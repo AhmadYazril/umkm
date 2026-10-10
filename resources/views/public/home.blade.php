@@ -4,7 +4,7 @@
 @section('content')
 
 {{-- ═══ HERO ═══ --}}
-<section class="relative min-h-[90vh] flex items-center justify-center topo-pattern overflow-hidden bg-nc-white">
+<section class="relative min-h-[92vh] py-16 pb-28 flex items-center justify-center topo-pattern overflow-hidden bg-nc-white">
     <div class="absolute inset-0 bg-gradient-to-b from-white/0 via-white/20 to-white/80 pointer-events-none"></div>
     <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
         {{-- Logo Monogram --}}
@@ -31,14 +31,14 @@
             @endif
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-4 justify-center reveal delay-300">
-            <a href="{{ route('menu') }}" id="hero-order-btn" class="btn-primary text-sm">Pesan Sekarang</a>
-            <a href="#menu-unggulan" class="btn-outline text-sm">Lihat Menu</a>
+        <div class="flex flex-row gap-8 justify-center items-center reveal delay-300">
+            <a href="{{ route('menu') }}" id="hero-order-btn" class="btn-text-link">Pesan Sekarang</a>
+            <a href="#menu-unggulan" class="btn-text-link">Lihat Menu</a>
         </div>
     </div>
 
     {{-- Scroll indicator --}}
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-bounce opacity-50">
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-bounce opacity-50">
         <div class="w-px h-8 bg-nc-black"></div>
         <div class="w-1.5 h-1.5 bg-nc-black rounded-full"></div>
     </div>
@@ -54,17 +54,17 @@
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" data-stagger="90">
             @foreach($featuredMenus as $menu)
-            <a href="{{ route('menu.show', $menu->slug) }}" class="group block card-hover reveal">
-                {{-- Gambar placeholder --}}
-                <div class="aspect-square bg-nc-gray-pale border border-nc-gray-light flex flex-col items-center justify-center overflow-hidden">
+            <a href="{{ route('menu.show', $menu->slug) }}" class="group block card-hover reveal transition-all duration-300 hover:-translate-y-2">
+                {{-- Gambar placeholder / foto menu --}}
+                <div class="aspect-square bg-nc-gray-pale border border-nc-gray-light group-hover:border-nc-black group-hover:shadow-lg flex flex-col items-center justify-center overflow-hidden transition-all duration-300">
                     @if($menu->image && file_exists(public_path('storage/' . $menu->image)))
-                        <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out">
                     @else
                         <div class="text-nc-gray-mid text-xs text-center p-4">
-                            <div class="w-12 h-12 border-2 border-dashed border-nc-gray-light mx-auto mb-2 flex items-center justify-center">
-                                <span class="text-nc-gray-light text-lg">☕</span>
+                            <div class="w-12 h-12 border-2 border-dashed border-nc-gray-light group-hover:border-nc-black mx-auto mb-2 flex items-center justify-center transition-colors duration-300">
+                                <span class="text-nc-gray-light text-lg group-hover:scale-125 group-hover:text-nc-black transition-all duration-300 inline-block">☕</span>
                             </div>
-                            <span>Foto Menu</span>
+                            <span class="group-hover:text-nc-black transition-colors duration-300">Foto Menu</span>
                         </div>
                     @endif
                 </div>
@@ -77,7 +77,7 @@
                         <span class="border border-nc-black text-nc-black text-xs px-2 py-0.5 font-medium tracking-wide">Unggulan</span>
                         @endif
                     </div>
-                    <h3 class="font-semibold text-nc-black text-sm mt-1 group-hover:underline">{{ $menu->name }}</h3>
+                    <h3 class="font-semibold text-nc-black text-sm mt-1 group-hover:underline group-hover:text-black transition-colors">{{ $menu->name }}</h3>
                     <p class="text-nc-gray-mid text-xs mt-0.5">{{ $menu->category->name }}</p>
                     <p class="font-bold text-nc-black text-sm mt-1">{{ $menu->formatted_price }}</p>
                 </div>
@@ -85,7 +85,7 @@
             @endforeach
         </div>
         <div class="text-center mt-10 reveal delay-200">
-            <a href="{{ route('menu') }}" class="btn-outline text-sm">Lihat Semua Menu</a>
+            <a href="{{ route('menu') }}" class="btn-text-link">Lihat Semua Menu</a>
         </div>
     </div>
 </section>
@@ -148,33 +148,34 @@
             </div>
 
             {{-- 3 Aesthetic Highlights / Badges --}}
+            {{-- 3 Aesthetic Highlights / Badges --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8" data-stagger="80">
-                <div class="bg-white border border-nc-gray-light/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-nc-black transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-nc-black text-white flex items-center justify-center font-serif font-black text-base shrink-0">
+                <div class="bg-white border border-nc-gray-light/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-nc-black hover:-translate-y-1.5 hover:shadow-xl hover:bg-zinc-50/50 cursor-pointer group transition-all duration-300">
+                    <div class="w-10 h-10 rounded-xl bg-nc-black text-white flex items-center justify-center font-serif font-black text-base shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         20
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-nc-black uppercase tracking-wider">Awal 2020</h4>
+                        <h4 class="text-xs font-bold text-nc-black uppercase tracking-wider group-hover:text-black">Awal 2020</h4>
                         <p class="text-[11px] text-nc-gray-mid">Berawal dari Banoffea</p>
                     </div>
                 </div>
 
-                <div class="bg-white border border-nc-gray-light/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-nc-black transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-nc-gray-pale border border-nc-gray-light text-nc-black flex items-center justify-center text-base shrink-0">
+                <div class="bg-white border border-nc-gray-light/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-nc-black hover:-translate-y-1.5 hover:shadow-xl hover:bg-zinc-50/50 cursor-pointer group transition-all duration-300">
+                    <div class="w-10 h-10 rounded-xl bg-nc-gray-pale border border-nc-gray-light text-nc-black flex items-center justify-center text-base shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         ☕
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-nc-black uppercase tracking-wider">Monokrom</h4>
+                        <h4 class="text-xs font-bold text-nc-black uppercase tracking-wider group-hover:text-black">Monokrom</h4>
                         <p class="text-[11px] text-nc-gray-mid">Elegan, Tenang & Bersih</p>
                     </div>
                 </div>
 
-                <div class="bg-white border border-nc-gray-light/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-nc-black transition-colors">
-                    <div class="w-10 h-10 rounded-xl bg-nc-black text-white flex items-center justify-center text-sm shrink-0">
+                <div class="bg-white border border-nc-gray-light/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-nc-black hover:-translate-y-1.5 hover:shadow-xl hover:bg-zinc-50/50 cursor-pointer group transition-all duration-300">
+                    <div class="w-10 h-10 rounded-xl bg-nc-black text-white flex items-center justify-center text-sm shrink-0 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         NU
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-nc-black uppercase tracking-wider">Favorit WFC</h4>
+                        <h4 class="text-xs font-bold text-nc-black uppercase tracking-wider group-hover:text-black">Favorit WFC</h4>
                         <p class="text-[11px] text-nc-gray-mid">Cozy, Nyaman & Produktif</p>
                     </div>
                 </div>
@@ -185,9 +186,9 @@
                 <p class="text-xs text-nc-gray-mid italic font-serif">
                     "New, Unforgettable, Comfy, Musings"
                 </p>
-                <a href="{{ route('about') }}" class="btn-primary rounded-full px-7 py-3 text-xs tracking-widest uppercase flex items-center gap-2 group shadow-md hover:shadow-xl transition-all">
+                <a href="{{ route('about') }}" class="btn-primary rounded-full px-7 py-3 text-xs tracking-widest uppercase flex items-center gap-2 group shadow-md hover:shadow-2xl hover:-translate-y-1 hover:scale-105 transition-all duration-300">
                     <span>Baca Cerita Selengkapnya</span>
-                    <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3.5 h-3.5 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
                 </a>
@@ -216,7 +217,7 @@
             @endforeach
         </div>
         <div class="text-center mt-10 reveal delay-200">
-            <a href="{{ route('facilities') }}" class="btn-outline text-sm">Selengkapnya</a>
+            <a href="{{ route('facilities') }}" class="btn-text-link">Selengkapnya</a>
         </div>
     </div>
 </section>
@@ -343,7 +344,7 @@
 
                             @if($isToday)
                                 {{-- Highlighted Card for Today --}}
-                                <div class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white text-nc-black font-semibold shadow-lg transition-transform duration-200 hover:scale-[1.01]">
+                                <div class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white text-nc-black font-semibold shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-zinc-50 hover:shadow-2xl cursor-pointer">
                                     <div class="flex items-center gap-2.5">
                                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                         <span class="text-sm sm:text-base font-bold">{{ $h->day_name }}</span>
@@ -365,7 +366,7 @@
                                 </div>
                             @elseif($h->is_closed)
                                 {{-- Closed Day --}}
-                                <div class="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-zinc-500 hover:bg-white/[0.04] transition-colors">
+                                <div class="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-zinc-500 hover:bg-white/[0.08] hover:border-white/20 hover:text-zinc-300 hover:translate-x-2 hover:shadow-md transition-all duration-300 cursor-pointer">
                                     <span class="text-sm font-medium text-zinc-400">{{ $h->day_name }}</span>
                                     <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-red-950/40 border border-red-800/40 text-red-400 uppercase tracking-wider">
                                         LIBUR
@@ -373,7 +374,7 @@
                                 </div>
                             @else
                                 {{-- Regular Open Day --}}
-                                <div class="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-zinc-300 hover:bg-white/[0.05] hover:text-white transition-all">
+                                <div class="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-zinc-300 hover:bg-white/[0.08] hover:border-white/20 hover:text-white hover:translate-x-2 hover:shadow-md transition-all duration-300 cursor-pointer">
                                     <span class="text-sm font-medium text-zinc-200">{{ $h->day_name }}</span>
                                     <span class="font-mono text-sm tracking-tight text-zinc-300">
                                         {{ substr($h->open_time, 0, 5) }} – {{ substr($h->close_time, 0, 5) }}
@@ -421,7 +422,7 @@
             @endforeach
         </div>
         <div class="text-center mt-8 reveal delay-200">
-            <a href="{{ route('gallery') }}" class="btn-outline text-sm">Lihat Semua Foto</a>
+            <a href="{{ route('gallery') }}" class="btn-text-link">Lihat Semua Foto</a>
         </div>
     </div>
 </section>
@@ -469,9 +470,9 @@
                 <p class="text-xs mt-1">[ISI: embed link Google Maps]</p>
             </div>
         </div>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-            <a href="{{ route('contact') }}" class="btn-primary text-sm">Info Kontak</a>
-            <a href="{{ route('reservation') }}" class="btn-outline text-sm">Buat Reservasi</a>
+        <div class="flex flex-row gap-10 justify-center items-center mt-8">
+            <a href="{{ route('contact') }}" class="btn-text-link">Info Kontak</a>
+            <a href="{{ route('reservation') }}" class="btn-text-link">Buat Reservasi</a>
         </div>
     </div>
 </section>
