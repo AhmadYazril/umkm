@@ -6,7 +6,7 @@
     $address = \App\Models\Setting::get('cafe_address');
 @endphp
 
-<footer class="relative bg-zinc-950 text-white overflow-hidden">
+<footer class="relative bg-zinc-950/90 text-white overflow-hidden backdrop-blur-xl border-t border-white/10">
 
     {{-- ── TOP CTA BAND ── --}}
     <div class="border-b border-white/5">
@@ -41,9 +41,13 @@
             {{-- Brand Column (wider) --}}
             <div class="lg:col-span-4">
                 {{-- Logo --}}
-                <a href="{{ route('home') }}" class="inline-flex items-center gap-3.5 mb-7 group">
-                    <div class="w-12 h-12 bg-white flex items-center justify-center shadow-md group-hover:shadow-white/20 transition-shadow">
-                        <span class="text-zinc-950 font-serif font-black text-xl tracking-tighter select-none">NU</span>
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-3 mb-7 group">
+                    <div class="w-8 h-9 text-white shrink-0 group-hover:scale-105 transition-transform">
+                        <svg class="w-full h-full" viewBox="0 0 104 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 24 46 V 24 C 24 10 52 10 52 24 V 46" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="80" cy="44" r="7" fill="currentColor"/>
+                            <path d="M 52 64 V 86 C 52 100 80 100 80 86 V 64" stroke="currentColor" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </div>
                     <div>
                         <div class="font-black text-white text-base tracking-[0.28em] leading-none mb-0.5">NUCOMU</div>

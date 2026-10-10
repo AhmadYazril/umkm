@@ -30,21 +30,34 @@
                     </div>
 
                     @foreach($cart as $key => $item)
+                        @php
+                            $itemName  = $item['name'] ?? $item['menu_name'] ?? 'Menu';
+                            $itemPrice = $item['price'] ?? $item['unit_price'] ?? 0;
+                            $itemQty   = $item['qty'] ?? 1;
+                            $lineTotal = $item['line_total'] ?? ($itemPrice * $itemQty);
+                            $options   = $item['options'] ?? [];
+                        @endphp
                         <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div class="flex-1">
                                 <h3 class="font-bold text-base text-white">
-                                    {{ $item['name'] }}
+                                    {{ $itemName }}
                                 </h3>
                                 <div class="text-xs font-mono text-zinc-400 mt-1">
-                                    Rp {{ number_format($item['price'], 0, ',', '.') }} × {{ $item['qty'] }} pcs
+                                    Rp {{ number_format($itemPrice, 0, ',', '.') }} × {{ $itemQty }} pcs
                                 </div>
 
-                                @if(!empty($item['options']))
+                                @if(!empty($options))
                                     <div class="mt-2 flex flex-wrap gap-1">
-                                        @foreach($item['options'] as $opt)
-                                            <span class="text-[11px] bg-zinc-800 text-zinc-300 border border-zinc-700 px-2 py-0.5 rounded-full">
-                                                + {{ $opt['name'] }} (Rp {{ number_format($opt['price'], 0, ',', '.') }})
-                                            </span>
+                                        @foreach($options as $opt)
+                                            @if(is_array($opt))
+                                                <span class="text-[11px] bg-zinc-800 text-zinc-300 border border-zinc-700 px-2 py-0.5 rounded-full">
+                                                    + {{ $opt['name'] ?? '' }} (Rp {{ number_format($opt['price'] ?? 0, 0, ',', '.') }})
+                                                </span>
+                                            @else
+                                                <span class="text-[11px] bg-zinc-800 text-zinc-300 border border-zinc-700 px-2 py-0.5 rounded-full">
+                                                    + Option #{{ $opt }}
+                                                </span>
+                                            @endif
                                         @endforeach
                                     </div>
                                 @endif
@@ -60,12 +73,13 @@
                                 <div class="text-right">
                                     <span class="text-xs text-zinc-500 block">Subtotal</span>
                                     <span class="text-base font-extrabold text-white">
-                                        Rp {{ number_format($item['line_total'], 0, ',', '.') }}
+                                        Rp {{ number_format($lineTotal, 0, ',', '.') }}
                                     </span>
                                 </div>
 
                                 <form action="{{ route('cart.remove') }}" method="POST">
                                     @csrf
+                                    <input type="hidden" name="key" value="{{ $key }}">
                                     <input type="hidden" name="cart_key" value="{{ $key }}">
                                     <button type="submit" class="p-2 bg-zinc-800 hover:bg-red-950 text-zinc-400 hover:text-red-400 border border-zinc-700 hover:border-red-800 rounded-xl transition-colors">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +137,7 @@
                                 <select name="table_id" id="table_id"
                                     class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-white transition-colors">
                                     <option value="">-- Pilih Meja --</option>
-                                    @foreach($tables as $table)
+                                    @foreach($tables ?? [] as $table)
                                         <option value="{{ $table->id }}">
                                             Meja {{ $table->number }} (Kapasitas {{ $table->capacity }} orang)
                                         </option>
