@@ -46,6 +46,78 @@
         /* Flash messages */
         .alert-success { @apply bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded; }
         .alert-error   { @apply bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded; }
+
+        /* Aesthetic Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            filter: blur(4px);
+            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-36px);
+            filter: blur(4px);
+            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+        .reveal-left.revealed {
+            opacity: 1;
+            transform: translateX(0);
+            filter: blur(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(36px);
+            filter: blur(4px);
+            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+        .reveal-right.revealed {
+            opacity: 1;
+            transform: translateX(0);
+            filter: blur(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            filter: blur(4px);
+            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+        .reveal-scale.revealed {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+        }
+
+        /* Stagger Delays */
+        .delay-75  { transition-delay: 75ms; }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-150 { transition-delay: 150ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-250 { transition-delay: 250ms; }
+        .delay-300 { transition-delay: 300ms; }
+        .delay-400 { transition-delay: 400ms; }
+        .delay-500 { transition-delay: 500ms; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal, .reveal-left, .reveal-right, .reveal-scale {
+                opacity: 1 !important;
+                transform: none !important;
+                filter: none !important;
+                transition: none !important;
+            }
+        }
     </style>
     @stack('styles')
 </head>
@@ -89,6 +161,47 @@
                 mobileMenu.classList.toggle('hidden');
             });
         }
+
+        // Aesthetic Scroll Reveal
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto stagger children if parent container has data-stagger
+            document.querySelectorAll('[data-stagger]').forEach(parent => {
+                const step = parseInt(parent.dataset.stagger) || 100;
+                Array.from(parent.children).forEach((child, idx) => {
+                    if (!child.style.transitionDelay && (
+                        child.classList.contains('reveal') || 
+                        child.classList.contains('reveal-scale') || 
+                        child.classList.contains('reveal-left') || 
+                        child.classList.contains('reveal-right')
+                    )) {
+                        child.style.transitionDelay = `${idx * step}ms`;
+                    }
+                });
+            });
+
+            const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+            if (!('IntersectionObserver' in window)) {
+                revealElements.forEach(el => el.classList.add('revealed'));
+                return;
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    } else {
+                        // Reset class agar animasi dapat muncul berulang kali setiap kali discroll kembali
+                        entry.target.classList.remove('revealed');
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: '0px 0px -30px 0px',
+                threshold: 0.08
+            });
+
+            revealElements.forEach(el => observer.observe(el));
+        });
     </script>
     @stack('scripts')
 </body>
