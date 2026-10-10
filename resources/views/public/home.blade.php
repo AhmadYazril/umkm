@@ -128,22 +128,177 @@
 </section>
 
 {{-- ═══ JAM OPERASIONAL ═══ --}}
-<section class="py-20 bg-nc-black text-white topo-pattern">
-    <div class="max-w-3xl mx-auto px-4 text-center">
-        <p class="text-nc-gray-mid text-xs tracking-widest uppercase mb-4">Kapan Kami Buka</p>
-        <h2 class="text-3xl font-serif font-bold tracking-wide mb-10">Jam Operasional</h2>
-        <div class="divide-y divide-nc-gray-dark">
-            @foreach($hours as $h)
-            <div class="flex justify-between py-3 {{ $h->is_closed ? 'text-nc-gray-mid' : 'text-white' }} {{ !$h->is_closed && $h->day_of_week == $now->dayOfWeek ? 'font-semibold' : '' }}">
-                <span>{{ $h->day_name }}</span>
-                <span>
-                    {{ $h->schedule_text }}
-                    @if(!$h->is_closed && $h->day_of_week == $now->dayOfWeek)
-                    <span class="ml-2 text-xs bg-white text-nc-black px-2 py-0.5 font-semibold">Hari ini</span>
-                    @endif
-                </span>
+<section class="relative py-24 bg-nc-black text-white overflow-hidden topo-pattern">
+    {{-- Ambient Glow Vignette --}}
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-white/[0.03] rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Section Header --}}
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md mb-4 shadow-sm">
+                <svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-xs uppercase tracking-widest text-zinc-300 font-medium">Kapan Kami Buka</span>
             </div>
-            @endforeach
+            <h2 class="text-3xl md:text-5xl font-serif font-bold tracking-tight text-white mb-3">
+                Jam Operasional
+            </h2>
+            <p class="text-nc-gray-mid text-sm md:text-base font-light leading-relaxed">
+                Luangkan harimu dengan secangkir kopi hangat dan sajian dessert otentik di sudut terbaik Tulungagung.
+            </p>
+            <div class="w-12 h-px bg-white/20 mx-auto mt-6"></div>
+        </div>
+
+        {{-- Aesthetic Grid Layout --}}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            
+            {{-- Left Side: Live Ambience & Experience Card --}}
+            <div class="lg:col-span-5 bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 border border-white/10 rounded-3xl p-7 sm:p-9 flex flex-col justify-between relative overflow-hidden backdrop-blur-md shadow-2xl">
+                {{-- Decorative Brand Monogram Watermark --}}
+                <div class="absolute -right-4 -bottom-6 text-white/[0.03] font-serif font-black text-9xl select-none pointer-events-none">
+                    NU
+                </div>
+
+                <div>
+                    {{-- Live Status Indicator --}}
+                    <div class="mb-6">
+                        @if($isOpen)
+                            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold tracking-wider uppercase shadow-inner">
+                                <span class="relative flex h-2.5 w-2.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                </span>
+                                <span>Buka Sekarang</span>
+                            </div>
+                            @if($todayHour)
+                                <p class="text-xs text-zinc-400 mt-2 font-mono">
+                                    Hari ini melayani hingga <span class="text-white font-semibold">{{ substr($todayHour->close_time, 0, 5) }} WIB</span>
+                                </p>
+                            @endif
+                        @else
+                            <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-zinc-800/80 border border-zinc-700/60 text-zinc-400 text-xs font-semibold tracking-wider uppercase">
+                                <span class="inline-block w-2.5 h-2.5 rounded-full bg-zinc-500"></span>
+                                <span>Sedang Tutup</span>
+                            </div>
+                            <p class="text-xs text-zinc-400 mt-2">
+                                @if($todayHour && $todayHour->is_closed)
+                                    Hari ini libur operasional. Sampai jumpa esok hari!
+                                @elseif($todayHour)
+                                    Buka hari ini pukul <span class="text-white font-medium">{{ substr($todayHour->open_time, 0, 5) }} WIB</span>
+                                @else
+                                    Silakan cek jadwal harian di samping.
+                                @endif
+                            </p>
+                        @endif
+                    </div>
+
+                    {{-- Card Copy & Features --}}
+                    <h3 class="text-2xl font-serif font-bold text-white mb-3">
+                        Ruang Nyaman, Kopi Berkesan
+                    </h3>
+                    <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+                        Nucomu Cafe didesain dengan konsep monokrom yang tenang dan elegan. Pilihan tepat untuk santai, bekerja nyaman (WFC), atau berbagi cerita hangat.
+                    </p>
+
+                    <ul class="space-y-3 mb-8 text-xs sm:text-sm text-zinc-300">
+                        <li class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0">☕</span>
+                            <span>Kopi pilihan & signature artisan dessert</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0">⚡</span>
+                            <span>Wi-Fi kencang & stopkontak ramah WFC</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white shrink-0">🌿</span>
+                            <span>Area indoor ber-AC & outdoor aesthetic</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Action Buttons --}}
+                <div class="pt-6 border-t border-white/10 flex flex-col sm:flex-row gap-3">
+                    <a href="{{ route('reservation') }}" class="btn-primary text-center text-xs tracking-widest uppercase flex items-center justify-center gap-2 group">
+                        <span>Reservasi Meja</span>
+                        <svg class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
+                    <a href="{{ route('contact') }}" class="btn-outline text-white border-white/20 hover:border-white hover:bg-white hover:text-nc-black text-center text-xs tracking-widest uppercase">
+                        Lokasi & Kontak
+                    </a>
+                </div>
+            </div>
+
+            {{-- Right Side: Daily Schedule Table Card --}}
+            <div class="lg:col-span-7 bg-zinc-900/40 border border-white/10 rounded-3xl p-6 sm:p-8 backdrop-blur-md shadow-2xl flex flex-col justify-between">
+                <div>
+                    {{-- Schedule Header --}}
+                    <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/10 text-xs font-semibold tracking-wider uppercase text-zinc-400">
+                        <span>Hari</span>
+                        <span>Jam Buka – Tutup</span>
+                    </div>
+
+                    {{-- Schedule List --}}
+                    <div class="space-y-2">
+                        @foreach($hours as $h)
+                            @php
+                                $isToday = ($h->day_of_week == $now->dayOfWeek);
+                            @endphp
+
+                            @if($isToday)
+                                {{-- Highlighted Card for Today --}}
+                                <div class="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white text-nc-black font-semibold shadow-lg transition-transform duration-200 hover:scale-[1.01]">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <span class="text-sm sm:text-base font-bold">{{ $h->day_name }}</span>
+                                        <span class="text-[10px] sm:text-xs bg-nc-black text-white px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                            Hari Ini
+                                        </span>
+                                    </div>
+                                    <div>
+                                        @if($h->is_closed)
+                                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-700 uppercase tracking-widest">
+                                                LIBUR
+                                            </span>
+                                        @else
+                                            <span class="font-mono text-sm sm:text-base font-bold tracking-tight">
+                                                {{ substr($h->open_time, 0, 5) }} – {{ substr($h->close_time, 0, 5) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @elseif($h->is_closed)
+                                {{-- Closed Day --}}
+                                <div class="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-zinc-500 hover:bg-white/[0.04] transition-colors">
+                                    <span class="text-sm font-medium text-zinc-400">{{ $h->day_name }}</span>
+                                    <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-red-950/40 border border-red-800/40 text-red-400 uppercase tracking-wider">
+                                        LIBUR
+                                    </span>
+                                </div>
+                            @else
+                                {{-- Regular Open Day --}}
+                                <div class="flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-zinc-300 hover:bg-white/[0.05] hover:text-white transition-all">
+                                    <span class="text-sm font-medium text-zinc-200">{{ $h->day_name }}</span>
+                                    <span class="font-mono text-sm tracking-tight text-zinc-300">
+                                        {{ substr($h->open_time, 0, 5) }} – {{ substr($h->close_time, 0, 5) }}
+                                    </span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Last Order Note --}}
+                <div class="mt-6 pt-4 border-t border-white/5 flex items-center gap-2 text-xs text-zinc-400">
+                    <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Pesanan terakhir (last order) dilayani 30 menit sebelum waktu tutup operasional.</span>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
