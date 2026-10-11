@@ -185,12 +185,12 @@
         .alert-success { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 1rem; border-radius: 0.5rem; }
         .alert-error   { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 1rem; border-radius: 0.5rem; }
 
-        /* Scroll Reveal */
+        /* Scroll Reveal - Lebih Cepat & Responsif */
         .reveal {
             opacity: 0;
-            transform: translateY(28px);
-            filter: blur(4px);
-            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(20px);
+            filter: blur(3px);
+            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform, filter;
         }
         .reveal.revealed {
@@ -200,9 +200,9 @@
         }
         .reveal-scale {
             opacity: 0;
-            transform: scale(0.92);
-            filter: blur(4px);
-            transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(0.95);
+            filter: blur(3px);
+            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
             will-change: opacity, transform, filter;
         }
         .reveal-scale.revealed {
@@ -242,13 +242,13 @@
                     x     : rand(0, W),
                     y     : fromTop ? rand(-80, -10) : rand(-80, H),
                     size  : size,
-                    speedY: rand(0.35, 0.95),
-                    speedX: rand(-0.25, 0.25),
+                    speedY: rand(0.9, 2.2),
+                    speedX: rand(-0.4, 0.4),
                     opacity: rand(0.30, 0.55),
                     rot   : rand(0, 360),
-                    rotSpeed: rand(-0.5, 0.5),
+                    rotSpeed: rand(-1.0, 1.0),
                     wobble: rand(0, Math.PI * 2),
-                    wobbleSpeed: rand(0.008, 0.022),
+                    wobbleSpeed: rand(0.02, 0.045),
                     wobbleAmp: rand(0.3, 1.2),
                 };
             }
