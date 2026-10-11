@@ -2,11 +2,12 @@
 @section('title', 'Katalog Menu — Nucomu Cafe')
 
 @section('content')
-<section class="py-12 bg-zinc-950 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-12 min-h-screen relative">
+    <div class="absolute inset-0 bg-zinc-950/80 pointer-events-none"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {{-- Header & Search --}}
-        <div class="text-center max-w-3xl mx-auto mb-10">
+        <div class="text-center max-w-3xl mx-auto mb-10 reveal">
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white uppercase mb-4">
                 Katalog <span class="text-zinc-500">Menu</span>
             </h1>
@@ -31,7 +32,7 @@
         </div>
 
         {{-- Filter Kategori --}}
-        <div class="flex items-center justify-start sm:justify-center space-x-2 overflow-x-auto pb-4 mb-10 no-scrollbar">
+        <div class="flex items-center justify-start sm:justify-center space-x-2 overflow-x-auto pb-4 mb-10 no-scrollbar reveal">
             <a href="{{ route('menu', array_filter(['q' => request('q')])) }}" 
                class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all border {{ !request('category') ? 'bg-white text-zinc-950 border-white shadow-lg shadow-white/10' : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-white' }}">
                Semua Menu
@@ -46,7 +47,7 @@
 
         {{-- Active Filter Info --}}
         @if(request('category') || request('q'))
-            <div class="flex items-center justify-between bg-zinc-900/60 border border-zinc-800/80 rounded-2xl px-5 py-3 mb-8 text-sm text-zinc-400">
+            <div class="flex items-center justify-between bg-zinc-900/60 border border-zinc-800/80 rounded-2xl px-5 py-3 mb-8 text-sm text-zinc-400 reveal">
                 <div>
                     Menampilkan hasil 
                     @if(request('q')) pencarian "<span class="text-white font-semibold">{{ request('q') }}</span>"@endif
@@ -60,7 +61,7 @@
         @if($menus->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @foreach($menus as $menu)
-                    <div class="group bg-zinc-900/60 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
+                    <div class="reveal-scale group bg-zinc-900/60 border border-zinc-800/80 rounded-2xl overflow-hidden hover:border-zinc-600 transition-all duration-300 flex flex-col justify-between hover:-translate-y-1">
                         <div>
                             {{-- Image Container --}}
                             <div class="relative h-48 sm:h-56 bg-zinc-950 overflow-hidden">

@@ -2,10 +2,11 @@
 @section('title', 'Galeri — Nucomu Cafe')
 
 @section('content')
-<section class="py-12 bg-zinc-950 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-12 min-h-screen relative">
+    <div class="absolute inset-0 bg-zinc-950/80 pointer-events-none"></div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center max-w-3xl mx-auto mb-12">
+        <div class="text-center max-w-3xl mx-auto mb-12 reveal">
             <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-2">Dokumentasi & Momen</span>
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white uppercase mb-4">
                 Galeri <span class="text-zinc-500">Nucomu</span>
@@ -18,7 +19,7 @@
         @if($gallery->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($gallery as $item)
-                    <div class="group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden aspect-square hover:border-zinc-600 transition-all duration-300">
+                    <div class="reveal-scale group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden aspect-square hover:border-zinc-600 transition-all duration-300">
                         @if($item->image && file_exists(public_path('storage/' . $item->image)))
                             <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->caption }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         @else

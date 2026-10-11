@@ -234,7 +234,7 @@
     @endif
 
     {{-- MAIN CONTENT --}}
-    <main>
+    <main class="pt-20 sm:pt-24">
         @yield('content')
     </main>
 

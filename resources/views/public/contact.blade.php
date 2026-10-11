@@ -2,10 +2,11 @@
 @section('title', 'Kontak & Lokasi — Nucomu Cafe')
 
 @section('content')
-<section class="py-16 bg-zinc-950 min-h-screen text-white">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="py-16 min-h-screen text-white relative">
+    <div class="absolute inset-0 bg-zinc-950/80 pointer-events-none"></div>
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="text-center max-w-2xl mx-auto mb-16 reveal">
             <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-2">Hubungi Kami</span>
             <h1 class="text-3xl sm:text-5xl font-black tracking-tight uppercase mb-4">
                 Kontak & <span class="text-zinc-500">Lokasi</span>
@@ -21,7 +22,7 @@
             <div class="lg:col-span-5 space-y-6">
                 
                 {{-- Alamat Card --}}
-                <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-6">
+                <div class="reveal bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-6">
                     <div class="flex items-center space-x-3 mb-3">
                         <div class="p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +38,7 @@
                 </div>
 
                 {{-- WhatsApp / Telepon Card --}}
-                <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-6">
+                <div class="reveal bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-6">
                     <div class="flex items-center space-x-3 mb-3">
                         <div class="p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +54,7 @@
                 </div>
 
                 {{-- Jam Operasional Card --}}
-                <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-6">
+                <div class="reveal bg-zinc-900/60 border border-zinc-800/80 rounded-3xl p-6">
                     <div class="flex items-center space-x-3 mb-4">
                         <div class="p-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-white">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,7 +81,7 @@
             </div>
 
             {{-- Maps Embed (Col 7) --}}
-            <div class="lg:col-span-7 bg-zinc-900/60 border border-zinc-800/80 rounded-3xl overflow-hidden min-h-[400px] flex flex-col justify-between p-2">
+            <div class="reveal lg:col-span-7 bg-zinc-900/60 border border-zinc-800/80 rounded-3xl overflow-hidden min-h-[400px] flex flex-col justify-between p-2">
                 <div class="w-full h-full min-h-[450px] bg-zinc-950 rounded-2xl relative overflow-hidden flex flex-col items-center justify-center p-6 text-center">
                     {{-- Embed Google Maps --}}
                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15794.137887556094!2d111.902!3d-8.064!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDMnNTAuNCJTIDExM8KwNTQnMDcuMiJF!5e0!3m2!1sid!2sid!4v1600000000000!5m2!1sid!2sid" 

@@ -71,9 +71,9 @@ class PageController extends Controller
     public function contact()
     {
         $settings = Setting::pluck('value', 'key');
-        $hours = OperatingHour::orderBy('day_of_week')->get();
+        $operatingHours = OperatingHour::orderBy('day_of_week')->get();
 
-        return view('public.contact', compact('settings', 'hours'));
+        return view('public.contact', compact('settings', 'operatingHours'));
     }
 
     public function events()

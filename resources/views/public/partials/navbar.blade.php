@@ -1,7 +1,7 @@
 {{-- ═══ FLOATING PILL ISLAND NAVBAR (ORGANIC, FLUID & MODERN) ═══ --}}
 <header class="fixed top-3 sm:top-5 left-0 right-0 z-50 flex justify-center px-3 sm:px-6 pointer-events-none transition-all duration-300">
     <div class="w-full max-w-5xl">
-        <nav class="pointer-events-auto rounded-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/90 dark:border-white/10 shadow-lg shadow-black/[0.04] dark:shadow-black/40 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between transition-all duration-300">
+        <nav class="pointer-events-auto rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-white/90 dark:border-white/10 shadow-lg shadow-black/[0.04] dark:shadow-black/40 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between transition-all duration-300">
 
             {{-- Logo Navbar (Clean, Balanced & Always Visible) --}}
             <a href="{{ route('home') }}" 
