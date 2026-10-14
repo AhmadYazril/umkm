@@ -2,7 +2,7 @@
 @section('title', $menu->name . ' — Nucomu Cafe')
 
 @section('content')
-<section class="py-12 bg-zinc-950 min-h-screen">
+<section class="py-12 min-h-screen relative">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {{-- Breadcrumb --}}

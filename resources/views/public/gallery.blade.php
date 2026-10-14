@@ -3,15 +3,14 @@
 
 @section('content')
 <section class="py-12 min-h-screen relative">
-    <div class="absolute inset-0 bg-zinc-950/80 pointer-events-none"></div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="text-center max-w-3xl mx-auto mb-12 reveal">
             <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-2">Dokumentasi & Momen</span>
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white uppercase mb-4">
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-white uppercase mb-4">
                 Galeri <span class="text-zinc-500">Nucomu</span>
             </h1>
-            <p class="text-zinc-400 text-sm sm:text-base leading-relaxed">
+            <p class="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
                 Intip suasana hangat, detail arsitektur monokrom, serta sajian kopi & dessert buatan kami di Tulungagung.
             </p>
         </div>
@@ -19,11 +18,11 @@
         @if($gallery->count() > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($gallery as $item)
-                    <div class="reveal-scale group relative bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden aspect-square hover:border-zinc-600 transition-all duration-300">
+                    <div class="reveal-scale group relative bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden aspect-square hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 shadow-sm">
                         @if($item->image && file_exists(public_path('storage/' . $item->image)))
                             <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->caption }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         @else
-                            <div class="w-full h-full flex flex-col items-center justify-center bg-zinc-900 text-zinc-600 p-4 text-center">
+                            <div class="w-full h-full flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600 p-4 text-center">
                                 <svg class="w-10 h-10 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
@@ -44,12 +43,12 @@
                 @endforeach
             </div>
         @else
-            <div class="text-center py-20 bg-zinc-900/40 border border-zinc-800/80 rounded-3xl p-8">
-                <svg class="w-16 h-16 text-zinc-600 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="text-center py-20 bg-white/70 dark:bg-zinc-900/40 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-8">
+                <svg class="w-16 h-16 text-zinc-400 dark:text-zinc-600 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                <h3 class="text-lg font-bold text-white mb-2">Galeri Foto Belum Tersedia</h3>
-                <p class="text-zinc-400 text-sm">Foto galeri akan segera diperbarui oleh Admin Nucomu Cafe.</p>
+                <h3 class="text-lg font-bold text-zinc-950 dark:text-white mb-2">Galeri Foto Belum Tersedia</h3>
+                <p class="text-zinc-600 dark:text-zinc-400 text-sm">Foto galeri akan segera diperbarui oleh Admin Nucomu Cafe.</p>
             </div>
         @endif
 
