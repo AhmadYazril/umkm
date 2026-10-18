@@ -2,7 +2,7 @@
 @section('title', 'Keranjang Pesanan — Nucomu Cafe')
 
 @section('content')
-<section class="py-12 bg-zinc-950 min-h-screen">
+<section class="py-12 min-h-screen relative">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="text-center max-w-2xl mx-auto mb-10">
