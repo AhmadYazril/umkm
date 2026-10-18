@@ -1,369 +1,85 @@
 <!DOCTYPE html>
-<html lang="id" class="transition-colors duration-300">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{ $metaDesc ?? 'Nucomu Cafe — Coffee & Dessert di Tulungagung. Tempat nyaman untuk menikmati dessert otentik, kopi, dan makanan dengan konsep monokrom elegan.' }}">
-    <title>@yield('title', 'Nucomu Cafe') — Coffee & Dessert Tulungagung</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
+    <meta name="description" content="@yield('meta_description', 'Nucomu Cafe — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
 
-    {{-- Script Pencegah FOUC (Flash of Unstyled Content) saat muat tema --}}
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    </script>
-
+    <!-- Google Fonts: Cormorant Garamond, Manrope & Alex Brush -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Material Symbols Outlined -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <!-- Tailwind CSS CDN with Nucomu Palette Configuration -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    },
                     colors: {
-                        'nc-black': '#0a0a0a',
-                        'nc-gray-dark': '#1a1a1a',
-                        'nc-gray': '#4a4a4a',
-                        'nc-gray-mid': '#888888',
-                        'nc-gray-light': '#d4d4d4',
-                        'nc-gray-pale': '#f0f0f0',
-                        'nc-white': '#fafafa',
+                        'ink-black': '#191919',
+                        'charcoal': '#30302D',
+                        'warm-ivory': '#F5F2EC',
+                        'pure-white': '#FFFFFF',
+                        'light-gray': '#E5E4E0',
+                        'medium-gray': '#8A8A86',
+                        'soft-beige': '#E7DED1',
+                        'warm-stone': '#DAD7CF',
+                        'espresso-brown': '#54392B',
+                        'espresso-dark': '#3D281D',
+                        'accent-gold': '#C2A378',
+                    },
+                    fontFamily: {
+                        editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        script: ['"Alex Brush"', 'cursive'],
+                        body: ['Manrope', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
                     },
                     letterSpacing: {
-                        'widest2': '0.3em',
+                        'editorial-widest': '0.15em',
+                        'editorial-tighter': '-0.02em',
                     }
                 }
             }
         }
     </script>
-    <style>
-        /* Topographic pattern overlay for solid sections */
-        .topo-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cpath d='M0 200 Q50 180 100 200 Q150 220 200 200 Q250 180 300 200 Q350 220 400 200' fill='none' stroke='%23888' stroke-width='0.5' opacity='0.08'/%3E%3C/svg%3E");
-        }
 
-        /* Ambient Cafe Backdrop Styling (Continuous, Seamless & Non-Stiff) */
-        .ambient-cafe-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: -10;
-            background-image: url('{{ asset('images/cafe_bg.jpg') }}');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            pointer-events-none;
-        }
-
-        /* Light Mode: Warm, luminous, semi-transparent cafe veil */
-        html:not(.dark) .ambient-cafe-backdrop::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                180deg,
-                rgba(255, 255, 255, 0.72) 0%,
-                rgba(250, 250, 249, 0.78) 35%,
-                rgba(245, 245, 244, 0.82) 70%,
-                rgba(255, 255, 255, 0.76) 100%
-            );
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
-        }
-
-        /* Dark Mode: Luxury moody monochrome veil with glowing ambient cafe lights */
-        html.dark .ambient-cafe-backdrop::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                180deg,
-                rgba(10, 10, 10, 0.75) 0%,
-                rgba(14, 14, 16, 0.79) 35%,
-                rgba(12, 12, 14, 0.82) 70%,
-                rgba(10, 10, 10, 0.78) 100%
-            );
-            backdrop-filter: blur(2px);
-            -webkit-backdrop-filter: blur(2px);
-        }
-
-        /* Frosted Glassmorphism Cards (Organic Squircles & Modern Blur) */
-        .glass-card {
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        html:not(.dark) .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.90);
-            box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.02);
-            color: #09090b;
-        }
-
-        html.dark .glass-card {
-            background: rgba(18, 18, 20, 0.70);
-            border: 1px solid rgba(255, 255, 255, 0.10);
-            box-shadow: 0 20px 45px -12px rgba(0, 0, 0, 0.50), 0 0 0 1px rgba(255, 255, 255, 0.04);
-            color: #ffffff;
-        }
-
-        /* Nav link — sliding underline on hover */
-        .nav-link {
-            font-size: 0.875rem;
-            line-height: 1.25rem;
-            font-weight: 500;
-            letter-spacing: 0.025em;
-            position: relative;
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -3px;
-            width: 0;
-            height: 1.5px;
-            background-color: currentColor;
-            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        /* Button styles */
-        .btn-primary {
-            display: inline-block;
-            background-color: #0a0a0a !important;
-            color: #ffffff !important;
-            padding: 0.75rem 1.5rem !important;
-            font-size: 0.875rem !important;
-            line-height: 1.25rem !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.1em !important;
-            text-align: center;
-            text-decoration: none !important;
-            cursor: pointer;
-            transition: background-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-        }
-        html.dark .btn-primary {
-            background-color: #ffffff !important;
-            color: #0a0a0a !important;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-outline {
-            display: inline-block;
-            border: 1px solid currentColor !important;
-            background-color: transparent !important;
-            padding: 0.75rem 1.5rem !important;
-            font-size: 0.875rem !important;
-            line-height: 1.25rem !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.1em !important;
-            text-align: center;
-            text-decoration: none !important;
-            cursor: pointer;
-            transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
-        }
-        .btn-outline:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Flash messages */
-        .alert-success { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 1rem; border-radius: 0.5rem; }
-        .alert-error   { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 1rem; border-radius: 0.5rem; }
-
-        /* Scroll Reveal - Lebih Cepat & Responsif */
-        .reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            filter: blur(3px);
-            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform, filter;
-        }
-        .reveal.revealed {
-            opacity: 1;
-            transform: translateY(0);
-            filter: blur(0);
-        }
-        .reveal-scale {
-            opacity: 0;
-            transform: scale(0.95);
-            filter: blur(3px);
-            transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform, filter;
-        }
-        .reveal-scale.revealed {
-            opacity: 1;
-            transform: scale(1);
-            filter: blur(0);
-        }
-    </style>
-    @stack('styles')
+    <!-- Custom Nucomu CSS -->
+    <link rel="stylesheet" href="{{ asset('css/nucomu.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/showcase.css') }}">
 </head>
-<body class="bg-stone-100/0 dark:bg-zinc-950/0 text-zinc-900 dark:text-white font-sans antialiased transition-colors duration-300 relative min-h-screen">
+<body class="bg-warm-ivory text-charcoal font-body antialiased selection:bg-ink-black selection:text-warm-ivory">
 
-    {{-- UNIFIED CONTINUOUS AMBIENT CAFE BACKDROP (SEAMLESS, COZY & NON-STIFF) --}}
-    <div class="ambient-cafe-backdrop" aria-hidden="true"></div>
+    <!-- Header Navigation -->
+    @include('components.navbar')
 
-    {{-- FOOD PARTICLE ANIMATION --}}
-    <canvas id="food-particles" aria-hidden="true" style="position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
-    <script>
-        (function () {
-            const canvas = document.getElementById('food-particles');
-            const ctx = canvas.getContext('2d');
-            const EMOJIS = ['☕','🍰','🧁','🍫','🥐','🫖','🍵','🍮','✨','🌿','🫙','🍪'];
-            const COUNT = 28;
-            let W, H, particles = [];
-
-            function resize() {
-                W = canvas.width  = window.innerWidth;
-                H = canvas.height = window.innerHeight;
-            }
-
-            function rand(min, max) { return Math.random() * (max - min) + min; }
-
-            function createParticle(fromTop = false) {
-                const size = rand(18, 36);
-                return {
-                    emoji : EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
-                    x     : rand(0, W),
-                    y     : fromTop ? rand(-80, -10) : rand(-80, H),
-                    size  : size,
-                    speedY: rand(0.9, 2.2),
-                    speedX: rand(-0.4, 0.4),
-                    opacity: rand(0.30, 0.55),
-                    rot   : rand(0, 360),
-                    rotSpeed: rand(-1.0, 1.0),
-                    wobble: rand(0, Math.PI * 2),
-                    wobbleSpeed: rand(0.02, 0.045),
-                    wobbleAmp: rand(0.3, 1.2),
-                };
-            }
-
-            function init() {
-                resize();
-                particles = Array.from({ length: COUNT }, () => createParticle(false));
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, W, H);
-                particles.forEach(p => {
-                    ctx.save();
-                    ctx.globalAlpha = p.opacity;
-                    ctx.font = `${p.size}px serif`;
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    const tx = p.x + Math.sin(p.wobble) * p.wobbleAmp * 12;
-                    ctx.translate(tx, p.y);
-                    ctx.rotate(p.rot * Math.PI / 180);
-                    ctx.fillText(p.emoji, 0, 0);
-                    ctx.restore();
-
-                    p.y += p.speedY;
-                    p.x += p.speedX;
-                    p.rot += p.rotSpeed;
-                    p.wobble += p.wobbleSpeed;
-
-                    if (p.y > H + 60) {
-                        Object.assign(p, createParticle(true));
-                    }
-                });
-                requestAnimationFrame(draw);
-            }
-
-            window.addEventListener('resize', resize);
-            init();
-            draw();
-        })();
-    </script>
-
-    {{-- NAVBAR --}}
-    @include('public.partials.navbar')
-
-    {{-- FLASH MESSAGES --}}
-    @if(session('success'))
-    <div class="fixed top-20 right-4 z-50 alert-success shadow-md max-w-sm" id="flash-msg">
-        {{ session('success') }}
-    </div>
-    @endif
-    @if(session('error'))
-    <div class="fixed top-20 right-4 z-50 alert-error shadow-md max-w-sm" id="flash-msg">
-        {{ session('error') }}
-    </div>
-    @endif
-
-    {{-- MAIN CONTENT --}}
-    <main class="pt-20 sm:pt-24">
+    <!-- Main Content Flow -->
+    <main>
         @yield('content')
     </main>
 
-    {{-- FOOTER --}}
-    @include('public.partials.footer')
+    <!-- Global Footer -->
+    @include('components.footer')
 
+    <!-- Global Interactive Modals -->
+    @include('home.modals.lightbox-modal')
+    @include('home.modals.service-detail-modal')
+    @include('home.modals.reservation-modal')
+
+    <!-- Global Client Script Config & Bundle -->
     <script>
-        setTimeout(() => {
-            const el = document.getElementById('flash-msg');
-            if (el) el.style.display = 'none';
-        }, 4000);
-
-        const mobileBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (mobileBtn && mobileMenu) {
-            mobileBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-        }
-
-        // Theme Switcher Logic
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        if (themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', function() {
-                if (document.documentElement.classList.contains('dark')) {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const revealElements = document.querySelectorAll('.reveal, .reveal-scale');
-            if (!('IntersectionObserver' in window)) {
-                revealElements.forEach(el => el.classList.add('revealed'));
-                return;
-            }
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('revealed');
-                    } else {
-                        entry.target.classList.remove('revealed');
-                    }
-                });
-            }, {
-                rootMargin: '0px 0px -30px 0px',
-                threshold: 0.08
-            });
-
-            revealElements.forEach(el => observer.observe(el));
-        });
+        window.NUCOMU_WA_NUMBER = "{{ config('nucomu.contact.whatsapp_number', '6281234567890') }}";
     </script>
-    @stack('scripts')
+    <script src="{{ asset('js/nucomu.js') }}"></script>
+
+    <!-- GSAP & ScrollTrigger CDN for Product Showcase Sequence -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="{{ asset('js/showcase.js') }}"></script>
 </body>
 </html>

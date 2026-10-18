@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="100%" height="100%" fill="none">
+    <defs>
+        <!-- Mascot Shading -->
+        <linearGradient id="mascotSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fff5ea"/>
+            <stop offset="70%" stop-color="#f0ded0"/>
+            <stop offset="100%" stop-color="#dab8a0"/>
+        </linearGradient>
+        <linearGradient id="mascotApron" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#2a2a2a"/>
+            <stop offset="100%" stop-color="#121212"/>
+        </linearGradient>
+        <linearGradient id="mascotCap" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#3c3c3c"/>
+            <stop offset="100%" stop-color="#191919"/>
+        </linearGradient>
+        <filter id="mascotShadow" x="-20%" y="-20%" width="150%" height="150%">
+            <feDropShadow dx="0" dy="16" stdDeviation="12" flood-color="#000000" flood-opacity="0.25"/>
+        </filter>
+    </defs>
+    <g filter="url(#mascotShadow)">
+        <!-- Body / Shirt -->
+        <rect x="62" y="115" width="76" height="95" rx="20" fill="#f5f5f5" stroke="#e0e0e0" stroke-width="2"/>
+
+        <!-- Barista Apron -->
+        <path d="M 72 135 L 128 135 L 136 210 Q 100 215 64 210 Z" fill="url(#mascotApron)"/>
+        <!-- Apron Straps -->
+        <line x1="82" y1="115" x2="82" y2="135" stroke="#121212" stroke-width="4"/>
+        <line x1="118" y1="115" x2="118" y2="135" stroke="#121212" stroke-width="4"/>
+        <!-- Apron Pocket -->
+        <rect x="80" y="160" width="40" height="30" rx="6" fill="#1e1e1e" stroke="#333333" stroke-width="1.5"/>
+        <!-- Nucomu 'N' Monogram on Apron -->
+        <text x="100" y="180" font-family="'Cormorant Garamond', serif" font-weight="bold" font-size="14" fill="#ffffff" text-anchor="middle">N</text>
+
+        <!-- Head -->
+        <circle cx="100" cy="72" r="38" fill="url(#mascotSkin)"/>
+
+        <!-- Cheeks -->
+        <circle cx="75" cy="80" r="5" fill="#f0a590" opacity="0.45"/>
+        <circle cx="125" cy="80" r="5" fill="#f0a590" opacity="0.45"/>
+
+        <!-- Eyes (Happy Arcs) -->
+        <path d="M 78 68 Q 85 62 92 68" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <path d="M 108 68 Q 115 62 122 68" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+        <!-- Warm Smile -->
+        <path d="M 90 82 Q 100 92 110 82" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+        <!-- Barista Beanie / Flat Cap -->
+        <path d="M 60 55 C 60 22, 140 22, 140 55 C 130 52, 70 52, 60 55 Z" fill="url(#mascotCap)"/>
+        <ellipse cx="100" cy="54" rx="42" ry="7" fill="#141414"/>
+
+        <!-- Right Arm holding a little Coffee Cup -->
+        <!-- Arm -->
+        <path d="M 132 135 Q 155 145 152 165" stroke="#fff5ea" stroke-width="12" stroke-linecap="round"/>
+        <!-- Mini Takeaway Cup -->
+        <g transform="translate(142, 150) rotate(-10)">
+            <polygon points="5,10 25,10 22,35 8,35" fill="#ffffff" stroke="#cccccc" stroke-width="1"/>
+            <ellipse cx="15" cy="10" rx="10" ry="3" fill="#191919"/>
+            <!-- Steam -->
+            <path d="M 13 4 Q 15 -2 13 -8" stroke="#888888" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.7"/>
+            <path d="M 17 6 Q 19 0 17 -6" stroke="#888888" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.5"/>
+        </g>
+    </g>
+</svg>

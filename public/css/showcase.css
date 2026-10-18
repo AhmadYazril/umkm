@@ -1,0 +1,387 @@
+/**
+ * Nucomu Cafe — Product Showcase Interactive Animation Styles
+ * Theme: Editorial Luxury Monochrome (White, Black, Grays)
+ */
+
+:root {
+    --sc-black: #141414;
+    --sc-charcoal: #262626;
+    --sc-gray-dark: #404040;
+    --sc-gray-mid: #737373;
+    --sc-gray-light: #d4d4d4;
+    --sc-gray-soft: #f0eee9;
+    --sc-white: #ffffff;
+    --sc-bg-bright: #faf8f5;
+    --sc-bg-stage: #f5f2ec;
+}
+
+/* ==========================================================================
+   1. Showcase Container & Master Stage
+   ========================================================================== */
+.showcase-pinned-stage {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--sc-bg-bright);
+    color: var(--sc-charcoal);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Subtle clean background grid / radial spotlight */
+.showcase-bg-spotlight {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.95) 0%, rgba(245, 242, 236, 0.85) 60%, rgba(235, 230, 222, 0.6) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.showcase-ambient-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   2. Main Floating Product & Idle Animations
+   ========================================================================== */
+.showcase-product-wrapper {
+    position: relative;
+    width: 240px;
+    height: 360px;
+    margin: 0 auto;
+    z-index: 20;
+    will-change: transform;
+}
+
+@media (min-width: 640px) {
+    .showcase-product-wrapper {
+        width: 280px;
+        height: 420px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .showcase-product-wrapper {
+        width: 320px;
+        height: 480px;
+    }
+}
+
+.showcase-cup-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.18));
+    animation: floatProduct 5s ease-in-out infinite;
+    will-change: transform;
+    opacity: 0;
+}
+
+/* Soft breathing shadow underneath floating cup */
+.showcase-cup-shadow {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 170px;
+    height: 22px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0.08) 50%, transparent 75%);
+    border-radius: 50%;
+    animation: floatShadow 5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 15;
+}
+
+@keyframes floatProduct {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-14px) rotate(0.8deg);
+    }
+}
+
+@keyframes floatShadow {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 0.85;
+    }
+    50% {
+        transform: translateX(-50%) scale(0.86);
+        opacity: 0.5;
+    }
+}
+
+/* ==========================================================================
+   3. Floating Ingredients
+   ========================================================================== */
+.showcase-ingredient {
+    position: absolute;
+    z-index: 25;
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+.showcase-ingredient img,
+.showcase-ingredient svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.22));
+}
+
+/* Individual ingredient sizes and initial positions */
+.ing-bean-1 {
+    width: 44px;
+    height: 44px;
+    top: 14%;
+    left: 22%;
+    opacity: 0;
+}
+
+.ing-ice {
+    width: 52px;
+    height: 52px;
+    top: 18%;
+    right: 24%;
+    opacity: 0;
+}
+
+.ing-cinnamon {
+    width: 64px;
+    height: 64px;
+    top: 36%;
+    left: 15%;
+    opacity: 0;
+}
+
+.ing-mint {
+    width: 50px;
+    height: 50px;
+    top: 32%;
+    right: 17%;
+    opacity: 0;
+}
+
+.ing-milk {
+    width: 48px;
+    height: 48px;
+    top: 8%;
+    left: 48%;
+    opacity: 0;
+}
+
+.ing-sugar {
+    width: 46px;
+    height: 46px;
+    top: 52%;
+    left: 26%;
+    opacity: 0;
+}
+
+.ing-bean-2 {
+    width: 38px;
+    height: 38px;
+    top: 48%;
+    right: 22%;
+    opacity: 0;
+}
+
+@media (min-width: 1024px) {
+    .ing-bean-1 { width: 56px; height: 56px; left: 28%; top: 18%; }
+    .ing-ice { width: 68px; height: 68px; right: 28%; top: 22%; }
+    .ing-cinnamon { width: 84px; height: 84px; left: 22%; top: 40%; }
+    .ing-mint { width: 64px; height: 64px; right: 23%; top: 38%; }
+    .ing-milk { width: 60px; height: 60px; left: 49%; top: 12%; }
+    .ing-sugar { width: 56px; height: 56px; left: 32%; top: 56%; }
+    .ing-bean-2 { width: 48px; height: 48px; right: 27%; top: 52%; }
+}
+
+/* ==========================================================================
+   4. Callout Information & Progress Circles
+   ========================================================================== */
+.showcase-callout-panel {
+    z-index: 30;
+    transition: opacity 0.4s ease;
+}
+
+/* Circular Progress Meters */
+.circle-meter-svg {
+    transform: rotate(-90deg);
+    overflow: visible;
+}
+
+.circle-track {
+    fill: none;
+    stroke: rgba(0, 0, 0, 0.08);
+    stroke-width: 5;
+}
+
+.circle-progress-bar {
+    fill: none;
+    stroke: var(--sc-black);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 283;
+    stroke-dashoffset: 283;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Delicate connector lines to cup */
+.showcase-pointer-line {
+    stroke: var(--sc-gray-mid);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+    opacity: 0.6;
+}
+
+/* ==========================================================================
+   5. Mascot Floating Animation
+   ========================================================================== */
+.showcase-mascot-wrapper {
+    position: absolute;
+    bottom: 25px;
+    right: 3%;
+    width: 110px;
+    height: 135px;
+    z-index: 35;
+    animation: floatMascot 4s ease-in-out infinite;
+    will-change: transform;
+}
+
+@media (min-width: 768px) {
+    .showcase-mascot-wrapper {
+        width: 150px;
+        height: 185px;
+        right: 6%;
+        bottom: 40px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .showcase-mascot-wrapper {
+        width: 180px;
+        height: 220px;
+        right: 8%;
+        bottom: 50px;
+    }
+}
+
+@keyframes floatMascot {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-8px) rotate(-1deg);
+    }
+}
+
+/* ==========================================================================
+   6. Order Tracker (Stepper Sequence)
+   ========================================================================== */
+.order-tracker-section {
+    background-color: var(--sc-black);
+    color: var(--sc-white);
+    position: relative;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tracker-track-line {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-50%);
+    border-radius: 3px;
+}
+
+.tracker-progress-active {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 0%;
+    height: 3px;
+    background-color: var(--sc-white);
+    transform: translateY(-50%);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.tracker-bike-icon {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 36px;
+    height: 36px;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    transition: left 0.3s ease;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+}
+
+.tracker-node {
+    position: relative;
+    z-index: 5;
+    transition: all 0.3s ease;
+}
+
+.tracker-node.is-active .tracker-dot {
+    background-color: var(--sc-white);
+    border-color: var(--sc-white);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+    transform: scale(1.15);
+}
+
+.tracker-node.is-active .tracker-label {
+    color: var(--sc-white);
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   7. Thumbnail Cards Hover Zoom & Monograph Styling
+   ========================================================================== */
+.showcase-thumb-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+.showcase-thumb-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 30px rgba(0, 0, 0, 0.12);
+    border-color: var(--sc-black);
+}
+
+.showcase-thumb-card:hover img {
+    transform: scale(1.06);
+}
+
+/* ==========================================================================
+   8. Reduced Motion & Mobile Fallback
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .showcase-cup-image,
+    .showcase-cup-shadow,
+    .showcase-mascot-wrapper {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+    .showcase-ingredient {
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

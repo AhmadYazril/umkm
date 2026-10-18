@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%" fill="none">
+    <defs>
+        <linearGradient id="iceTop" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#d8e8f8" stop-opacity="0.65"/>
+        </linearGradient>
+        <linearGradient id="iceFront" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#eaf2fa" stop-opacity="0.75"/>
+            <stop offset="100%" stop-color="#b6cde2" stop-opacity="0.5"/>
+        </linearGradient>
+        <linearGradient id="iceRight" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#cbdff0" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#8daecb" stop-opacity="0.6"/>
+        </linearGradient>
+        <filter id="iceShadow" x="-20%" y="-20%" width="150%" height="150%">
+            <feDropShadow dx="2" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.25"/>
+        </filter>
+    </defs>
+    <g filter="url(#iceShadow)">
+        <!-- Top Face -->
+        <polygon points="50,15 85,32 50,48 15,32" fill="url(#iceTop)" stroke="#ffffff" stroke-width="1.5"/>
+        <!-- Left Face -->
+        <polygon points="15,32 50,48 50,85 15,68" fill="url(#iceFront)" stroke="#ffffff" stroke-width="1.2"/>
+        <!-- Right Face -->
+        <polygon points="50,48 85,32 85,68 50,85" fill="url(#iceRight)" stroke="#ffffff" stroke-width="1.2"/>
+        <!-- Internal Refraction Lines -->
+        <line x1="28" y1="42" x2="42" y2="70" stroke="#ffffff" stroke-width="1" opacity="0.6"/>
+        <line x1="62" y1="52" x2="75" y2="42" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+        <!-- Specular Highlight Point -->
+        <circle cx="50" cy="48" r="2.5" fill="#ffffff" opacity="0.9"/>
+    </g>
+</svg>

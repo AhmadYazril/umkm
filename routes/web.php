@@ -6,19 +6,22 @@ use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\NucomuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
 // ─────────────────────────────────────────────
-//  PUBLIC ROUTES
+//  PUBLIC ROUTES — NUCOMU CAFE (MATCHING NYOBA)
 // ─────────────────────────────────────────────
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [NucomuController::class, 'index'])->name('home');
+Route::get('/menu', [NucomuController::class, 'allMenu'])->name('menu.all');
+Route::get('/daftar-menu', [NucomuController::class, 'allMenu'])->name('menu');
+Route::post('/reservasi', [NucomuController::class, 'submitReservation'])->name('reservation.submit');
+Route::post('/reservasi/store', [NucomuController::class, 'submitReservation'])->name('reservation.store');
 
-// Menu publik
-Route::get('/menu', [MenuController::class, 'index'])->name('menu');
+// Menu item detail
 Route::get('/menu/{menu:slug}', [MenuController::class, 'show'])->name('menu.show');
 
 // Keranjang
@@ -38,7 +41,6 @@ Route::get('/tentang-kami', [PageController::class, 'about'])->name('about');
 Route::get('/galeri', [PageController::class, 'gallery'])->name('gallery');
 Route::get('/fasilitas', [PageController::class, 'facilities'])->name('facilities');
 Route::get('/reservasi', [PageController::class, 'reservation'])->name('reservation');
-Route::post('/reservasi', [PageController::class, 'storeReservation'])->name('reservation.store');
 Route::get('/kontak', [PageController::class, 'contact'])->name('contact');
 Route::get('/event', [PageController::class, 'events'])->name('events');
 
