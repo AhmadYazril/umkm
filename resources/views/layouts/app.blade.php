@@ -51,36 +51,14 @@
 
     <!-- Custom Nucomu CSS -->
     <link rel="stylesheet" href="{{ asset('css/nucomu.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/showcase.css') }}">
 </head>
 <body class="bg-warm-ivory text-charcoal font-body antialiased selection:bg-ink-black selection:text-warm-ivory">
 
     <!-- Header Navigation -->
     @include('components.navbar')
 
-<<<<<<< HEAD
     <!-- Main Content Flow -->
     <main>
-=======
-
-    {{-- NAVBAR --}}
-    @include('public.partials.navbar')
-
-    {{-- FLASH MESSAGES --}}
-    @if(session('success'))
-    <div class="fixed top-20 right-4 z-50 alert-success shadow-md max-w-sm" id="flash-msg">
-        {{ session('success') }}
-    </div>
-    @endif
-    @if(session('error'))
-    <div class="fixed top-20 right-4 z-50 alert-error shadow-md max-w-sm" id="flash-msg">
-        {{ session('error') }}
-    </div>
-    @endif
-
-    {{-- MAIN CONTENT --}}
-    <main class="pt-20 sm:pt-24">
->>>>>>> 450e0ad3d675aca0445177d8ddb7e4847fc08f52
         @yield('content')
     </main>
 
@@ -97,10 +75,5 @@
         window.NUCOMU_WA_NUMBER = "{{ config('nucomu.contact.whatsapp_number', '6281234567890') }}";
     </script>
     <script src="{{ asset('js/nucomu.js') }}"></script>
-
-    <!-- GSAP & ScrollTrigger CDN for Product Showcase Sequence -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="{{ asset('js/showcase.js') }}"></script>
 </body>
 </html>

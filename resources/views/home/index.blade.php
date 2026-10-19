@@ -7,9 +7,6 @@
     <!-- 1. Section Home / Hero (Flat-lay Overhead Composition) -->
     @include('home.sections.hero')
 
-    <!-- Interactive Scroll-Triggered Product Showcase Sequence -->
-    @include('home.sections.showcase')
-
     <!-- 2. Section About (Cerita, Konsep & Fasilitas: Indoor, Outdoor, Musala, Toilet) -->
     @include('home.sections.about')
 
