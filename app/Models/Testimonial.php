@@ -11,6 +11,9 @@ class Testimonial extends Model
 
     protected $fillable = [
         'name',
+        'handle',
+        'order_tag',
+        'avatar_url',
         'content',
         'rating',
         'is_sample',

@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('categories')) {
+        if (! Schema::hasTable('categories')) {
             Schema::create('categories', function (Blueprint $table) {
                 $table->id();
                 $table->string('name', 100);
@@ -22,17 +22,18 @@ return new class extends Migration
                 $table->text('description')->nullable();
                 $table->timestamps();
             });
+
             return;
         }
 
         Schema::table('categories', function (Blueprint $table) {
-            if (!Schema::hasColumn('categories', 'slug')) {
+            if (! Schema::hasColumn('categories', 'slug')) {
                 $table->string('slug')->nullable()->after('name');
             }
-            if (!Schema::hasColumn('categories', 'sort_order')) {
+            if (! Schema::hasColumn('categories', 'sort_order')) {
                 $table->integer('sort_order')->default(0)->after('slug');
             }
-            if (!Schema::hasColumn('categories', 'is_active')) {
+            if (! Schema::hasColumn('categories', 'is_active')) {
                 $table->boolean('is_active')->default(true)->after('sort_order');
             }
         });
@@ -42,7 +43,7 @@ return new class extends Migration
             Schema::table('categories', function (Blueprint $table) {
                 $table->unique('slug');
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Index may already exist
         }
     }

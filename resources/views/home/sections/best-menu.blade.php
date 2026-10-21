@@ -242,7 +242,7 @@
 
         <!-- View Full Catalog Link -->
         <div class="text-center reveal-on-scroll">
-            <a href="{{ route('menu.all') }}" class="inline-flex items-center space-x-2.5 px-7 py-3 rounded-full bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-200 active:scale-95">
+            <a href="{{ route('nucomu.order') }}" class="inline-flex items-center space-x-2.5 px-7 py-3 rounded-full bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-200 active:scale-95">
                 <span>Lihat Semua Menu (Katalog Lengkap)</span>
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
             </a>

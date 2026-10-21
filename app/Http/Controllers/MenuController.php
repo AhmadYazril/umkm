@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Menu;
-use App\Models\MenuOption;
 use Illuminate\Http\Request;
 
 class MenuController extends Controller
@@ -15,13 +14,14 @@ class MenuController extends Controller
         $query = Menu::available()->with('category');
 
         if ($request->filled('kategori')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $request->kategori));
+            $query->whereHas('category', fn ($q) => $q->where('slug', $request->kategori));
         }
         if ($request->filled('q')) {
-            $query->where('name', 'like', '%' . $request->q . '%');
+            $query->where('name', 'like', '%'.$request->q.'%');
         }
 
         $menus = $query->orderBy('sort_order')->paginate(12);
+
         return view('public.menu', compact('menus', 'categories'));
     }
 
@@ -29,7 +29,8 @@ class MenuController extends Controller
     {
         $menu->load(['category', 'options']);
         $variants = $menu->options->where('type', 'variant');
-        $addons   = $menu->options->where('type', 'addon');
+        $addons = $menu->options->where('type', 'addon');
+
         return view('public.menu-detail', compact('menu', 'variants', 'addons'));
     }
 }

@@ -24,8 +24,8 @@ class GallerySeeder extends Seeder
             GalleryItem::updateOrCreate(
                 ['caption' => $item['caption']],
                 [
-                    'image'      => 'images/placeholder/gallery-' . $item['sort_order'] . '.jpg',
-                    'category'   => $item['category'],
+                    'image' => 'images/placeholder/gallery-'.$item['sort_order'].'.jpg',
+                    'category' => $item['category'],
                     'sort_order' => $item['sort_order'],
                 ]
             );

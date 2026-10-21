@@ -39,6 +39,6 @@ class OrderItem extends Model
 
     public function getFormattedLineTotalAttribute(): string
     {
-        return 'Rp ' . number_format($this->line_total, 0, ',', '.');
+        return 'Rp '.number_format($this->line_total, 0, ',', '.');
     }
 }

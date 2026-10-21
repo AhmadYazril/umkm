@@ -15,12 +15,20 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
 
-        $todayOrders   = Order::whereDate('created_at', $today)->count();
-        $todayRevenue  = Order::whereDate('created_at', $today)
-                              ->where('payment_status', 'paid')
-                              ->sum('total');
+        $todayOrders = Order::whereDate('created_at', $today)->count();
+        $todayRevenue = Order::whereDate('created_at', $today)
+            ->where('payment_status', 'paid')
+            ->sum('total');
         $pendingOrders = Order::where('status', 'pending')->count();
         $pendingReservations = Reservation::where('status', 'pending')->count();
+        $totalMenus = Menu::available()->count();
+
+        $stats = [
+            'revenue_today' => $todayRevenue,
+            'orders_today' => $todayOrders,
+            'pending_orders' => $pendingOrders,
+            'total_menus' => $totalMenus,
+        ];
 
         // Menu terlaris dari order_items
         $topMenus = DB::table('order_items')
@@ -30,20 +38,12 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Pesanan 7 hari terakhir untuk grafik
-        $recentOrders = Order::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(*) as count'),
-                DB::raw('SUM(total) as revenue')
-            )
-            ->where('created_at', '>=', now()->subDays(7))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+        // Pesanan terbaru untuk tabel
+        $recentOrders = Order::latest()->take(10)->get();
 
         return view('admin.dashboard', compact(
             'todayOrders', 'todayRevenue', 'pendingOrders',
-            'pendingReservations', 'topMenus', 'recentOrders'
+            'pendingReservations', 'topMenus', 'recentOrders', 'stats'
         ));
     }
 }

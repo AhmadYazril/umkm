@@ -42,7 +42,7 @@
 
             <!-- Dual Pill CTAs -->
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <a href="#menu" 
+                <a href="{{ route('nucomu.order') }}" 
                    class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 sm:px-8 sm:py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95">
                     VIEW OUR MENU
                 </a>

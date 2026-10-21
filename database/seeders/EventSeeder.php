@@ -11,18 +11,18 @@ class EventSeeder extends Seeder
     {
         $events = [
             [
-                'title'       => 'Grand Opening Nucomu Cafe',
+                'title' => 'Grand Opening Nucomu Cafe',
                 'description' => 'Rayakan bersama kami pembukaan resmi Nucomu Cafe! Dapatkan promo spesial dan berbagai diskon menarik di hari pertama kami hadir untuk kalian.',
-                'date'        => now()->addDays(7),
-                'image'       => null,
-                'is_active'   => true,
+                'date' => now()->addDays(7),
+                'image' => null,
+                'is_active' => true,
             ],
             [
-                'title'       => 'Nucomu Dessert Weekend',
+                'title' => 'Nucomu Dessert Weekend',
                 'description' => 'Setiap akhir pekan, nikmati promo spesial dessert pilihan dengan harga lebih terjangkau. Ajak teman-teman dan rasakan kelezatan bersama!',
-                'date'        => now()->addDays(14),
-                'image'       => null,
-                'is_active'   => true,
+                'date' => now()->addDays(14),
+                'image' => null,
+                'is_active' => true,
             ],
         ];
 

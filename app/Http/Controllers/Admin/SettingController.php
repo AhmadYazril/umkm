@@ -18,8 +18,9 @@ class SettingController extends Controller
     public function index()
     {
         $settings = Setting::pluck('value', 'key');
-        $hours    = OperatingHour::orderBy('day_of_week')->get();
+        $hours = OperatingHour::orderBy('day_of_week')->get();
         $facilities = Facility::orderBy('sort_order')->get();
+
         return view('admin.settings.index', compact('settings', 'hours', 'facilities'));
     }
 
@@ -35,6 +36,7 @@ class SettingController extends Controller
                 Setting::set($key, $request->input($key));
             }
         }
+
         return back()->with('success', 'Pengaturan berhasil disimpan.');
     }
 
@@ -45,12 +47,13 @@ class SettingController extends Controller
             OperatingHour::updateOrCreate(
                 ['day_of_week' => $dayOfWeek],
                 [
-                    'open_time'  => $data['is_closed'] ?? false ? null : ($data['open_time'] ?? null),
+                    'open_time' => $data['is_closed'] ?? false ? null : ($data['open_time'] ?? null),
                     'close_time' => $data['is_closed'] ?? false ? null : ($data['close_time'] ?? null),
-                    'is_closed'  => isset($data['is_closed']),
+                    'is_closed' => isset($data['is_closed']),
                 ]
             );
         }
+
         return back()->with('success', 'Jam operasional berhasil diperbarui.');
     }
 
@@ -58,8 +61,11 @@ class SettingController extends Controller
     public function reservations(Request $request)
     {
         $query = Reservation::query();
-        if ($request->filled('status')) $query->where('status', $request->status);
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
         $reservations = $query->latest()->paginate(20);
+
         return view('admin.reservations.index', compact('reservations'));
     }
 
@@ -67,6 +73,7 @@ class SettingController extends Controller
     {
         $request->validate(['status' => 'required|in:pending,confirmed,cancelled']);
         $reservation->update(['status' => $request->status]);
+
         return back()->with('success', 'Status reservasi diperbarui.');
     }
 
@@ -74,19 +81,35 @@ class SettingController extends Controller
     public function gallery()
     {
         $items = GalleryItem::orderBy('sort_order')->get();
+
         return view('admin.gallery.index', compact('items'));
     }
 
     public function storeGallery(Request $request)
     {
-        $request->validate(['image' => 'required|image|max:4096', 'caption' => 'nullable|string', 'category' => 'nullable|string']);
+        $request->validate([
+            'image' => 'required|image|max:4096',
+            'caption' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:100',
+            'author' => 'nullable|string|max:100',
+            'time_label' => 'nullable|string|max:50',
+            'category_badge' => 'nullable|string|max:50',
+            'avatar_url' => 'nullable|url|max:500',
+            'description' => 'nullable|string|max:500',
+        ]);
         $path = $request->file('image')->store('gallery', 'public');
         GalleryItem::create([
-            'image'      => $path,
-            'caption'    => $request->caption,
-            'category'   => $request->category ?? 'ambience',
+            'image' => $path,
+            'caption' => $request->caption,
+            'category' => $request->category ?? 'ambience',
             'sort_order' => GalleryItem::max('sort_order') + 1,
+            'author' => $request->author,
+            'time_label' => $request->time_label,
+            'category_badge' => $request->category_badge,
+            'avatar_url' => $request->avatar_url,
+            'description' => $request->description,
         ]);
+
         return back()->with('success', 'Foto berhasil ditambahkan.');
     }
 
@@ -94,6 +117,7 @@ class SettingController extends Controller
     {
         Storage::disk('public')->delete($galleryItem->image);
         $galleryItem->delete();
+
         return back()->with('success', 'Foto berhasil dihapus.');
     }
 
@@ -101,25 +125,38 @@ class SettingController extends Controller
     public function testimonials()
     {
         $testimonials = Testimonial::latest()->paginate(20);
+
         return view('admin.testimonials.index', compact('testimonials'));
     }
 
     public function storeTestimonial(Request $request)
     {
-        $request->validate(['name' => 'required', 'content' => 'required', 'rating' => 'required|integer|min:1|max:5']);
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'content' => 'required|string|max:1000',
+            'rating' => 'required|integer|min:1|max:5',
+            'handle' => 'nullable|string|max:50',
+            'order_tag' => 'nullable|string|max:100',
+            'avatar_url' => 'nullable|url|max:500',
+        ]);
         Testimonial::create([
-            'name'      => $request->name,
-            'content'   => $request->content,
-            'rating'    => $request->rating,
+            'name' => $request->name,
+            'handle' => $request->handle ? (str_starts_with($request->handle, '@') ? $request->handle : '@'.$request->handle) : null,
+            'order_tag' => $request->order_tag,
+            'avatar_url' => $request->avatar_url,
+            'content' => $request->content,
+            'rating' => $request->rating,
             'is_sample' => false,
             'is_active' => true,
         ]);
+
         return back()->with('success', 'Testimoni berhasil ditambahkan.');
     }
 
     public function destroyTestimonial(Testimonial $testimonial)
     {
         $testimonial->delete();
+
         return back()->with('success', 'Testimoni berhasil dihapus.');
     }
 
@@ -127,13 +164,22 @@ class SettingController extends Controller
     {
         $count = Testimonial::where('is_sample', true)->count();
         Testimonial::where('is_sample', true)->delete();
+
         return back()->with('success', "$count testimoni data contoh berhasil dihapus.");
+    }
+
+    public function toggleTestimonial(Testimonial $testimonial)
+    {
+        $testimonial->update(['is_active' => ! $testimonial->is_active]);
+
+        return back()->with('success', 'Status ulasan diperbarui.');
     }
 
     // ── Events ─────────────────────────────────────────
     public function events()
     {
         $events = Event::latest()->paginate(20);
+
         return view('admin.events.index', compact('events'));
     }
 
@@ -146,13 +192,17 @@ class SettingController extends Controller
             $data['image'] = $request->file('image')->store('events', 'public');
         }
         Event::create($data);
+
         return back()->with('success', 'Event berhasil ditambahkan.');
     }
 
     public function destroyEvent(Event $event)
     {
-        if ($event->image) Storage::disk('public')->delete($event->image);
+        if ($event->image) {
+            Storage::disk('public')->delete($event->image);
+        }
         $event->delete();
+
         return back()->with('success', 'Event berhasil dihapus.');
     }
 }

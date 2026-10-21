@@ -27,6 +27,7 @@ class OperatingHour extends Model
         if ($this->is_closed) {
             return 'LIBUR';
         }
-        return substr($this->open_time, 0, 5) . ' – ' . substr($this->close_time, 0, 5);
+
+        return substr($this->open_time, 0, 5).' – '.substr($this->close_time, 0, 5);
     }
 }

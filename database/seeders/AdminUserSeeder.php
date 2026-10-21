@@ -13,10 +13,10 @@ class AdminUserSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@nucomu.com'],
             [
-                'name'     => 'Admin Nucomu',
-                'email'    => 'admin@nucomu.com',
+                'name' => 'Admin Nucomu',
+                'email' => 'admin@nucomu.com',
                 'password' => Hash::make('password123'),
-                'role'     => 'admin',
+                'role' => 'admin',
             ]
         );
     }

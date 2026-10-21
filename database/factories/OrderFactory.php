@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
+ * @extends Factory<Order>
  */
 class OrderFactory extends Factory
 {
@@ -21,9 +22,9 @@ class OrderFactory extends Factory
         $seq = $this->faker->unique()->numberBetween(1, 999);
 
         return [
-            'code' => 'NCM-' . $date->format('Ymd') . '-' . str_pad($seq, 3, '0', STR_PAD_LEFT),
+            'code' => 'NCM-'.$date->format('Ymd').'-'.str_pad($seq, 3, '0', STR_PAD_LEFT),
             'customer_name' => $this->faker->name(),
-            'customer_phone' => '08' . $this->faker->numerify('##########'),
+            'customer_phone' => '08'.$this->faker->numerify('##########'),
             'order_type' => $this->faker->randomElement(['dine_in', 'take_away', 'pre_order']),
             'table_id' => null,
             'notes' => $this->faker->optional()->sentence(),

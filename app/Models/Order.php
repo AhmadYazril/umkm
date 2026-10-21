@@ -44,7 +44,7 @@ class Order extends Model
 
     public function getFormattedTotalAttribute(): string
     {
-        return 'Rp ' . number_format($this->total, 0, ',', '.');
+        return 'Rp '.number_format($this->total, 0, ',', '.');
     }
 
     public function getStatusLabelAttribute(): string

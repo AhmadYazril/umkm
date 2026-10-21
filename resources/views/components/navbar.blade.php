@@ -19,7 +19,7 @@
                class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
                 About
             </a>
-            <a href="{{ route('home') }}#menu" 
+            <a href="{{ route('nucomu.order') }}" 
                class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
                 Menu
             </a>
@@ -34,6 +34,11 @@
             <a href="{{ route('home') }}#contact" 
                class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
                 Contact
+            </a>
+            <a href="{{ route('nucomu.order') }}" 
+               class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#15151c] text-amber-400 border border-amber-500/30 text-xs font-bold hover:bg-black transition-all">
+                <i class="fa-solid fa-utensils text-[11px]"></i>
+                <span>Pesan Menu</span>
             </a>
         </nav>
 

@@ -33,6 +33,7 @@ class MenuOption extends Model
         if ($this->price == 0) {
             return 'Gratis';
         }
-        return '+Rp ' . number_format($this->price, 0, ',', '.');
+
+        return '+Rp '.number_format($this->price, 0, ',', '.');
     }
 }

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('facilities')) {
+        if (! Schema::hasTable('facilities')) {
             Schema::create('facilities', function (Blueprint $table) {
                 $table->id();
                 $table->string('icon')->default('zap');

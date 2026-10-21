@@ -45,6 +45,20 @@ Route::get('/kontak', [PageController::class, 'contact'])->name('contact');
 Route::get('/event', [PageController::class, 'events'])->name('events');
 
 // ─────────────────────────────────────────────
+//  NUCOMU STORY & ORDER ROUTES
+// ─────────────────────────────────────────────
+Route::get('/nucomu', [NucomuController::class, 'nucomuPage'])->name('nucomu.index');
+Route::post('/nucomu/ulasan', [NucomuController::class, 'storeReview'])->name('nucomu.review.store');
+
+// Nucomu Order (kasir-less ordering)
+Route::get('/pesan', [NucomuController::class, 'orderPage'])->name('nucomu.order');
+Route::post('/pesan', [NucomuController::class, 'storeOrder'])->name('nucomu.order.store');
+Route::get('/pesan/slip/{code}', [NucomuController::class, 'orderSlip'])->name('nucomu.order.slip');
+
+// QR Detail (publicly accessible — scanned by kasir via phone)
+Route::get('/qr/pesanan/{code}', [AdminOrderController::class, 'qrDetail'])->name('admin.orders.qr');
+
+// ─────────────────────────────────────────────
 //  ADMIN ROUTES
 // ─────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -73,6 +87,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Pesanan
         Route::get('/pesanan', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/pesanan/scan', [AdminOrderController::class, 'scanPage'])->name('orders.scan');
+        Route::get('/pesanan/scan/cari', [AdminOrderController::class, 'scanPage'])->name('orders.scan.search');
         Route::get('/pesanan/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
         Route::post('/pesanan/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
         Route::get('/pesanan/{order}/struk', [AdminOrderController::class, 'printReceipt'])->name('orders.receipt');
@@ -86,11 +102,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/galeri', [SettingController::class, 'storeGallery'])->name('gallery.store');
         Route::delete('/galeri/{galleryItem}', [SettingController::class, 'destroyGallery'])->name('gallery.destroy');
 
-        // Testimoni
+        // Testimoni / Ulasan
         Route::get('/testimoni', [SettingController::class, 'testimonials'])->name('testimonials.index');
         Route::post('/testimoni', [SettingController::class, 'storeTestimonial'])->name('testimonials.store');
         Route::delete('/testimoni/{testimonial}', [SettingController::class, 'destroyTestimonial'])->name('testimonials.destroy');
         Route::post('/testimoni/hapus-data-contoh', [SettingController::class, 'deleteSampleTestimonials'])->name('testimonials.deleteSample');
+        Route::post('/testimoni/{testimonial}/toggle', [SettingController::class, 'toggleTestimonial'])->name('testimonials.toggle');
 
         // Event
         Route::get('/event', [SettingController::class, 'events'])->name('events.index');

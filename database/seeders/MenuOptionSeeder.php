@@ -11,7 +11,7 @@ class MenuOptionSeeder extends Seeder
     public function run(): void
     {
         // Opsi suhu untuk kopi & non-kopi
-        $beverages = Menu::whereHas('category', fn($q) => $q->whereIn('slug', ['kopi', 'non-kopi']))->get();
+        $beverages = Menu::whereHas('category', fn ($q) => $q->whereIn('slug', ['kopi', 'non-kopi']))->get();
         foreach ($beverages as $menu) {
             MenuOption::updateOrCreate(
                 ['menu_id' => $menu->id, 'name' => 'Hot', 'type' => 'variant'],
@@ -35,7 +35,7 @@ class MenuOptionSeeder extends Seeder
         }
 
         // Extra shot espresso (untuk kopi)
-        $coffees = Menu::whereHas('category', fn($q) => $q->where('slug', 'kopi'))->get();
+        $coffees = Menu::whereHas('category', fn ($q) => $q->where('slug', 'kopi'))->get();
         foreach ($coffees as $menu) {
             MenuOption::updateOrCreate(
                 ['menu_id' => $menu->id, 'name' => 'Extra Shot', 'type' => 'addon'],

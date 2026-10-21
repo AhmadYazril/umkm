@@ -14,6 +14,11 @@ class GalleryItem extends Model
         'caption',
         'category',
         'sort_order',
+        'author',
+        'time_label',
+        'category_badge',
+        'avatar_url',
+        'description',
     ];
 
     protected $casts = [

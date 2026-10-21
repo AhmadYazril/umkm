@@ -6,35 +6,39 @@
     
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-black uppercase text-white tracking-tight">Manajemen Pesanan</h1>
-            <p class="text-xs text-zinc-400 mt-1">Daftar transaksi pesanan pelanggan dine-in, takeaway, dan pre-order.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Manajemen Pesanan</h1>
+            <p class="text-xs text-gray-400 mt-1">Daftar transaksi pesanan pelanggan dine-in, takeaway, dan slip scan kasir.</p>
         </div>
+        <a href="{{ route('admin.orders.scan') }}" class="px-4 py-2.5 rounded-xl bg-goldAccent text-black font-extrabold text-xs uppercase tracking-wider hover:bg-amber-400 transition-all shadow-lg shadow-goldAccent/20 flex items-center gap-2">
+            <i class="fa-solid fa-qrcode"></i>
+            <span>Buka Scanner QR</span>
+        </a>
     </div>
 
     {{-- Filter Status Tabs --}}
-    <div class="flex items-center space-x-2 overflow-x-auto pb-2 border-b border-zinc-800 text-xs">
-        <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ !request('status') ? 'bg-white text-zinc-950' : 'text-zinc-400 hover:text-white bg-zinc-900' }}">
+    <div class="flex items-center space-x-2 overflow-x-auto pb-2 border-b border-white/10 text-xs">
+        <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ !request('status') ? 'bg-goldAccent text-black shadow-md' : 'text-gray-400 hover:text-white bg-white/5' }}">
             Semua Pesanan
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'pending' ? 'bg-yellow-400 text-zinc-950' : 'text-zinc-400 hover:text-white bg-zinc-900' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'pending' ? 'bg-amber-400 text-black shadow-md' : 'text-gray-400 hover:text-white bg-white/5' }}">
             Pending
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'processing' ? 'bg-blue-400 text-zinc-950' : 'text-zinc-400 hover:text-white bg-zinc-900' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'processing' ? 'bg-blue-400 text-black shadow-md' : 'text-gray-400 hover:text-white bg-white/5' }}">
             Diproses
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'completed']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'completed' ? 'bg-emerald-400 text-zinc-950' : 'text-zinc-400 hover:text-white bg-zinc-900' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'completed']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'completed' ? 'bg-emerald-400 text-black shadow-md' : 'text-gray-400 hover:text-white bg-white/5' }}">
             Selesai
         </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'cancelled' ? 'bg-red-400 text-zinc-950' : 'text-zinc-400 hover:text-white bg-zinc-900' }}">
+        <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="px-4 py-2 rounded-xl font-bold transition-all {{ request('status') === 'cancelled' ? 'bg-rose-400 text-black shadow-md' : 'text-gray-400 hover:text-white bg-white/5' }}">
             Dibatalkan
         </a>
     </div>
 
     {{-- Orders Table --}}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden shadow-xl">
+    <div class="bg-[#15151c]/80 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-zinc-300">
-                <thead class="bg-zinc-950 text-zinc-400 uppercase text-[10px] font-mono tracking-widest border-b border-zinc-800">
+            <table class="w-full text-left text-xs text-gray-300">
+                <thead class="bg-black/40 text-gray-400 uppercase text-[10px] font-mono tracking-widest border-b border-white/10">
                     <tr>
                         <th class="px-6 py-4">Kode & Waktu</th>
                         <th class="px-6 py-4">Pemesan</th>
@@ -45,23 +49,23 @@
                         <th class="px-6 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-zinc-800/60">
+                <tbody class="divide-y divide-white/5">
                     @forelse($orders as $order)
-                        <tr class="hover:bg-zinc-800/30 transition-colors">
+                        <tr class="hover:bg-white/5 transition-colors">
                             <td class="px-6 py-4">
-                                <span class="font-bold text-white font-mono block text-sm">{{ $order->code }}</span>
-                                <span class="text-[10px] text-zinc-500 font-mono">{{ $order->created_at->format('d/m/Y H:i') }}</span>
+                                <span class="font-mono font-bold text-goldAccent block text-sm">{{ $order->code }}</span>
+                                <span class="text-[10px] text-gray-500 font-mono">{{ $order->created_at->format('d/m/Y H:i') }}</span>
                             </td>
 
                             <td class="px-6 py-4">
-                                <span class="font-bold text-white block">{{ $order->customer_name }}</span>
-                                <span class="text-[11px] text-zinc-400 font-mono">{{ $order->customer_phone }}</span>
+                                <span class="font-bold text-white text-sm block">{{ $order->customer_name }}</span>
+                                <span class="text-[11px] text-gray-400 font-mono">{{ $order->customer_phone && $order->customer_phone !== '-' ? $order->customer_phone : 'Slip Pesan QR' }}</span>
                             </td>
 
-                            <td class="px-6 py-4 uppercase font-semibold">
-                                {{ str_replace('_', ' ', $order->order_type) }}
+                            <td class="px-6 py-4">
+                                <span class="uppercase font-semibold text-gray-200 block">{{ str_replace('_', ' ', $order->order_type) }}</span>
                                 @if($order->table)
-                                    <span class="text-zinc-400 block text-[11px]">Meja {{ $order->table->number }}</span>
+                                    <span class="text-[10px] text-gray-500 font-mono">Meja {{ $order->table->number }}</span>
                                 @endif
                             </td>
 
@@ -69,39 +73,42 @@
                                 Rp {{ number_format($order->total, 0, ',', '.') }}
                             </td>
 
-                            <td class="px-6 py-4 uppercase text-[11px]">
-                                <span class="font-bold text-white block">{{ $order->payment_method }}</span>
-                                <span class="text-zinc-400 font-mono">{{ $order->payment_status }}</span>
+                            <td class="px-6 py-4">
+                                <span class="uppercase font-bold text-gray-300 block">{{ $order->payment_method }}</span>
+                                @if($order->payment_status === 'paid')
+                                    <span class="text-[10px] text-emerald-400 font-semibold font-mono">Lunas</span>
+                                @else
+                                    <span class="text-[10px] text-amber-400 font-semibold font-mono">Belum Bayar</span>
+                                @endif
                             </td>
 
                             <td class="px-6 py-4">
-                                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
-                                    @csrf
-                                    <select name="status" onchange="this.form.submit()"
-                                        class="bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] font-bold text-white focus:outline-none focus:border-white">
-                                        <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                        <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Diproses</option>
-                                        <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Selesai</option>
-                                        <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                                    </select>
-                                </form>
+                                @if($order->status === 'pending')
+                                    <span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Pending</span>
+                                @elseif($order->status === 'processing')
+                                    <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Diproses</span>
+                                @elseif($order->status === 'completed')
+                                    <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Selesai</span>
+                                @else
+                                    <span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Dibatalkan</span>
+                                @endif
                             </td>
 
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end space-x-2">
-                                    <a href="{{ route('admin.orders.receipt', $order->id) }}" target="_blank" title="Cetak Struk Nota" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-bold p-2 rounded-lg border border-zinc-700 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                                    </a>
-                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="bg-white hover:bg-zinc-200 text-zinc-950 text-[11px] font-bold px-3 py-1.5 rounded-lg transition-colors">
-                                        Detail
-                                    </a>
-                                </div>
+                            <td class="px-6 py-4 text-right space-x-2">
+                                <a href="{{ route('admin.orders.receipt', $order->id) }}" target="_blank" title="Cetak Struk" class="p-2 text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-colors inline-block">
+                                    <i class="fa-solid fa-print"></i>
+                                </a>
+                                <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-goldAccent text-black font-extrabold text-[11px] uppercase hover:bg-amber-400 transition-colors shadow-sm">
+                                    <span>Detail</span>
+                                    <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-12 text-center text-zinc-500 text-xs">
-                                Tidak ada data pesanan yang sesuai filter.
+                            <td colspan="7" class="px-6 py-16 text-center text-gray-500 text-xs">
+                                <i class="fa-solid fa-receipt text-3xl opacity-20 block mb-2"></i>
+                                Belum ada data pesanan.
                             </td>
                         </tr>
                     @endforelse
@@ -109,9 +116,11 @@
             </table>
         </div>
 
-        <div class="p-4 border-t border-zinc-800">
-            {{ $orders->links() }}
-        </div>
+        @if($orders->hasPages())
+            <div class="p-4 border-t border-white/10">
+                {{ $orders->links() }}
+            </div>
+        @endif
     </div>
 
 </div>

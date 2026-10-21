@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('operating_hours')) {
+        if (! Schema::hasTable('operating_hours')) {
             Schema::create('operating_hours', function (Blueprint $table) {
                 $table->id();
                 $table->tinyInteger('day_of_week'); // 0=Sunday, 1=Monday...6=Saturday
