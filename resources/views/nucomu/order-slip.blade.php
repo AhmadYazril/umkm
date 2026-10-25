@@ -154,20 +154,54 @@
                 </div>
             </div>
 
-            {{-- NOTES --}}
-            @if($order->notes)
-                <div class="px-6 py-3 border-b border-white/5 bg-white/2">
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Catatan</p>
-                    <p class="text-xs text-gray-300 italic">{{ $order->notes }}</p>
+            {{-- DELIVERY ADDRESS & NOTES --}}
+            @if(!empty($deliveryAddress))
+                <div class="px-6 py-3.5 border-b border-white/5 bg-emerald-500/5 space-y-1">
+                    <div class="flex items-center justify-between">
+                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">
+                            <i class="fa-solid fa-location-dot mr-1"></i> Alamat Pengiriman (Kurir Zendo)
+                        </p>
+                        @if(!empty($distanceKm))
+                            <span class="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full">
+                                {{ number_format((float) $distanceKm, 1, ',', '.') }} km dari Kafe
+                            </span>
+                        @endif
+                    </div>
+                    <p class="text-xs text-gray-200">{{ $deliveryAddress }}</p>
+                    @if(!empty($customerLat) && !empty($customerLng))
+                        <a href="https://www.google.com/maps?q={{ $customerLat }},{{ $customerLng }}" target="_blank"
+                           class="inline-flex items-center gap-1 text-[10px] text-emerald-400 hover:underline font-semibold pt-0.5">
+                            <i class="fa-solid fa-map-pin"></i> Buka Titik Peta Pengiriman ↗
+                        </a>
+                    @endif
                 </div>
             @endif
 
-            {{-- TOTAL --}}
-            <div class="px-6 py-5 bg-goldAccent/5">
+            @if(!empty($cleanNotes ?? $order->notes))
+                <div class="px-6 py-3 border-b border-white/5 bg-white/2">
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Catatan</p>
+                    <p class="text-xs text-gray-300 italic">{{ $cleanNotes ?? $order->notes }}</p>
+                </div>
+            @endif
+
+            {{-- TOTAL & ONGKIR BREAKDOWN --}}
+            <div class="px-6 py-5 bg-goldAccent/5 space-y-2">
+                @if(!empty($isZendoOrder) && !empty($deliveryFee) && $deliveryFee > 0)
+                    <div class="flex items-center justify-between text-xs text-gray-300">
+                        <span>Subtotal Menu</span>
+                        <span class="font-mono font-semibold">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-emerald-400 pb-2 border-b border-white/10">
+                        <span>Ongkir Kurir Zendo @if(!empty($distanceKm))({{ number_format((float) $distanceKm, 1, ',', '.') }} km)@endif</span>
+                        <span class="font-mono font-bold">Rp {{ number_format($deliveryFee, 0, ',', '.') }}</span>
+                    </div>
+                @endif
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-xs text-gray-400">Total Pembayaran</p>
-                        <p class="text-[10px] text-gray-500">*Bayar tunai di kasir</p>
+                        <p class="text-[10px] text-gray-500">
+                            {{ !empty($isZendoOrder) ? '*Terkirim otomatis ke kontak Kurir Zendo' : '*Bayar tunai di kasir' }}
+                        </p>
                     </div>
                     <span class="font-mono font-black text-2xl text-goldAccent print-gold">
                         Rp {{ number_format($order->total, 0, ',', '.') }}
@@ -181,6 +215,17 @@
                 <p class="text-[10px] text-gray-500">Nucomu Cafe · Open 08:00 - 23:00</p>
             </div>
         </div>
+
+        {{-- ZENDO WHATSAPP BUTTON (IF ZENDO ENABLED OR ZENDO ORDER) --}}
+        @if(!empty($zendoWhatsappUrl) && (!empty($isZendoOrder) || ($transactionMode ?? 'both') !== 'kasir'))
+            <div class="no-print">
+                <a href="{{ $zendoWhatsappUrl }}" target="_blank"
+                   class="w-full py-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider hover:bg-emerald-500/25 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>{{ !empty($isZendoOrder) ? 'Hubungi Kontak Kurir Zendo (+' . ($zendoWaClean ?? '') . ')' : 'Pesan Delivery via Kurir Zendo' }}</span>
+                </a>
+            </div>
+        @endif
 
         {{-- ACTION BUTTONS --}}
         <div class="flex flex-col sm:flex-row gap-3 no-print">
@@ -198,12 +243,19 @@
         <div class="glass-card rounded-2xl p-4 border border-white/10 no-print">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-clock text-goldAccent text-sm"></i>
+                    <div class="w-8 h-8 rounded-full {{ !empty($isZendoOrder) ? 'bg-emerald-500/20' : 'bg-amber-500/20' }} flex items-center justify-center shrink-0">
+                        <i class="{{ !empty($isZendoOrder) ? 'fa-solid fa-check-double text-emerald-400' : 'fa-solid fa-clock text-goldAccent' }} text-sm"></i>
                     </div>
                     <div>
-                        <p class="text-xs font-bold text-white">Status: <span class="text-goldAccent">Menunggu Kasir</span></p>
-                        <p class="text-[10px] text-gray-400">Tunjukkan slip ini ke kasir untuk membayar.</p>
+                        <p class="text-xs font-bold text-white">
+                            Status:
+                            <span class="{{ !empty($isZendoOrder) ? 'text-emerald-400' : 'text-goldAccent' }}">
+                                {{ !empty($isZendoOrder) ? 'Terkirim Otomatis ke Kontak Zendo' : 'Menunggu Kasir' }}
+                            </span>
+                        </p>
+                        <p class="text-[10px] text-gray-400">
+                            {{ !empty($isZendoOrder) ? 'Pesanan & titik alamat Anda telah dikirim ke kontak Kurir Zendo.' : 'Tunjukkan slip ini ke kasir untuk membayar.' }}
+                        </p>
                     </div>
                 </div>
             </div>

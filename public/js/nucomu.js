@@ -421,7 +421,7 @@ window.switchBestMenuItem = function(index) {
         }
         if (priceEl) priceEl.textContent = item.price_formatted;
         if (orderBtn) {
-            orderBtn.setAttribute('onclick', `openReservationModal('Pesanan Best Menu: ${item.name}')`);
+            orderBtn.setAttribute('href', `/pesan?add=${encodeURIComponent(item.name)}`);
         }
         if (imgEl) {
             imgEl.src = item.image;
@@ -718,21 +718,162 @@ window.closeServiceDetailModal = function() {
 /* ==========================================================================
    9. RESERVATION MODAL & WHATSAPP GENERATOR
    ========================================================================== */
+let currentLayananCategory = 'Bridal';
+
+window.toggleLayananPackagePreview = function(category) {
+    currentLayananCategory = category;
+    const wrap = document.getElementById('layanan-package-options-wrap');
+    const label = document.getElementById('layanan-selected-cat-label');
+    const btnBridal = document.getElementById('layanan-btn-bridal');
+    const btnBirthday = document.getElementById('layanan-btn-birthday');
+
+    if (wrap) wrap.classList.remove('hidden');
+    if (label) {
+        label.innerText = `Pilihan Paket Acara ${category} — Klik salah satu paket untuk reservasi:`;
+    }
+    if (btnBridal && btnBirthday) {
+        if (category === 'Bridal') {
+            btnBridal.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-rose-50 border-2 border-[#E06D24] text-xs font-bold text-[#2A1D17] shadow-sm transition-all';
+            btnBirthday.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-amber-50 border border-stone-200 hover:border-amber-300 text-xs font-bold text-[#54392B] shadow-2xs transition-all';
+        } else {
+            btnBirthday.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-amber-50 border-2 border-[#E06D24] text-xs font-bold text-[#2A1D17] shadow-sm transition-all';
+            btnBridal.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-rose-50 border border-stone-200 hover:border-rose-300 text-xs font-bold text-[#54392B] shadow-2xs transition-all';
+        }
+    }
+};
+
+window.pickLayananPackageAndOpenModal = function(pkgCode, pkgName, priceShort, pkgDesc) {
+    window.openReservationModal(currentLayananCategory);
+    const targetCard = document.querySelector(`.res-pkg-card[data-section="${currentLayananCategory}"][data-pkg-code="${pkgCode}"]`);
+    if (targetCard) {
+        window.selectReservationPackage(currentLayananCategory, pkgName, priceShort, pkgDesc, targetCard);
+    }
+};
+
+window.resetReservationEventCategory = function() {
+    const promptEl = document.getElementById('res-empty-category-prompt');
+    const summaryBar = document.getElementById('res-package-summary-bar');
+    const bridalSec = document.getElementById('res-section-bridal');
+    const birthdaySec = document.getElementById('res-section-birthday');
+    const btnBridal = document.getElementById('btn-choose-bridal');
+    const btnBirthday = document.getElementById('btn-choose-birthday');
+    const checkBridal = document.getElementById('check-cat-bridal');
+    const checkBirthday = document.getElementById('check-cat-birthday');
+
+    if (promptEl) promptEl.classList.remove('hidden');
+    if (summaryBar) {
+        summaryBar.classList.add('hidden');
+        summaryBar.classList.remove('flex');
+    }
+    if (bridalSec) bridalSec.classList.add('hidden');
+    if (birthdaySec) birthdaySec.classList.add('hidden');
+
+    if (btnBridal) {
+        btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-rose-400 bg-gradient-to-br from-[#FFFDFB] to-rose-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+    }
+    if (btnBirthday) {
+        btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-amber-400 bg-gradient-to-br from-[#FFFDFB] to-amber-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+    }
+    if (checkBridal) {
+        checkBridal.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+    }
+    if (checkBirthday) {
+        checkBirthday.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+    }
+
+    const serviceInput = document.getElementById('res-service-type');
+    const sectionInput = document.getElementById('res-event-section');
+    const packageInput = document.getElementById('res-event-package');
+    if (serviceInput) serviceInput.value = '';
+    if (sectionInput) sectionInput.value = '';
+    if (packageInput) packageInput.value = '';
+};
+
+window.chooseReservationEventCategory = function(categoryKey) {
+    const key = (categoryKey || '').toLowerCase();
+    const promptEl = document.getElementById('res-empty-category-prompt');
+    const summaryBar = document.getElementById('res-package-summary-bar');
+    const bridalSec = document.getElementById('res-section-bridal');
+    const birthdaySec = document.getElementById('res-section-birthday');
+    const btnBridal = document.getElementById('btn-choose-bridal');
+    const btnBirthday = document.getElementById('btn-choose-birthday');
+    const checkBridal = document.getElementById('check-cat-bridal');
+    const checkBirthday = document.getElementById('check-cat-birthday');
+
+    if (promptEl) promptEl.classList.add('hidden');
+    if (summaryBar) {
+        summaryBar.classList.remove('hidden');
+        summaryBar.classList.add('flex');
+    }
+
+    if (key === 'bridal') {
+        if (bridalSec) bridalSec.classList.remove('hidden');
+        if (birthdaySec) birthdaySec.classList.add('hidden');
+        if (btnBridal) {
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#E06D24] ring-2 ring-[#E06D24]/20 bg-gradient-to-br from-[#FFFDFB] to-rose-50/70 transition-all duration-200 flex items-center justify-between gap-3 shadow-md';
+        }
+        if (btnBirthday) {
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-amber-400 bg-gradient-to-br from-[#FFFDFB] to-amber-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+        }
+        if (checkBridal) {
+            checkBridal.className = 'w-6 h-6 rounded-full bg-[#E06D24] text-white flex items-center justify-center text-xs font-bold transition-all shrink-0';
+        }
+        if (checkBirthday) {
+            checkBirthday.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+        }
+
+        const firstBridalCard = document.querySelector('.res-pkg-card[data-section="Bridal"][data-pkg-code="A"]');
+        if (firstBridalCard) {
+            window.selectReservationPackage(
+                'Bridal',
+                'Paket Dekorasi A',
+                '35K',
+                'Dekorasi meja, lilin, dipinjami korek, lettering ucapan',
+                firstBridalCard
+            );
+        }
+    } else if (key === 'birthday') {
+        if (birthdaySec) birthdaySec.classList.remove('hidden');
+        if (bridalSec) bridalSec.classList.add('hidden');
+        if (btnBirthday) {
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#E06D24] ring-2 ring-[#E06D24]/20 bg-gradient-to-br from-[#FFFDFB] to-amber-50/70 transition-all duration-200 flex items-center justify-between gap-3 shadow-md';
+        }
+        if (btnBridal) {
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-rose-400 bg-gradient-to-br from-[#FFFDFB] to-rose-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+        }
+        if (checkBirthday) {
+            checkBirthday.className = 'w-6 h-6 rounded-full bg-[#E06D24] text-white flex items-center justify-center text-xs font-bold transition-all shrink-0';
+        }
+        if (checkBridal) {
+            checkBridal.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+        }
+
+        const firstBirthdayCard = document.querySelector('.res-pkg-card[data-section="Birthday"][data-pkg-code="A"]');
+        if (firstBirthdayCard) {
+            window.selectReservationPackage(
+                'Birthday',
+                'Paket Dekorasi A',
+                '35K',
+                'Dekorasi meja, lilin, dipinjami korek, lettering ucapan',
+                firstBirthdayCard
+            );
+        }
+    }
+};
+
+window.switchEventPackageSectionTab = window.chooseReservationEventCategory;
+
 window.openReservationModal = function(preferredService = '') {
     const modal = document.getElementById('reservation-modal');
     if (!modal) return;
 
-    if (preferredService) {
-        const serviceSelect = document.getElementById('res-service-type');
-        if (serviceSelect) {
-            for (let option of serviceSelect.options) {
-                if (option.text.toLowerCase().includes(preferredService.toLowerCase()) ||
-                    option.value.toLowerCase().includes(preferredService.toLowerCase())) {
-                    option.selected = true;
-                    break;
-                }
-            }
-        }
+    const lower = (preferredService || '').toLowerCase();
+    if (lower === 'birthday' || lower.includes('ulang tahun') || lower.includes('paket birthday')) {
+        window.chooseReservationEventCategory('birthday');
+    } else if (lower === 'bridal' || lower.includes('paket bridal')) {
+        window.chooseReservationEventCategory('bridal');
+    } else {
+        window.resetReservationEventCategory();
     }
 
     // Set minimum date to today
@@ -746,6 +887,84 @@ window.openReservationModal = function(preferredService = '') {
     modal.classList.remove('opacity-0', 'pointer-events-none');
     modal.classList.add('opacity-100');
     document.body.classList.add('overflow-hidden');
+};
+
+window.selectReservationPackage = function(sectionName, packageName, priceShort, packageDesc, cardElement) {
+    const serviceInput = document.getElementById('res-service-type');
+    const sectionInput = document.getElementById('res-event-section');
+    const packageInput = document.getElementById('res-event-package');
+    const summaryEl = document.getElementById('res-selected-package-summary');
+    const detailEl = document.getElementById('res-selected-package-detail');
+
+    const fullServiceLabel = `${sectionName} - ${packageName} (${priceShort})`;
+    const fullPackageLabel = `${packageName} : ${priceShort} (${packageDesc})`;
+
+    if (serviceInput) serviceInput.value = fullServiceLabel;
+    if (sectionInput) sectionInput.value = sectionName;
+    if (packageInput) packageInput.value = fullPackageLabel;
+    if (summaryEl) summaryEl.innerText = `${sectionName} — ${packageName} : ${priceShort}`;
+    if (detailEl) detailEl.innerText = packageDesc;
+
+    // Reset all package cards
+    const allCards = document.querySelectorAll('.res-pkg-card');
+    allCards.forEach(card => {
+        card.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-stone-200/90 bg-white/80 hover:border-[#E06D24]/50 hover:bg-white transition-all duration-200 flex flex-col justify-between relative';
+        const check = card.querySelector('.res-pkg-check');
+        if (check) {
+            check.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-stone-100 text-transparent border border-stone-300';
+        }
+    });
+
+    // Highlight active card
+    if (cardElement) {
+        cardElement.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[#E06D24] bg-white ring-2 ring-[#E06D24]/20 shadow-md transition-all duration-200 flex flex-col justify-between relative';
+        const activeCheck = cardElement.querySelector('.res-pkg-check');
+        if (activeCheck) {
+            activeCheck.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#E06D24] text-white';
+        }
+    }
+
+    // Highlight active section container & badge
+    const bridalSec = document.getElementById('res-section-bridal');
+    const birthdaySec = document.getElementById('res-section-birthday');
+    const bridalBadge = document.getElementById('badge-active-bridal');
+    const birthdayBadge = document.getElementById('badge-active-birthday');
+
+    if (sectionName.toLowerCase() === 'bridal') {
+        if (bridalSec) {
+            bridalSec.classList.add('border-2', 'border-[#E06D24]/30');
+            bridalSec.classList.remove('border', 'border-stone-200/90');
+        }
+        if (birthdaySec) {
+            birthdaySec.classList.remove('border-2', 'border-[#E06D24]/30');
+            birthdaySec.classList.add('border', 'border-stone-200/90');
+        }
+        if (bridalBadge) {
+            bridalBadge.classList.remove('hidden');
+            bridalBadge.classList.add('inline-flex');
+        }
+        if (birthdayBadge) {
+            birthdayBadge.classList.add('hidden');
+            birthdayBadge.classList.remove('inline-flex');
+        }
+    } else {
+        if (birthdaySec) {
+            birthdaySec.classList.add('border-2', 'border-[#E06D24]/30');
+            birthdaySec.classList.remove('border', 'border-stone-200/90');
+        }
+        if (bridalSec) {
+            bridalSec.classList.remove('border-2', 'border-[#E06D24]/30');
+            bridalSec.classList.add('border', 'border-stone-200/90');
+        }
+        if (birthdayBadge) {
+            birthdayBadge.classList.remove('hidden');
+            birthdayBadge.classList.add('inline-flex');
+        }
+        if (bridalBadge) {
+            bridalBadge.classList.add('hidden');
+            bridalBadge.classList.remove('inline-flex');
+        }
+    }
 };
 
 window.closeReservationModal = function() {
@@ -765,6 +984,8 @@ window.handleReservationSubmit = function(e) {
     const time = document.getElementById('res-time').value;
     const guestCount = document.getElementById('res-guests').value;
     const serviceType = document.getElementById('res-service-type').value;
+    const eventSection = document.getElementById('res-event-section')?.value || '';
+    const eventPackage = document.getElementById('res-event-package')?.value || '';
     const area = document.getElementById('res-area').value;
     const notes = document.getElementById('res-notes').value.trim();
 
@@ -793,7 +1014,7 @@ window.handleReservationSubmit = function(e) {
     }
 
     if (!serviceType) {
-        errors.push("Jenis layanan / acara wajib dipilih.");
+        errors.push("Paket acara wajib dipilih.");
     }
 
     if (!area) {
@@ -823,7 +1044,10 @@ window.handleReservationSubmit = function(e) {
     message += `• *Tanggal:* ${formatDisplayDate(date)}\n`;
     message += `• *Waktu:* ${time} WIB\n`;
     message += `• *Jumlah Tamu:* ${guestCount}\n`;
-    message += `• *Jenis Acara:* ${serviceType}\n`;
+    message += `• *Kategori Acara:* ${eventSection || serviceType}\n`;
+    if (eventPackage) {
+        message += `• *Paket Dekorasi:* ${eventPackage}\n`;
+    }
     message += `• *Pilihan Area:* ${area}\n`;
     message += `• *Catatan Khusus:* ${notes || '-'}\n\n`;
     message += `Mohon konfirmasi ketersediaan jadwal meja kami. Terima kasih!`;
@@ -852,6 +1076,8 @@ window.handleReservationSubmit = function(e) {
             time,
             guestCount,
             serviceType,
+            eventSection,
+            eventPackage,
             area,
             notes
         })

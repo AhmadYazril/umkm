@@ -48,28 +48,62 @@
                         Pesan meja khusus untuk kebutuhan kerja tim, ulang tahun, gathering, atau momen intim bersama pasangan agar kepastian tempat terjaga tanpa perlu khawatir kehabisan area favorit.
                     </p>
 
-                    <!-- Pilihan Momen Chips (Compact & Clean) -->
+                    <!-- Pilihan Momen Chips (Bridal & Birthday Packages - Pilih Kategori Dulu) -->
                     <div class="mb-5">
                         <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-500 block mb-2">
-                            Pilihan Momen Spesial:
+                            Pilih Kategori Paket Acara (Klik untuk melihat pilihan paket dekorasi):
                         </span>
-                        <div class="flex flex-wrap gap-1.5">
-                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
-                                <span class="material-symbols-outlined text-xs text-[#E06D24]">celebration</span>
-                                <span>Ulang Tahun</span>
-                            </span>
-                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
-                                <span class="material-symbols-outlined text-xs text-[#E06D24]">groups</span>
-                                <span>Meeting &amp; Kerja Tim</span>
-                            </span>
-                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
-                                <span class="material-symbols-outlined text-xs text-[#E06D24]">handshake</span>
-                                <span>Gathering Komunitas</span>
-                            </span>
-                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
-                                <span class="material-symbols-outlined text-xs text-[#E06D24]">favorite</span>
-                                <span>Private Dining</span>
-                            </span>
+                        <div class="flex flex-wrap gap-2 mb-2.5">
+                            <button type="button"
+                                    id="layanan-btn-bridal"
+                                    onclick="toggleLayananPackagePreview('Bridal')"
+                                    class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-rose-50 border border-stone-200 hover:border-rose-300 text-xs font-bold text-[#54392B] shadow-2xs transition-all">
+                                <span class="material-symbols-outlined text-sm text-rose-500">favorite</span>
+                                <span>Paket Bridal</span>
+                                <span class="material-symbols-outlined text-xs text-neutral-400">expand_more</span>
+                            </button>
+                            <button type="button"
+                                    id="layanan-btn-birthday"
+                                    onclick="toggleLayananPackagePreview('Birthday')"
+                                    class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-amber-50 border border-stone-200 hover:border-amber-300 text-xs font-bold text-[#54392B] shadow-2xs transition-all">
+                                <span class="material-symbols-outlined text-sm text-[#E06D24]">cake</span>
+                                <span>Paket Birthday</span>
+                                <span class="material-symbols-outlined text-xs text-neutral-400">expand_more</span>
+                            </button>
+                        </div>
+
+                        <div id="layanan-package-options-wrap" class="hidden rounded-2xl bg-white/95 border border-[#E06D24]/30 p-3.5 shadow-sm transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span id="layanan-selected-cat-label" class="text-[11px] font-bold uppercase tracking-wider text-[#E06D24]">
+                                    Pilihan Paket Acara Bridal — Klik paket untuk reservasi:
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                                <div onclick="pickLayananPackageAndOpenModal('A', 'Paket Dekorasi A', '35K', 'Dekorasi meja, lilin, dipinjami korek, lettering ucapan')"
+                                     class="p-2.5 rounded-xl bg-[#FAF8F5] hover:bg-white border border-stone-200 hover:border-[#E06D24] cursor-pointer transition-all group">
+                                    <div class="flex items-center justify-between font-bold text-[#2A1D17] mb-0.5">
+                                        <span class="group-hover:text-[#E06D24] transition-colors">Paket Dekorasi A</span>
+                                        <span class="text-[#E06D24]">35K</span>
+                                    </div>
+                                    <p class="text-[10px] text-[#5C4E45] leading-snug">Dekorasi meja, lilin, dipinjami korek, lettering ucapan</p>
+                                </div>
+                                <div onclick="pickLayananPackageAndOpenModal('B', 'Paket Dekorasi B', '60K', 'Paket 35K + cheesecake slice 1')"
+                                     class="p-2.5 rounded-xl bg-[#FAF8F5] hover:bg-white border border-stone-200 hover:border-[#E06D24] cursor-pointer transition-all group">
+                                    <div class="flex items-center justify-between font-bold text-[#2A1D17] mb-0.5">
+                                        <span class="group-hover:text-[#E06D24] transition-colors">Paket Dekorasi B</span>
+                                        <span class="text-[#E06D24]">60K</span>
+                                    </div>
+                                    <p class="text-[10px] text-[#5C4E45] leading-snug">Paket 35K + cheesecake slice 1</p>
+                                </div>
+                                <div onclick="pickLayananPackageAndOpenModal('C', 'Paket Dekorasi C', '100K', 'Paket 35K + 1 whole cheesecake diameter 10cm + 1 minuman nucomu coffee')"
+                                     class="p-2.5 rounded-xl bg-[#FAF8F5] hover:bg-white border border-stone-200 hover:border-[#E06D24] cursor-pointer transition-all group">
+                                    <div class="flex items-center justify-between font-bold text-[#2A1D17] mb-0.5">
+                                        <span class="group-hover:text-[#E06D24] transition-colors">Paket Dekorasi C</span>
+                                        <span class="text-[#E06D24]">100K</span>
+                                    </div>
+                                    <p class="text-[10px] text-[#5C4E45] leading-snug">Paket 35K + 1 whole cheesecake Ø 10cm + 1 minuman nucomu coffee</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -140,10 +174,9 @@
 
                     <!-- Bottom Link / Button -->
                     <div class="pt-3 border-t border-stone-100">
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', config('nucomu.contact.whatsapp_number', '6281234567890')) }}?text={{ urlencode('Halo Nucomu Cafe, saya ingin memesan menu untuk delivery...') }}" 
-                           target="_blank" 
+                        <a href="{{ route('nucomu.order', ['mode' => 'zendo']) }}" 
                            class="inline-flex items-center justify-between w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-sm shadow-emerald-600/20 transition-all duration-200 active:scale-95">
-                            <span>Chat WhatsApp Sekarang</span>
+                            <span>Pilih Menu &amp; Pesan via Zendo</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </a>
                     </div>

@@ -14,8 +14,10 @@ class Testimonial extends Model
         'handle',
         'order_tag',
         'avatar_url',
+        'review_image',
         'content',
         'rating',
+        'source',
         'is_sample',
         'is_active',
     ];

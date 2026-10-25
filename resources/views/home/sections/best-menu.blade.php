@@ -66,14 +66,13 @@
 
                     <!-- Orange Pill Order Button Underneath -->
                     <div class="mt-6 sm:-mt-5 relative z-20">
-                        <button id="best-hero-order-btn" 
-                                type="button"
-                                onclick="openReservationModal('Pesanan Best Menu: {{ $bestMenu[0]['name'] }}')" 
-                                class="px-7 sm:px-8 py-3 rounded-full bg-[#E06D24] hover:bg-[#c95b17] text-white font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2.5 shadow-lg shadow-orange-500/25 transition-all duration-200 hover:scale-105 active:scale-95">
+                        <a id="best-hero-order-btn" 
+                           href="{{ route('nucomu.order', ['add' => $bestMenu[0]['name']]) }}" 
+                           class="px-7 sm:px-8 py-3 rounded-full bg-[#E06D24] hover:bg-[#c95b17] text-white font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2.5 shadow-lg shadow-orange-500/25 transition-all duration-200 hover:scale-105 active:scale-95">
                             <span id="best-hero-price">{{ $bestMenu[0]['price_formatted'] }}</span>
                             <span>ORDER</span>
                             <span class="material-symbols-outlined text-base">chevron_right</span>
-                        </button>
+                        </a>
                     </div>
 
                     <!-- Slide Dots Indicator -->
@@ -222,12 +221,11 @@
 
                     <!-- Action Button -->
                     <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
-                        <button type="button" 
-                                onclick="openReservationModal('Pesanan Menu: {{ $item['name'] }}')" 
-                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                        <a href="{{ route('nucomu.order', ['add' => $item['name']]) }}" 
+                           class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
                             <span>Pesan / Order</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                        </button>
+                        </a>
                     </div>
                 </div>
             @endforeach

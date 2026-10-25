@@ -197,57 +197,125 @@
 
     {{-- 2. REVIEWS --}}
     <section id="reviews" class="py-12 px-4 relative z-10">
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-5xl mx-auto">
             <div class="text-center mb-6 space-y-1">
                 <div class="inline-flex items-center gap-1.5 text-goldAccent text-xs font-bold uppercase tracking-wider">
-                    <i class="fa-solid fa-star"></i> Ulasan Pengunjung
+                    <i class="fa-solid fa-star"></i> Ulasan Pengunjung Nucomu Cafe
                 </div>
                 <h2 class="text-2xl sm:text-3xl font-bold text-white">Kata Mereka Tentang Nucomu</h2>
+                <p class="text-xs text-gray-400">Pengalaman langsung dari para pengunjung Nucomu Cafe Tulungagung.</p>
             </div>
 
-            <div id="reviewContainer"
-                 class="w-full glass-card rounded-story p-6 sm:p-10 relative overflow-hidden border border-white/15 shadow-2xl transition-all duration-500"
-                 onmouseenter="pauseReview()" onmouseleave="resumeReview()">
+            <div class="max-w-3xl mx-auto mb-8">
+                <div id="reviewContainer"
+                     class="w-full glass-card rounded-story p-6 sm:p-10 relative overflow-hidden border border-white/15 shadow-2xl transition-all duration-500"
+                     onmouseenter="pauseReview()" onmouseleave="resumeReview()">
 
-                <div class="space-y-6 relative z-10">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-4">
-                            <img id="reviewAvatar" src="" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-goldAccent/40 shadow-xl">
-                            <div>
-                                <h4 id="reviewName" class="text-base sm:text-lg font-bold text-white">Loading...</h4>
-                                <p id="reviewHandle" class="text-xs text-goldAccent font-mono">@user</p>
+                    <div class="space-y-6 relative z-10">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <img id="reviewAvatar" src="" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-goldAccent/40 shadow-xl">
+                                <div>
+                                    <h4 id="reviewName" class="text-base sm:text-lg font-bold text-white">Loading...</h4>
+                                    <p id="reviewHandle" class="text-xs text-goldAccent font-medium">Local Guide</p>
+                                </div>
                             </div>
+                            <div id="reviewStars" class="flex text-goldAccent text-sm sm:text-base gap-1 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"></div>
                         </div>
-                        <div id="reviewStars" class="flex text-goldAccent text-sm sm:text-base gap-1 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"></div>
+
+                        <div class="relative py-2">
+                            <i class="fa-solid fa-quote-left text-4xl text-white/10 absolute -top-4 -left-2"></i>
+                            <p id="reviewText" class="text-sm sm:text-base text-gray-200 leading-relaxed italic relative z-10 pl-3 sm:pl-4">"Ulasan..."</p>
+                        </div>
+
+                        <div id="reviewPhotoWrap" class="hidden rounded-2xl overflow-hidden border border-white/15 max-h-52 bg-black/40">
+                            <img id="reviewPhotoImg" src="" alt="Foto Ulasan" class="w-full h-52 object-cover">
+                        </div>
+
+                        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs sm:text-sm">
+                            <span class="text-gray-400 text-xs">Pesanan Favorit:</span>
+                            <span id="reviewOrderTag" class="font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3.5 py-1.5 rounded-full text-xs sm:text-sm">
+                                <i class="fa-solid fa-mug-saucer mr-1.5"></i> Special Coffee
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="relative py-2">
-                        <i class="fa-solid fa-quote-left text-4xl text-white/10 absolute -top-4 -left-2"></i>
-                        <p id="reviewText" class="text-sm sm:text-base text-gray-200 leading-relaxed italic relative z-10 pl-3 sm:pl-4">"Ulasan..."</p>
-                    </div>
-
-                    <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs sm:text-sm">
-                        <span class="text-gray-400 text-xs">Pesanan Favorit:</span>
-                        <span id="reviewOrderTag" class="font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3.5 py-1.5 rounded-full text-xs sm:text-sm">
-                            <i class="fa-solid fa-mug-saucer mr-1.5"></i> Special Coffee
-                        </span>
-                    </div>
+                    <div class="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-goldAccent/10 blur-3xl pointer-events-none"></div>
                 </div>
 
-                <div class="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-goldAccent/10 blur-3xl pointer-events-none"></div>
+                <div class="text-center mt-5">
+                    <button onclick="openReviewModal()" class="text-xs sm:text-sm font-semibold text-goldAccent hover:text-amber-300 transition-colors inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-goldAccent/20 hover:border-goldAccent">
+                        <i class="fa-solid fa-plus-circle"></i> Tambah ulasan pengalaman Anda
+                    </button>
+                </div>
             </div>
 
-            <div class="text-center mt-6">
-                <button onclick="openReviewModal()" class="text-xs sm:text-sm font-semibold text-goldAccent hover:text-amber-300 transition-colors inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-goldAccent/20 hover:border-goldAccent">
-                    <i class="fa-solid fa-plus-circle"></i> Tambah ulasan pengalaman Anda
-                </button>
+            <div id="nucomuReviewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach($reviews as $rev)
+                    @php
+                        $cardImages = !empty($rev['review_images']) && is_array($rev['review_images'])
+                            ? array_slice($rev['review_images'], 0, 4)
+                            : (!empty($rev['review_image']) ? [$rev['review_image']] : []);
+                        $isHiddenInitially = $loop->index >= 3;
+                    @endphp
+                    <div class="glass-card rounded-2xl p-5 border border-white/10 flex flex-col justify-between {{ $isHiddenInitially ? 'extra-nucomu-review hidden' : '' }}">
+                        <div>
+                            <div class="flex items-start justify-between gap-2 mb-3">
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ $rev['avatar_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' }}" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-white/15 bg-rose-600">
+                                    <div>
+                                        <h5 class="text-sm font-bold text-white">{{ $rev['name'] }}</h5>
+                                        <span class="text-[11px] text-gray-400 block">{{ $rev['handle'] ?? 'Pengunjung Nucomu' }}</span>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-gray-500">{{ $rev['time_ago'] ?? '' }}</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-goldAccent text-xs mb-2">
+                                @for($i = 0; $i < ($rev['rating'] ?? 5); $i++)
+                                    <i class="fa-solid fa-star"></i>
+                                @endfor
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed mb-3 whitespace-pre-line">{{ $rev['content'] }}</p>
+                            @if(count($cardImages) > 1)
+                                <div class="grid grid-cols-2 gap-1.5 mb-3 rounded-xl overflow-hidden border border-white/10">
+                                    @foreach($cardImages as $imgUrl)
+                                        <div class="aspect-[4/3] bg-black/40 overflow-hidden">
+                                            <img src="{{ $imgUrl }}" alt="Foto ulasan {{ $rev['name'] }}" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @elseif(count($cardImages) === 1)
+                                <div class="mb-3 rounded-xl overflow-hidden border border-white/10 h-36 bg-black/40">
+                                    <img src="{{ $cardImages[0] }}" alt="Foto ulasan {{ $rev['name'] }}" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover">
+                                </div>
+                            @endif
+                        </div>
+                        <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px]">
+                            <span class="text-gray-500">Favorit:</span>
+                            <span class="text-rose-400 font-medium">{{ $rev['order_tag'] ?? 'Menu Nucomu' }}</span>
+                        </div>
+                    </div>
+                @endforeach
             </div>
+
+            @if(count($reviews) > 3)
+                <div class="text-center mt-6">
+                    <button type="button"
+                            id="toggleNucomuReviewsBtn"
+                            onclick="toggleNucomuReviews()"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-card border border-goldAccent/30 hover:border-goldAccent text-xs sm:text-sm font-bold text-white transition-all">
+                        <i class="fa-solid fa-layer-group text-goldAccent"></i>
+                        <span id="toggleNucomuReviewsText">View All Ulasan ({{ count($reviews) }} Ulasan)</span>
+                        <i id="toggleNucomuReviewsChevron" class="fa-solid fa-chevron-down text-xs text-goldAccent transition-transform duration-300"></i>
+                    </button>
+                </div>
+            @endif
         </div>
     </section>
 
     {{-- MODAL ULASAN --}}
     <div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="glass-card w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl relative transform scale-95 transition-transform duration-300" id="modalContent">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl relative transform scale-95 transition-transform duration-300 max-h-[92vh] overflow-y-auto" id="modalContent">
             <button onclick="closeReviewModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -258,7 +326,7 @@
                 </div>
                 <div>
                     <h3 class="text-base font-bold text-white">Tulis Ulasan Nucomu</h3>
-                    <p class="text-[11px] text-gray-400">Akan langsung tampil di ulasan pengunjung</p>
+                    <p class="text-[11px] text-gray-400">Bagikan kesan &amp; foto pengalaman Anda</p>
                 </div>
             </div>
 
@@ -269,23 +337,23 @@
                 </div>
             @endif
 
-            <form action="{{ route('nucomu.review.store') }}" method="POST" class="space-y-3.5">
+            <form action="{{ route('nucomu.review.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
                 @csrf
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Nama Lengkap</label>
+                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Nama Lengkap *</label>
                     <input type="text" name="name" required placeholder="Nama Anda"
                         class="w-full bg-black/40 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Username (@handle)</label>
-                    <input type="text" name="handle" placeholder="contoh: @rara_coffeelover"
+                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Status / Info Singkat</label>
+                    <input type="text" name="handle" placeholder="Contoh: Local Guide / Pengunjung"
                         class="w-full bg-black/40 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors">
                 </div>
 
                 <div>
                     <label class="block text-[11px] font-semibold text-gray-300 mb-1">Pesanan Anda</label>
-                    <input type="text" name="order_tag" placeholder="Misal: Iced Palm Sugar Latte"
+                    <input type="text" name="order_tag" placeholder="Misal: Cheesecake & Nucomu Coffee"
                         class="w-full bg-black/40 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors">
                 </div>
 
@@ -300,9 +368,15 @@
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Ulasan Singkat</label>
-                    <textarea name="content" rows="3" required placeholder="Tuliskan kesan rasa kopi dan suasana di Nucomu Cafe..."
+                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Ulasan Singkat *</label>
+                    <textarea name="content" rows="3" required placeholder="Tuliskan kesan rasa kopi, dessert, dan suasana di Nucomu Cafe..."
                         class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Upload Foto (Opsional)</label>
+                    <input type="file" name="review_image" accept="image/*"
+                        class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-gray-300 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-goldAccent file:text-black">
                 </div>
 
                 <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-goldAccent via-amber-400 to-yellow-300 text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity shadow-md">
@@ -386,10 +460,21 @@
             if (!reviews.length) return;
             const r = reviews[reviewIndex];
             document.getElementById('reviewName').innerText = r.name;
-            document.getElementById('reviewHandle').innerText = r.handle ? (r.handle.startsWith('@') ? r.handle : '@' + r.handle) : '@pelanggan';
+            document.getElementById('reviewHandle').innerText = r.handle || 'Pengunjung Nucomu';
             document.getElementById('reviewAvatar').src = r.avatar_url || DEFAULT_AVATAR;
             document.getElementById('reviewText').innerText = '"' + r.content + '"';
             document.getElementById('reviewOrderTag').innerHTML = '<i class="fa-solid fa-mug-saucer mr-1.5"></i> ' + (r.order_tag || 'Menu Spesial');
+
+            const photoWrap = document.getElementById('reviewPhotoWrap');
+            const photoImg = document.getElementById('reviewPhotoImg');
+            if (photoWrap && photoImg) {
+                if (r.review_image) {
+                    photoImg.src = r.review_image;
+                    photoWrap.classList.remove('hidden');
+                } else {
+                    photoWrap.classList.add('hidden');
+                }
+            }
 
             const starContainer = document.getElementById('reviewStars');
             starContainer.innerHTML = '';
@@ -440,6 +525,27 @@
             for (let i = 0; i < stars.length; i++) {
                 stars[i].classList.toggle('text-goldAccent', i < rating);
                 stars[i].classList.toggle('text-gray-600', i >= rating);
+            }
+        }
+
+        let isNucomuReviewsExpanded = false;
+        function toggleNucomuReviews() {
+            const extraCards = document.querySelectorAll('#nucomuReviewsGrid .extra-nucomu-review');
+            const btnText = document.getElementById('toggleNucomuReviewsText');
+            const chevron = document.getElementById('toggleNucomuReviewsChevron');
+            isNucomuReviewsExpanded = !isNucomuReviewsExpanded;
+
+            extraCards.forEach(card => {
+                card.classList.toggle('hidden', !isNucomuReviewsExpanded);
+            });
+
+            if (btnText) {
+                btnText.innerText = isNucomuReviewsExpanded
+                    ? 'Sembunyikan Sebagian (Show Less)'
+                    : `View All Ulasan (${reviews ? reviews.length : extraCards.length + 3} Ulasan)`;
+            }
+            if (chevron) {
+                chevron.classList.toggle('rotate-180', isNucomuReviewsExpanded);
             }
         }
 

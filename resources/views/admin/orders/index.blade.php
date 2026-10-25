@@ -63,7 +63,13 @@
                             </td>
 
                             <td class="px-6 py-4">
-                                <span class="uppercase font-semibold text-gray-200 block">{{ str_replace('_', ' ', $order->order_type) }}</span>
+                                @if(str_starts_with((string) $order->notes, '[KURIR ZENDO]'))
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase">
+                                        <i class="fa-brands fa-whatsapp"></i> Kurir Zendo
+                                    </span>
+                                @else
+                                    <span class="uppercase font-semibold text-gray-200 block">{{ str_replace('_', ' ', $order->order_type) }}</span>
+                                @endif
                                 @if($order->table)
                                     <span class="text-[10px] text-gray-500 font-mono">Meja {{ $order->table->number }}</span>
                                 @endif

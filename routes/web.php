@@ -10,6 +10,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\NucomuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ZendoTrackingController;
 use Illuminate\Support\Facades\Route;
 
 // ─────────────────────────────────────────────
@@ -54,6 +55,22 @@ Route::post('/nucomu/ulasan', [NucomuController::class, 'storeReview'])->name('n
 Route::get('/pesan', [NucomuController::class, 'orderPage'])->name('nucomu.order');
 Route::post('/pesan', [NucomuController::class, 'storeOrder'])->name('nucomu.order.store');
 Route::get('/pesan/slip/{code}', [NucomuController::class, 'orderSlip'])->name('nucomu.order.slip');
+
+// ─────────────────────────────────────────────
+//  ZENDO LIVE TRACKING & COURIER GPS WORKSPACE (GRAB-LIKE)
+// ─────────────────────────────────────────────
+// 1 Unified live tracking route for customer, admin, and auto-detected courier
+Route::get('/zendo/lacak/{token}', [ZendoTrackingController::class, 'track'])->name('zendo.track');
+Route::get('/zendo/lacak/{token}/data', [ZendoTrackingController::class, 'trackData'])->name('zendo.track.data');
+Route::post('/zendo/lacak/{token}/lokasi', [ZendoTrackingController::class, 'updateLocation'])->name('zendo.track.location');
+Route::post('/zendo/lacak/{token}/status', [ZendoTrackingController::class, 'updateStatus'])->name('zendo.track.status');
+
+// Courier workspace routes (backward-compatible aliases)
+Route::get('/zendo/kurir/{token}', [ZendoTrackingController::class, 'courier'])->name('zendo.courier.show');
+Route::post('/zendo/kurir/{token}/otp', [ZendoTrackingController::class, 'sendOtp'])->name('zendo.courier.otp');
+Route::post('/zendo/kurir/{token}/verifikasi', [ZendoTrackingController::class, 'verify'])->name('zendo.courier.verify');
+Route::post('/zendo/kurir/{token}/lokasi', [ZendoTrackingController::class, 'updateLocation'])->name('zendo.courier.location');
+Route::post('/zendo/kurir/{token}/status', [ZendoTrackingController::class, 'updateStatus'])->name('zendo.courier.status');
 
 // QR Detail (publicly accessible — scanned by kasir via phone)
 Route::get('/qr/pesanan/{code}', [AdminOrderController::class, 'qrDetail'])->name('admin.orders.qr');
@@ -114,9 +131,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/event', [SettingController::class, 'storeEvent'])->name('events.store');
         Route::delete('/event/{event}', [SettingController::class, 'destroyEvent'])->name('events.destroy');
 
+        // Kurir & Pemantauan Zendo (Terpisah dari Pengaturan Sistem)
+        Route::get('/zendo', [SettingController::class, 'zendoIndex'])->name('zendo.index');
+        Route::post('/zendo/couriers', [SettingController::class, 'updateZendoCouriers'])->name('zendo.couriers.update');
+        Route::post('/zendo/couriers/{index}/status', [SettingController::class, 'updateZendoCourierStatus'])->name('zendo.couriers.status');
+        Route::post('/zendo/orders/{order}/stage', [SettingController::class, 'updateZendoOrderStage'])->name('zendo.orders.stage');
+        Route::post('/zendo/tariff', [SettingController::class, 'updateZendoTariff'])->name('zendo.tariff.update');
+
         // Pengaturan
         Route::get('/pengaturan', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/pengaturan', [SettingController::class, 'update'])->name('settings.update');
+        Route::post('/pengaturan/test-wa', [SettingController::class, 'testZendoWhatsapp'])->name('settings.testWa');
         Route::post('/pengaturan/jam-operasional', [SettingController::class, 'updateHours'])->name('settings.hours');
     });
 });

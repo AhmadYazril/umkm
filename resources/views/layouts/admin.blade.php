@@ -88,6 +88,11 @@
                     <span>Scan QR Kasir</span>
                 </a>
 
+                <a href="{{ route('admin.zendo.index') }}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('admin.zendo.*') ? 'bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 text-black font-extrabold shadow-lg shadow-emerald-500/20' : 'text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 border border-emerald-500/20' }}">
+                    <i class="fa-solid fa-motorcycle w-4"></i>
+                    <span>Kurir & Pantau Zendo</span>
+                </a>
+
                 <a href="{{ route('admin.reservations.index') }}" class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all {{ request()->routeIs('admin.reservations.*') ? 'bg-goldAccent text-black font-extrabold shadow-lg shadow-goldAccent/20' : 'text-zinc-400 hover:text-white hover:bg-white/5' }}">
                     <i class="fa-solid fa-calendar-check w-4"></i>
                     <span>Reservasi</span>

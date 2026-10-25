@@ -75,11 +75,11 @@
 
                         <div class="pt-3 border-t border-light-gray/60 flex items-center justify-between mt-4">
                             <span class="font-editorial text-base sm:text-lg font-bold text-ink-black">{{ $item['price_formatted'] }}</span>
-                            <button onclick="openReservationModal('Order: {{ $item['name'] }}')" 
-                                    class="inline-flex items-center space-x-1 text-[11px] font-semibold uppercase tracking-wider text-ink-black border border-neutral-300 hover:border-neutral-900 px-3 py-1 rounded transition-colors">
+                            <a href="{{ route('nucomu.order', ['add' => $item['name']]) }}" 
+                               class="inline-flex items-center space-x-1 text-[11px] font-semibold uppercase tracking-wider text-ink-black border border-neutral-300 hover:border-neutral-900 px-3 py-1 rounded transition-colors">
                                 <span>Pesan</span>
                                 <span class="material-symbols-outlined text-xs">add</span>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 @endforeach
