@@ -62,6 +62,7 @@ Route::get('/pesan/slip/{code}', [NucomuController::class, 'orderSlip'])->name('
 // 1 Unified live tracking route for customer, admin, and auto-detected courier
 Route::get('/zendo/lacak/{token}', [ZendoTrackingController::class, 'track'])->name('zendo.track');
 Route::get('/zendo/lacak/{token}/data', [ZendoTrackingController::class, 'trackData'])->name('zendo.track.data');
+Route::post('/zendo/lacak/{token}/pin', [ZendoTrackingController::class, 'verifyPin'])->name('zendo.track.pin');
 Route::post('/zendo/lacak/{token}/lokasi', [ZendoTrackingController::class, 'updateLocation'])->name('zendo.track.location');
 Route::post('/zendo/lacak/{token}/status', [ZendoTrackingController::class, 'updateStatus'])->name('zendo.track.status');
 
@@ -138,6 +139,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/zendo/couriers/{index}/status', [SettingController::class, 'updateZendoCourierStatus'])->name('zendo.couriers.status');
         Route::post('/zendo/orders/{order}/stage', [SettingController::class, 'updateZendoOrderStage'])->name('zendo.orders.stage');
         Route::post('/zendo/tariff', [SettingController::class, 'updateZendoTariff'])->name('zendo.tariff.update');
+        Route::post('/zendo/devices/{id}/reset', [SettingController::class, 'resetZendoDevice'])->name('zendo.devices.reset');
+        Route::post('/zendo/devices/reset-all', [SettingController::class, 'resetAllZendoDevices'])->name('zendo.devices.resetAll');
 
         // Pengaturan
         Route::get('/pengaturan', [SettingController::class, 'index'])->name('settings.index');

@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class NucomuController extends Controller
 {
@@ -710,6 +711,176 @@ class NucomuController extends Controller
     }
 
     /**
+     * Get the list of devices currently connected/bound as couriers.
+     */
+    public function getConnectedDevicesList(): array
+    {
+        $raw = Setting::get('zendo_connected_devices');
+        $devices = [];
+        if ($raw) {
+            $decoded = json_decode((string) $raw, true);
+            if (is_array($decoded)) {
+                $devices = $decoded;
+            }
+        }
+
+        // Check if any registered courier phone has an active device binding not in the JSON list yet
+        $couriers = $this->getTransactionSettings()['zendo_couriers'] ?? [];
+        foreach ($couriers as $courier) {
+            $phone = (string) ($courier['clean_phone'] ?? '');
+            if ($phone === '') {
+                continue;
+            }
+
+            $connectedAt = Setting::get("zendo_connected_at_{$phone}");
+            $deviceHash = Setting::get("zendo_device_{$phone}");
+            if ($connectedAt && $deviceHash) {
+                $alreadyExists = collect($devices)->contains(fn ($d) => ($d['courier_phone'] ?? '') === $phone);
+                if (! $alreadyExists) {
+                    $lastPing = Setting::get("zendo_last_ping_{$phone}") ?: $connectedAt;
+                    $devices[] = [
+                        'id' => 'dev_'.substr(md5($phone), 0, 12),
+                        'token_hash' => (string) $deviceHash,
+                        'token_preview' => substr((string) $deviceHash, 0, 8).'...',
+                        'courier_phone' => $phone,
+                        'courier_name' => $courier['name'] ?? 'Kurir Zendo',
+                        'device_name' => 'Perangkat Kurir (Browser / HP)',
+                        'ip_address' => '-',
+                        'user_agent' => '',
+                        'connected_at' => (string) $connectedAt,
+                        'last_active_at' => (string) $lastPing,
+                    ];
+                }
+            }
+        }
+
+        // Enrich with live online status and formatted timestamps
+        foreach ($devices as &$dev) {
+            $lastActive = ! empty($dev['last_active_at']) ? Carbon::parse($dev['last_active_at']) : null;
+            $dev['is_online'] = $lastActive !== null && $lastActive->greaterThan(now()->subMinutes(3));
+            $dev['last_active_diff'] = $lastActive ? $lastActive->diffForHumans() : 'Belum ada aktivitas';
+            $dev['connected_at_formatted'] = ! empty($dev['connected_at']) ? Carbon::parse($dev['connected_at'])->format('d M Y, H:i') : '-';
+        }
+        unset($dev);
+
+        return $devices;
+    }
+
+    /**
+     * Record or update a connected courier device in the persistent list.
+     */
+    public function recordConnectedDevice(ZendoDelivery $delivery, string $deviceToken): void
+    {
+        $devices = $this->getConnectedDevicesList();
+        $tokenHash = hash('sha256', $deviceToken);
+        $userAgent = (string) (request()->userAgent() ?? '');
+        $ip = (string) (request()->ip() ?? '');
+        $deviceName = $this->parseDeviceName($userAgent);
+
+        $found = false;
+        foreach ($devices as &$dev) {
+            if (($dev['token_hash'] ?? '') === $tokenHash) {
+                $dev['token_hash'] = $tokenHash;
+                $dev['token_preview'] = substr($deviceToken, 0, 8).'...';
+                $dev['courier_phone'] = $delivery->courier_phone;
+                $dev['courier_name'] = $delivery->courier_name;
+                $dev['last_active_at'] = now()->toDateTimeString();
+                $dev['ip_address'] = $ip;
+                $dev['user_agent'] = $userAgent;
+                $dev['device_name'] = $deviceName;
+                $found = true;
+                break;
+            }
+        }
+        unset($dev);
+
+        if (! $found) {
+            array_unshift($devices, [
+                'id' => 'dev_'.Str::random(12),
+                'token_hash' => $tokenHash,
+                'token_preview' => substr($deviceToken, 0, 8).'...',
+                'courier_phone' => $delivery->courier_phone,
+                'courier_name' => $delivery->courier_name,
+                'device_name' => $deviceName,
+                'ip_address' => $ip,
+                'user_agent' => $userAgent,
+                'connected_at' => now()->toDateTimeString(),
+                'last_active_at' => now()->toDateTimeString(),
+            ]);
+        }
+
+        // Clean up formatting attributes before storing raw data
+        $cleanDevices = array_map(function ($d) {
+            return [
+                'id' => $d['id'] ?? 'dev_'.Str::random(12),
+                'token_hash' => $d['token_hash'] ?? '',
+                'token_preview' => $d['token_preview'] ?? '',
+                'courier_phone' => $d['courier_phone'] ?? '',
+                'courier_name' => $d['courier_name'] ?? '',
+                'device_name' => $d['device_name'] ?? 'Perangkat Kurir',
+                'ip_address' => $d['ip_address'] ?? '-',
+                'user_agent' => $d['user_agent'] ?? '',
+                'connected_at' => $d['connected_at'] ?? now()->toDateTimeString(),
+                'last_active_at' => $d['last_active_at'] ?? now()->toDateTimeString(),
+            ];
+        }, array_slice($devices, 0, 50));
+
+        Setting::set('zendo_connected_devices', json_encode($cleanDevices, JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Parse User-Agent string to a human-readable device name.
+     */
+    public function parseDeviceName(?string $userAgent): string
+    {
+        if (empty($userAgent)) {
+            return 'Perangkat Kurir (Web Browser)';
+        }
+
+        $platform = 'Perangkat Lain';
+        if (stripos($userAgent, 'Android') !== false) {
+            $platform = 'Android';
+            if (stripos($userAgent, 'Samsung') !== false) {
+                $platform = 'Android (Samsung)';
+            } elseif (stripos($userAgent, 'Xiaomi') !== false || stripos($userAgent, 'Redmi') !== false) {
+                $platform = 'Android (Xiaomi)';
+            } elseif (stripos($userAgent, 'OPPO') !== false) {
+                $platform = 'Android (OPPO)';
+            } elseif (stripos($userAgent, 'vivo') !== false) {
+                $platform = 'Android (Vivo)';
+            }
+        } elseif (stripos($userAgent, 'iPhone') !== false) {
+            $platform = 'iPhone (iOS)';
+        } elseif (stripos($userAgent, 'iPad') !== false) {
+            $platform = 'iPad (iPadOS)';
+        } elseif (stripos($userAgent, 'Windows') !== false) {
+            $platform = 'Windows PC';
+        } elseif (stripos($userAgent, 'Macintosh') !== false || stripos($userAgent, 'Mac OS') !== false) {
+            $platform = 'Mac';
+        } elseif (stripos($userAgent, 'Linux') !== false) {
+            $platform = 'Linux';
+        }
+
+        $browser = 'Browser';
+        if (stripos($userAgent, 'Chrome') !== false && stripos($userAgent, 'Edg') === false) {
+            $browser = 'Chrome';
+        } elseif (stripos($userAgent, 'Safari') !== false && stripos($userAgent, 'Chrome') === false) {
+            $browser = 'Safari';
+        } elseif (stripos($userAgent, 'Firefox') !== false) {
+            $browser = 'Firefox';
+        } elseif (stripos($userAgent, 'Edg') !== false) {
+            $browser = 'Edge';
+        } elseif (stripos($userAgent, 'Opera') !== false || stripos($userAgent, 'OPR') !== false) {
+            $browser = 'Opera';
+        }
+
+        $isMobile = stripos($userAgent, 'Mobile') !== false;
+        $mobileSuffix = $isMobile ? ' Mobile' : '';
+
+        return "{$platform} • {$browser}{$mobileSuffix}";
+    }
+
+    /**
      * Automatically select a Zendo courier for a customer order:
      * 1. Random selection among couriers who have NOT received an active order yet (`effective_status === 'idle'`).
      * 2. If ALL couriers already have an order, dispatch to a courier whose delivery is almost finished (`effective_status === 'almost_done'`).
@@ -902,17 +1073,11 @@ class NucomuController extends Controller
         $lines[] = '*Catatan Tambahan:* '.(! empty($notes) ? $notes : '-');
         $lines[] = '';
 
-        if (! empty($courierUrl)) {
-            $lines[] = '🛵 *LINK KHUSUS KURIR (KIRIM GPS & STATUS):*';
-            $lines[] = $courierUrl;
-            $lines[] = 'Khusus kurir yang ditugaskan untuk menyiarkan GPS & menyelesaikan pengantaran.';
-            $lines[] = '';
-        }
-
         if (! empty($trackingUrl)) {
-            $lines[] = '📍 *LINK PELACAKAN PELANGGAN (HANYA LIHAT POSISI KURIR):*';
+            $lines[] = '📍 *LINK PELACAKAN PESANAN (1 LINK):*';
             $lines[] = $trackingUrl;
-            $lines[] = 'Pelanggan dapat memantau pergerakan posisi kurir di peta secara realtime.';
+            $lines[] = 'Pelanggan: Buka link untuk pantau posisi kurir di peta secara live.';
+            $lines[] = 'Kurir: Klik "Masuk Mode Kurir" pada link di atas lalu masukkan PIN Kurir untuk mulai siarkan GPS & antar pesanan.';
             $lines[] = '';
         }
 

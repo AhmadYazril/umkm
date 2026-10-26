@@ -6,6 +6,7 @@ use App\Http\Controllers\NucomuController;
 use App\Http\Controllers\ZendoTrackingController;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Models\User;
 use App\Models\ZendoDelivery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
@@ -320,13 +321,58 @@ class NucomuFeatureTest extends TestCase
         $this->unencryptedCookies = [];
         $customerResponse = $this->get(route('zendo.track', ['token' => $delivery->tracking_token]));
         $customerResponse->assertStatus(200);
-        $customerResponse->assertDontSee('Mode Kurir');
+        $customerResponse->assertDontSee('GPS Lock Aktif (Anti Fake GPS)');
         $customerResponse->assertDontSee($delivery->courier_token);
         $customerResponse->assertSee('Live Tracking');
         $customerResponse->assertSee('Kurir Zendo 1');
+        $customerResponse->assertSee('Masuk Mode Kurir');
 
-        // 4. GPS streaming is accepted for the courier
-        $validGps = $this->withHeaders(['X-Courier-Device' => $deviceCookieValue])
+        // 4. The single tracking link can be unlocked to Courier Mode using the 4-digit PIN
+        $wrongPinResponse = $this->postJson(route('zendo.track.pin', $delivery->tracking_token), ['pin' => '9999']);
+        $wrongPinResponse->assertStatus(422);
+        $wrongPinResponse->assertJson(['success' => false]);
+
+        $correctPinResponse = $this->postJson(route('zendo.track.pin', $delivery->tracking_token), ['pin' => '1234']);
+        $correctPinResponse->assertStatus(200);
+        $correctPinResponse->assertJson(['success' => true]);
+        $correctPinResponse->assertCookie(ZendoTrackingController::DEVICE_COOKIE);
+
+        $newCookieValue = $correctPinResponse->getCookie(ZendoTrackingController::DEVICE_COOKIE, false)->getValue();
+
+        // 5. Permanent Access: Once PIN is verified, subsequent orders opened on this device immediately grant Courier Mode
+        $secondDelivery = ZendoDelivery::factory()->create([
+            'courier_phone' => '6285712345678',
+            'courier_name' => 'Kurir Zendo 1',
+        ]);
+        $secondDeliveryResponse = $this->withUnencryptedCookie(ZendoTrackingController::DEVICE_COOKIE, $newCookieValue)
+            ->get(route('zendo.track', ['token' => $secondDelivery->tracking_token]));
+        $secondDeliveryResponse->assertStatus(200);
+        $secondDeliveryResponse->assertSee('Mode Kurir');
+        $secondDeliveryResponse->assertSee('GPS Lock Aktif (Anti Fake GPS)');
+
+        // 6. Admin can update the Courier PIN and the new PIN takes effect
+        $adminUser = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($adminUser)->post(route('admin.zendo.couriers.update'), [
+            'zendo_courier_pin' => '7788',
+            'zendo_courier_count' => 1,
+            'zendo_couriers' => [
+                ['name' => 'Kurir Zendo 1', 'phone' => '6285712345678'],
+            ],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame('7788', Setting::get('zendo_courier_pin'));
+
+        // Old PIN 1234 now fails, new PIN 7788 succeeds
+        $this->defaultCookies = [];
+        $this->unencryptedCookies = [];
+        $this->postJson(route('zendo.track.pin', $secondDelivery->tracking_token), ['pin' => '1234'])
+            ->assertStatus(422);
+        $this->postJson(route('zendo.track.pin', $secondDelivery->tracking_token), ['pin' => '7788'])
+            ->assertStatus(200)
+            ->assertJson(['success' => true]);
+
+        // 7. GPS streaming is accepted for the courier before reset
+        $validGps = $this->withHeaders(['X-Courier-Device' => $newCookieValue])
             ->postJson(route('zendo.track.location', $delivery->tracking_token), [
                 'lat' => -8.0766,
                 'lng' => 111.9188,
@@ -336,7 +382,42 @@ class NucomuFeatureTest extends TestCase
         $validGps->assertStatus(200);
         $validGps->assertJson(['accepted' => true]);
 
-        // 5. Device can be unlinked from courier mode
+        // 8. Connected device appears in Admin Zendo table
+        $adminZendoPage = $this->actingAs($adminUser)->get(route('admin.zendo.index'));
+        $adminZendoPage->assertStatus(200);
+        $adminZendoPage->assertSee('Tabel Perangkat Terhubung sebagai Kurir');
+        $adminZendoPage->assertSee('Kurir Zendo 1');
+        $adminZendoPage->assertSee('Reset / Keluarkan');
+
+        $devices = app(NucomuController::class)->getConnectedDevicesList();
+        $this->assertNotEmpty($devices);
+
+        [$cookiePhone, $cookieRawToken] = explode('|', $newCookieValue, 2);
+        $cookieTokenHash = hash('sha256', $cookieRawToken);
+        $targetDev = collect($devices)->firstWhere('token_hash', $cookieTokenHash) ?? $devices[0];
+
+        // 9. Admin resets/disconnects this specific device
+        $resetResponse = $this->actingAs($adminUser)->post(route('admin.zendo.devices.reset', $targetDev['id']));
+        $resetResponse->assertRedirect();
+        $resetResponse->assertSessionHas('success');
+
+        // Location ping from the reset device is now rejected (kicked out of courier mode)
+        $rejectedGps = $this->withHeaders(['X-Courier-Device' => $newCookieValue])
+            ->postJson(route('zendo.track.location', $delivery->tracking_token), [
+                'lat' => -8.0766,
+                'lng' => 111.9188,
+                'accuracy' => 10,
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+        $rejectedGps->assertStatus(403);
+        $rejectedGps->assertJson(['accepted' => false, 'revoked' => true]);
+
+        // 10. Admin can reset all devices at once
+        $resetAllResponse = $this->actingAs($adminUser)->post(route('admin.zendo.devices.resetAll'));
+        $resetAllResponse->assertRedirect();
+        $resetAllResponse->assertSessionHas('success');
+
+        // 11. Device unbind route works
         $unbindResponse = $this->post(route('zendo.courier.unbind'));
         $unbindResponse->assertCookieExpired(ZendoTrackingController::DEVICE_COOKIE);
     }

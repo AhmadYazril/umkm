@@ -46,7 +46,7 @@
                         <a href="{{ route('zendo.track', $delivery->tracking_token) }}" title="Lihat tampilan dari sisi pelanggan" class="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/10 text-[9px] font-bold transition">
                             <i class="fa-solid fa-eye"></i> Tampilan Pelanggan
                         </a>
-                        <form method="POST" action="{{ route('zendo.courier.unbind') }}" class="inline ml-1" onsubmit="return confirm('Keluar dari Mode Kurir pada perangkat ini?')">
+                        <form method="POST" action="{{ route('zendo.courier.unbind') }}" class="inline ml-1" onsubmit="try { localStorage.removeItem('zendo_courier_permanent_access'); localStorage.removeItem('zendo_courier_device_token'); } catch(e){} return confirm('Keluar dari Mode Kurir pada perangkat ini? Anda harus memasukkan PIN lagi jika ingin masuk kembali.');">
                             @csrf
                             <button type="submit" title="Lepas perangkat ini dari Mode Kurir" class="px-2 py-0.5 rounded-md bg-zinc-800/80 hover:bg-rose-950 text-gray-400 hover:text-rose-300 border border-white/10 text-[9px] font-bold transition">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
@@ -57,6 +57,9 @@
                         <span id="liveBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Tracking
                         </span>
+                        <button type="button" onclick="openCourierPinModal()" class="px-2 py-0.5 rounded-md bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-[9px] font-bold transition flex items-center gap-1 ml-1 cursor-pointer">
+                            <i class="fa-solid fa-motorcycle"></i> Masuk Mode Kurir
+                        </button>
                     @endif
                 </div>
                 <h1 class="text-sm font-extrabold text-white truncate">Pesanan #{{ $delivery->order_code }}</h1>
@@ -569,6 +572,15 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await res.json();
+                if (res.status === 403 || data.revoked) {
+                    try {
+                        localStorage.removeItem('zendo_courier_permanent_access');
+                        localStorage.removeItem('zendo_courier_device_token');
+                    } catch (e) {}
+                    alert(data.message || 'Akses kurir pada perangkat ini telah direset oleh admin.');
+                    window.location.reload();
+                    return;
+                }
                 handleGpsServerFeedback(data);
             } catch (err) {
                 console.warn('Gagal streaming GPS kurir:', err);
@@ -704,8 +716,111 @@
             }
         }
 
+        // Courier PIN Modal (1 Link Tunggal)
+        function openCourierPinModal() {
+            // Jika perangkat ini sebelumnya membuka tampilan pelanggan, langsung kembali ke Mode Kurir
+            if (window.location.search.includes('view=customer')) {
+                window.location.href = '{{ route("zendo.track", $delivery->tracking_token, false) }}';
+                return;
+            }
+
+            const modal = document.getElementById('courierPinModal');
+            const input = document.getElementById('inputCourierPin');
+            const err = document.getElementById('pinErrorMsg');
+            if (err) err.classList.add('hidden');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            if (input) {
+                input.value = '';
+                setTimeout(() => input.focus(), 100);
+            }
+        }
+
+        function closeCourierPinModal() {
+            const modal = document.getElementById('courierPinModal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        async function submitCourierPin(e) {
+            e.preventDefault();
+            const pin = document.getElementById('inputCourierPin').value;
+            const err = document.getElementById('pinErrorMsg');
+            const btn = document.getElementById('btnSubmitPin');
+            if (!pin) return;
+
+            btn.disabled = true;
+            btn.innerText = 'Memverifikasi...';
+            if (err) err.classList.add('hidden');
+
+            try {
+                const res = await fetch('{{ route("zendo.track.pin", $delivery->tracking_token, false) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ pin: pin })
+                });
+                const data = await res.json();
+                if (data.success && data.redirect_url) {
+                    try {
+                        localStorage.setItem('zendo_courier_permanent_access', '1');
+                        if (data.device_token) {
+                            localStorage.setItem('zendo_courier_device_token', data.device_token);
+                        }
+                    } catch (e) {}
+                    window.location.href = data.redirect_url;
+                } else {
+                    if (err) {
+                        err.innerText = data.message || 'PIN Kurir salah. Silakan coba lagi.';
+                        err.classList.remove('hidden');
+                    }
+                }
+            } catch (ex) {
+                if (err) {
+                    err.innerText = 'Gagal menghubungi server.';
+                    err.classList.remove('hidden');
+                }
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Masuk';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initMap();
+
+            // Auto-restore Mode Kurir permanen jika perangkat ini sebelumnya sudah diverifikasi via PIN
+            if (!isCourierMode && !window.location.search.includes('view=customer')) {
+                try {
+                    const savedToken = localStorage.getItem('zendo_courier_device_token');
+                    const hasPermanent = localStorage.getItem('zendo_courier_permanent_access') === '1';
+                    if (hasPermanent && savedToken) {
+                        fetch('{{ route("zendo.track.pin", $delivery->tracking_token, false) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ device_token: savedToken })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success && data.redirect_url) {
+                                window.location.href = data.redirect_url;
+                            }
+                        })
+                        .catch(() => {});
+                    }
+                } catch (e) {}
+            }
 
             if (isCourierMode) {
                 startCourierGps();
@@ -714,5 +829,33 @@
             }
         });
     </script>
+
+    {{-- MODAL INPUT PIN KURIR (1 LINK TUNGGAL) --}}
+    <div id="courierPinModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-[#1c1c24] border border-white/20 rounded-3xl max-w-xs w-full p-6 shadow-2xl space-y-4 text-center animate-fade-in">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl mx-auto">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-black text-white">Aktifkan Mode Kurir</h3>
+                <p class="text-xs text-gray-400 mt-1">Khusus kurir Zendo. Masukkan PIN 1 kali, perangkat ini akan otomatis terakses selamanya.</p>
+            </div>
+            <form onsubmit="submitCourierPin(event)" class="space-y-3">
+                <input type="password" id="inputCourierPin" inputmode="numeric" maxlength="10" placeholder="PIN (Default: 1234)" autofocus required
+                       class="w-full bg-black/60 border border-white/15 focus:border-emerald-400 rounded-xl px-4 py-2.5 text-center text-lg font-mono font-bold tracking-widest text-emerald-400 focus:outline-none">
+                <p id="pinErrorMsg" class="hidden text-xs text-rose-400 font-semibold"></p>
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="closeCourierPinModal()"
+                            class="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition">
+                        Batal
+                    </button>
+                    <button type="submit" id="btnSubmitPin"
+                            class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-green-400 text-black font-black text-xs uppercase tracking-wider transition">
+                        Masuk
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -25,4 +25,9 @@ class Setting extends Model
     {
         static::updateOrCreate(['key' => $key], ['value' => $value]);
     }
+
+    public static function forget(string $key): void
+    {
+        static::where('key', $key)->delete();
+    }
 }

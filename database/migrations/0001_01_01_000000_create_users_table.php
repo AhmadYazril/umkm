@@ -18,8 +18,13 @@ return new class extends Migration
                 $table->string('email')->unique();
                 $table->timestamp('email_verified_at')->nullable();
                 $table->string('password');
+                $table->string('role')->default('user');
                 $table->rememberToken();
                 $table->timestamps();
+            });
+        } elseif (! Schema::hasColumn('users', 'role')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('role')->default('user')->after('password');
             });
         }
 

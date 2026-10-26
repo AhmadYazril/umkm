@@ -42,6 +42,7 @@ return [
         ],
         // Live courier tracking & GPS lock (anti fake GPS) thresholds
         'zendo_tracking' => [
+            'courier_pin' => env('NUCOMU_ZENDO_COURIER_PIN', '1234'),
             'pickup_radius_m' => (int) env('NUCOMU_ZENDO_PICKUP_RADIUS_M', 500),
             'dropoff_radius_m' => (int) env('NUCOMU_ZENDO_DROPOFF_RADIUS_M', 200),
             'almost_done_radius_m' => (int) env('NUCOMU_ZENDO_ALMOST_DONE_RADIUS_M', 1000),
@@ -52,7 +53,7 @@ return [
             'suspicious_lock_threshold' => (int) env('NUCOMU_ZENDO_SUSPICIOUS_LOCK_THRESHOLD', 3),
             'lock_minutes' => (int) env('NUCOMU_ZENDO_LOCK_MINUTES', 5),
             'stale_location_s' => (int) env('NUCOMU_ZENDO_STALE_LOCATION_S', 120),
-            'device_cookie_days' => (int) env('NUCOMU_ZENDO_DEVICE_COOKIE_DAYS', 30),
+            'device_cookie_days' => (int) env('NUCOMU_ZENDO_DEVICE_COOKIE_DAYS', 3650),
         ],
         'instagram_url' => env('NUCOMU_INSTAGRAM_URL', 'https://instagram.com/nucomucafe'),
         'instagram_handle' => '@nucomucafe',

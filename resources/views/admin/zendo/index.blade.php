@@ -178,48 +178,6 @@
                                 {{ $isOnline ? '🟢 GPS Aktif Online' : ($isConnected ? '💤 Standby' : '⚪ Menunggu Kurir') }}
                             </span>
                         </div>
-
-                        {{-- Pesanan Aktif yang Sedang Dibawa Kurir --}}
-                        <div class="mt-3 space-y-2">
-                            @if(!empty($activeDeliveries))
-                                <p class="text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                                    Pengantaran Sedang Berjalan ({{ count($activeDeliveries) }}):
-                                </p>
-                                @foreach($activeDeliveries as $activeDelivery)
-                                    <div class="rounded-xl bg-white border border-gray-200 p-3 shadow-xs space-y-2 text-xs">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <span class="font-mono font-bold text-gray-900">#{{ $activeDelivery->order_code }}</span>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold
-                                                {{ $activeDelivery->status === 'almost_done' ? 'bg-amber-100 text-amber-900' : ($activeDelivery->status === 'picked_up' ? 'bg-blue-100 text-blue-900' : 'bg-gray-100 text-gray-700') }}">
-                                                {{ $activeDelivery->status_label }}
-                                            </span>
-                                        </div>
-                                        <p class="text-gray-700 leading-snug line-clamp-2">
-                                            📍 <strong>{{ $activeDelivery->delivery_address }}</strong>
-                                        </p>
-
-                                        {{-- Tombol Buka Peta Live Grab (Lacak dari mana) --}}
-                                        <div class="pt-2 border-t border-gray-100 flex flex-wrap gap-1.5">
-                                            <a href="{{ route('zendo.track', $activeDelivery->tracking_token) }}" target="_blank"
-                                               class="flex-1 py-1.5 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center justify-center gap-1 transition shadow-xs">
-                                                <i class="fa-solid fa-map-location-dot"></i>
-                                                <span>Buka Peta Live (Grab) ↗</span>
-                                            </a>
-                                            <a href="{{ route('zendo.courier.show', $activeDelivery->courier_token) }}" target="_blank"
-                                               class="py-1.5 px-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700 text-[10px] font-semibold flex items-center gap-1 transition"
-                                               title="Buka langsung sebagai Workspace Kurir">
-                                                <i class="fa-solid fa-motorcycle text-[10px] text-emerald-600"></i>
-                                                <span>Mode Kurir</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="rounded-xl border border-dashed border-gray-200 p-3 text-center text-xs text-gray-400">
-                                    Belum ada order aktif yang dibawa.
-                                </div>
-                            @endif
-                        </div>
                     </div>
 
                     {{-- Footer Kurir: Chat WA --}}
@@ -235,6 +193,116 @@
                     </div>
                 </div>
             @endforeach
+        </div>
+    </div>
+
+    {{-- SECTION: Tabel Perangkat yang Terhubung Menjadi Kurir (Bisa Reset) --}}
+    <div class="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gray-50/50">
+            <div>
+                <h3 class="text-base font-bold text-gray-900 flex items-center gap-2">
+                    <span class="w-7 h-7 rounded-lg bg-[#2B1F1A] text-amber-300 flex items-center justify-center text-xs shadow-xs">
+                        <i class="fa-solid fa-mobile-screen"></i>
+                    </span>
+                    <span>Tabel Perangkat Terhubung sebagai Kurir ({{ count($connectedDevices) }} Perangkat)</span>
+                </h3>
+                <p class="text-xs text-gray-500 mt-0.5">
+                    Daftar HP / browser kurir yang memegang akses permanen Mode Kurir. Admin dapat <strong>mereset perangkat</strong> untuk mengeluarkan kurir dari sistem sewaktu-waktu.
+                </p>
+            </div>
+            @if(count($connectedDevices) > 0)
+                <form method="POST" action="{{ route('admin.zendo.devices.resetAll') }}"
+                      onsubmit="return confirm('⚠️ PERINGATAN: Apakah Anda yakin ingin mereset dan mengeluarkan SEMUA perangkat kurir?\n\nSeluruh HP kurir akan langsung dikeluarkan dari Mode Kurir dan wajib memasukkan PIN baru untuk masuk kembali.');">
+                    @csrf
+                    <button type="submit"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-xs">
+                        <i class="fa-solid fa-power-off"></i>
+                        <span>Reset Semua Perangkat Kurir</span>
+                    </button>
+                </form>
+            @endif
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50/80 border-b border-gray-100 text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        <th class="py-3 px-4">Kurir Zendo</th>
+                        <th class="py-3 px-4">Perangkat & Browser</th>
+                        <th class="py-3 px-4">Alamat IP</th>
+                        <th class="py-3 px-4">Waktu Terhubung</th>
+                        <th class="py-3 px-4">Status & Sinyal Terakhir</th>
+                        <th class="py-3 px-4 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 text-xs">
+                    @forelse($connectedDevices as $dev)
+                        <tr class="hover:bg-gray-50/60 transition">
+                            <td class="py-3.5 px-4 align-middle">
+                                <div class="font-bold text-gray-900 flex items-center gap-1.5">
+                                    <span class="w-5 h-5 rounded-md bg-[#2B1F1A] text-amber-300 font-extrabold text-[10px] flex items-center justify-center">
+                                        <i class="fa-solid fa-user-check"></i>
+                                    </span>
+                                    <span>{{ $dev['courier_name'] ?? 'Kurir Zendo' }}</span>
+                                </div>
+                                <div class="inline-flex items-center gap-1 font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded mt-1">
+                                    📱 +{{ $dev['courier_phone'] ?? '-' }}
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 align-middle">
+                                <div class="font-semibold text-gray-800 flex items-center gap-1.5">
+                                    <i class="fa-solid {{ str_contains(strtolower($dev['device_name'] ?? ''), 'windows') || str_contains(strtolower($dev['device_name'] ?? ''), 'mac') ? 'fa-laptop' : 'fa-mobile-screen' }} text-gray-400"></i>
+                                    <span>{{ $dev['device_name'] ?? 'Perangkat Kurir' }}</span>
+                                </div>
+                                @if(!empty($dev['token_preview']))
+                                    <span class="text-[10px] text-gray-400 font-mono">Token: {{ $dev['token_preview'] }}</span>
+                                @endif
+                            </td>
+                            <td class="py-3.5 px-4 align-middle font-mono text-gray-600 text-[11px]">
+                                {{ $dev['ip_address'] ?? '-' }}
+                            </td>
+                            <td class="py-3.5 px-4 align-middle text-gray-600">
+                                <span class="font-semibold text-gray-800">{{ $dev['connected_at_formatted'] ?? '-' }}</span>
+                            </td>
+                            <td class="py-3.5 px-4 align-middle">
+                                @if($dev['is_online'] ?? false)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        🟢 Online (GPS Aktif)
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-gray-100 text-gray-700">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                                        💤 Terhubung (Standby)
+                                    </span>
+                                @endif
+                                <p class="text-[10px] text-gray-400 mt-0.5">{{ $dev['last_active_diff'] ?? '-' }}</p>
+                            </td>
+                            <td class="py-3.5 px-4 align-middle text-right">
+                                <form method="POST" action="{{ route('admin.zendo.devices.reset', $dev['id']) }}"
+                                      onsubmit="return confirm('Keluarkan perangkat {{ addslashes($dev['device_name'] ?? 'ini') }} dari Mode Kurir?\n\nKurir (+{{ $dev['courier_phone'] ?? '' }}) harus memasukkan PIN lagi jika ingin mengakses kembali.');">
+                                    @csrf
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs transition shadow-xs hover:border-rose-300">
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                        <span>Reset / Keluarkan</span>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="py-8 text-center text-gray-400 text-xs">
+                                <div class="w-10 h-10 rounded-2xl bg-gray-100 text-gray-400 flex items-center justify-center mx-auto mb-2 text-base">
+                                    <i class="fa-solid fa-mobile-screen"></i>
+                                </div>
+                                <p class="font-bold text-gray-600">Belum ada perangkat kurir yang terhubung</p>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Perangkat HP/browser kurir akan otomatis tercatat di sini begitu kurir memasukkan PIN pada link pesanan.</p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -373,6 +441,32 @@
 
         <form method="POST" action="{{ route('admin.zendo.couriers.update') }}" class="p-6 space-y-5">
             @csrf
+
+            {{-- Pengaturan PIN Kurir Zendo (Akses Permanen) --}}
+            <div class="p-4 rounded-2xl border-2 border-amber-300 bg-amber-50/70 shadow-xs">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <label for="zendoCourierPinInput" class="text-xs font-extrabold text-amber-950 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500 text-stone-950 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-key"></i>
+                            </span>
+                            <span>PIN Akses Mode Kurir (Bisa Diatur Admin)</span>
+                        </label>
+                        <p class="text-[11px] text-amber-900/80 leading-relaxed max-w-xl">
+                            Kurir memasukkan PIN ini <strong>hanya 1 kali</strong> di HP-nya saat pertama kali membuka link pesanan. Setelah PIN diverifikasi, HP kurir tersebut <strong>otomatis terakses selamanya</strong> dan tidak akan pernah meminta PIN lagi untuk order-order berikutnya.
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <div class="text-right sm:text-left">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-900 mb-1">PIN Kurir (Default: 1234)</span>
+                            <input type="text" name="zendo_courier_pin" id="zendoCourierPinInput"
+                                   value="{{ old('zendo_courier_pin', $settings['zendo_courier_pin'] ?? '1234') }}"
+                                   maxlength="10" placeholder="1234" required
+                                   class="w-32 px-3 py-2 rounded-xl border-2 border-amber-400 bg-white text-center font-mono font-black text-base text-amber-950 focus:border-amber-600 focus:outline-none tracking-widest shadow-xs">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
                 <div>

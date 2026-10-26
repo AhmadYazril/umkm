@@ -56,6 +56,7 @@ class SettingController extends Controller
         $txSettings = $nucomu->getTransactionSettings();
         $couriers = $nucomu->getCouriersWithLiveTracking();
         $nextDispatchPreview = $nucomu->selectAutoDispatchedCourier();
+        $connectedDevices = $nucomu->getConnectedDevicesList();
 
         // Filters
         $filterPhone = trim((string) $request->query('courier_phone', ''));
@@ -87,6 +88,7 @@ class SettingController extends Controller
             'settings',
             'txSettings',
             'couriers',
+            'connectedDevices',
             'nextDispatchPreview',
             'deliveries',
             'filterPhone',
@@ -101,6 +103,7 @@ class SettingController extends Controller
     public function updateZendoCouriers(Request $request)
     {
         $request->validate([
+            'zendo_courier_pin' => 'nullable|string|max:20',
             'zendo_courier_count' => 'required|integer|min:1|max:50',
             'zendo_couriers' => 'required|array|min:1',
             'zendo_couriers.*.name' => 'nullable|string|max:100',
@@ -109,6 +112,10 @@ class SettingController extends Controller
         ], [
             'zendo_couriers.*.phone.required' => 'Nomor WhatsApp setiap kurir Zendo wajib diisi.',
         ]);
+
+        if ($request->filled('zendo_courier_pin')) {
+            Setting::set('zendo_courier_pin', trim((string) $request->input('zendo_courier_pin')));
+        }
 
         $submittedCouriers = array_values((array) $request->input('zendo_couriers', []));
         $courierCount = max(1, min(50, (int) $request->input('zendo_courier_count', count($submittedCouriers) ?: 1)));
@@ -217,6 +224,90 @@ class SettingController extends Controller
     }
 
     /**
+     * Reset / disconnect a specific courier device so it exits Courier Mode.
+     */
+    public function resetZendoDevice(Request $request, string $id)
+    {
+        $nucomu = app(NucomuController::class);
+        $raw = Setting::get('zendo_connected_devices');
+        $devices = $raw ? (json_decode((string) $raw, true) ?: []) : [];
+
+        $target = null;
+        $remaining = [];
+        foreach ($devices as $dev) {
+            if (($dev['id'] ?? '') === $id) {
+                $target = $dev;
+            } else {
+                $remaining[] = $dev;
+            }
+        }
+
+        // Check fallback generated from registered couriers if not yet in JSON
+        if (! $target) {
+            $couriers = $nucomu->getTransactionSettings()['zendo_couriers'] ?? [];
+            foreach ($couriers as $courier) {
+                $phone = (string) ($courier['clean_phone'] ?? '');
+                if ($phone !== '' && 'dev_'.substr(md5($phone), 0, 12) === $id) {
+                    $target = [
+                        'id' => $id,
+                        'courier_phone' => $phone,
+                        'courier_name' => $courier['name'] ?? 'Kurir Zendo',
+                        'token_hash' => (string) Setting::get("zendo_device_{$phone}", ''),
+                        'device_name' => 'Perangkat Kurir',
+                    ];
+                    break;
+                }
+            }
+        }
+
+        if ($target) {
+            $phone = (string) ($target['courier_phone'] ?? '');
+            $tokenHash = (string) ($target['token_hash'] ?? '');
+
+            if ($phone !== '') {
+                Setting::forget("zendo_device_{$phone}");
+                Setting::forget("zendo_connected_at_{$phone}");
+                Setting::set("zendo_revoked_phone_{$phone}", now()->toDateTimeString());
+            }
+            if ($tokenHash !== '') {
+                Setting::set("zendo_revoked_{$tokenHash}", now()->toDateTimeString());
+            }
+
+            Setting::set('zendo_connected_devices', json_encode(array_values($remaining), JSON_UNESCAPED_UNICODE));
+
+            $name = $target['courier_name'] ?? 'Kurir';
+            $deviceName = $target['device_name'] ?? 'Perangkat';
+
+            return back()->with('success', "Perangkat {$deviceName} ({$name}) berhasil direset. Akses kurir telah dicabut dan dikeluarkan dari Mode Kurir.");
+        }
+
+        return back()->with('error', 'Perangkat kurir tidak ditemukan atau sudah direset sebelumnya.');
+    }
+
+    /**
+     * Reset ALL connected courier devices at once.
+     */
+    public function resetAllZendoDevices(Request $request)
+    {
+        $nucomu = app(NucomuController::class);
+        $couriers = $nucomu->getTransactionSettings()['zendo_couriers'] ?? [];
+
+        foreach ($couriers as $courier) {
+            $phone = (string) ($courier['clean_phone'] ?? '');
+            if ($phone !== '') {
+                Setting::forget("zendo_device_{$phone}");
+                Setting::forget("zendo_connected_at_{$phone}");
+            }
+        }
+
+        // Set session epoch to invalidate all existing cookies/tokens issued before now
+        Setting::set('zendo_courier_session_epoch', (string) now()->timestamp);
+        Setting::set('zendo_connected_devices', json_encode([], JSON_UNESCAPED_UNICODE));
+
+        return back()->with('success', 'Semua perangkat kurir berhasil direset. Seluruh kurir telah dikeluarkan dari Mode Kurir dan wajib memasukkan PIN baru.');
+    }
+
+    /**
      * Update a specific Zendo order's delivery stage (delivering -> almost_done -> completed)
      * and synchronize the assigned courier's availability status.
      */
@@ -280,6 +371,7 @@ class SettingController extends Controller
     public function updateZendoTariff(Request $request)
     {
         $request->validate([
+            'zendo_courier_pin' => 'nullable|string|max:20',
             'zendo_send_mode' => 'nullable|in:auto_direct,wa_redirect',
             'zendo_public_url' => 'nullable|string|max:255',
             'zendo_wa_api_url' => 'nullable|string|max:255',
@@ -295,6 +387,7 @@ class SettingController extends Controller
         ]);
 
         $keys = [
+            'zendo_courier_pin',
             'zendo_send_mode',
             'zendo_public_url',
             'zendo_wa_api_url',
@@ -337,6 +430,7 @@ class SettingController extends Controller
     {
         $request->validate([
             'transaction_mode' => 'nullable|in:kasir,zendo,both',
+            'zendo_courier_pin' => 'nullable|string|max:20',
             'zendo_whatsapp' => 'nullable|string|max:30',
             'zendo_courier_count' => 'nullable|integer|min:1|max:50',
             'zendo_couriers' => 'nullable|array',
@@ -361,7 +455,7 @@ class SettingController extends Controller
             'cafe_name', 'cafe_tagline', 'cafe_subtitle', 'cafe_story', 'cafe_history',
             'cafe_concept', 'cafe_address', 'cafe_maps_url', 'cafe_whatsapp',
             'cafe_email', 'cafe_instagram', 'cafe_tiktok',
-            'transaction_mode', 'zendo_whatsapp', 'zendo_send_mode', 'zendo_public_url',
+            'transaction_mode', 'zendo_courier_pin', 'zendo_whatsapp', 'zendo_send_mode', 'zendo_public_url',
             'zendo_wa_api_url', 'zendo_wa_api_token',
             'cafe_lat', 'cafe_lng',
             'zendo_tier_0_3', 'zendo_tier_3_4', 'zendo_tier_4_5',

@@ -38,13 +38,17 @@ class ZendoTrackingController extends Controller
 
         $txSettings = $this->nucomu->getTransactionSettings();
 
-        // Mode kurir otomatis aktif jika URL memiliki kunci kurir (?k=...) atau dibuka via token kurir
+        // Mode kurir aktif jika:
+        // 1. URL memiliki kunci kurir (?k=...) atau dibuka via token kurir
+        // 2. Atau perangkat ini telah memverifikasi PIN kurir dan tidak sedang memilih tampilan pelanggan (?view=customer)
         $isCourier = false;
         if ($request->filled('k') && hash_equals($delivery->courier_token, (string) $request->query('k'))) {
             $this->bindCourierDevice($delivery);
             $isCourier = true;
         } elseif (hash_equals($delivery->courier_token, $trackingToken)) {
             $this->bindCourierDevice($delivery);
+            $isCourier = true;
+        } elseif ($this->isVerifiedCourierDevice($request, $delivery) && $request->query('view') !== 'customer') {
             $isCourier = true;
         }
 
@@ -55,6 +59,76 @@ class ZendoTrackingController extends Controller
             'cafeLng' => $txSettings['cafe_lng'],
             'trackingConfig' => config('nucomu.contact.zendo_tracking'),
             'initialPayload' => $this->buildTrackingPayload($delivery, $isCourier),
+        ]);
+    }
+
+    /**
+     * Verify the courier 4-digit PIN to unlock Courier Mode permanently on this device.
+     */
+    public function verifyPin(Request $request, string $trackingToken): JsonResponse
+    {
+        $delivery = ZendoDelivery::where('tracking_token', $trackingToken)
+            ->orWhere('courier_token', $trackingToken)
+            ->firstOrFail();
+
+        // 1. Check if reconnecting via a previously stored device token
+        $savedDeviceToken = (string) $request->input('device_token', '');
+        if ($savedDeviceToken !== '') {
+            $tokenHash = hash('sha256', $savedDeviceToken);
+            if (Setting::get("zendo_revoked_{$tokenHash}") !== null) {
+                return response()->json([
+                    'success' => false,
+                    'revoked' => true,
+                    'message' => 'Akses kurir pada perangkat ini telah direset/dicabut oleh admin.',
+                ], 403);
+            }
+
+            $pinHash = (string) Setting::get("zendo_device_pin_{$savedDeviceToken}", '');
+            if ($pinHash !== '' && hash_equals($pinHash, $tokenHash)) {
+                $this->bindCourierDevice($delivery);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Mode Kurir aktif secara permanen.',
+                    'device_token' => $savedDeviceToken,
+                    'redirect_url' => route('zendo.track', [
+                        'token' => $delivery->tracking_token,
+                        'k' => $delivery->courier_token,
+                    ]),
+                ]);
+            }
+        }
+
+        // 2. Otherwise verify via 4-digit Courier PIN
+        $validated = $request->validate([
+            'pin' => ['required_without:device_token', 'string', 'max:20'],
+        ]);
+
+        $configuredPin = (string) Setting::get('zendo_courier_pin', config('nucomu.contact.zendo_tracking.courier_pin', '1234'));
+
+        if (! hash_equals($configuredPin, (string) $validated['pin'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'PIN Kurir salah. Silakan coba lagi.',
+            ], 422);
+        }
+
+        // Bind this device as the courier and grant permanent lifetime access
+        $deviceToken = $this->bindCourierDevice($delivery);
+        $tokenHash = hash('sha256', $deviceToken);
+        Setting::forget("zendo_revoked_phone_{$delivery->courier_phone}");
+        Setting::forget("zendo_revoked_{$tokenHash}");
+        Setting::set("zendo_device_pin_{$deviceToken}", $tokenHash);
+        Setting::set("zendo_device_pin_at_{$deviceToken}", now()->toDateTimeString());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mode Kurir berhasil diaktifkan secara permanen.',
+            'device_token' => $deviceToken,
+            'redirect_url' => route('zendo.track', [
+                'token' => $delivery->tracking_token,
+                'k' => $delivery->courier_token,
+            ]),
         ]);
     }
 
@@ -90,9 +164,24 @@ class ZendoTrackingController extends Controller
      */
     public function unbindCourier(Request $request): RedirectResponse
     {
+        $cookieValue = (string) ($request->cookie(self::DEVICE_COOKIE) ?: $request->header('X-Courier-Device', ''));
+        if ($cookieValue !== '' && str_contains($cookieValue, '|')) {
+            [$phone, $devToken] = explode('|', $cookieValue, 2);
+            $tokenHash = hash('sha256', $devToken);
+
+            Setting::forget("zendo_device_{$phone}");
+            Setting::forget("zendo_connected_at_{$phone}");
+            Setting::set("zendo_revoked_{$tokenHash}", now()->toDateTimeString());
+
+            $raw = Setting::get('zendo_connected_devices');
+            $devices = $raw ? (json_decode((string) $raw, true) ?: []) : [];
+            $filtered = array_filter($devices, fn ($d) => ($d['token_hash'] ?? '') !== $tokenHash && ($d['courier_phone'] ?? '') !== $phone);
+            Setting::set('zendo_connected_devices', json_encode(array_values($filtered), JSON_UNESCAPED_UNICODE));
+        }
+
         Cookie::queue(Cookie::forget(self::DEVICE_COOKIE));
 
-        return back()->with('info', 'Perangkat berhasil dilepas dari Mode Kurir.');
+        return back()->with('info', 'Perangkat berhasil dikeluarkan dari Mode Kurir.');
     }
 
     /**
@@ -197,7 +286,13 @@ class ZendoTrackingController extends Controller
             ->firstOrFail();
 
         if (! $this->isVerifiedCourierDevice($request, $delivery)) {
-            return response()->json(['accepted' => false, 'message' => 'Perangkat belum terverifikasi sebagai nomor kurir.'], 403);
+            Cookie::queue(Cookie::forget(self::DEVICE_COOKIE));
+
+            return response()->json([
+                'accepted' => false,
+                'revoked' => true,
+                'message' => 'Perangkat belum terverifikasi atau telah direset oleh admin.',
+            ], 403);
         }
 
         $validated = $request->validate([
@@ -519,20 +614,28 @@ class ZendoTrackingController extends Controller
 
     /**
      * Bind this device to the assigned courier's phone number and record verified timestamp.
-     * Must only be called after the courier's WhatsApp number (and OTP, when enabled) has been verified.
+     * Grants permanent device binding (10 years / 3650 days).
      */
     public function bindCourierDevice(ZendoDelivery $delivery): string
     {
         $delivery->update(['courier_verified_at' => now()]);
 
-        $cookieDays = (int) config('nucomu.contact.zendo_tracking.device_cookie_days', 30);
+        $cookieDays = (int) config('nucomu.contact.zendo_tracking.device_cookie_days', 3650);
         $cookieValue = (string) (request()->cookie(self::DEVICE_COOKIE) ?: request()->header('X-Courier-Device', ''));
         if ($cookieValue !== '' && str_contains($cookieValue, '|')) {
             [$phone, $existingToken] = explode('|', $cookieValue, 2);
-            if ($existingToken !== '' && hash_equals((string) $delivery->courier_phone, $phone)) {
+            if ($existingToken !== '') {
                 $storedHash = (string) Setting::get("zendo_device_{$phone}", '');
-                if ($storedHash !== '' && hash_equals($storedHash, hash('sha256', $existingToken))) {
+                $pinHash = (string) Setting::get("zendo_device_pin_{$existingToken}", '');
+
+                if (($storedHash !== '' && hash_equals($storedHash, hash('sha256', $existingToken)))
+                    || ($pinHash !== '' && hash_equals($pinHash, hash('sha256', $existingToken)))) {
+                    Setting::set("zendo_device_{$delivery->courier_phone}", hash('sha256', $existingToken));
+                    Setting::set("zendo_connected_at_{$delivery->courier_phone}", now()->toDateTimeString());
+
                     Cookie::queue(self::DEVICE_COOKIE, $delivery->courier_phone.'|'.$existingToken, $cookieDays * 24 * 60);
+
+                    $this->nucomu->recordConnectedDevice($delivery, $existingToken);
 
                     return $existingToken;
                 }
@@ -544,6 +647,8 @@ class ZendoTrackingController extends Controller
         Setting::set("zendo_connected_at_{$delivery->courier_phone}", now()->toDateTimeString());
 
         Cookie::queue(self::DEVICE_COOKIE, $delivery->courier_phone.'|'.$deviceToken, $cookieDays * 24 * 60);
+
+        $this->nucomu->recordConnectedDevice($delivery, $deviceToken);
 
         return $deviceToken;
     }
@@ -574,13 +679,61 @@ class ZendoTrackingController extends Controller
         }
 
         [$phone, $deviceToken] = explode('|', $cookieValue, 2);
-        if ($deviceToken === '' || ! hash_equals((string) $delivery->courier_phone, $phone)) {
+        if ($deviceToken === '') {
             return false;
         }
 
-        $storedHash = (string) Setting::get("zendo_device_{$phone}", '');
+        $tokenHash = hash('sha256', $deviceToken);
 
-        return $storedHash !== '' && hash_equals($storedHash, hash('sha256', $deviceToken));
+        // Check if explicitly revoked by admin or unbind
+        if (Setting::get("zendo_revoked_{$tokenHash}") !== null) {
+            return false;
+        }
+        if ($phone !== '' && Setting::get("zendo_revoked_phone_{$phone}") !== null) {
+            return false;
+        }
+
+        // Check global reset epoch
+        $epoch = (int) Setting::get('zendo_courier_session_epoch', 0);
+        if ($epoch > 0) {
+            $pinCreatedAt = Setting::get("zendo_device_pin_at_{$deviceToken}");
+            $connectedAt = Setting::get("zendo_connected_at_{$phone}");
+            $deviceTime = max(
+                $pinCreatedAt ? strtotime($pinCreatedAt) : 0,
+                $connectedAt ? strtotime($connectedAt) : 0
+            );
+            if ($deviceTime > 0 && $deviceTime < $epoch) {
+                return false;
+            }
+        }
+
+        // Direct phone match with stored device hash
+        if (hash_equals((string) $delivery->courier_phone, $phone)) {
+            $storedHash = (string) Setting::get("zendo_device_{$phone}", '');
+            if ($storedHash !== '' && hash_equals($storedHash, $tokenHash)) {
+                return true;
+            }
+        }
+
+        // Permanent access across all deliveries: device was verified via courier PIN
+        $pinHash = (string) Setting::get("zendo_device_pin_{$deviceToken}", '');
+        if ($pinHash !== '' && hash_equals($pinHash, $tokenHash)) {
+            return true;
+        }
+
+        // Match any registered courier phone on the system
+        $couriers = $this->nucomu->getTransactionSettings()['zendo_couriers'] ?? [];
+        foreach ($couriers as $courier) {
+            $cPhone = (string) ($courier['clean_phone'] ?? '');
+            if ($cPhone !== '') {
+                $storedHash = (string) Setting::get("zendo_device_{$cPhone}", '');
+                if ($storedHash !== '' && hash_equals($storedHash, $tokenHash)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     protected function isGatewayEnabled(array $txSettings): bool
