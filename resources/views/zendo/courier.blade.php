@@ -148,6 +148,16 @@
                     </p>
                     <p>Setelah nomor terverifikasi, perangkat ini akan terikat ke sistem sebagai {{ $delivery->courier_name }} dan siap menyiarkan GPS secara realtime.</p>
                 </div>
+
+                {{-- Opsi untuk Pelanggan / Bukan Kurir --}}
+                <div class="pt-2 text-center border-t border-white/10 space-y-2">
+                    <p class="text-[11px] text-gray-400">Bukan kurir yang ditugaskan untuk pesanan ini?</p>
+                    <a href="{{ route('zendo.track', $delivery->tracking_token) }}"
+                       class="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs transition border border-white/10">
+                        <i class="fa-solid fa-map-location-dot text-emerald-400"></i>
+                        <span>Lihat Posisi Kurir di Peta (Mode Pelanggan)</span>
+                    </a>
+                </div>
             </div>
 
         @else
@@ -249,38 +259,14 @@
                             <span id="btnCompleteText">Dekati Tujuan untuk Selesai (≤ 200m)</span>
                         </button>
                     </div>
-
-                    {{-- Toolbar Tes Simulasi GPS (Untuk Laptop / Uji Coba Cepat Tanpa Hardware Satelit) --}}
-                    <div class="bg-black/50 border border-amber-500/30 rounded-2xl p-2.5 space-y-1.5 text-[11px] mt-2">
-                        <div class="flex items-center justify-between text-gray-300">
-                            <span class="font-bold flex items-center gap-1.5 text-amber-300 text-[11px]">
-                                <i class="fa-solid fa-flask text-amber-400"></i> Tes Simulasi (Uji Coba di Laptop):
-                            </span>
-                            <span class="text-[10px] text-gray-400">Pilih titik untuk tes tombol</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-1.5">
-                            <button type="button" onclick="simulateGpsPoint('cafe')"
-                                    class="py-1.5 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold border border-amber-500/30 transition text-[10px] flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-mug-hot text-[10px]"></i> Di Kafe (Ambil)
-                            </button>
-                            <button type="button" onclick="simulateGpsPoint('midway')"
-                                    class="py-1.5 px-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 font-bold border border-blue-500/30 transition text-[10px] flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-motorcycle text-[10px]"></i> Di Jalan
-                            </button>
-                            <button type="button" onclick="simulateGpsPoint('dest')"
-                                    class="py-1.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold border border-emerald-500/30 transition text-[10px] flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-house-chimney text-[10px]"></i> Di Tujuan (Selesai)
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             {{-- Script GPS Engine & Anti Fake GPS --}}
             <script>
                 const courierToken = '{{ $delivery->courier_token }}';
-                const locationEndpoint = '{{ route("zendo.courier.location", $delivery->courier_token) }}';
-                const statusEndpoint = '{{ route("zendo.courier.status", $delivery->courier_token) }}';
+                const locationEndpoint = '{{ route("zendo.courier.location", $delivery->courier_token, false) }}';
+                const statusEndpoint = '{{ route("zendo.courier.status", $delivery->courier_token, false) }}';
                 const cafeCoords = { lat: {{ $cafeLat }}, lng: {{ $cafeLng }} };
                 const destCoords = {
                     lat: {{ $delivery->destination_lat ?? 'null' }},
@@ -510,42 +496,11 @@
                     }
                 }
 
-                // Quick simulation for testing in PC / laptop browser
-                function simulateGpsPoint(mode) {
-                    let lat, lng;
-                    if (mode === 'cafe') {
-                        lat = cafeCoords.lat + 0.00015;
-                        lng = cafeCoords.lng + 0.00015;
-                    } else if (mode === 'dest') {
-                        lat = (destCoords.lat || cafeCoords.lat) + 0.0002;
-                        lng = (destCoords.lng || cafeCoords.lng) + 0.0002;
-                    } else {
-                        const destLat = destCoords.lat || cafeCoords.lat;
-                        const destLng = destCoords.lng || cafeCoords.lng;
-                        lat = (cafeCoords.lat + destLat) / 2;
-                        lng = (cafeCoords.lng + destLng) / 2;
-                    }
-
-                    const simulatedPos = {
-                        coords: {
-                            latitude: lat,
-                            longitude: lng,
-                            accuracy: 8,
-                            speed: 6.5,
-                            heading: 45,
-                            altitude: 85
-                        },
-                        timestamp: Date.now()
-                    };
-
-                    sendGpsReading(simulatedPos);
-                }
-
                 // Start HTML5 High Accuracy Geolocation Watcher
                 function startGpsStreaming() {
                     if (!navigator.geolocation) {
                         const badge = document.getElementById('gpsAccuracyBadge');
-                        if (badge) badge.innerText = 'GPS: Gunakan tes di bawah';
+                        if (badge) badge.innerText = 'GPS: Tidak didukung browser';
                         return;
                     }
 
@@ -555,7 +510,7 @@
                         (err) => {
                             console.warn('GPS initial err:', err.message);
                             const badge = document.getElementById('gpsAccuracyBadge');
-                            if (badge) badge.innerText = 'GPS: Gunakan tes di bawah';
+                            if (badge) badge.innerText = err.code === 1 ? 'GPS: Izin lokasi ditolak' : 'GPS: Mencari sinyal...';
                         },
                         { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
                     );

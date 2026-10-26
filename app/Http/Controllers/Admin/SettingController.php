@@ -281,6 +281,7 @@ class SettingController extends Controller
     {
         $request->validate([
             'zendo_send_mode' => 'nullable|in:auto_direct,wa_redirect',
+            'zendo_public_url' => 'nullable|string|max:255',
             'zendo_wa_api_url' => 'nullable|string|max:255',
             'zendo_wa_api_token' => 'nullable|string|max:255',
             'cafe_lat' => 'nullable|numeric',
@@ -295,6 +296,7 @@ class SettingController extends Controller
 
         $keys = [
             'zendo_send_mode',
+            'zendo_public_url',
             'zendo_wa_api_url',
             'zendo_wa_api_token',
             'cafe_lat',
@@ -341,6 +343,7 @@ class SettingController extends Controller
             'zendo_couriers.*.name' => 'nullable|string|max:100',
             'zendo_couriers.*.phone' => 'nullable|string|max:30',
             'zendo_send_mode' => 'nullable|in:auto_direct,wa_redirect',
+            'zendo_public_url' => 'nullable|string|max:255',
             'zendo_wa_api_url' => 'nullable|string|max:255',
             'zendo_wa_api_token' => 'nullable|string|max:255',
             'cafe_lat' => 'nullable|numeric',
@@ -358,7 +361,7 @@ class SettingController extends Controller
             'cafe_name', 'cafe_tagline', 'cafe_subtitle', 'cafe_story', 'cafe_history',
             'cafe_concept', 'cafe_address', 'cafe_maps_url', 'cafe_whatsapp',
             'cafe_email', 'cafe_instagram', 'cafe_tiktok',
-            'transaction_mode', 'zendo_whatsapp', 'zendo_send_mode',
+            'transaction_mode', 'zendo_whatsapp', 'zendo_send_mode', 'zendo_public_url',
             'zendo_wa_api_url', 'zendo_wa_api_token',
             'cafe_lat', 'cafe_lng',
             'zendo_tier_0_3', 'zendo_tier_3_4', 'zendo_tier_4_5',

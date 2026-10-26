@@ -572,11 +572,17 @@
                 </p>
             </div>
 
-            <button type="button" onclick="closeZendoSuccessModal()"
-                class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:opacity-95 transition-all">
-                <i class="fa-solid fa-check"></i>
-                <span>Selesai</span>
-            </button>
+            <div class="space-y-2">
+                <a id="modalTrackingBtn" href="#"
+                    class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:opacity-95 transition-all">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Lacak Posisi Kurir di Peta</span>
+                </a>
+                <button type="button" onclick="closeZendoSuccessModal()"
+                    class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all">
+                    Tutup
+                </button>
+            </div>
         </div>
     </div>
 
@@ -751,6 +757,9 @@
             });
 
             updateDistanceAndTariffUI(customerLat, customerLng);
+
+            // Langsung deteksi posisi GPS asli perangkat pemesan saat pertama kali
+            autoDetectCustomerGpsLocation();
         }
 
         function setCustomerMapPin(lat, lng, labelText = null, reverseGeocode = false) {
@@ -930,24 +939,53 @@
             });
         }
 
+        let hasAutoDetectedGps = false;
+
+        function autoDetectCustomerGpsLocation() {
+            if (hasAutoDetectedGps || !navigator.geolocation) return;
+
+            const gpsBtn = document.getElementById('gpsBtn');
+            if (gpsBtn) {
+                gpsBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-emerald-400"></i> Mendeteksi Lokasi...';
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    hasAutoDetectedGps = true;
+                    if (gpsBtn) {
+                        gpsBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs text-emerald-400"></i> GPS Saya';
+                    }
+                    setCustomerMapPin(pos.coords.latitude, pos.coords.longitude, null, true);
+                },
+                (err) => {
+                    console.log('GPS otomatis belum diizinkan atau tidak aktif:', err.message);
+                    if (gpsBtn) {
+                        gpsBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> GPS Saya';
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+            );
+        }
+
         function useMyGpsLocation() {
             if (!navigator.geolocation) {
                 alert('Browser Anda tidak mendukung fitur GPS.');
                 return;
             }
             const gpsBtn = document.getElementById('gpsBtn');
-            if (gpsBtn) gpsBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Mencari...';
+            if (gpsBtn) gpsBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-emerald-400"></i> Mencari...';
 
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
-                    if (gpsBtn) gpsBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> GPS Saya';
+                    hasAutoDetectedGps = true;
+                    if (gpsBtn) gpsBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs text-emerald-400"></i> GPS Saya';
                     setCustomerMapPin(pos.coords.latitude, pos.coords.longitude, null, true);
                 },
-                () => {
+                (err) => {
                     if (gpsBtn) gpsBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> GPS Saya';
-                    alert('Tidak dapat mengakses GPS. Silakan cari nama daerah atau klik pada peta.');
+                    alert('Tidak dapat mengakses GPS (' + (err.message || 'Izin ditolak') + '). Silakan geser pin hijau pada peta ke lokasi rumah Anda.');
                 },
-                { enableHighAccuracy: true, timeout: 7000 }
+                { enableHighAccuracy: true, timeout: 8000 }
             );
         }
 
@@ -1264,7 +1302,7 @@
                 ? '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim ke WhatsApp ' + selectedCourierName + '...'
                 : '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Membuat Slip Pesanan...';
 
-            fetch('{{ route("nucomu.order.store") }}', {
+            fetch('{{ route("nucomu.order.store", [], false) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1285,7 +1323,13 @@
                     total: total
                 })
             })
-            .then(r => r.json())
+            .then(async r => {
+                const data = await r.json().catch(() => null);
+                if (!r.ok || !data) {
+                    throw new Error(data && data.message ? data.message : 'Gagal mengirim pesanan (HTTP ' + r.status + ')');
+                }
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     if (data.process_method === 'zendo') {
@@ -1307,8 +1351,8 @@
                     resetSubmitButton();
                 }
             })
-            .catch(() => {
-                alert('Terjadi kesalahan koneksi.');
+            .catch(err => {
+                alert(err.message || 'Terjadi kesalahan koneksi.');
                 resetSubmitButton();
             });
         }
@@ -1319,12 +1363,19 @@
 
             const courierNameEl = document.getElementById('modalCourierName');
             const contactEl = document.getElementById('modalZendoContact');
+            const trackingBtn = document.getElementById('modalTrackingBtn');
 
             if (courierNameEl) {
                 courierNameEl.innerText = data.courier_name || selectedCourierName || 'Kurir Zendo';
             }
             if (contactEl) {
                 contactEl.innerText = '+' + (data.zendo_contact || selectedCourierPhone || '{{ $zendoWhatsapp }}');
+            }
+            if (trackingBtn && data.tracking_url) {
+                trackingBtn.href = data.tracking_url;
+                trackingBtn.classList.remove('hidden');
+            } else if (trackingBtn) {
+                trackingBtn.classList.add('hidden');
             }
 
             modal.classList.remove('hidden');

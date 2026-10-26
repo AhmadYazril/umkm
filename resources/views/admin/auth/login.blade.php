@@ -33,6 +33,12 @@
             <p class="text-zinc-400 text-xs mt-1">Masuk ke Panel Pengelolaan Nucomu Cafe</p>
         </div>
 
+        @if(session('session_expired') || session('error'))
+            <div class="bg-amber-950/80 border border-amber-800 text-amber-300 p-3.5 rounded-2xl text-xs mb-6 font-semibold text-center">
+                {{ session('session_expired') ?? session('error') }}
+            </div>
+        @endif
+
         @if($errors->any())
             <div class="bg-red-950/80 border border-red-800 text-red-300 p-3.5 rounded-2xl text-xs mb-6 font-semibold text-center">
                 {{ $errors->first() }}

@@ -205,7 +205,7 @@
                                                 <i class="fa-solid fa-map-location-dot"></i>
                                                 <span>Buka Peta Live (Grab) ↗</span>
                                             </a>
-                                            <a href="{{ route('zendo.track', ['token' => $activeDelivery->tracking_token, 'k' => $activeDelivery->courier_token]) }}" target="_blank"
+                                            <a href="{{ route('zendo.courier.show', $activeDelivery->courier_token) }}" target="_blank"
                                                class="py-1.5 px-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700 text-[10px] font-semibold flex items-center gap-1 transition"
                                                title="Buka langsung sebagai Workspace Kurir">
                                                 <i class="fa-solid fa-motorcycle text-[10px] text-emerald-600"></i>
@@ -330,7 +330,7 @@
                                         <i class="fa-solid fa-map-location-dot"></i>
                                         <span>Buka Peta Live ↗</span>
                                     </a>
-                                    <a href="{{ route('zendo.track', ['token' => $deliv->tracking_token, 'k' => $deliv->courier_token]) }}" target="_blank"
+                                    <a href="{{ route('zendo.courier.show', $deliv->courier_token) }}" target="_blank"
                                        class="text-[10px] text-gray-500 hover:text-emerald-700 font-semibold"
                                        title="Buka langsung sebagai Workspace Kurir">
                                         <i class="fa-solid fa-motorcycle text-[10px] text-emerald-600 mr-0.5"></i> Buka Mode Kurir
@@ -512,6 +512,17 @@
                     <input type="password" name="zendo_wa_api_token" value="{{ $txSettings['zendo_wa_api_token'] ?? '' }}"
                            placeholder="Isi token Fonnte jika ada"
                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-[11px] font-semibold text-gray-600 mb-1">
+                        Domain / URL Publik Aplikasi (Agar Link WhatsApp Otomatis Bisa Diklik)
+                    </label>
+                    <input type="text" name="zendo_public_url" value="{{ $txSettings['zendo_public_url'] ?? '' }}"
+                           placeholder="Contoh: https://xxx.ngrok-free.app atau https://nucomucafe.com (Kosongkan jika pakai default)"
+                           class="w-full px-3 py-2 rounded-lg border border-gray-200 text-xs">
+                    <p class="text-[10px] text-gray-500 mt-1 leading-relaxed">
+                        <i class="fa-solid fa-circle-info text-blue-500"></i> <strong>Penting:</strong> WhatsApp tidak mengizinkan klik langsung pada tautan yang menggunakan alamat IP angka mentah (seperti <code>192.168.x.x</code>). Jika Anda menggunakan Ngrok, Cloudflare Tunnel, atau domain website, masukkan alamatnya di sini agar link di WhatsApp berwarna hijau dan bisa langsung diklik kurir.
+                    </p>
                 </div>
             </div>
 

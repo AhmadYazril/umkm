@@ -43,6 +43,15 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
                             {{ $delivery->courier_name }} ({{ $delivery->courier_phone }})
                         </span>
+                        <a href="{{ route('zendo.track', $delivery->tracking_token) }}" title="Lihat tampilan dari sisi pelanggan" class="px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/10 text-[9px] font-bold transition">
+                            <i class="fa-solid fa-eye"></i> Tampilan Pelanggan
+                        </a>
+                        <form method="POST" action="{{ route('zendo.courier.unbind') }}" class="inline ml-1" onsubmit="return confirm('Keluar dari Mode Kurir pada perangkat ini?')">
+                            @csrf
+                            <button type="submit" title="Lepas perangkat ini dari Mode Kurir" class="px-2 py-0.5 rounded-md bg-zinc-800/80 hover:bg-rose-950 text-gray-400 hover:text-rose-300 border border-white/10 text-[9px] font-bold transition">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar
+                            </button>
+                        </form>
                     @else
                         <span class="text-xs font-black tracking-wider uppercase text-amber-400">Nucomu Cafe x Zendo</span>
                         <span id="liveBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
@@ -55,29 +64,22 @@
         </div>
 
         <div class="flex items-center gap-2 shrink-0">
-            {{-- Role Switcher Toggle --}}
-            @if($isCourier)
-                <a href="{{ route('zendo.track', ['token' => $delivery->tracking_token, 'view' => 'customer']) }}"
-                   class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-gray-200 text-[11px] font-bold flex items-center gap-1.5 transition"
-                   title="Lihat sebagai Tampilan Pelanggan">
-                    <i class="fa-solid fa-eye text-amber-400"></i>
-                    <span class="hidden sm:inline">Tampilan Pelanggan</span>
-                </a>
-            @else
-                <a href="{{ route('zendo.track', ['token' => $delivery->tracking_token, 'k' => $delivery->courier_token]) }}"
-                   class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold flex items-center gap-1.5 transition"
-                   title="Buka Mode Kurir (Tugas Pengantaran)">
-                    <i class="fa-solid fa-motorcycle"></i>
-                    <span>Mode Kurir</span>
-                </a>
-            @endif
-
             <span id="statusHeaderBadge" class="inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider
                 {{ $delivery->status === 'completed' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : ($delivery->status === 'almost_done' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-blue-500/20 text-blue-300 border border-blue-500/40') }}">
                 {{ $delivery->status_label }}
             </span>
         </div>
     </header>
+
+    @if(session('info'))
+        <div class="bg-blue-500/20 border-b border-blue-500/30 text-blue-200 px-4 py-2.5 text-xs flex items-center justify-between gap-3 shrink-0 z-20">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-blue-400"></i>
+                <span>{{ session('info') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-blue-300 hover:text-white">&times;</button>
+        </div>
+    @endif
 
     {{-- Main Viewport: Leaflet Map + Floating Cards --}}
     <div class="relative flex-1 w-full overflow-hidden">
@@ -162,30 +164,6 @@
                                 <p class="text-[10px] text-gray-400">Terima kasih atas kerja keras Anda! Status Anda kembali siap menerima order berikutnya.</p>
                             </div>
                         @endif
-                    </div>
-
-                    {{-- Toolbar Tes Simulasi GPS (Untuk Laptop / Uji Coba Cepat Tanpa Hardware Satelit) --}}
-                    <div class="bg-black/50 border border-amber-500/30 rounded-2xl p-2.5 space-y-1.5 text-[11px]">
-                        <div class="flex items-center justify-between text-gray-300">
-                            <span class="font-bold flex items-center gap-1.5 text-amber-300 text-[11px]">
-                                <i class="fa-solid fa-flask text-amber-400"></i> Tes Simulasi (Uji Coba di Laptop):
-                            </span>
-                            <span class="text-[10px] text-gray-400">Pilih titik untuk tes tombol</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-1.5">
-                            <button type="button" onclick="simulateGpsPoint('cafe')"
-                                    class="py-1.5 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-bold border border-amber-500/30 transition text-[10px] flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-mug-hot text-[10px]"></i> Di Kafe (Ambil)
-                            </button>
-                            <button type="button" onclick="simulateGpsPoint('midway')"
-                                    class="py-1.5 px-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 font-bold border border-blue-500/30 transition text-[10px] flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-motorcycle text-[10px]"></i> Di Jalan
-                            </button>
-                            <button type="button" onclick="simulateGpsPoint('dest')"
-                                    class="py-1.5 px-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold border border-emerald-500/30 transition text-[10px] flex items-center justify-center gap-1">
-                                <i class="fa-solid fa-house-chimney text-[10px]"></i> Di Tujuan (Selesai)
-                            </button>
-                        </div>
                     </div>
 
                     {{-- Info Alamat Pelanggan --}}
@@ -307,10 +285,9 @@
     <script>
         const isCourierMode = {{ $isCourier ? 'true' : 'false' }};
         const initialData = @json($initialPayload);
-        const dataUrl = '{{ route("zendo.track.data", $delivery->tracking_token) }}';
-        const locationUrl = '{{ route("zendo.track.location", $delivery->tracking_token) }}';
-        const statusUrl = '{{ route("zendo.track.status", $delivery->tracking_token) }}';
-        const courierToken = '{{ $delivery->courier_token }}';
+        const dataUrl = '{{ route("zendo.track.data", $delivery->tracking_token, false) }}';
+        const locationUrl = '{{ route("zendo.track.location", $delivery->tracking_token, false) }}';
+        const statusUrl = '{{ route("zendo.track.status", $delivery->tracking_token, false) }}';
 
         const cafeCoords = {
             lat: {{ $cafeLat }},
@@ -578,8 +555,7 @@
                 heading: coords.heading,
                 altitude: coords.altitude,
                 timestamp: pos.timestamp || Date.now(),
-                signals: signals,
-                k: courierToken
+                signals: signals
             };
 
             try {
@@ -620,40 +596,6 @@
             }
         }
 
-        // Quick simulation for testing in PC / laptop browser
-        function simulateGpsPoint(mode) {
-            let lat, lng;
-            if (mode === 'cafe') {
-                // 20 meters from Nucomu cafe
-                lat = cafeCoords.lat + 0.00015;
-                lng = cafeCoords.lng + 0.00015;
-            } else if (mode === 'dest') {
-                // 30 meters from customer destination
-                lat = (destCoords.lat || cafeCoords.lat) + 0.0002;
-                lng = (destCoords.lng || cafeCoords.lng) + 0.0002;
-            } else {
-                // Halfway between cafe and destination
-                const destLat = destCoords.lat || cafeCoords.lat;
-                const destLng = destCoords.lng || cafeCoords.lng;
-                lat = (cafeCoords.lat + destLat) / 2;
-                lng = (cafeCoords.lng + destLng) / 2;
-            }
-
-            const simulatedPos = {
-                coords: {
-                    latitude: lat,
-                    longitude: lng,
-                    accuracy: 8,
-                    speed: 6.5,
-                    heading: 45,
-                    altitude: 85
-                },
-                timestamp: Date.now()
-            };
-
-            sendGpsReading(simulatedPos);
-        }
-
         // Submit Status Change (Ambil Pesanan / Selesai)
         async function submitCourierStatus(status) {
             try {
@@ -664,7 +606,7 @@
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ status: status, k: courierToken })
+                    body: JSON.stringify({ status: status })
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -691,7 +633,7 @@
                 (err) => {
                     console.warn('GPS initial err:', err.message);
                     const badge = document.getElementById('gpsAccuracyBadge');
-                    if (badge) badge.innerText = 'GPS: Gunakan tes di bawah';
+                    if (badge) badge.innerText = err.code === 1 ? 'GPS: Izin lokasi ditolak' : 'GPS: Mencari sinyal...';
                 },
                 { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
             );

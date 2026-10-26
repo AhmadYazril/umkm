@@ -406,6 +406,7 @@ class NucomuController extends Controller
         $mode = config('nucomu.contact.transaction_mode', 'both');
         $zendoWa = config('nucomu.contact.zendo_whatsapp', config('nucomu.contact.whatsapp_number', '6281234567890'));
         $zendoSendMode = 'auto_direct';
+        $zendoPublicUrl = '';
         $zendoApiUrl = 'https://api.fonnte.com/send';
         $zendoApiToken = '';
         $cafeLat = (float) config('nucomu.contact.cafe_lat', -8.0765099);
@@ -458,6 +459,9 @@ class NucomuController extends Controller
 
             if (in_array($dbSettings['zendo_send_mode'] ?? null, ['auto_direct', 'wa_redirect'], true)) {
                 $zendoSendMode = $dbSettings['zendo_send_mode'];
+            }
+            if (! empty($dbSettings['zendo_public_url'])) {
+                $zendoPublicUrl = trim((string) $dbSettings['zendo_public_url']);
             }
             if (! empty($dbSettings['zendo_wa_api_url'])) {
                 $zendoApiUrl = $dbSettings['zendo_wa_api_url'];
@@ -526,6 +530,7 @@ class NucomuController extends Controller
             'zendo_courier_count' => $courierCount,
             'zendo_couriers' => $couriers,
             'zendo_send_mode' => $zendoSendMode,
+            'zendo_public_url' => $zendoPublicUrl,
             'zendo_wa_api_url' => $zendoApiUrl,
             'zendo_wa_api_token' => $zendoApiToken,
             'cafe_lat' => $cafeLat,
@@ -897,11 +902,17 @@ class NucomuController extends Controller
         $lines[] = '*Catatan Tambahan:* '.(! empty($notes) ? $notes : '-');
         $lines[] = '';
 
-        $unifiedUrl = $courierUrl ?: $trackingUrl;
-        if (! empty($unifiedUrl)) {
-            $lines[] = '📍 *LINK PELACAKAN & PENGANTARAN (1 Link):*';
-            $lines[] = $unifiedUrl;
-            $lines[] = 'Buka link di atas: sistem otomatis membaca nomor kurir yang ditugaskan tanpa perlu input nomor manual. GPS kurir otomatis aktif untuk memancarkan lokasi pengantaran realtime ala Grab (dilengkapi proteksi Anti Fake-GPS).';
+        if (! empty($courierUrl)) {
+            $lines[] = '🛵 *LINK KHUSUS KURIR (KIRIM GPS & STATUS):*';
+            $lines[] = $courierUrl;
+            $lines[] = 'Khusus kurir yang ditugaskan untuk menyiarkan GPS & menyelesaikan pengantaran.';
+            $lines[] = '';
+        }
+
+        if (! empty($trackingUrl)) {
+            $lines[] = '📍 *LINK PELACAKAN PELANGGAN (HANYA LIHAT POSISI KURIR):*';
+            $lines[] = $trackingUrl;
+            $lines[] = 'Pelanggan dapat memantau pergerakan posisi kurir di peta secara realtime.';
             $lines[] = '';
         }
 
@@ -1228,11 +1239,15 @@ class NucomuController extends Controller
                         'destination_lat' => $customerLat,
                         'destination_lng' => $customerLng,
                     ]);
-                    $trackingUrl = route('zendo.track', $delivery->tracking_token);
-                    $courierUrl = route('zendo.track', [
-                        'token' => $delivery->tracking_token,
-                        'k' => $delivery->courier_token,
-                    ]);
+                    $customBase = trim((string) ($txSettings['zendo_public_url'] ?? ''));
+                    if ($customBase !== '') {
+                        $customBase = rtrim($customBase, '/');
+                        $trackingUrl = $customBase.route('zendo.track', $delivery->tracking_token, false);
+                        $courierUrl = $customBase.route('zendo.courier.show', $delivery->courier_token, false);
+                    } else {
+                        $trackingUrl = route('zendo.track', $delivery->tracking_token);
+                        $courierUrl = route('zendo.courier.show', $delivery->courier_token);
+                    }
                 } catch (\Throwable $deliveryEx) {
                     Log::warning('Gagal membuat data pelacakan Zendo: '.$deliveryEx->getMessage());
                 }

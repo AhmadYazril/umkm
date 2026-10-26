@@ -71,6 +71,7 @@ Route::post('/zendo/kurir/{token}/otp', [ZendoTrackingController::class, 'sendOt
 Route::post('/zendo/kurir/{token}/verifikasi', [ZendoTrackingController::class, 'verify'])->name('zendo.courier.verify');
 Route::post('/zendo/kurir/{token}/lokasi', [ZendoTrackingController::class, 'updateLocation'])->name('zendo.courier.location');
 Route::post('/zendo/kurir/{token}/status', [ZendoTrackingController::class, 'updateStatus'])->name('zendo.courier.status');
+Route::post('/zendo/kurir/keluar', [ZendoTrackingController::class, 'unbindCourier'])->name('zendo.courier.unbind');
 
 // QR Detail (publicly accessible — scanned by kasir via phone)
 Route::get('/qr/pesanan/{code}', [AdminOrderController::class, 'qrDetail'])->name('admin.orders.qr');

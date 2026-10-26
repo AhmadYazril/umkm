@@ -290,32 +290,55 @@ class NucomuFeatureTest extends TestCase
             'courier_name' => 'Kurir Zendo 1',
         ]);
 
-        // 1. Unified track link with courier key automatically recognizes the courier and binds cookie
-        $autoCourierResponse = $this->get(route('zendo.track', [
+        // 1. Opening the courier link automatically enters Courier Mode without requiring manual phone number input
+        $courierShowResponse = $this->get(route('zendo.courier.show', $delivery->courier_token));
+        $courierShowResponse->assertRedirect(route('zendo.track', [
             'token' => $delivery->tracking_token,
             'k' => $delivery->courier_token,
         ]));
-        $autoCourierResponse->assertStatus(200);
-        $autoCourierResponse->assertSee('Mode Kurir');
-        $autoCourierResponse->assertSee('Kurir Zendo 1');
-        $autoCourierResponse->assertSee('6285712345678');
-        $autoCourierResponse->assertCookie(ZendoTrackingController::DEVICE_COOKIE);
+        $courierShowResponse->assertCookie(ZendoTrackingController::DEVICE_COOKIE);
 
         $delivery->refresh();
         $this->assertNotNull($delivery->courier_verified_at);
 
-        // 2. Verification with WRONG phone number is rejected
-        $wrongVerify = $this->post(route('zendo.courier.verify', $delivery->courier_token), [
-            'phone' => '081299999999',
-        ]);
-        $wrongVerify->assertSessionHasErrors('phone');
+        $deviceCookieValue = $courierShowResponse->getCookie(ZendoTrackingController::DEVICE_COOKIE, false)->getValue();
 
-        // 3. Verification with CORRECT courier phone number succeeds and binds device cookie
-        $correctVerify = $this->post(route('zendo.courier.verify', $delivery->courier_token), [
-            'phone' => '085712345678',
-        ]);
-        $correctVerify->assertRedirect(route('zendo.courier.show', $delivery->courier_token));
-        $correctVerify->assertCookie(ZendoTrackingController::DEVICE_COOKIE);
+        // 2. The courier workspace loads in Mode Kurir with GPS streaming and courier action controls
+        $courierWorkspaceResponse = $this->withUnencryptedCookie(ZendoTrackingController::DEVICE_COOKIE, $deviceCookieValue)
+            ->get(route('zendo.track', [
+                'token' => $delivery->tracking_token,
+                'k' => $delivery->courier_token,
+            ]));
+        $courierWorkspaceResponse->assertStatus(200);
+        $courierWorkspaceResponse->assertSee('Mode Kurir');
+        $courierWorkspaceResponse->assertSee('Kurir Zendo 1');
+        $courierWorkspaceResponse->assertSee('6285712345678');
+        $courierWorkspaceResponse->assertSee('Tampilan Pelanggan');
+
+        // 3. A customer opening the tracking link (without k) only sees the live map (cuma bisa melihat kurirnya sampai mana)
+        $this->defaultCookies = [];
+        $this->unencryptedCookies = [];
+        $customerResponse = $this->get(route('zendo.track', ['token' => $delivery->tracking_token]));
+        $customerResponse->assertStatus(200);
+        $customerResponse->assertDontSee('Mode Kurir');
+        $customerResponse->assertDontSee($delivery->courier_token);
+        $customerResponse->assertSee('Live Tracking');
+        $customerResponse->assertSee('Kurir Zendo 1');
+
+        // 4. GPS streaming is accepted for the courier
+        $validGps = $this->withHeaders(['X-Courier-Device' => $deviceCookieValue])
+            ->postJson(route('zendo.track.location', $delivery->tracking_token), [
+                'lat' => -8.0766,
+                'lng' => 111.9188,
+                'accuracy' => 10,
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+        $validGps->assertStatus(200);
+        $validGps->assertJson(['accepted' => true]);
+
+        // 5. Device can be unlinked from courier mode
+        $unbindResponse = $this->post(route('zendo.courier.unbind'));
+        $unbindResponse->assertCookieExpired(ZendoTrackingController::DEVICE_COOKIE);
     }
 
     public function test_zendo_courier_gps_lock_validates_real_gps_and_detects_fake_gps(): void

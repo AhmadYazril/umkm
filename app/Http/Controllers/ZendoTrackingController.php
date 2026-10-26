@@ -27,7 +27,7 @@ class ZendoTrackingController extends Controller
     public function __construct(protected NucomuController $nucomu) {}
 
     /**
-     * Unified live tracking page (auto-detects courier vs customer from token or device).
+     * Unified live tracking page (auto-detects courier vs customer from token or key).
      */
     public function track(Request $request, string $trackingToken): View
     {
@@ -38,19 +38,14 @@ class ZendoTrackingController extends Controller
 
         $txSettings = $this->nucomu->getTransactionSettings();
 
-        // Automatic phone / courier selection without manual input
+        // Mode kurir otomatis aktif jika URL memiliki kunci kurir (?k=...) atau dibuka via token kurir
         $isCourier = false;
         if ($request->filled('k') && hash_equals($delivery->courier_token, (string) $request->query('k'))) {
-            $isCourier = true;
             $this->bindCourierDevice($delivery);
+            $isCourier = true;
         } elseif (hash_equals($delivery->courier_token, $trackingToken)) {
-            $isCourier = true;
             $this->bindCourierDevice($delivery);
-        } elseif ($this->isVerifiedCourierDevice($request, $delivery)) {
-            $isCourier = $request->query('view') !== 'customer';
-        } elseif ($request->query('role') === 'kurir') {
             $isCourier = true;
-            $this->bindCourierDevice($delivery);
         }
 
         return view('zendo.track', [
@@ -76,24 +71,28 @@ class ZendoTrackingController extends Controller
     }
 
     /**
-     * Courier-only page (auto-recognizes courier phone without manual input form).
+     * Courier-only entry route: automatically binds the courier device without requiring manual phone entry,
+     * and redirects directly to live courier workspace.
      */
-    public function courier(Request $request, string $courierToken): View
+    public function courier(Request $request, string $courierToken): RedirectResponse
     {
         $delivery = ZendoDelivery::with('order.items')->where('courier_token', $courierToken)->firstOrFail();
         $this->bindCourierDevice($delivery);
-        $txSettings = $this->nucomu->getTransactionSettings();
 
-        return view('zendo.courier', [
-            'delivery' => $delivery,
-            'isVerified' => true,
-            'gatewayEnabled' => false,
-            'maskedPhone' => $this->maskPhone($delivery->courier_phone),
-            'cafeLat' => $txSettings['cafe_lat'],
-            'cafeLng' => $txSettings['cafe_lng'],
-            'trackingConfig' => config('nucomu.contact.zendo_tracking'),
-            'initialPayload' => $this->buildTrackingPayload($delivery, true),
+        return redirect()->route('zendo.track', [
+            'token' => $delivery->tracking_token,
+            'k' => $delivery->courier_token,
         ]);
+    }
+
+    /**
+     * Unlink courier device cookie (allows resetting/logging out of courier mode on this device).
+     */
+    public function unbindCourier(Request $request): RedirectResponse
+    {
+        Cookie::queue(Cookie::forget(self::DEVICE_COOKIE));
+
+        return back()->with('info', 'Perangkat berhasil dilepas dari Mode Kurir.');
     }
 
     /**
@@ -110,7 +109,8 @@ class ZendoTrackingController extends Controller
 
         $enteredPhone = $this->nucomu->normalizeWhatsappNumber($validated['phone']);
         if (! hash_equals($delivery->courier_phone, $enteredPhone)) {
-            return back()->withInput()->withErrors(['phone' => 'Nomor ini bukan nomor kurir yang ditugaskan untuk pesanan ini. Link kurir hanya bisa dibuka oleh nomor kurir tersebut.']);
+            return redirect()->route('zendo.track', $delivery->tracking_token)
+                ->with('info', 'Nomor ini bukan nomor kurir yang ditugaskan. Anda dialihkan ke Mode Pelacakan untuk melihat posisi kurir.');
         }
 
         $rateKey = 'zendo-otp:'.$delivery->id;
@@ -166,7 +166,8 @@ class ZendoTrackingController extends Controller
 
         $enteredPhone = $this->nucomu->normalizeWhatsappNumber($validated['phone']);
         if (! hash_equals($delivery->courier_phone, $enteredPhone)) {
-            return back()->withInput()->withErrors(['phone' => 'Nomor ini bukan nomor kurir yang ditugaskan. Akses ditolak.']);
+            return redirect()->route('zendo.track', $delivery->tracking_token)
+                ->with('info', 'Nomor ini bukan nomor kurir yang ditugaskan. Anda dialihkan ke Mode Pelacakan untuk melihat posisi kurir di peta.');
         }
 
         if ($gatewayEnabled) {
@@ -180,16 +181,9 @@ class ZendoTrackingController extends Controller
         RateLimiter::clear($rateKey);
 
         // Bind this device to the courier number (one active device per courier)
-        $deviceToken = Str::random(48);
-        Setting::set("zendo_device_{$delivery->courier_phone}", hash('sha256', $deviceToken));
-        Setting::set("zendo_connected_at_{$delivery->courier_phone}", now()->toDateTimeString());
+        $this->bindCourierDevice($delivery);
 
-        $delivery->update(['courier_verified_at' => now()]);
-
-        $cookieDays = (int) config('nucomu.contact.zendo_tracking.device_cookie_days', 30);
-        Cookie::queue(self::DEVICE_COOKIE, $delivery->courier_phone.'|'.$deviceToken, $cookieDays * 24 * 60);
-
-        return redirect()->route('zendo.courier.show', $delivery->courier_token)
+        return redirect()->route('zendo.track', $delivery->tracking_token)
             ->with('verified', 'Nomor kurir terverifikasi. Perangkat ini sekarang terhubung sebagai '.$delivery->courier_name.'.');
     }
 
@@ -525,36 +519,47 @@ class ZendoTrackingController extends Controller
 
     /**
      * Bind this device to the assigned courier's phone number and record verified timestamp.
+     * Must only be called after the courier's WhatsApp number (and OTP, when enabled) has been verified.
      */
     public function bindCourierDevice(ZendoDelivery $delivery): string
     {
+        $delivery->update(['courier_verified_at' => now()]);
+
+        $cookieDays = (int) config('nucomu.contact.zendo_tracking.device_cookie_days', 30);
+        $cookieValue = (string) (request()->cookie(self::DEVICE_COOKIE) ?: request()->header('X-Courier-Device', ''));
+        if ($cookieValue !== '' && str_contains($cookieValue, '|')) {
+            [$phone, $existingToken] = explode('|', $cookieValue, 2);
+            if ($existingToken !== '' && hash_equals((string) $delivery->courier_phone, $phone)) {
+                $storedHash = (string) Setting::get("zendo_device_{$phone}", '');
+                if ($storedHash !== '' && hash_equals($storedHash, hash('sha256', $existingToken))) {
+                    Cookie::queue(self::DEVICE_COOKIE, $delivery->courier_phone.'|'.$existingToken, $cookieDays * 24 * 60);
+
+                    return $existingToken;
+                }
+            }
+        }
+
         $deviceToken = Str::random(48);
         Setting::set("zendo_device_{$delivery->courier_phone}", hash('sha256', $deviceToken));
         Setting::set("zendo_connected_at_{$delivery->courier_phone}", now()->toDateTimeString());
 
-        if (! $delivery->courier_verified_at) {
-            $delivery->update(['courier_verified_at' => now()]);
-        }
-
-        $cookieDays = (int) config('nucomu.contact.zendo_tracking.device_cookie_days', 30);
         Cookie::queue(self::DEVICE_COOKIE, $delivery->courier_phone.'|'.$deviceToken, $cookieDays * 24 * 60);
 
         return $deviceToken;
     }
 
     /**
-     * Check whether the current device holds a valid device-binding cookie for the delivery's courier number.
+     * Check whether the current device is authorized as the delivery's assigned courier.
      */
     public function isVerifiedCourierDevice(Request $request, ZendoDelivery $delivery): bool
     {
-        // 1. Direct match with query parameter ?k=
+        // 1. Direct match with courier token via query parameter or route
         if ($request->filled('k') && hash_equals($delivery->courier_token, (string) $request->query('k'))) {
             $this->bindCourierDevice($delivery);
 
             return true;
         }
 
-        // 2. Direct match with courier token in route parameter or request input
         $routeToken = (string) ($request->route('token') ?? $request->input('courier_token', ''));
         if ($routeToken !== '' && hash_equals($delivery->courier_token, $routeToken)) {
             $this->bindCourierDevice($delivery);
@@ -562,24 +567,20 @@ class ZendoTrackingController extends Controller
             return true;
         }
 
-        // 3. Cookie or Header match
+        // 2. Cookie or Header match
         $cookieValue = (string) ($request->cookie(self::DEVICE_COOKIE) ?: $request->header('X-Courier-Device', ''));
-        if ($cookieValue !== '' && str_contains($cookieValue, '|')) {
-            [$phone, $deviceToken] = explode('|', $cookieValue, 2);
-            if (hash_equals($delivery->courier_phone, $phone) && $deviceToken !== '') {
-                $storedHash = (string) Setting::get("zendo_device_{$phone}", '');
-                if ($storedHash !== '' && hash_equals($storedHash, hash('sha256', $deviceToken))) {
-                    return true;
-                }
-            }
+        if ($cookieValue === '' || ! str_contains($cookieValue, '|')) {
+            return false;
         }
 
-        // 4. If already verified and visiting with role=kurir or verified flag
-        if ($delivery->courier_verified_at !== null && $request->query('role') === 'kurir') {
-            return true;
+        [$phone, $deviceToken] = explode('|', $cookieValue, 2);
+        if ($deviceToken === '' || ! hash_equals((string) $delivery->courier_phone, $phone)) {
+            return false;
         }
 
-        return false;
+        $storedHash = (string) Setting::get("zendo_device_{$phone}", '');
+
+        return $storedHash !== '' && hash_equals($storedHash, hash('sha256', $deviceToken));
     }
 
     protected function isGatewayEnabled(array $txSettings): bool
