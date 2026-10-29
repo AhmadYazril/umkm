@@ -29,16 +29,21 @@
 
             <!-- Right Asymmetric Image & Concept Highlight -->
             <div class="lg:col-span-7 flex flex-col space-y-8 reveal-on-scroll">
-                <!-- Large Editorial Atmosphere Frame -->
-                <div class="relative bg-warm-ivory p-3.5 border border-soft-beige rounded">
-                    <div class="overflow-hidden aspect-[16/10] relative img-editorial rounded-sm">
-                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1P8f-EBGZgQflvyyKW_OfkYt5VXDhIHhyiA0jYpsYzEy8byioxZDaWsSPLkisOP-W_QT-VcYpPWvkAwmmTF7cezpEXN28i0_M-PWtTJW2KjxmleAQqtWyBLZ5zzD30p7EmZtIpIYtRROYCmwqv1pjfq6g5hxHEJFUqd4c3lkTBiGsN776sKI08OynnTy1V_3sxpZlFx503s6QqS_iNqoum8aQF1Xp2-LoEa2gp7yB4VmJ0MaV4UcZ" 
-                             alt="Interior Nucomu Cafe Tulungagung" 
-                             class="w-full h-full object-cover">
-                        <div class="absolute bottom-3 left-3 bg-warm-ivory/95 backdrop-blur-sm px-3.5 py-1.5 border border-soft-beige text-[10px] font-semibold uppercase tracking-editorial-widest text-ink-black">
-                            ATMOSFER RUANG NUCOMU
-                        </div>
-                    </div>
+                <!-- Video Atmosphere Frame -->
+                <div id="about-video-container" class="relative w-full aspect-video overflow-hidden rounded bg-pure-white" style="transition: background-color 0.4s ease;">
+                    <video id="about-video-player"
+                           autoplay
+                           muted
+                           playsinline
+                           preload="auto"
+                           class="w-full h-full object-contain block"
+                           style="aspect-ratio: 16/9; mix-blend-mode: multiply; transition: opacity 0.4s ease-in-out; opacity: 1;">
+                        <source src="video/tiramisu.mp4" type="video/mp4">
+                    </video>
+                    <canvas id="about-video-canvas"
+                            class="w-full h-full object-contain block absolute inset-0 pointer-events-none"
+                            style="aspect-ratio: 16/9; display: none; opacity: 0; transition: opacity 0.4s ease-in-out;">
+                    </canvas>
                 </div>
 
                 <!-- Concept Statement -->
@@ -181,5 +186,173 @@
             </div>
         </div>
 
-    </div>
 </section>
+
+<!-- SCRIPT: ABOUT SECTION VIDEO SEQUENCER -->
+<script>
+    (function() {
+        const playlist = [
+            'video/tiramisu.mp4',
+            'video/chescake.mp4',
+            'video/spagheti.mp4',
+            'video/kopsu.mp4'
+        ];
+        let currentIndex = 0;
+        const container = document.getElementById('about-video-container');
+        const video = document.getElementById('about-video-player');
+        const canvas = document.getElementById('about-video-canvas');
+        if (!video || !canvas) return;
+
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        let animFrameId = null;
+
+        // Preload cache for smooth transitions
+        const preloaded = {};
+        function preloadVideo(index) {
+            const src = playlist[index];
+            if (!preloaded[src]) {
+                const v = document.createElement('video');
+                v.preload = 'auto';
+                v.src = src;
+                preloaded[src] = v;
+            }
+        }
+
+        // Preload next video while current is playing
+        preloadVideo((currentIndex + 1) % playlist.length);
+
+        let isTransitioning = false;
+
+        function renderKopsuFrame() {
+            if (currentIndex !== 3 || video.paused || video.ended) {
+                return;
+            }
+
+            if (video.videoWidth && (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight)) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+            }
+
+            const w = canvas.width;
+            const h = canvas.height;
+            if (w && h) {
+                // Enlarge image (scale 1.38x) from center
+                const scale = 1.38;
+                const sw = w / scale;
+                const sh = h / scale;
+                const sx = (w - sw) / 2;
+                const sy = (h - sh) / 2;
+
+                ctx.drawImage(video, sx, sy, sw, sh, 0, 0, w, h);
+
+                const imgData = ctx.getImageData(0, 0, w, h);
+                const data32 = new Uint32Array(imgData.data.buffer);
+                const len = data32.length;
+
+                // Hero section Kopi Susu theme color #D9DECF:
+                // R: 217 (0xD9), G: 222 (0xDE), B: 207 (0xCF)
+                for (let i = 0; i < len; i++) {
+                    const pixel = data32[i];
+                    const r = pixel & 0xFF;
+                    const g = (pixel >> 8) & 0xFF;
+                    const b = (pixel >> 16) & 0xFF;
+                    const maxChannel = Math.max(r, g, b);
+
+                    // Remove dark charcoal background & blend smoothly
+                    if (maxChannel <= 48) {
+                        data32[i] = 0xFFCFDED9;
+                    } else if (maxChannel < 68) {
+                        const factor = (maxChannel - 48) / 20;
+                        const blendedR = Math.round(217 * (1 - factor) + r * factor);
+                        const blendedG = Math.round(222 * (1 - factor) + g * factor);
+                        const blendedB = Math.round(207 * (1 - factor) + b * factor);
+                        data32[i] = (0xFF << 24) | (blendedB << 16) | (blendedG << 8) | blendedR;
+                    }
+                }
+
+                ctx.putImageData(imgData, 0, 0);
+            }
+
+            animFrameId = requestAnimationFrame(renderKopsuFrame);
+        }
+
+        function playVideoSafely() {
+            video.muted = true;
+            const promise = video.play();
+            if (promise !== undefined) {
+                promise.catch(function() {
+                    function retryPlay() {
+                        video.muted = true;
+                        video.play().then(function() {
+                            window.removeEventListener('click', retryPlay);
+                            window.removeEventListener('touchstart', retryPlay);
+                            window.removeEventListener('scroll', retryPlay);
+                        }).catch(function() {});
+                    }
+                    window.addEventListener('click', retryPlay, { once: false, passive: true });
+                    window.addEventListener('touchstart', retryPlay, { once: false, passive: true });
+                    window.addEventListener('scroll', retryPlay, { once: false, passive: true });
+                });
+            }
+        }
+
+        function transitionToNext() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            // Fade out active display
+            if (currentIndex === 3) {
+                canvas.style.opacity = '0';
+            } else {
+                video.style.opacity = '0';
+            }
+
+            setTimeout(function() {
+                if (animFrameId) {
+                    cancelAnimationFrame(animFrameId);
+                    animFrameId = null;
+                }
+
+                currentIndex = (currentIndex + 1) % playlist.length;
+                video.src = playlist[currentIndex];
+                video.load();
+
+                // Preload upcoming video
+                preloadVideo((currentIndex + 1) % playlist.length);
+
+                if (currentIndex === 3) {
+                    // Match container background with hero section theme color #D9DECF
+                    if (container) container.style.backgroundColor = '#D9DECF';
+                    video.style.opacity = '0';
+                    canvas.style.display = 'block';
+                } else {
+                    if (container) container.style.backgroundColor = '#FFFFFF';
+                    canvas.style.display = 'none';
+                    canvas.style.opacity = '0';
+                }
+
+                function onPlaying() {
+                    video.removeEventListener('playing', onPlaying);
+                    if (currentIndex === 3) {
+                        canvas.style.opacity = '1';
+                        renderKopsuFrame();
+                    } else {
+                        video.style.opacity = '1';
+                    }
+                    isTransitioning = false;
+                }
+
+                video.addEventListener('playing', onPlaying);
+                playVideoSafely();
+            }, 400);
+        }
+
+        video.addEventListener('ended', transitionToNext);
+
+        if (document.readyState === 'complete') {
+            playVideoSafely();
+        } else {
+            window.addEventListener('load', playVideoSafely);
+        }
+    })();
+</script>

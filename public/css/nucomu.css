@@ -203,6 +203,76 @@ body {
     scrollbar-width: none;
 }
 
+/* ==========================================================================
+   Hero Animated Menu Video Slider Styles
+   ========================================================================== */
+#home {
+    transition: background-color 0.8s ease;
+}
+
+.hero-slide-item {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+    z-index: 0;
+}
+
+.hero-slide-item.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 10;
+}
+
+/* Video scale & fade transition */
+.hero-slide-item .hero-video-container {
+    transform: scale(0.92);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+    will-change: transform, opacity;
+}
+
+.hero-slide-item.active .hero-video-container {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Text slide & fade transition */
+.hero-slide-item .hero-text-content {
+    transform: translateY(14px);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
+    will-change: transform, opacity;
+}
+
+.hero-slide-item.active .hero-text-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Video tags global defaults for menu */
+video.hero-slide-video {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}
+
+video.menu-lazy-video {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* Best menu dish plate: cropped square video fits inside circle */
+#best-hero-video {
+    object-fit: contain;
+}
+
 /* Accessibility: Respect Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after {

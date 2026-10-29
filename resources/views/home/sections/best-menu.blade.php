@@ -57,11 +57,17 @@
                 <!-- 2. CENTER COLUMN: Giant Plate, Order Pill, and Slide Dots (~5 cols) -->
                 <div class="lg:col-span-5 flex flex-col items-center justify-center my-4 lg:my-0">
                     <!-- Big Round Plate with Soft Shadow -->
-                    <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-white shadow-2xl transition-all duration-500 ease-out border border-stone-100 flex items-center justify-center">
+                    <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-white shadow-2xl transition-all duration-500 ease-out border border-stone-100 flex items-center justify-center overflow-hidden">
                         <img id="best-hero-img" 
                              src="{{ $bestMenu[0]['image'] }}" 
                              alt="{{ $bestMenu[0]['name'] }}" 
-                             class="w-full h-full object-cover rounded-full shadow-inner transition-all duration-500">
+                             class="w-full h-full object-cover rounded-full shadow-inner transition-all duration-500 {{ !empty($bestMenu[0]['video']) ? 'hidden' : '' }}">
+                        <video id="best-hero-video"
+                               class="w-full h-full object-contain rounded-full transition-all duration-500 menu-lazy-video {{ empty($bestMenu[0]['video']) ? 'hidden' : '' }}"
+                               autoplay muted loop playsinline preload="metadata"
+                               poster="{{ $bestMenu[0]['image'] }}">
+                            <source src="{{ !empty($bestMenu[0]['video']) ? asset($bestMenu[0]['video']) : '' }}" type="video/mp4">
+                        </video>
                     </div>
 
                     <!-- Orange Pill Order Button Underneath -->
@@ -94,10 +100,18 @@
                              class="best-menu-pill {{ $idx === 0 ? 'active bg-[#E06D24] text-white shadow-lg shadow-orange-500/20' : 'bg-white text-neutral-800 shadow-md hover:shadow-lg hover:-translate-x-1 border border-stone-100' }} flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
                             
                             <!-- Left: Thumbnail in white circle -->
-                            <div class="w-12 h-12 rounded-full overflow-hidden p-0.5 bg-white border border-stone-200 shadow-sm shrink-0">
-                                <img src="{{ $m['image'] }}" 
-                                     alt="{{ $m['name'] }}" 
-                                     class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
+                            <div class="w-12 h-12 rounded-full overflow-hidden p-0.5 bg-white border border-stone-200 shadow-sm shrink-0 relative">
+                                @if(!empty($m['video']))
+                                    <video class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300 menu-lazy-video"
+                                           autoplay muted loop playsinline preload="metadata"
+                                           poster="{{ $m['image'] }}">
+                                        <source src="{{ asset($m['video']) }}" type="video/mp4">
+                                    </video>
+                                @else
+                                    <img src="{{ $m['image'] }}" 
+                                         alt="{{ $m['name'] }}" 
+                                         class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
+                                @endif
                             </div>
 
                             <!-- Right Info: Title & Price -->
@@ -182,9 +196,17 @@
                     <div>
                         <!-- Card Image with Top Badge -->
                         <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
-                            <img src="{{ $item['image'] }}" 
-                                 alt="{{ $item['name'] }}" 
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            @if(!empty($item['video']))
+                                <video class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 menu-lazy-video"
+                                       autoplay muted loop playsinline preload="metadata"
+                                       poster="{{ $item['image'] }}">
+                                    <source src="{{ asset($item['video']) }}" type="video/mp4">
+                                </video>
+                            @else
+                                <img src="{{ $item['image'] }}" 
+                                     alt="{{ $item['name'] }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            @endif
                             
                             @if(isset($item['badge']) && $item['badge'])
                                 <span class="absolute top-3 left-3 {{ $item['badge_color'] ?? 'bg-[#E06D24]' }} text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">

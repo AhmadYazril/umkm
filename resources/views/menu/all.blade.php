@@ -56,10 +56,33 @@
                         <div>
                             <!-- Image -->
                             <div class="relative overflow-hidden aspect-square rounded-sm mb-3.5 bg-warm-ivory img-editorial border border-light-gray/60">
-                                <img src="{{ $item['image'] }}" 
-                                     alt="{{ $item['name'] }}" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                <span class="absolute top-2 left-2 bg-warm-ivory/95 backdrop-blur-sm px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-charcoal rounded">
+                                @php
+                                    $itemVideo = !empty($item['video']) ? $item['video'] : null;
+                                    if (!$itemVideo) {
+                                        $itemNameLower = strtolower($item['name'] ?? '');
+                                        if (str_contains($itemNameLower, 'tiramisu')) {
+                                            $itemVideo = 'videos/tiramisu.mp4';
+                                        } elseif (str_contains($itemNameLower, 'cheesecake')) {
+                                            $itemVideo = 'videos/chescake.mp4';
+                                        } elseif (str_contains($itemNameLower, 'spaghetti') || str_contains($itemNameLower, 'pasta')) {
+                                            $itemVideo = 'videos/spagheti.mp4';
+                                        } elseif (str_contains($itemNameLower, 'kopi susu') || str_contains($itemNameLower, 'nucomu coffee') || str_contains($itemNameLower, 'aren') || str_contains($itemNameLower, 'signature latte')) {
+                                            $itemVideo = 'videos/kopsu.mp4';
+                                        }
+                                    }
+                                @endphp
+                                @if($itemVideo)
+                                    <video class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 menu-lazy-video"
+                                           autoplay muted loop playsinline preload="metadata"
+                                           poster="{{ $item['image'] }}">
+                                        <source src="{{ asset($itemVideo) }}" type="video/mp4">
+                                    </video>
+                                @else
+                                    <img src="{{ $item['image'] }}" 
+                                         alt="{{ $item['name'] }}" 
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                @endif
+                                <span class="absolute top-2 left-2 bg-warm-ivory/95 backdrop-blur-sm px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-charcoal rounded z-10">
                                     {{ $item['category_label'] }}
                                 </span>
                             </div>

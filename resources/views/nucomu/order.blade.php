@@ -172,7 +172,35 @@
 
                             {{-- Image --}}
                             <div class="relative h-40 sm:h-44 bg-zinc-900 overflow-hidden">
-                                @if($menu->image && file_exists(public_path('storage/' . $menu->image)))
+                                @php
+                                    $mLower = strtolower($menu->name);
+                                    $mVideo = null;
+                                    $fallbackPoster = 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=800';
+                                    if (str_contains($mLower, 'tiramisu')) {
+                                        $mVideo = 'videos/tiramisu.mp4';
+                                        $fallbackPoster = 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&q=80&w=800';
+                                    } elseif (str_contains($mLower, 'cheesecake')) {
+                                        $mVideo = 'videos/chescake.mp4';
+                                        $fallbackPoster = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW';
+                                    } elseif (str_contains($mLower, 'spaghetti') || str_contains($mLower, 'pasta')) {
+                                        $mVideo = 'videos/spagheti.mp4';
+                                        $fallbackPoster = 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800';
+                                    } elseif (str_contains($mLower, 'kopi') || str_contains($mLower, 'nucomu coffee') || str_contains($mLower, 'aren') || str_contains($mLower, 'latte')) {
+                                        $mVideo = 'videos/kopsu.mp4';
+                                        $fallbackPoster = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCPqLrA-TY5mFKhRtn4JKGIrRcBH3BdS1fNJjmW2YLU-LfY2vZYIA_IREh3dxqIRd_3_6MPxGC-J7zRVl8pKRzlzudFwVSwuU9vphdP0N_CE1PyBfm3Du_d5hJkNoLQixpClSDb4DslruxOf4KXQRbVYsb7BsgAoHgevN1ubGxFM6t1k9fceENXwk2soL3QsW9DfXM101g70CDkDFHiMpgGjdyd2NpQBTUZONVX29AZoUp8LvPw3fbk';
+                                    }
+                                    $posterImg = ($menu->image && file_exists(public_path('storage/' . $menu->image))) 
+                                        ? asset('storage/' . $menu->image) 
+                                        : (($menu->image && (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://'))) ? $menu->image : $fallbackPoster);
+                                @endphp
+
+                                @if($mVideo)
+                                    <video class="w-full h-full object-cover menu-lazy-video transition-transform duration-300 group-hover:scale-105"
+                                           autoplay muted loop playsinline preload="metadata"
+                                           poster="{{ $posterImg }}">
+                                        <source src="{{ asset($mVideo) }}" type="video/mp4">
+                                    </video>
+                                @elseif($menu->image && file_exists(public_path('storage/' . $menu->image)))
                                     <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}"
                                          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                                 @elseif($menu->image && (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://')))
