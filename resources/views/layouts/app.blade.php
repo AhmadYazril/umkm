@@ -54,6 +54,9 @@
 
     <!-- Custom Nucomu CSS -->
     <link rel="stylesheet" href="{{ asset('css/nucomu.css') }}">
+
+    <!-- Page-specific styles -->
+    @stack('styles')
 </head>
 <body class="bg-warm-ivory text-charcoal font-body antialiased selection:bg-ink-black selection:text-warm-ivory">
 
@@ -78,5 +81,8 @@
         window.NUCOMU_WA_NUMBER = "{{ config('nucomu.contact.whatsapp_number', '6281234567890') }}";
     </script>
     <script src="{{ asset('js/nucomu.js') }}"></script>
+
+    <!-- Page-specific scripts -->
+    @stack('scripts')
 </body>
 </html>

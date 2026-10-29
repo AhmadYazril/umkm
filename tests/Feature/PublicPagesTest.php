@@ -57,4 +57,28 @@ class PublicPagesTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Banoffee');
     }
+
+    public function test_home_page_renders_our_story_about_section(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('OUR STORY / TENTANG KAMI');
+        $response->assertSee('Berawal dari Rasa,');
+        $response->assertSee('Kembali karena Rindu.');
+        $response->assertSee('Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.');
+        $response->assertSee('Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.');
+        $response->assertSee('Jelajahi Pilihan Menu');
+        $response->assertSee('href="#menu"', false);
+        $response->assertSee('id="menu"', false);
+        $response->assertSee('Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.');
+        $response->assertSee('nucomu_story_1.png');
+        $response->assertSee('nucomu_logo_icon.png');
+    }
+
+    public function test_old_tentang_kami_route_no_longer_exists(): void
+    {
+        $response = $this->get('/tentang-kami');
+        $response->assertStatus(404);
+    }
 }

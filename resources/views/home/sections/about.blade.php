@@ -1,191 +1,215 @@
 <!-- SECTION 2: ABOUT NUCOMU CAFE -->
-<section id="about" class="py-20 lg:py-28 bg-pure-white border-b border-light-gray/60">
+<section id="about" class="relative bg-[#FAFAFA] pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 overflow-hidden border-b border-[#DDDDDD]/80">
+    {{-- NoScript Accessibility Fallback: Ensures content is visible if JS is disabled --}}
+    <noscript>
+        <style>
+            .story-anim-photo,
+            .story-anim-badge-logo,
+            .story-anim-badge-coffee,
+            .story-anim-right,
+            .facility-anim-left,
+            .facility-anim-right,
+            .reveal-on-scroll,
+            .reveal-from-left,
+            .reveal-from-right,
+            .reveal-fade-up {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+            .story-anim-deco {
+                opacity: 1 !important;
+                transform: rotate(-2.6deg) !important;
+                transition: none !important;
+            }
+            .story-typing-cursor {
+                display: none !important;
+            }
+        </style>
+    </noscript>
+
+    {{-- Perimeter Decorative Element 1: Vertical Marginal Text on Left (Desktop Editorial Accent) --}}
+    <div class="hidden xl:flex absolute left-5 2xl:left-8 top-1/3 -translate-y-1/2 flex-col items-center gap-6 pointer-events-none select-none z-10" aria-hidden="true">
+        <span class="vertical-lr-editorial text-[10px] font-semibold tracking-[0.3em] uppercase text-[#9E9E9E] font-body">
+            NUCOMU CAFE &amp; EATERY
+        </span>
+        <div class="w-px h-16 bg-[#CCCCCC]"></div>
+    </div>
+
+    {{-- Perimeter Decorative Element 2: Top Right Editorial Established Timestamp --}}
+    <div class="hidden sm:flex absolute right-6 sm:right-10 lg:right-16 top-10 sm:top-14 flex-col items-end pointer-events-none select-none z-10" aria-hidden="true">
+        <div class="text-right">
+            <span class="block text-[11px] font-bold tracking-[0.2em] text-[#888888] uppercase font-body">EST.</span>
+            <span class="block text-[11px] font-medium tracking-[0.18em] text-[#888888] font-body">2024</span>
+        </div>
+        <div class="w-px h-10 bg-[#DDDDDD] mt-2"></div>
+    </div>
+
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
-        <!-- SUBSECTION 2A: CERITA & KONSEP CAFE -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-24">
-            
-            <!-- Left Editorial Text Column -->
-            <div class="lg:col-span-5 reveal-on-scroll">
-                <span class="text-[11px] font-semibold uppercase tracking-editorial-widest text-medium-gray block mb-3">TENTANG NUCOMU</span>
-                <h2 class="font-editorial text-3xl sm:text-5xl font-bold text-ink-black leading-[1.15] mb-6">
-                    Lebih dari Sekadar Tempat Menikmati Kopi.
-                </h2>
-                <div class="w-12 h-0.5 bg-ink-black mb-6"></div>
-                <p class="font-body text-sm sm:text-base text-charcoal/80 leading-relaxed mb-6 font-normal">
-                    Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat. 
-                </p>
-                <p class="font-body text-sm text-medium-gray leading-relaxed mb-8">
-                    Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.
-                </p>
+        <!-- SUBSECTION 2A: OUR STORY / ABOUT NUCOMU (MODERN ELEGANT MONOCHROME EDITORIAL) -->
+        <div id="our-story-section" class="mb-20 sm:mb-24 lg:mb-28">
+            {{-- TWO-COLUMN MAIN CONTENT --}}
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
 
-                <div class="pt-2">
-                    <a href="#menu" class="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-editorial-widest text-ink-black border-b border-ink-black pb-1 hover:text-medium-gray hover:border-medium-gray transition-colors">
-                        <span>Jelajahi Pilihan Menu</span>
-                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                    </a>
+                {{-- KOLOM KIRI: ELEGANT LAYERED FLOATING FRAME DENGAN VIDEO NUCOMU CAFE --}}
+                <div class="lg:col-span-6 flex justify-center lg:justify-start">
+                    <div class="group/story-card relative w-full max-w-[440px] sm:max-w-[470px] lg:max-w-[490px] xl:max-w-[510px] p-4 sm:p-5 lg:p-6">
+
+                        {{-- 1. Lapisan Belakang (Back Plate): Abu-Abu Lembut (#A8A8A8), Rounded Corners, Rotasi -2.6 Derajat --}}
+                        <div class="story-anim-deco absolute inset-0 bg-[#A8A8A8] rounded-[28px] sm:rounded-[34px] lg:rounded-[40px] pointer-events-none z-0 shadow-md origin-center transform -rotate-2 sm:-rotate-[2.6deg]" aria-hidden="true"></div>
+
+                        {{-- 2. Frame Video Nucomu Cafe (Rasio 16:9, Bingkai Putih Tegas) --}}
+                        <div id="about-video-container"
+                             class="story-anim-photo group/carousel relative z-10 w-full rounded-[18px] sm:rounded-[22px] lg:rounded-[24px] overflow-hidden border-[3.5px] sm:border-4 border-white shadow-[0_20px_45px_-10px_rgba(0,0,0,0.22)] bg-pure-white select-none aspect-video"
+                             style="transition: background-color 0.4s ease;">
+                            <video id="about-video-player"
+                                   autoplay
+                                   muted
+                                   playsinline
+                                   preload="auto"
+                                   class="w-full h-full object-contain block"
+                                   style="aspect-ratio: 16/9; mix-blend-mode: multiply; transition: opacity 0.4s ease-in-out; opacity: 1;">
+                                <source src="video/tiramisu.mp4" type="video/mp4">
+                            </video>
+                            <canvas id="about-video-canvas"
+                                    class="w-full h-full object-contain block absolute inset-0 pointer-events-none"
+                                    style="aspect-ratio: 16/9; display: none; opacity: 0; transition: opacity 0.4s ease-in-out;">
+                            </canvas>
+                        </div>
+
+                        {{-- 3. Badge Logo Resmi Nucomu (Sudut Kiri Atas Foto) --}}
+                        <div class="story-anim-badge-logo absolute top-1.5 left-1.5 sm:top-2 sm:left-2 lg:top-2.5 lg:left-2.5 z-20 w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] lg:w-[82px] lg:h-[82px] bg-[#E8E8E8] rounded-[16px] sm:rounded-[18px] shadow-[0_10px_25px_-6px_rgba(0,0,0,0.22)] flex flex-col items-center justify-center p-2 border border-white/95 select-none" title="Nucomu Cafe Tulungagung">
+                            <img src="{{ asset('images/nucomu/nucomu_logo_icon.png') }}" 
+                                 alt="Logo Nucomu Cafe" 
+                                 class="h-6 sm:h-7 lg:h-8 w-auto object-contain brightness-0">
+                            <span class="text-[7.5px] sm:text-[8.5px] font-extrabold tracking-[0.2em] text-[#1C1C1C] uppercase mt-1 font-body">NUCOMU</span>
+                        </div>
+
+                        {{-- 4. Badge Ikon Kopi (Sudut Kanan Bawah Foto) --}}
+                        <div class="story-anim-badge-coffee absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 lg:bottom-2.5 lg:right-2.5 z-20 w-[54px] h-[54px] sm:w-[60px] sm:h-[60px] lg:w-[66px] lg:h-[66px] bg-[#242424] rounded-full shadow-[0_12px_28px_-6px_rgba(0,0,0,0.36)] flex items-center justify-center text-white border-[3px] border-white" title="Nucomu Coffee Craftsmanship" aria-label="Ikon Kopi Nucomu">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+                                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+                                <line x1="6" y1="1" x2="6" y2="4"></line>
+                                <line x1="10" y1="1" x2="10" y2="4"></line>
+                                <line x1="14" y1="1" x2="14" y2="4"></line>
+                            </svg>
+                        </div>
+
+                    </div>
                 </div>
+
+                {{-- KOLOM KANAN: LABEL, HEADLINE EDITORIAL, DESKRIPSI & TOMBOL MENU --}}
+                <div class="lg:col-span-6 flex flex-col justify-center text-left lg:pl-2">
+
+                    {{-- 1. Label Section dengan Garis Aksen Tipis --}}
+                    <div class="story-anim-right story-delay-1 flex items-center gap-3 mb-5">
+                        <span class="text-xs sm:text-[13px] font-bold text-[#666666] uppercase tracking-[0.22em] font-body">
+                            OUR STORY / TENTANG KAMI
+                        </span>
+                        <div class="w-12 h-px bg-[#DDDDDD]" aria-hidden="true"></div>
+                    </div>
+
+                    {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) untuk Kedua Baris --}}
+                    <div class="story-anim-right story-delay-2 mb-6">
+                        <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight">
+                            <span class="block">Berawal dari Rasa,</span>
+                            <span class="block mt-1 sm:mt-1.5">Kembali karena Rindu.</span>
+                        </h2>
+                    </div>
+
+                    {{-- 3 & 4. Deskripsi Nucomu Cafe (Dua Paragraf dengan Typografi Rapi & Proporsional) --}}
+                    <div class="space-y-4 max-w-xl text-[15px] sm:text-base text-[#666666] leading-[1.8] font-body mb-8">
+                        <p class="story-anim-right story-delay-3">
+                            Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.
+                        </p>
+                        <p class="story-anim-right story-delay-4">
+                            Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.
+                        </p>
+                    </div>
+
+                    {{-- 5. Tombol Jelajahi Pilihan Menu (Pill Button Charcoal #242424 dengan Smooth Hover) --}}
+                    <div class="story-anim-right story-delay-5">
+                        <a href="#menu"
+                           class="group inline-flex items-center gap-3.5 bg-[#242424] hover:bg-[#383838] active:bg-[#1A1A1A] text-white text-sm sm:text-[15px] font-medium py-3.5 px-8 rounded-full transition-colors duration-300 shadow-[0_8px_20px_-4px_rgba(36,36,36,0.3)] hover:shadow-[0_12px_28px_-6px_rgba(36,36,36,0.4)] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
+                            <span>Jelajahi Pilihan Menu</span>
+                            <svg class="w-4 h-4 text-white transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                        </a>
+                    </div>
+
+                </div>
+
             </div>
 
-            <!-- Right Asymmetric Image & Concept Highlight -->
-            <div class="lg:col-span-7 flex flex-col space-y-8 reveal-on-scroll">
-                <!-- Video Atmosphere Frame -->
-                <div id="about-video-container" class="relative w-full aspect-video overflow-hidden rounded bg-pure-white" style="transition: background-color 0.4s ease;">
-                    <video id="about-video-player"
-                           autoplay
-                           muted
-                           playsinline
-                           preload="auto"
-                           class="w-full h-full object-contain block"
-                           style="aspect-ratio: 16/9; mix-blend-mode: multiply; transition: opacity 0.4s ease-in-out; opacity: 1;">
-                        <source src="video/tiramisu.mp4" type="video/mp4">
-                    </video>
-                    <canvas id="about-video-canvas"
-                            class="w-full h-full object-contain block absolute inset-0 pointer-events-none"
-                            style="aspect-ratio: 16/9; display: none; opacity: 0; transition: opacity 0.4s ease-in-out;">
-                    </canvas>
-                </div>
+            {{-- QUOTE SECTION: MINIMALIST EDITORIAL QUOTE CARD --}}
+            <div id="story-quote-wrapper" class="mt-16 sm:mt-20 lg:mt-24">
+                <div class="relative bg-[#F2F2F2] border border-[#DDDDDD] rounded-[24px] sm:rounded-[28px] p-6 sm:p-8 lg:p-9 shadow-[0_10px_30px_rgba(0,0,0,0.03)] transition-all duration-300 hover:border-[#CCCCCC]">
+                    
+                    <div class="flex flex-col md:flex-row items-center md:items-start lg:items-center justify-between gap-6">
 
-                <!-- Concept Statement -->
-                <div class="p-6 sm:p-8 bg-warm-ivory/70 border border-soft-beige rounded">
-                    <p class="font-editorial text-xl sm:text-2xl italic text-ink-black leading-relaxed">
-                        "Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan."
-                    </p>
+                        {{-- Left Quote Icon Indicator --}}
+                        <div class="flex-shrink-0 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-white border border-[#E0E0E0] flex items-center justify-center text-[#777777] shadow-sm">
+                                <span class="font-editorial text-3xl font-bold leading-none select-none">&ldquo;</span>
+                            </div>
+                            <div class="hidden sm:block w-px h-10 bg-[#DDDDDD]" aria-hidden="true"></div>
+                        </div>
+
+                        {{-- Center: Quote Typography with Screen Reader & Typewriter Fallback --}}
+                        <div class="flex-grow text-center md:text-left px-1 sm:px-3">
+                            <p class="sr-only">
+                                "Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan."
+                            </p>
+                            <blockquote class="font-editorial italic font-medium text-lg sm:text-xl lg:text-[22px] text-[#333333] leading-[1.55]">
+                                <span id="story-typewriter-text">&ldquo;Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.&rdquo;</span><span id="story-typewriter-cursor" class="story-typing-cursor inline-block w-[2px] h-[1em] bg-[#333333] align-middle ml-1 hidden" aria-hidden="true"></span>
+                            </blockquote>
+                        </div>
+
+                        {{-- Right: Editorial Signature & Stamp --}}
+                        <div class="flex-shrink-0 flex items-center gap-3 self-center md:self-end lg:self-center">
+                            <div class="hidden lg:block w-12 h-px bg-[#CCCCCC]" aria-hidden="true"></div>
+                            <div class="text-right select-none">
+                                <span class="block text-[11px] font-bold tracking-[0.2em] text-[#666666] uppercase font-body">NUCOMU</span>
+                                <span class="block text-[10px] font-medium tracking-[0.16em] text-[#999999] uppercase font-body">EST. 2024</span>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
-
         </div>
 
-        <!-- SUBSECTION 2B: FASILITAS CAFE (DYNAMIC ASYMMETRICAL EDITORIAL) -->
-        <div id="facilities" class="pt-12 sm:pt-16 lg:pt-20 border-t border-stone-200/80">
+        <!-- SUBSECTION 2B: FASILITAS CAFE (MODERN ELEGANT MONOCHROME — FLOATING GALLERY) -->
+        <div id="facilities" class="pt-14 sm:pt-18 lg:pt-22 border-t border-[#E5E5E5]">
             
-            <!-- Section Header (Editorial Asymmetric Split - Compact) -->
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 pb-6 border-b border-stone-200/80 reveal-on-scroll">
+            <!-- 1. Introduction Header (Minimal Editorial Split) -->
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#E5E5E5] gap-4 reveal-fade-up">
                 <div>
-                    <span class="inline-flex items-center space-x-1.5 text-[11px] font-bold uppercase tracking-widest text-[#E06D24] mb-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                        <span>Eksplorasi Ruang</span>
+                    <span class="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.22em] font-body block mb-2">
+                        OUR SPACE / FASILITAS NUCOMU
                     </span>
-                    <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-light text-[#2A1D17]">
-                        Fasilitas <span class="font-editorial italic font-normal text-[#E06D24]">&amp; Area Cafe</span>
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#1C1C1C] tracking-tight font-body leading-tight">
+                        Setiap Sudut, Punya Cerita.
                     </h2>
                 </div>
-                <p class="font-body text-xs sm:text-sm text-[#5C4E45] max-w-md font-normal leading-relaxed mt-2 md:mt-0">
-                    Dirancang dengan cermat untuk memenuhi kebutuhan kerja tenang, diskusi komunitas, hingga kenyamanan beribadah.
+                <p class="font-body text-xs sm:text-sm text-[#666666] max-w-md font-normal leading-relaxed">
+                    Dirancang dengan cermat untuk kenyamanan bekerja, kehangatan bercengkerama, hingga ketenangan beribadah.
                 </p>
             </div>
 
-            <!-- Facilities Grid Layout (Asymmetrical Alternating - Compact) -->
-            <div class="space-y-8 sm:space-y-10">
-                
-                <!-- Facility Item 1: Indoor Lounge (Image Left, Content Right) -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center reveal-on-scroll">
-                    <div class="lg:col-span-7 group relative overflow-hidden rounded-2xl h-[240px] sm:h-[280px] lg:h-[300px] shadow-md border border-stone-200/80 bg-stone-100">
-                        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop" 
-                             alt="Indoor Lounge Nucomu" 
-                             class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
-                        <div class="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur-md px-3.5 py-1 rounded-full shadow-sm border border-stone-200/70 text-[10px] font-bold text-[#E06D24] uppercase tracking-wider flex items-center space-x-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                            <span>AC &bull; High-Speed Wi-Fi &bull; Power Outlets</span>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-5 lg:pl-2 space-y-3 text-left">
-                        <span class="text-[11px] font-bold text-[#E06D24] uppercase tracking-widest block">01 / Workspace &amp; Lounge</span>
-                        <h3 class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] leading-tight">Indoor Lounge Work Space</h3>
-                        <p class="font-body text-xs sm:text-[13px] text-[#5C4E45] leading-relaxed font-normal">
-                            Area dalam ruangan ber-AC yang tenang dengan meja ergonomis, stopkontak melimpah di setiap sudut, serta koneksi internet cepat. Ideal untuk WFC (Work From Cafe) maupun rapat santai.
-                        </p>
-                        <ul class="space-y-2 pt-1 text-xs text-[#5C4E45]">
-                            <li class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
-                                <span>Suhu ruangan sejuk &amp; sirkulasi udara bersih</span>
-                            </li>
-                            <li class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
-                                <span>Pencahayaan hangat bebas silau untuk kenyamanan mata</span>
-                            </li>
-                            <li class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
-                                <span>Stopkontak di setiap meja &amp; Wi-Fi berkecepatan tinggi</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <!-- 2. Interactive Floating Gallery (Indoor / Outdoor) -->
+            @include('home.sections.facilities.gallery')
 
-                <!-- Facility Item 2: Outdoor Garden (Reversed: Content Left, Image Right) -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center reveal-on-scroll">
-                    <div class="lg:col-span-5 lg:pr-2 space-y-3 text-left order-2 lg:order-1">
-                        <span class="text-[11px] font-bold text-[#E06D24] uppercase tracking-widest block">02 / Open Air &amp; Santai</span>
-                        <h3 class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] leading-tight">Outdoor Garden Terrace</h3>
-                        <p class="font-body text-xs sm:text-[13px] text-[#5C4E45] leading-relaxed font-normal">
-                            Taman terbuka bersuasana asri dengan naungan pepohonan rindang dan pencahayaan malam yang temaram romantis. Tempat favorit untuk menikmati senja, angin sepoi-sepoi, dan obrolan santai tanpa sekat kaku.
-                        </p>
-                        <ul class="space-y-2 pt-1 text-xs text-[#5C4E45]">
-                            <li class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
-                                <span>Smoking area yang lega dan asri</span>
-                            </li>
-                            <li class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
-                                <span>Suasana hijau teduh dengan bangku taman nyaman</span>
-                            </li>
-                            <li class="flex items-center space-x-2">
-                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
-                                <span>Atmosfer santai untuk bercengkerama sore hingga malam</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="lg:col-span-7 group relative overflow-hidden rounded-2xl h-[240px] sm:h-[280px] lg:h-[300px] shadow-md border border-stone-200/80 bg-stone-100 order-1 lg:order-2">
-                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop" 
-                             alt="Outdoor Garden Nucomu" 
-                             class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
-                        <div class="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur-md px-3.5 py-1 rounded-full shadow-sm border border-stone-200/70 text-[10px] font-bold text-[#E06D24] uppercase tracking-wider flex items-center space-x-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                            <span>Smoking Allowed &bull; Garden View</span>
-                        </div>
-                    </div>
-                </div>
+            <!-- 3. Additional Facilities (Musala & Restroom) -->
+            @include('home.sections.facilities.additional-cards')
 
-                <!-- Facility Item 3 & 4 Grid (Musala & Restroom - Compact) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 pt-2">
-                    <!-- Musala -->
-                    <div class="bg-gradient-to-br from-[#FAF8F5] via-white to-[#F6EFE6]/40 p-5 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-all duration-300 space-y-3 text-left reveal-on-scroll">
-                        <div class="w-10 h-10 rounded-xl bg-[#E06D24]/10 border border-[#E06D24]/20 flex items-center justify-center text-[#E06D24] mb-2 shadow-sm">
-                            <span class="material-symbols-outlined text-xl">mosque</span>
-                        </div>
-                        <span class="text-[11px] font-bold text-[#E06D24] uppercase tracking-widest block">03 / Kenyamanan Ibadah</span>
-                        <h4 class="font-editorial text-xl sm:text-2xl font-bold text-[#2A1D17]">Musala Bersih &amp; Terpisah</h4>
-                        <p class="font-body text-xs text-[#5C4E45] font-normal leading-relaxed">
-                            Fasilitas musala khusus lengkap dengan sarana wudhu yang selalu terjaga kebersihannya, sajadah, mukena wangi, serta pendingin udara untuk kenyamanan dan ketenangan ibadah Anda.
-                        </p>
-                        <div class="flex flex-wrap gap-1.5 pt-1">
-                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Sarana Wudhu Bersih</span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Mukena &amp; Sajadah</span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Sejuk &amp; Tenang</span>
-                        </div>
-                    </div>
-
-                    <!-- Kamar Mandi / Restroom -->
-                    <div class="bg-gradient-to-br from-[#FAF8F5] via-white to-[#EDE7DC]/40 p-5 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-all duration-300 space-y-3 text-left reveal-on-scroll">
-                        <div class="w-10 h-10 rounded-xl bg-[#54392B]/10 border border-[#54392B]/20 flex items-center justify-center text-[#54392B] mb-2 shadow-sm">
-                            <span class="material-symbols-outlined text-xl">wc</span>
-                        </div>
-                        <span class="text-[11px] font-bold text-[#54392B] uppercase tracking-widest block">04 / Kebersihan Utama</span>
-                        <h4 class="font-editorial text-xl sm:text-2xl font-bold text-[#2A1D17]">Restroom Modern &amp; Higienis</h4>
-                        <p class="font-body text-xs text-[#5C4E45] font-normal leading-relaxed">
-                            Kamar mandi terpisah pria &amp; wanita dengan standar kebersihan berkala tinggi, dilengkapi sabun cuci tangan aromaterapi lembut, cermin estetis, dan ventilasi udara segar demi kenyamanan setiap pengunjung.
-                        </p>
-                        <div class="flex flex-wrap gap-1.5 pt-1">
-                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Terpisah Pria &amp; Wanita</span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Hand Wash Aromatik</span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Sanitasi Teratur</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
         </div>
 
+    </div>
 </section>
 
 <!-- SCRIPT: ABOUT SECTION VIDEO SEQUENCER -->

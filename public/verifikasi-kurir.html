@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifikasi Password — Kurir Zendo</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       1. CSS VARIABLES & RESET
+       ========================================================== */
+    :root {
+      --primary-start: #6C5CE7;
+      --primary-end: #4F6BFF;
+      --primary-glow: rgba(108, 92, 231, 0.28);
+      --success-color: #22C55E;
+      --success-dark: #16A34A;
+      --success-glow: rgba(34, 197, 94, 0.32);
+      --error-color: #EF4444;
+      --error-glow: rgba(239, 68, 68, 0.28);
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-400: #94A3B8;
+      --gray-600: #64748B;
+      --gray-800: #1E293B;
+      --gray-900: #0F172A;
+      --radius-card: 24px;
+      --radius-input: 14px;
+      --radius-btn: 14px;
+      --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #FAF8FF 0%, #EDE9FE 45%, #FCE7F3 100%);
+      color: var(--gray-800);
+    }
+
+    /* ==========================================================
+       2. AMBIENT BACKGROUND BLOBS
+       ========================================================== */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.55;
+      transition: transform 1.2s ease;
+    }
+
+    .blob-1 {
+      width: 380px;
+      height: 380px;
+      background: linear-gradient(135deg, #A78BFA, #C084FC);
+      top: -120px;
+      left: -100px;
+      animation: floatSlow 18s ease-in-out infinite alternate;
+    }
+
+    .blob-2 {
+      width: 420px;
+      height: 420px;
+      background: linear-gradient(135deg, #F472B6, #FB7185);
+      bottom: -140px;
+      right: -120px;
+      opacity: 0.45;
+      animation: floatSlow 15s ease-in-out infinite alternate-reverse;
+    }
+
+    .blob-3 {
+      width: 320px;
+      height: 320px;
+      background: linear-gradient(135deg, #60A5FA, #818CF8);
+      top: 40%;
+      left: 60%;
+      opacity: 0.35;
+      animation: floatSlow 22s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatSlow {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    /* ==========================================================
+       3. KARTU VERIFIKASI (CONTAINER)
+       ========================================================== */
+    .card-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      width: 100%;
+      background: #FFFFFF;
+      border-radius: var(--radius-card);
+      padding: 36px 28px 30px;
+      box-shadow: 
+        0 24px 48px -12px rgba(108, 92, 231, 0.16),
+        0 8px 24px -4px rgba(15, 23, 42, 0.04),
+        0 0 0 1px rgba(108, 92, 231, 0.08);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s var(--ease-smooth), box-shadow 0.4s var(--ease-smooth);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-start), var(--primary-end));
+      opacity: 0.9;
+    }
+
+    /* Animasi getar saat error */
+    .card.shake {
+      animation: shake 400ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-9px) rotate(-1deg); }
+      30% { transform: translateX(8px) rotate(1deg); }
+      45% { transform: translateX(-6px) rotate(-0.5deg); }
+      60% { transform: translateX(5px) rotate(0.5deg); }
+      75% { transform: translateX(-3px); }
+      90% { transform: translateX(2px); }
+    }
+
+    /* ==========================================================
+       4. ICON BADGE DENGAN ROTATING RING
+       ========================================================== */
+    .icon-container {
+      position: relative;
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cincin luar SVG yang berputar */
+    .rotating-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      animation: spinRing 14s linear infinite;
+      transform-origin: center;
+      transition: animation-duration 0.3s ease;
+    }
+
+    .rotating-ring circle {
+      fill: none;
+      stroke: url(#ringGradient);
+      stroke-width: 2;
+      stroke-dasharray: 6 8;
+      stroke-linecap: round;
+      opacity: 0.85;
+    }
+
+    /* Saat loading: putaran cincin dipercepat */
+    .state-loading .rotating-ring {
+      animation-duration: 1.2s !important;
+    }
+
+    /* Saat sukses: cincin berdenyut hijau */
+    .pulse-ring-success {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--success-color);
+      opacity: 0;
+      pointer-events: none;
+      display: none;
+    }
+
+    .state-success .pulse-ring-success {
+      display: block;
+      animation: pulseGreenRing 1.8s infinite cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    @keyframes spinRing {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseGreenRing {
+      0% { transform: scale(0.92); opacity: 0.9; }
+      70% { transform: scale(1.28); opacity: 0; }
+      100% { transform: scale(1.3); opacity: 0; }
+    }
+
+    /* Lingkaran badge utama */
+    .icon-badge {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+      box-shadow: 0 10px 22px var(--primary-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s var(--ease-bounce);
+    }
+
+    .icon-badge svg {
+      width: 26px;
+      height: 26px;
+      fill: #FFFFFF;
+      transition: transform 0.35s var(--ease-bounce), opacity 0.25s ease;
+    }
+
+    /* Transisi gembok ke centang pada badge */
+    .icon-lock {
+      display: block;
+    }
+    .icon-check {
+      display: none;
+    }
+
+    /* State sukses badge */
+    .state-success .icon-badge {
+      background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%);
+      box-shadow: 0 10px 24px var(--success-glow);
+      transform: scale(1.08);
+    }
+
+    .state-success .icon-lock {
+      display: none;
+    }
+
+    .state-success .icon-check {
+      display: block;
+      fill: none;
+      stroke: #FFFFFF;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Animasi gambar garis centang (stroke draw) */
+    .check-path {
+      stroke-dasharray: 40;
+      stroke-dashoffset: 40;
+      animation: drawCheck 0.6s 0.2s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* State error badge sesaat */
+    .state-error .icon-badge {
+      background: linear-gradient(135deg, var(--error-color) 0%, #DC2626 100%);
+      box-shadow: 0 10px 22px var(--error-glow);
+    }
+
+    /* ==========================================================
+       5. TEKS JUDUL & SUBJUDUL
+       ========================================================== */
+    .text-center {
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gray-900);
+      letter-spacing: -0.025em;
+      margin-bottom: 6px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-600);
+      line-height: 1.45;
+      margin-bottom: 24px;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .email-masked {
+      display: inline-block;
+      font-weight: 700;
+      color: var(--gray-900);
+      background: var(--gray-100);
+      padding: 2px 10px;
+      border-radius: 8px;
+      margin-top: 4px;
+      font-size: 12.5px;
+      letter-spacing: 0.02em;
+      border: 1px solid var(--gray-200);
+    }
+
+    /* ==========================================================
+       6. INPUT PASSWORD & ELEMEN INTERAKTIF
+       ========================================================== */
+    .input-section {
+      width: 100%;
+      margin-bottom: 16px;
+      transition: opacity 0.35s ease, transform 0.35s var(--ease-smooth);
+    }
+
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: var(--radius-input);
+      background: #FFFFFF;
+      border: 1.6px solid rgba(108, 92, 231, 0.22);
+      display: flex;
+      align-items: center;
+      transition: all 0.28s var(--ease-smooth);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    }
+
+    /* Icon gembok kiri */
+    .input-icon-left {
+      position: absolute;
+      left: 14px;
+      width: 18px;
+      height: 18px;
+      fill: var(--primary-start);
+      opacity: 0.75;
+      pointer-events: none;
+      transition: fill 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    /* Input textfield */
+    .password-input {
+      width: 100%;
+      height: 48px;
+      padding: 0 46px 0 42px;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--gray-900);
+      letter-spacing: 0.08em;
+    }
+
+    .password-input::placeholder {
+      font-weight: 500;
+      color: var(--gray-400);
+      letter-spacing: normal;
+      font-size: 13.5px;
+    }
+
+    /* Efek fokus: glow ungu & sedikit naik scale 1.02 */
+    .input-wrapper:focus-within {
+      transform: scale(1.02);
+      border-color: var(--primary-start);
+      box-shadow: 
+        0 0 0 4px var(--primary-glow),
+        0 8px 18px -4px rgba(108, 92, 231, 0.18);
+    }
+
+    .input-wrapper:focus-within .input-icon-left {
+      opacity: 1;
+      transform: scale(1.08);
+      fill: var(--primary-start);
+    }
+
+    /* Efek pop saat mengetik */
+    .input-wrapper.typing-pop {
+      animation: keyPop 0.18s ease-out;
+    }
+
+    @keyframes keyPop {
+      0% { transform: scale(1.02); }
+      50% { transform: scale(1.038); }
+      100% { transform: scale(1.02); }
+    }
+
+    /* Border merah saat state error */
+    .state-error .input-wrapper {
+      border-color: var(--error-color) !important;
+      box-shadow: 0 0 0 4px var(--error-glow) !important;
+    }
+
+    .state-error .input-icon-left {
+      fill: var(--error-color) !important;
+    }
+
+    /* Tombol mata di kanan */
+    .toggle-visibility-btn {
+      position: absolute;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-400);
+      transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .toggle-visibility-btn:hover {
+      color: var(--primary-start);
+      background: var(--gray-100);
+    }
+
+    .toggle-visibility-btn:focus-visible {
+      outline: 2px solid var(--primary-start);
+      outline-offset: 2px;
+    }
+
+    .toggle-visibility-btn svg {
+      width: 19px;
+      height: 19px;
+      fill: currentColor;
+      transition: transform 0.25s var(--ease-bounce), opacity 0.2s ease;
+    }
+
+    /* ==========================================================
+       7. PASSWORD STRENGTH BAR (4 SEGMEN)
+       ========================================================== */
+    .strength-meter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 9px;
+      padding: 0 2px;
+    }
+
+    .strength-segment {
+      flex: 1;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--gray-200);
+      transition: background-color 0.35s ease, transform 0.35s ease;
+    }
+
+    .strength-text {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 5px;
+      display: flex;
+      justify-content: flex-end;
+      color: var(--gray-400);
+      transition: color 0.3s ease;
+    }
+
+    /* Warna segmen kekuatan password */
+    .strength-segment.active-weak {
+      background: var(--error-color);
+    }
+    .strength-segment.active-fair {
+      background: #F59E0B;
+    }
+    .strength-segment.active-good {
+      background: #3B82F6;
+    }
+    .strength-segment.active-strong {
+      background: var(--success-color);
+    }
+
+    /* ==========================================================
+       8. PESAN ERROR / STATUS ALERT
+       ========================================================== */
+    .error-banner {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      color: #B91C1C;
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      animation: slideFadeIn 0.3s var(--ease-smooth);
+    }
+
+    .error-banner svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    @keyframes slideFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================
+       9. SUCCESS DOTS VIEW (MUNCUL SATU PER SATU / STAGGER)
+       ========================================================== */
+    .success-dots-view {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      height: 52px;
+      margin-bottom: 16px;
+    }
+
+    .state-success .input-section {
+      display: none;
+    }
+
+    .state-success .success-dots-view {
+      display: flex;
+    }
+
+    .success-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%);
+      box-shadow: 0 4px 10px var(--success-glow);
+      opacity: 0;
+      transform: scale(0.3);
+      animation: popDot 0.45s var(--ease-bounce) forwards;
+    }
+
+    .success-dot:nth-child(1) { animation-delay: 0.05s; }
+    .success-dot:nth-child(2) { animation-delay: 0.15s; }
+    .success-dot:nth-child(3) { animation-delay: 0.25s; }
+    .success-dot:nth-child(4) { animation-delay: 0.35s; }
+    .success-dot:nth-child(5) { animation-delay: 0.45s; }
+    .success-dot:nth-child(6) { animation-delay: 0.55s; }
+
+    @keyframes popDot {
+      0% { opacity: 0; transform: scale(0.2) translateY(8px); }
+      70% { opacity: 1; transform: scale(1.25) translateY(-3px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ==========================================================
+       10. TOMBOL UTAMA DENGAN PROGRESS BAR
+       ========================================================== */
+    .btn-submit {
+      position: relative;
+      width: 100%;
+      height: 48px;
+      border-radius: var(--radius-btn);
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 14.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px -4px var(--primary-glow);
+      transition: all 0.3s var(--ease-smooth);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px -4px var(--primary-glow);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px -2px var(--primary-glow);
+    }
+
+    /* Disabled state */
+    .btn-submit:disabled {
+      background: #CBD5E1;
+      color: #94A3B8;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none !important;
+    }
+
+    /* Progress bar di dalam tombol saat loading */
+    .btn-progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      transition: width 0.1s linear;
+    }
+
+    .state-loading .btn-progress-bar {
+      width: 100%;
+      transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Spinner saat loading */
+    .btn-spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spinSpinner 0.8s linear infinite;
+    }
+
+    @keyframes spinSpinner {
+      to { transform: rotate(360deg); }
+    }
+
+    .state-loading .btn-spinner {
+      display: inline-block;
+    }
+
+    /* State sukses pada tombol */
+    .state-success .btn-submit {
+      background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%) !important;
+      box-shadow: 0 10px 24px -2px var(--success-glow) !important;
+      color: #FFFFFF !important;
+      cursor: pointer !important;
+    }
+
+    /* ==========================================================
+       11. LINK FOOTER & COUNTDOWN LOCK
+       ========================================================== */
+    .card-footer {
+      margin-top: 18px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .forgot-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-start);
+      text-decoration: none;
+      transition: color 0.2s ease, opacity 0.2s ease;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+      color: var(--primary-end);
+    }
+
+    .lock-timer-text {
+      display: none;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--error-color);
+      animation: slideFadeIn 0.3s ease;
+    }
+
+    /* ==========================================================
+       12. PETUNJUK DEMO DI LUAR KARTU
+       ========================================================== */
+    .demo-hint {
+      margin-top: 20px;
+      font-size: 12.5px;
+      color: var(--gray-600);
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .demo-hint:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(108, 92, 231, 0.12);
+    }
+
+    .demo-hint strong {
+      color: var(--primary-start);
+      font-weight: 700;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    /* ==========================================================
+       13. TOAST NOTIFIKASI
+       ========================================================== */
+    .toast-notification {
+      position: fixed;
+      bottom: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 13px 22px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+      z-index: 99999;
+      pointer-events: none;
+      opacity: 0;
+      transition: transform 0.4s var(--ease-bounce), opacity 0.3s ease, bottom 0.4s var(--ease-bounce);
+    }
+
+    .toast-notification.show {
+      bottom: 28px;
+      opacity: 1;
+    }
+
+    .toast-icon {
+      width: 18px;
+      height: 18px;
+      fill: var(--success-color);
+      flex-shrink: 0;
+    }
+
+    /* Canvas Confetti */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ==========================================================
+       14. PREFERS-REDUCED-MOTION (AKSESIBILITAS)
+       ========================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .card.shake {
+        animation: none !important;
+      }
+      .rotating-ring {
+        animation: none !important;
+      }
+      .blob {
+        animation: none !important;
+      }
+      #confettiCanvas {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Glowing Blobs -->
+  <div class="blob blob-1" aria-hidden="true"></div>
+  <div class="blob blob-2" aria-hidden="true"></div>
+  <div class="blob blob-3" aria-hidden="true"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <!-- Card Wrapper -->
+  <main class="card-wrapper">
+    <div class="card" id="verificationCard">
+      
+      <!-- 1. Ikon Gembok & Cincin Berputar -->
+      <div class="icon-container" aria-hidden="true">
+        <!-- Cincin SVG Putar -->
+        <svg class="rotating-ring" viewBox="0 0 84 84">
+          <defs>
+            <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6C5CE7" stop-opacity="0.9" />
+              <stop offset="50%" stop-color="#4F6BFF" stop-opacity="0.6" />
+              <stop offset="100%" stop-color="#C084FC" stop-opacity="0.2" />
+            </linearGradient>
+          </defs>
+          <circle cx="42" cy="42" r="39" />
+        </svg>
+
+        <!-- Cincin Sukses Hijau Berdenyut -->
+        <div class="pulse-ring-success"></div>
+
+        <!-- Lingkaran Badge Utama -->
+        <div class="icon-badge" id="iconBadge">
+          <!-- SVG Gembok (Idle/Loading) -->
+          <svg class="icon-lock" viewBox="0 0 24 24" id="lockSvg">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+          </svg>
+          
+          <!-- SVG Centang (Sukses) -->
+          <svg class="icon-check" viewBox="0 0 24 24" id="checkSvg">
+            <path class="check-path" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 2 & 3. Judul dan Subjudul -->
+      <div class="text-center">
+        <h1 class="card-title" id="cardTitle">Verifikasi Dirimu</h1>
+        <p class="card-subtitle" id="cardSubtitle">
+          Masukkan password untuk akun<br>
+          <span class="email-masked">s•••••@gmail.com</span>
+        </p>
+      </div>
+
+      <!-- Banner Pesan Error -->
+      <div class="error-banner" id="errorBanner" role="alert" aria-live="assertive">
+        <svg viewBox="0 0 20 20">
+          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 9a1 1 0 012 0v3a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
+        </svg>
+        <span id="errorMessage">Password salah. Coba lagi.</span>
+      </div>
+
+      <!-- Form Input Password -->
+      <form id="verifyForm" onsubmit="event.preventDefault(); handleFormSubmit();" novalidate>
+        
+        <!-- 4. Input Password & Kekuatan Password -->
+        <div class="input-section" id="inputSection">
+          <div class="input-wrapper" id="inputWrapper">
+            <!-- Ikon Gembok Kecil di Kiri -->
+            <svg class="input-icon-left" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-5.1c1.71 0 3.1 1.39 3.1 3.1v2H8.9V6c0-1.71 1.39-3.1 3.1-3.1z"/>
+            </svg>
+
+            <!-- Input Textfield -->
+            <input 
+              type="password" 
+              id="passwordInput" 
+              class="password-input" 
+              placeholder="Masukkan password" 
+              autocomplete="current-password"
+              aria-label="Password akun"
+              required
+            >
+
+            <!-- Tombol Toggle Mata -->
+            <button 
+              type="button" 
+              class="toggle-visibility-btn" 
+              id="togglePasswordBtn" 
+              aria-label="Tampilkan password"
+              title="Tampilkan password"
+            >
+              <!-- Eye Icon (Show) -->
+              <svg id="eyeIcon" viewBox="0 0 24 24">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+              <!-- Eye Slash Icon (Hide) -->
+              <svg id="eyeSlashIcon" viewBox="0 0 24 24" style="display: none;">
+                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Bar Kekuatan Password (4 Segmen) -->
+          <div class="strength-meter" aria-hidden="true">
+            <div class="strength-segment" id="seg1"></div>
+            <div class="strength-segment" id="seg2"></div>
+            <div class="strength-segment" id="seg3"></div>
+            <div class="strength-segment" id="seg4"></div>
+          </div>
+          <div class="strength-text" id="strengthText">Minimal 6 karakter</div>
+        </div>
+
+        <!-- Success Staggered Dots (Menggantikan input saat sukses) -->
+        <div class="success-dots-view" id="successDotsView" aria-hidden="true">
+          <div class="success-dot"></div>
+          <div class="success-dot"></div>
+          <div class="success-dot"></div>
+          <div class="success-dot"></div>
+          <div class="success-dot"></div>
+          <div class="success-dot"></div>
+        </div>
+
+        <!-- 5. Tombol Utama -->
+        <button type="submit" id="submitBtn" class="btn-submit" disabled>
+          <!-- Progress bar animasi loading -->
+          <div class="btn-progress-bar" id="btnProgressBar"></div>
+          <!-- Spinner icon -->
+          <span class="btn-spinner" id="btnSpinner" aria-hidden="true"></span>
+          <!-- Teks tombol -->
+          <span id="btnText">Verifikasi Password</span>
+        </button>
+
+      </form>
+
+      <!-- 6. Baris Bawah / Lupa Password & Countdown -->
+      <footer class="card-footer">
+        <button type="button" class="forgot-link" id="forgotPasswordBtn" onclick="handleForgotPassword()">
+          Lupa password?
+        </button>
+        <span class="lock-timer-text" id="lockTimerText">Coba lagi dalam 0:30</span>
+      </footer>
+
+    </div>
+
+    <!-- 7. Petunjuk Demo di luar kartu -->
+    <div class="demo-hint" id="demoHint" title="Klik untuk isi otomatis 'admin123'" onclick="autofillDemoPassword()">
+      <span>💡</span>
+      <span>Password demo: <strong>admin123</strong></span>
+    </div>
+  </main>
+
+  <!-- Toast Notifikasi (Saat tombol Lanjutkan diklik) -->
+  <div class="toast-notification" id="toastNotification" role="status">
+    <svg class="toast-icon" viewBox="0 0 20 20">
+      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+    </svg>
+    <span>Mengalihkan ke dashboard...</span>
+  </div>
+
+  <!-- ==========================================================
+       JAVASCRIPT VANILLA & STATE MACHINE
+       ========================================================== -->
+  <script>
+    /*
+     * STATE MACHINE SEDERHANA:
+     * - 'idle'    : Siap menerima input
+     * - 'loading' : Memproses verifikasi (progress bar, spinner, disabled)
+     * - 'success' : Password benar (centang hijau, dots, tombol lanjutkan)
+     * - 'error'   : Password salah (shake, banner error, fokus ulang)
+     * - 'locked'  : Terkunci 30 detik setelah 3 kali salah
+     */
+
+    const AppState = {
+      IDLE: 'idle',
+      LOADING: 'loading',
+      SUCCESS: 'success',
+      ERROR: 'error',
+      LOCKED: 'locked'
+    };
+
+    let currentState = AppState.IDLE;
+    let failedAttempts = 0;
+    let countdownInterval = null;
+    let isPasswordVisible = false;
+
+    // DOM Elements
+    const card = document.getElementById('verificationCard');
+    const passwordInput = document.getElementById('passwordInput');
+    const inputWrapper = document.getElementById('inputWrapper');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const btnProgressBar = document.getElementById('btnProgressBar');
+    const cardTitle = document.getElementById('cardTitle');
+    const cardSubtitle = document.getElementById('cardSubtitle');
+    const errorBanner = document.getElementById('errorBanner');
+    const errorMessage = document.getElementById('errorMessage');
+    const lockTimerText = document.getElementById('lockTimerText');
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const eyeSlashIcon = document.getElementById('eyeSlashIcon');
+    const strengthText = document.getElementById('strengthText');
+    const seg1 = document.getElementById('seg1');
+    const seg2 = document.getElementById('seg2');
+    const seg3 = document.getElementById('seg3');
+    const seg4 = document.getElementById('seg4');
+    const toast = document.getElementById('toastNotification');
+
+    /* ----------------------------------------------------------
+     * 1. EVENT LISTENERS: INPUT & TYPING EFFECT
+     * ---------------------------------------------------------- */
+    passwordInput.addEventListener('input', (e) => {
+      if (currentState === AppState.LOCKED) return;
+
+      const value = e.target.value;
+
+      // Efek visual 'pop' saat karakter diketik
+      inputWrapper.classList.remove('typing-pop');
+      void inputWrapper.offsetWidth; // Trigger reflow
+      inputWrapper.classList.add('typing-pop');
+
+      // Hilangkan status error saat pengguna mulai mengetik ulang
+      if (card.classList.contains('state-error')) {
+        card.classList.remove('state-error');
+        errorBanner.style.display = 'none';
+      }
+
+      // Evaluasi kekuatan password & aktivasi tombol submit
+      evaluatePasswordStrength(value);
+
+      // Tombol aktif hanya jika panjang >= 6 karakter
+      if (value.length >= 6) {
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.disabled = true;
+      }
+    });
+
+    // Toggle Tampilkan / Sembunyikan Password
+    togglePasswordBtn.addEventListener('click', () => {
+      isPasswordVisible = !isPasswordVisible;
+      passwordInput.type = isPasswordVisible ? 'text' : 'password';
+
+      if (isPasswordVisible) {
+        eyeIcon.style.display = 'none';
+        eyeSlashIcon.style.display = 'block';
+        togglePasswordBtn.setAttribute('aria-label', 'Sembunyikan password');
+        togglePasswordBtn.setAttribute('title', 'Sembunyikan password');
+      } else {
+        eyeIcon.style.display = 'block';
+        eyeSlashIcon.style.display = 'none';
+        togglePasswordBtn.setAttribute('aria-label', 'Tampilkan password');
+        togglePasswordBtn.setAttribute('title', 'Tampilkan password');
+      }
+      passwordInput.focus();
+    });
+
+    /* ----------------------------------------------------------
+     * 2. EVALUASI KEKUATAN PASSWORD (4 SEGMEN)
+     * ---------------------------------------------------------- */
+    function evaluatePasswordStrength(pass) {
+      const segments = [seg1, seg2, seg3, seg4];
+      segments.forEach(seg => {
+        seg.className = 'strength-segment';
+      });
+
+      if (!pass || pass.length === 0) {
+        strengthText.textContent = 'Minimal 6 karakter';
+        strengthText.style.color = 'var(--gray-400)';
+        return;
+      }
+
+      let score = 0;
+      if (pass.length >= 6) score++;
+      if (pass.length >= 8) score++;
+      if (/[A-Z]/.test(pass) || /[0-9]/.test(pass)) score++;
+      if (/[^A-Za-z0-9]/.test(pass) || (pass.length >= 10 && /[0-9]/.test(pass))) score++;
+
+      if (score === 1) {
+        seg1.classList.add('active-weak');
+        strengthText.textContent = 'Password lemah';
+        strengthText.style.color = 'var(--error-color)';
+      } else if (score === 2) {
+        seg1.classList.add('active-fair');
+        seg2.classList.add('active-fair');
+        strengthText.textContent = 'Cukup kuat';
+        strengthText.style.color = '#F59E0B';
+      } else if (score === 3) {
+        seg1.classList.add('active-good');
+        seg2.classList.add('active-good');
+        seg3.classList.add('active-good');
+        strengthText.textContent = 'Password kuat';
+        strengthText.style.color = '#3B82F6';
+      } else if (score >= 4) {
+        seg1.classList.add('active-strong');
+        seg2.classList.add('active-strong');
+        seg3.classList.add('active-strong');
+        seg4.classList.add('active-strong');
+        strengthText.textContent = 'Sangat kuat!';
+        strengthText.style.color = 'var(--success-color)';
+      }
+    }
+
+    /* ----------------------------------------------------------
+     * 3. SUBMIT FORM & LOGIKA STATE MACHINE
+     * ---------------------------------------------------------- */
+    function handleFormSubmit() {
+      if (currentState === AppState.LOADING || currentState === AppState.LOCKED) return;
+
+      // Jika state SUKSES dan tombol diklik lagi (tombol "Lanjutkan →")
+      if (currentState === AppState.SUCCESS) {
+        showRedirectToast();
+        return;
+      }
+
+      const inputVal = passwordInput.value.trim();
+      if (inputVal.length < 6) return;
+
+      // Masuk ke STATE LOADING
+      setLoadingState();
+
+      // Simulasi verifikasi selama 1.5 detik
+      setTimeout(() => {
+        if (inputVal === 'admin123') {
+          setSuccessState();
+        } else {
+          setErrorState();
+        }
+      }, 1500);
+    }
+
+    /* ----------------------------------------------------------
+     * A. STATE: LOADING
+     * ---------------------------------------------------------- */
+    function setLoadingState() {
+      currentState = AppState.LOADING;
+      card.classList.remove('state-error');
+      card.classList.add('state-loading');
+
+      // Kunci input dan tombol
+      passwordInput.disabled = true;
+      submitBtn.disabled = true;
+      btnText.textContent = 'Memverifikasi...';
+      errorBanner.style.display = 'none';
+    }
+
+    /* ----------------------------------------------------------
+     * B. STATE: SUKSES
+     * ---------------------------------------------------------- */
+    function setSuccessState() {
+      currentState = AppState.SUCCESS;
+      card.classList.remove('state-loading', 'state-error');
+      card.classList.add('state-success');
+
+      // Update Teks Judul & Subjudul
+      cardTitle.textContent = 'Berhasil Diverifikasi';
+      cardSubtitle.innerHTML = 'Akunmu sudah terverifikasi dengan aman';
+
+      // Tombol berubah menjadi hijau "Lanjutkan →"
+      btnText.textContent = 'Lanjutkan →';
+      submitBtn.disabled = false;
+
+      // Jalankan Confetti
+      launchConfetti();
+    }
+
+    /* ----------------------------------------------------------
+     * C. STATE: ERROR
+     * ---------------------------------------------------------- */
+    function setErrorState() {
+      failedAttempts++;
+      currentState = AppState.ERROR;
+      card.classList.remove('state-loading');
+      card.classList.add('state-error');
+
+      // Animasi Shake kartu
+      card.classList.remove('shake');
+      void card.offsetWidth; // Reflow
+      card.classList.add('shake');
+
+      // Kembalikan tombol ke teks semula
+      btnText.textContent = 'Verifikasi Password';
+      submitBtn.disabled = true;
+      passwordInput.disabled = false;
+      passwordInput.value = '';
+      evaluatePasswordStrength('');
+
+      // Cek apakah mencapai limit percobaan (3 kali)
+      if (failedAttempts >= 3) {
+        setLockedState(30);
+      } else {
+        errorBanner.style.display = 'flex';
+        errorMessage.textContent = `Password salah. Coba lagi (${failedAttempts}/3).`;
+        setTimeout(() => {
+          passwordInput.focus();
+        }, 100);
+      }
+    }
+
+    /* ----------------------------------------------------------
+     * D. STATE: TERKUNCI (LOCKOUT 30 DETIK)
+     * ---------------------------------------------------------- */
+    function setLockedState(seconds) {
+      currentState = AppState.LOCKED;
+      card.classList.remove('state-loading', 'state-error');
+
+      passwordInput.disabled = true;
+      submitBtn.disabled = true;
+      errorBanner.style.display = 'flex';
+      errorMessage.textContent = 'Terlalu banyak percobaan salah. Tombol terkunci.';
+
+      let remaining = seconds;
+      lockTimerText.style.display = 'block';
+      updateLockTimerDisplay(remaining);
+
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      countdownInterval = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          unlockState();
+        } else {
+          updateLockTimerDisplay(remaining);
+        }
+      }, 1000);
+    }
+
+    function updateLockTimerDisplay(seconds) {
+      const s = seconds < 10 ? '0' + seconds : seconds;
+      lockTimerText.textContent = `Coba lagi dalam 0:${s}`;
+    }
+
+    function unlockState() {
+      currentState = AppState.IDLE;
+      failedAttempts = 0;
+      passwordInput.disabled = false;
+      lockTimerText.style.display = 'none';
+      errorBanner.style.display = 'none';
+      btnText.textContent = 'Verifikasi Password';
+      passwordInput.focus();
+    }
+
+    /* ----------------------------------------------------------
+     * TOAST NOTIFIKASI SAAT KLIK 'LANJUTKAN →'
+     * ---------------------------------------------------------- */
+    function showRedirectToast() {
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    /* ----------------------------------------------------------
+     * HELPER: AUTORUN DEMO PASSWORD
+     * ---------------------------------------------------------- */
+    function autofillDemoPassword() {
+      if (currentState === AppState.LOCKED || currentState === AppState.LOADING) return;
+      passwordInput.value = 'admin123';
+      passwordInput.dispatchEvent(new Event('input'));
+      passwordInput.focus();
+    }
+
+    function handleForgotPassword() {
+      alert('Tautan pemulihan password telah dikirim ke email terdaftar.');
+    }
+
+    /* ==========================================================
+     * LIGHTWEIGHT CANVAS CONFETTI (VANILLA JS, TANPA LIBRARY)
+     * ========================================================== */
+    function launchConfetti() {
+      // Periksa preferensi reduced motion pengguna
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#6C5CE7', '#4F6BFF', '#22C55E', '#F59E0B', '#EC4899', '#38BDF8'];
+      const particles = [];
+      const particleCount = 75;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() * 80 - 40),
+          y: canvas.height / 2 - 80,
+          w: Math.random() * 8 + 5,
+          h: Math.random() * 6 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 12,
+          vy: Math.random() * -11 - 4,
+          gravity: 0.35,
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+
+      let animationFrame;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let activeCount = 0;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.rotation += p.rotSpeed;
+          p.opacity -= 0.009;
+
+          if (p.opacity > 0 && p.y < canvas.height) {
+            activeCount++;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          }
+        });
+
+        if (activeCount > 0) {
+          animationFrame = requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          cancelAnimationFrame(animationFrame);
+        }
+      }
+
+      render();
+    }
+
+    // Auto-focus input saat pertama kali halaman dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+      passwordInput.focus();
+    });
+  </script>
+</body>
+</html>

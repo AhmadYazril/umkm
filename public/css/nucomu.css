@@ -145,6 +145,47 @@ body {
     transform: translateY(0);
 }
 
+/* Directional Editorial Reveal Animations for Facilities */
+.reveal-from-left {
+    opacity: 0;
+    transform: translateX(-32px);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.reveal-from-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-from-right {
+    opacity: 0;
+    transform: translateX(32px);
+    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.reveal-from-right.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.reveal-fade-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.style-delay-2 {
+    transition-delay: 0.15s;
+}
+
 /* Carousel & Fade Transitions */
 .fade-transition {
     transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
@@ -273,6 +314,355 @@ video.menu-lazy-video {
     object-fit: contain;
 }
 
+/* ==========================================================================
+   OUR STORY / ABOUT US SECTION (MONOCHROME MINIMALIST EDITORIAL)
+   ========================================================================== */
+
+.vertical-lr-editorial {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+}
+
+/* Photo & Decoration: Fade In + Slide In From Left (0.8s Smooth Easing) */
+.story-anim-photo {
+    opacity: 0;
+    transform: translateX(-36px) rotate(0deg);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s ease;
+    will-change: opacity, transform;
+}
+
+.story-anim-deco {
+    opacity: 0;
+    transform: scale(0.92) translateX(-20px) rotate(-2.6deg);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+/* Badges: Scale In + Fade In */
+.story-anim-badge-logo {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.35s,
+                transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.35s;
+    will-change: opacity, transform;
+}
+
+.story-anim-badge-coffee {
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.45s,
+                transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.45s;
+    will-change: opacity, transform;
+}
+
+/* Right Column Items: Fade In + Slide In From Right with 0.15s Stagger */
+.story-anim-right {
+    opacity: 0;
+    transform: translateX(32px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.story-delay-1 { transition-delay: 0.1s; }   /* 1. Label OUR STORY */
+.story-delay-2 { transition-delay: 0.25s; }  /* 2. Headline */
+.story-delay-3 { transition-delay: 0.4s; }   /* 3. Deskripsi Paragraf 1 */
+.story-delay-4 { transition-delay: 0.48s; }  /* 4. Deskripsi Paragraf 2 */
+.story-delay-5 { transition-delay: 0.6s; }   /* 5. Tombol CTA */
+
+/* In-View Active State (Single-Trigger, No Layout Shift) */
+.story-in-view .story-anim-photo {
+    opacity: 1;
+    transform: translate(0, 0) rotate(-0.8deg);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s ease;
+}
+
+.story-in-view .story-anim-right {
+    opacity: 1;
+    transform: translate(0, 0);
+}
+
+.story-in-view .story-anim-deco {
+    opacity: 1;
+    transform: scale(1) translate(0, 0) rotate(-2.6deg);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Frame Hover Effect: 3px Lift, Deeper Shadow, Base Rotation Strictly Preserved */
+.group\/story-card:hover .story-anim-photo {
+    transform: translate(0, -3px) rotate(-0.8deg);
+    box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.28);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.3s ease;
+}
+
+.group\/story-card:hover .story-anim-deco {
+    transform: scale(1.01) translate(0, -1px) rotate(-2.6deg);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Stable Badges */
+.story-in-view .story-anim-badge-logo,
+.story-in-view .story-anim-badge-coffee {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ==========================================================================
+   STORY CAROUSEL (SMOOTH CROSSFADE & CONTROLS)
+   ========================================================================== */
+.story-carousel-slide {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
+}
+
+.story-carousel-slide.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
+}
+
+/* Desktop Manual Controls */
+.story-carousel-btn {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, background-color 0.25s ease, transform 0.2s ease;
+}
+
+.group\/story-card:hover .story-carousel-btn,
+.story-carousel-btn:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Blinking Cursor for Typewriter */
+.story-typing-cursor {
+    animation: story-cursor-blink 0.75s step-start infinite;
+}
+
+@keyframes story-cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ==========================================================================
+   FACILITIES FLOATING STACKED GALLERY (2-SLOT ASYMMETRICAL EDITORIAL - SMOOTH CROSSFADE)
+   ========================================================================== */
+.facility-photo-stack-container {
+    position: relative;
+    overflow: visible;
+}
+
+/* Floating Cards A & B: Lapisan paling atas, selalu di atas semua foto */
+#facility-card-a,
+#facility-card-b {
+    z-index: 60 !important;
+}
+
+/* Stationary Floating Frames */
+.facility-frame-main {
+    width: 66%;
+    height: 82%;
+    top: 10px;
+    left: 10px;
+    bottom: auto;
+    right: auto;
+    z-index: 20;
+    border-radius: 20px;
+    border: 3.5px solid #FFFFFF;
+    box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.18);
+    background-color: #F3F4F6;
+}
+
+.facility-frame-sub {
+    width: 53%;
+    height: 56%;
+    top: calc(100% - 56% - 10px);
+    left: calc(100% - 53% - 10px);
+    bottom: auto;
+    right: auto;
+    z-index: 30;
+    border-radius: 20px;
+    border: 3.5px solid #FFFFFF;
+    box-shadow: 0 22px 46px -8px rgba(0, 0, 0, 0.28);
+    background-color: #F3F4F6;
+    transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease;
+    cursor: pointer;
+}
+
+.facility-frame-sub:hover {
+    transform: translate3d(-3px, -3px, 0) scale(1.025);
+    box-shadow: 0 28px 52px -10px rgba(0, 0, 0, 0.34);
+}
+
+/* Pure Smooth Crossfade Slides (Persis seperti Story Carousel About) */
+.facility-slide-main,
+.facility-slide-sub {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
+}
+
+.facility-slide-main.active,
+.facility-slide-sub.active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 10;
+}
+
+/* ==========================================================================
+   FACILITIES ENTRANCE ANIMATION (INVERSE STAGGERED: TEXT FROM LEFT, PHOTO FROM RIGHT)
+   ========================================================================== */
+.facility-anim-left {
+    opacity: 0;
+    transform: translateX(-36px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.facility-delay-1 { transition-delay: 0.1s; }   /* Category Tabs & Arrows */
+.facility-delay-2 { transition-delay: 0.22s; }  /* Badge / Label */
+.facility-delay-3 { transition-delay: 0.34s; }  /* Heading */
+.facility-delay-4 { transition-delay: 0.46s; }  /* Description */
+.facility-delay-5 { transition-delay: 0.58s; }  /* Checklist Features */
+.facility-delay-6 { transition-delay: 0.7s; }   /* Accessibility Hint */
+
+.facility-in-view .facility-anim-left {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.facility-anim-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+                transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    will-change: opacity, transform;
+}
+
+.facility-in-view .facility-anim-right {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Mobile Responsiveness for 2-Slot Gallery & Animations */
+@media (max-width: 639px) {
+    .facility-frame-main {
+        width: 72%;
+        height: 76%;
+        top: 6px;
+        left: 6px;
+        border-radius: 18px;
+        border-width: 2.5px;
+    }
+    .facility-frame-sub {
+        width: 55%;
+        height: 52%;
+        top: calc(100% - 52% - 6px);
+        left: calc(100% - 55% - 6px);
+        border-radius: 18px;
+        border-width: 2.5px;
+    }
+    .facility-anim-left {
+        transform: translateX(-24px);
+    }
+    .facility-anim-right {
+        transform: translateX(24px);
+    }
+}
+
+/* ==========================================================================
+   SECTION LAYANAN & PEMESANAN (MODERN ELEGANT MONOCHROME)
+   ========================================================================== */
+.layanan-chip {
+    cursor: pointer;
+    will-change: transform, background-color, border-color;
+}
+.layanan-chip:active {
+    transform: scale(0.96);
+}
+
+/* Layanan Section Entrance Animations (Slow, Editorial & Ultra-Smooth) */
+.layanan-anim-header {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.layanan-anim-card-1 {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.12s,
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.12s,
+                box-shadow 0.3s ease, border-color 0.3s ease;
+    will-change: opacity, transform;
+}
+
+.layanan-anim-card-2 {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.24s,
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.24s,
+                box-shadow 0.3s ease, border-color 0.3s ease;
+    will-change: opacity, transform;
+}
+
+.layanan-anim-card-3 {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.36s,
+                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.36s,
+                box-shadow 0.3s ease, border-color 0.3s ease;
+    will-change: opacity, transform;
+}
+
+/* In-View Triggered State */
+.layanan-in-view .layanan-anim-header {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.layanan-in-view .layanan-anim-card-1 {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.layanan-in-view .layanan-anim-card-2 {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.layanan-in-view .layanan-anim-card-3 {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@media (max-width: 767px) {
+    .layanan-anim-card-1 {
+        transform: translateY(22px);
+    }
+    .layanan-anim-card-2 {
+        transform: translateY(22px);
+    }
+    .layanan-anim-card-3 {
+        transform: translateY(22px);
+    }
+}
+
 /* Accessibility: Respect Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
     *, ::before, ::after {
@@ -281,8 +671,149 @@ video.menu-lazy-video {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
-    .reveal-on-scroll {
-        opacity: 1 !important;
+    .facility-slide-main,
+    .facility-slide-sub {
+        transition: opacity 0.15s ease !important;
+    }
+    .facility-frame-sub:hover {
         transform: none !important;
     }
+    .facility-anim-left,
+    .facility-anim-right,
+    .story-anim-photo,
+    .story-anim-badge-logo,
+    .story-anim-badge-coffee,
+    .story-anim-right,
+    .reveal-on-scroll,
+    .reveal-from-left,
+    .reveal-from-right,
+    .reveal-fade-up,
+    .layanan-anim-header,
+    .layanan-anim-card-1,
+    .layanan-anim-card-2,
+    .layanan-anim-card-3 {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .story-anim-deco {
+        opacity: 1 !important;
+        transform: rotate(-2.5deg) !important;
+        transition: none !important;
+    }
+    .story-typing-cursor {
+        display: none !important;
+    }
+
+    #reservation-modal,
+    #reservation-modal-dialog,
+    .res-package-section,
+    .res-section-tab-btn,
+    .res-pkg-card,
+    .res-field-error,
+    .layanan-detail-wrapper,
+    .layanan-card-reservasi {
+        animation: none !important;
+        transform: none !important;
+        transition-duration: 0.01ms !important;
+    }
 }
+
+/* ==========================================================================
+   RESERVATION MODAL - MODERN ELEGANT MONOCHROME ANIMATIONS
+   ========================================================================== */
+#reservation-modal {
+    transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+}
+
+#reservation-modal-dialog {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out;
+    will-change: transform, opacity;
+}
+
+#reservation-modal.modal-open #reservation-modal-dialog {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+#reservation-modal.modal-closing #reservation-modal-dialog {
+    transform: translateY(18px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.25s ease-in, opacity 0.25s ease-in;
+}
+
+/* Category & Package Section Transitions */
+.res-package-section {
+    transition: opacity 0.35s ease-out, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.res-package-section.is-entering {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.res-package-section.is-entered {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Card Selection Checkmark Pop */
+.res-check-pop {
+    animation: resCheckPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes resCheckPop {
+    0% { transform: scale(0.8); }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* Form field shake on validation error */
+@keyframes resFieldShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+}
+
+.res-field-error {
+    border-color: #EF4444 !important;
+    animation: resFieldShake 0.35s ease-in-out;
+}
+
+/* ==========================================================================
+   LAYANAN SECTION - DETAIL PANEL TOGGLE & NOTCH ANIMATIONS
+   ========================================================================== */
+.layanan-detail-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.35s ease-out,
+                transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                margin 0.35s ease;
+    margin-top: 0;
+}
+
+.layanan-detail-wrapper > div {
+    min-height: 0;
+}
+
+.layanan-detail-wrapper.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 0.5rem;
+}
+
+/* Card 1 Selected Highlight state (Thin 1.5px outline without double ring) */
+.layanan-card-reservasi.is-active {
+    box-shadow: 0 0 0 1.5px #242424 !important;
+}
+
+#layanan-panel-notch {
+    pointer-events: none;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease, opacity 0.3s ease;
+}
+
+

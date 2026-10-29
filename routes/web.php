@@ -38,12 +38,12 @@ Route::get('/pesanan/konfirmasi/{code}', [OrderController::class, 'confirmation'
 Route::get('/lacak-pesanan', [OrderController::class, 'track'])->name('order.track');
 
 // Halaman Statis
-Route::get('/tentang-kami', [PageController::class, 'about'])->name('about');
 Route::get('/galeri', [PageController::class, 'gallery'])->name('gallery');
 Route::get('/fasilitas', [PageController::class, 'facilities'])->name('facilities');
 Route::get('/reservasi', [PageController::class, 'reservation'])->name('reservation');
 Route::get('/kontak', [PageController::class, 'contact'])->name('contact');
 Route::get('/event', [PageController::class, 'events'])->name('events');
+Route::get('/layanan', [PageController::class, 'services'])->name('services');
 
 // ─────────────────────────────────────────────
 //  NUCOMU STORY & ORDER ROUTES

@@ -9,7 +9,7 @@
         <nav class="flex items-center space-x-2 text-xs text-zinc-500 mb-8">
             <a href="{{ route('home') }}" class="hover:text-white transition-colors">Beranda</a>
             <span>/</span>
-            <a href="{{ route('menu') }}" class="hover:text-white transition-colors">Katalog Menu</a>
+            <a href="{{ route('home') }}#menu" class="hover:text-white transition-colors">Menu</a>
             <span>/</span>
             <span class="text-zinc-300 font-medium">{{ $menu->name }}</span>
         </nav>

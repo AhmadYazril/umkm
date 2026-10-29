@@ -22,6 +22,8 @@ class NucomuFeatureTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Nucomu Cafe');
+        $response->assertSee('OUR STORY / TENTANG KAMI');
+        $response->assertSee('Berawal dari Rasa,');
         $response->assertSee('BEST MENU');
         $response->assertSee('OUR MENU CATEGORIES');
         $response->assertSee('Layanan');
