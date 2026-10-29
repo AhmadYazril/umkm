@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verifikasi Password — Kurir Zendo</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       1. CSS VARIABLES & RESET
+       ========================================================== */
+    :root {
+      --primary-start: #6C5CE7;
+      --primary-end: #4F6BFF;
+      --primary-glow: rgba(108, 92, 231, 0.28);
+      --success-color: #22C55E;
+      --success-dark: #16A34A;
+      --success-glow: rgba(34, 197, 94, 0.32);
+      --error-color: #EF4444;
+      --error-glow: rgba(239, 68, 68, 0.28);
+      --bg-dark-1: #0A0A14;
+      --bg-dark-2: #121026;
+      --bg-dark-3: #1A1638;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-400: #94A3B8;
+      --gray-600: #64748B;
+      --gray-800: #1E293B;
+      --gray-900: #0F172A;
+      --radius-card: 28px;
+      --radius-box: 14px;
+      --radius-btn: 14px;
+      --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow-x: hidden;
+      background: radial-gradient(circle at 50% 15%, var(--bg-dark-3) 0%, var(--bg-dark-2) 45%, var(--bg-dark-1) 100%);
+      color: var(--gray-800);
+    }
+
+    /* Ambient Glow Blobs di latar belakang */
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .glow-1 {
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, #6C5CE7, transparent 70%);
+      top: -100px;
+      left: 10%;
+      animation: ambientFloat 14s ease-in-out infinite alternate;
+    }
+    .glow-2 {
+      width: 460px;
+      height: 460px;
+      background: radial-gradient(circle, #4F6BFF, transparent 70%);
+      bottom: -120px;
+      right: 10%;
+      opacity: 0.28;
+      animation: ambientFloat 18s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes ambientFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(30px, 20px) scale(1.08); }
+    }
+
+    /* ==========================================================
+       2. KARTU VERIFIKASI (CONTAINER)
+       ========================================================== */
+    .card-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      width: 100%;
+      background: #FFFFFF;
+      border-radius: var(--radius-card);
+      padding: 36px 26px 30px;
+      box-shadow: 
+        0 28px 56px -12px rgba(0, 0, 0, 0.45),
+        0 12px 28px -4px rgba(108, 92, 231, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.35s var(--ease-smooth), box-shadow 0.35s ease;
+    }
+
+    /* Garis gradient tipis di tepi atas kartu */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-start), var(--primary-end));
+    }
+
+    /* Tombol Close (X) bulat abu-abu di pojok kanan atas */
+    .btn-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-600);
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+      transition: all 0.2s ease;
+      z-index: 20;
+    }
+    .btn-close:hover {
+      background: var(--gray-200);
+      color: var(--gray-900);
+      transform: rotate(90deg);
+    }
+    .btn-close:focus-visible {
+      outline: 2px solid var(--primary-start);
+      outline-offset: 2px;
+    }
+
+    /* Animasi getar saat password salah (Horizontal Shake) */
+    .card.shake {
+      animation: cardShake 400ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+    @keyframes cardShake {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-9px) rotate(-1deg); }
+      30% { transform: translateX(8px) rotate(1deg); }
+      45% { transform: translateX(-6px) rotate(-0.5deg); }
+      60% { transform: translateX(5px) rotate(0.5deg); }
+      75% { transform: translateX(-3px); }
+      90% { transform: translateX(2px); }
+    }
+
+    /* ==========================================================
+       3. ICON GEMBOK & CINCIN PUTUS-PUTUS (DASHED)
+       ========================================================== */
+    .icon-container {
+      position: relative;
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cincin putus-putus berputar pelan */
+    .rotating-ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      animation: spinDashedRing 14s linear infinite;
+      transform-origin: center;
+      transition: animation-duration 0.3s ease;
+    }
+    .rotating-ring circle {
+      fill: none;
+      stroke: url(#dashedRingGradient);
+      stroke-width: 2.2;
+      stroke-dasharray: 6 7;
+      stroke-linecap: round;
+      opacity: 0.9;
+    }
+
+    /* Putaran cincin dipercepat saat loading */
+    .state-loading .rotating-ring {
+      animation-duration: 1.2s !important;
+    }
+
+    /* Cincin hijau berdenyut saat sukses */
+    .pulse-ring-success {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--success-color);
+      opacity: 0;
+      pointer-events: none;
+      display: none;
+    }
+    .state-success .pulse-ring-success {
+      display: block;
+      animation: pulseGreen 1.8s infinite cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    @keyframes spinDashedRing {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulseGreen {
+      0% { transform: scale(0.92); opacity: 0.9; }
+      70% { transform: scale(1.3); opacity: 0; }
+      100% { transform: scale(1.32); opacity: 0; }
+    }
+
+    /* Badge lingkaran gembok */
+    .icon-badge {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+      box-shadow: 0 10px 22px var(--primary-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.4s var(--ease-bounce);
+    }
+    .icon-badge svg {
+      width: 25px;
+      height: 25px;
+      fill: #FFFFFF;
+    }
+
+    .icon-lock { display: block; }
+    .icon-check { display: none; }
+
+    /* State sukses pada badge */
+    .state-success .icon-badge {
+      background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%) !important;
+      box-shadow: 0 10px 24px var(--success-glow) !important;
+      transform: scale(1.08);
+    }
+    .state-success .icon-lock { display: none; }
+    .state-success .icon-check {
+      display: block;
+      fill: none;
+      stroke: #FFFFFF;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .check-path {
+      stroke-dasharray: 40;
+      stroke-dashoffset: 40;
+      animation: drawCheck 0.6s 0.2s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+
+    .state-error .icon-badge {
+      background: linear-gradient(135deg, var(--error-color) 0%, #DC2626 100%);
+      box-shadow: 0 10px 22px var(--error-glow);
+    }
+
+    /* ==========================================================
+       4. JUDUL, SUBJUDUL & CHIP AKUN
+       ========================================================== */
+    .text-center { text-align: center; }
+
+    .card-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--gray-900);
+      letter-spacing: -0.025em;
+      margin-bottom: 5px;
+      transition: opacity 0.3s ease;
+    }
+    .card-subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-600);
+      line-height: 1.45;
+      margin-bottom: 22px;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Chip / Pill akun kurir */
+    .account-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: var(--gray-900);
+      background: var(--gray-100);
+      padding: 3px 12px;
+      border-radius: 999px;
+      margin-top: 5px;
+      font-size: 12px;
+      border: 1px solid var(--gray-200);
+      letter-spacing: 0.01em;
+    }
+
+    /* ==========================================================
+       5. KOTAK PASSWORD GAYA OTP (JUMLAH DINAMIS)
+       ========================================================== */
+    .otp-wrapper {
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .otp-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 auto;
+      width: 100%;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Setiap kotak input */
+    .otp-box-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .otp-input {
+      width: var(--box-w, 48px);
+      height: var(--box-h, 56px);
+      border-radius: var(--radius-box);
+      background: #FFFFFF;
+      border: 1.6px solid rgba(108, 92, 231, 0.25);
+      font-family: 'Plus Jakarta Sans', monospace, sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      color: var(--gray-900);
+      outline: none;
+      caret-color: var(--primary-start);
+      box-shadow: 
+        0 2px 8px rgba(15, 23, 42, 0.04),
+        inset 0 -3px 0 rgba(108, 92, 231, 0.22);
+      transition: all 0.25s var(--ease-smooth);
+      -webkit-user-select: auto;
+      user-select: auto;
+    }
+
+    /* Kotak aktif / fokus: naik sedikit & glow ungu */
+    .otp-input:focus {
+      transform: translateY(-2px) scale(1.05);
+      border-color: var(--primary-start);
+      box-shadow: 
+        0 0 0 4px var(--primary-glow),
+        0 8px 18px -4px rgba(108, 92, 231, 0.2),
+        inset 0 -3px 0 var(--primary-start);
+      z-index: 5;
+    }
+
+    /* Animasi pop saat karakter terisi */
+    .otp-input.pop {
+      animation: otpPop 0.2s var(--ease-bounce);
+    }
+    @keyframes otpPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.14); }
+      100% { transform: scale(1); }
+    }
+
+    /* Wave denyut berurutan saat loading */
+    .state-loading .otp-input {
+      animation: wavePulse 1.2s ease-in-out infinite;
+      cursor: wait;
+    }
+    @keyframes wavePulse {
+      0%, 100% { transform: translateY(0); opacity: 0.7; }
+      50% { transform: translateY(-6px); opacity: 1; border-color: var(--primary-start); }
+    }
+
+    /* Kotak saat state error */
+    .state-error .otp-input {
+      border-color: var(--error-color) !important;
+      color: var(--error-color) !important;
+      box-shadow: 
+        0 0 0 4px var(--error-glow) !important,
+        inset 0 -3px 0 var(--error-color) !important;
+    }
+
+    /* Kotak saat state sukses (muncul stagger) */
+    .state-success .otp-input {
+      background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%) !important;
+      border-color: var(--success-dark) !important;
+      color: #FFFFFF !important;
+      box-shadow: 0 4px 14px var(--success-glow) !important;
+      pointer-events: none;
+    }
+
+    /* Baris info di bawah kotak (Mata toggle & Karakter counter) */
+    .otp-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      padding: 0 4px;
+    }
+
+    .btn-toggle-eye {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: transparent;
+      border: none;
+      color: var(--gray-600);
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 3px 6px;
+      border-radius: 6px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .btn-toggle-eye:hover {
+      color: var(--primary-start);
+      background: var(--gray-100);
+    }
+    .btn-toggle-eye svg {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
+    .char-count-text {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-align: right;
+    }
+
+    /* ==========================================================
+       6. PESAN ERROR / STATUS ALERT
+       ========================================================== */
+    .error-banner {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      color: #B91C1C;
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      animation: slideFadeIn 0.3s var(--ease-smooth);
+    }
+    .error-banner svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+    @keyframes slideFadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================
+       7. TOMBOL UTAMA & PROGRESS BAR
+       ========================================================== */
+    .btn-submit {
+      position: relative;
+      width: 100%;
+      height: 48px;
+      border-radius: var(--radius-btn);
+      border: none;
+      outline: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 14.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px -4px var(--primary-glow);
+      transition: all 0.3s var(--ease-smooth);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px -4px var(--primary-glow);
+    }
+
+    .btn-submit:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 6px 16px -2px var(--primary-glow);
+    }
+
+    .btn-submit:disabled {
+      background: #CBD5E1;
+      color: #94A3B8;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none !important;
+    }
+
+    /* Progress bar di dalam tombol saat loading */
+    .btn-progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      background: rgba(255, 255, 255, 0.25);
+      pointer-events: none;
+      transition: width 0.1s linear;
+    }
+    .state-loading .btn-progress-bar {
+      width: 100%;
+      transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Spinner saat loading */
+    .btn-spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2.5px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: spinSpinner 0.8s linear infinite;
+    }
+    @keyframes spinSpinner {
+      to { transform: rotate(360deg); }
+    }
+    .state-loading .btn-spinner {
+      display: inline-block;
+    }
+
+    /* Tombol saat sukses */
+    .state-success .btn-submit {
+      background: linear-gradient(135deg, var(--success-color) 0%, var(--success-dark) 100%) !important;
+      box-shadow: 0 10px 24px -2px var(--success-glow) !important;
+      color: #FFFFFF !important;
+      cursor: pointer !important;
+    }
+
+    /* ==========================================================
+       8. FOOTER: LUPA PASSWORD & LOCK COUNTDOWN
+       ========================================================== */
+    .card-footer {
+      margin-top: 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .forgot-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary-start);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .forgot-link:hover {
+      text-decoration: underline;
+      color: var(--primary-end);
+    }
+
+    .lock-timer-text {
+      display: none;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--error-color);
+      animation: slideFadeIn 0.3s ease;
+    }
+
+    /* ==========================================================
+       9. PILL PETUNJUK DEMO DI BAGIAN BAWAH
+       ========================================================== */
+    .demo-hint {
+      margin-top: 20px;
+      font-size: 12.5px;
+      color: #CBD5E1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      padding: 7px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .demo-hint:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+      color: #FFFFFF;
+    }
+    .demo-hint strong {
+      color: #A78BFA;
+      font-family: monospace;
+      font-size: 13px;
+    }
+
+    /* ==========================================================
+       10. TOAST NOTIFIKASI
+       ========================================================== */
+    .toast-notification {
+      position: fixed;
+      bottom: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0F172A;
+      color: #FFFFFF;
+      padding: 13px 22px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+      z-index: 99999;
+      pointer-events: none;
+      opacity: 0;
+      transition: transform 0.4s var(--ease-bounce), opacity 0.3s ease, bottom 0.4s var(--ease-bounce);
+    }
+    .toast-notification.show {
+      bottom: 28px;
+      opacity: 1;
+    }
+    .toast-icon {
+      width: 18px;
+      height: 18px;
+      fill: var(--success-color);
+      flex-shrink: 0;
+    }
+
+    /* Canvas Confetti */
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ==========================================================
+       11. PREFERS-REDUCED-MOTION
+       ========================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .card.shake, .rotating-ring, .ambient-glow {
+        animation: none !important;
+      }
+      #confettiCanvas {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Glow Blobs Gelap -->
+  <div class="ambient-glow glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow glow-2" aria-hidden="true"></div>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <!-- Container Kartu -->
+  <main class="card-wrapper">
+    <div class="card" id="verificationCard">
+
+      <!-- Tombol Close (X) bulat abu-abu -->
+      <button type="button" class="btn-close" id="btnClose" aria-label="Tutup verifikasi" title="Tutup">&times;</button>
+
+      <!-- 1. Ikon Gembok Putih di Lingkaran Gradient & Cincin Dashed Putar -->
+      <div class="icon-container" aria-hidden="true">
+        <svg class="rotating-ring" viewBox="0 0 82 82">
+          <defs>
+            <linearGradient id="dashedRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6C5CE7" stop-opacity="0.9" />
+              <stop offset="50%" stop-color="#4F6BFF" stop-opacity="0.6" />
+              <stop offset="100%" stop-color="#C084FC" stop-opacity="0.2" />
+            </linearGradient>
+          </defs>
+          <circle cx="41" cy="41" r="38" />
+        </svg>
+
+        <!-- Cincin Hijau Berdenyut (Sukses) -->
+        <div class="pulse-ring-success"></div>
+
+        <!-- Badge Gembok -->
+        <div class="icon-badge" id="iconBadge">
+          <svg class="icon-lock" viewBox="0 0 24 24" id="lockSvg">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+          </svg>
+          <svg class="icon-check" viewBox="0 0 24 24" id="checkSvg">
+            <path class="check-path" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- 2 & 3. Judul, Subjudul & Chip Akun -->
+      <div class="text-center">
+        <h1 class="card-title" id="cardTitle">Verifikasi Dirimu</h1>
+        <p class="card-subtitle" id="cardSubtitle">
+          Masukkan password untuk akun<br>
+          <span class="account-chip">
+            <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Kurir Zendo 1 (6285●●●●40)
+          </span>
+        </p>
+      </div>
+
+      <!-- Banner Pesan Error (Aksesibilitas role="alert") -->
+      <div class="error-banner" id="errorBanner" role="alert" aria-live="assertive">
+        <svg viewBox="0 0 20 20">
+          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9 9a1 1 0 012 0v3a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
+        </svg>
+        <span id="errorMessage">Password salah. Coba lagi.</span>
+      </div>
+
+      <!-- Form Kotak Password Dinamis (Gaya OTP) -->
+      <form id="verifyForm" onsubmit="event.preventDefault(); handleFormSubmit();" novalidate>
+        
+        <!-- 4. Kotak Password OTP (Direncanakan & Dirender lewat JS) -->
+        <div class="otp-wrapper">
+          <div class="otp-container" id="otpContainer">
+            <!-- Kotak-kotak input dirender dinamis berdasarkan PASSWORD_LENGTH -->
+          </div>
+
+          <!-- Baris Kontrol Bawah: Toggle Mata & Info Panjang Karakter -->
+          <div class="otp-meta-row">
+            <button type="button" class="btn-toggle-eye" id="btnToggleEye" aria-label="Tampilkan karakter password">
+              <!-- Ikon Mata (Show) -->
+              <svg id="eyeSvgShow" viewBox="0 0 24 24">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+              <!-- Ikon Mata Slash (Hide) -->
+              <svg id="eyeSvgHide" viewBox="0 0 24 24" style="display:none">
+                <path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/>
+              </svg>
+              <span id="eyeLabelText">Lihat</span>
+            </button>
+            <span class="char-count-text" id="charCountText">8 karakter</span>
+          </div>
+        </div>
+
+        <!-- 6. Tombol Utama Verifikasi -->
+        <button type="submit" id="submitBtn" class="btn-submit" disabled>
+          <div class="btn-progress-bar" id="btnProgressBar"></div>
+          <span class="btn-spinner" id="btnSpinner" aria-hidden="true"></span>
+          <span id="btnText">Verifikasi Password</span>
+        </button>
+      </form>
+
+      <!-- 7. Footer: Link Lupa Password & Hitungan Mundur Terkunci -->
+      <footer class="card-footer">
+        <button type="button" class="forgot-link" id="forgotBtn" onclick="handleForgotPassword()">
+          Lupa password?
+        </button>
+        <span class="lock-timer-text" id="lockTimerText">Coba lagi dalam 0:30</span>
+      </footer>
+
+    </div>
+
+    <!-- 8. Pill Petunjuk Demo di Bagian Bawah -->
+    <div class="demo-hint" id="demoHintPill" onclick="autofillDemoPassword()" title="Klik untuk isi otomatis 'admin123'">
+      <span>💡</span>
+      <span>Password demo: <strong>admin123</strong></span>
+    </div>
+  </main>
+
+  <!-- Toast Notifikasi (Saat tombol Lanjutkan diklik) -->
+  <div class="toast-notification" id="toastNotification" role="status">
+    <svg class="toast-icon" viewBox="0 0 20 20">
+      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+    </svg>
+    <span>Mengalihkan ke dashboard...</span>
+  </div>
+
+  <!-- ==========================================================
+       JAVASCRIPT VANILLA & LOGIKA INTERAKTIF
+       ========================================================== */ -->
+  <script>
+    /* ==========================================================
+     * KONFIGURASI UTAMA:
+     * - PASSWORD_LENGTH: jumlah kotak OTP (4 sampai 12).
+     *   Jika di PHP/Backend, Anda dapat mengisinya dengan:
+     *   const PASSWORD_LENGTH = <?= (int)($panjangPassword ?? 8) ?>;
+     * ========================================================== */
+    const PASSWORD_LENGTH = 8; // Default demo = 8 agar sesuai dengan 'admin123'
+    const CORRECT_PASSWORD = "admin123"; // Password pengecekan demo
+    const AUTO_SUBMIT = false; // Jika true, submit otomatis begitu kotak terakhir terisi
+    const SHOW_DEMO_HINT = true; // Sembunyikan pill demo jika bernilai false
+
+    // State Machine Sederhana: 'idle' | 'loading' | 'success' | 'error' | 'locked'
+    const AppState = {
+      IDLE: 'idle',
+      LOADING: 'loading',
+      SUCCESS: 'success',
+      ERROR: 'error',
+      LOCKED: 'locked'
+    };
+
+    let currentState = AppState.IDLE;
+    let failedAttempts = 0;
+    let countdownInterval = null;
+    let isPasswordRevealed = false; // Toggle mata
+    let rawCharacters = new Array(PASSWORD_LENGTH).fill(''); // Menyimpan karakter asli
+    let maskTimers = new Array(PASSWORD_LENGTH).fill(null); // Timer masking per kotak (400ms)
+
+    // DOM Elements
+    const card = document.getElementById('verificationCard');
+    const otpContainer = document.getElementById('otpContainer');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const cardTitle = document.getElementById('cardTitle');
+    const cardSubtitle = document.getElementById('cardSubtitle');
+    const errorBanner = document.getElementById('errorBanner');
+    const errorMessage = document.getElementById('errorMessage');
+    const lockTimerText = document.getElementById('lockTimerText');
+    const demoHintPill = document.getElementById('demoHintPill');
+    const charCountText = document.getElementById('charCountText');
+    const btnToggleEye = document.getElementById('btnToggleEye');
+    const eyeSvgShow = document.getElementById('eyeSvgShow');
+    const eyeSvgHide = document.getElementById('eyeSvgHide');
+    const eyeLabelText = document.getElementById('eyeLabelText');
+    const toast = document.getElementById('toastNotification');
+    const btnClose = document.getElementById('btnClose');
+
+    /* ----------------------------------------------------------
+     * 1. INISIALISASI KOTAK OTP SECARA DINAMIS
+     * ---------------------------------------------------------- */
+    function renderOtpBoxes() {
+      otpContainer.innerHTML = '';
+      charCountText.textContent = `${PASSWORD_LENGTH} karakter`;
+
+      if (!SHOW_DEMO_HINT && demoHintPill) {
+        demoHintPill.style.display = 'none';
+      }
+
+      // Hitung ukuran kotak agar responsif dan pas di dalam kartu 400px
+      // Jika panjang > 6, kita sesuaikan width dan flex-basis agar rapi (misal 2 baris x 4 kotak jika 8)
+      let boxWidth = 52;
+      let boxHeight = 60;
+      if (PASSWORD_LENGTH > 8) {
+        boxWidth = 40;
+        boxHeight = 52;
+      } else if (PASSWORD_LENGTH > 6) {
+        boxWidth = 46;
+        boxHeight = 56;
+      }
+
+      for (let i = 0; i < PASSWORD_LENGTH; i++) {
+        const wrap = document.createElement('div');
+        wrap.className = 'otp-box-wrap';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'otp-input';
+        input.maxLength = 1;
+        input.autocomplete = 'off';
+        input.spellcheck = false;
+        input.autocapitalize = 'none';
+        input.inputMode = 'text'; // Mendukung huruf, angka, dan simbol
+        input.dataset.index = i;
+        input.setAttribute('aria-label', `Karakter ${i + 1} dari ${PASSWORD_LENGTH}`);
+
+        input.style.setProperty('--box-w', `${boxWidth}px`);
+        input.style.setProperty('--box-h', `${boxHeight}px`);
+
+        // Event Listeners Kotak
+        input.addEventListener('input', (e) => handleBoxInput(e, i));
+        input.addEventListener('keydown', (e) => handleBoxKeyDown(e, i));
+        input.addEventListener('paste', handleBoxPaste);
+        input.addEventListener('focus', () => {
+          // Pilih teks saat fokus agar mudah ditimpa
+          setTimeout(() => input.select(), 10);
+        });
+
+        // Delay animasi wave saat loading
+        input.style.animationDelay = `${i * 0.08}s`;
+
+        wrap.appendChild(input);
+        otpContainer.appendChild(wrap);
+      }
+    }
+
+    const getInputs = () => Array.from(otpContainer.querySelectorAll('.otp-input'));
+
+    /* ----------------------------------------------------------
+     * 2. LOGIKA MASKING (TITIK '•' SETELAH 400ms SEPERTI KEYBOARD HP)
+     * ---------------------------------------------------------- */
+    function setBoxCharacter(index, char) {
+      const inputs = getInputs();
+      const input = inputs[index];
+      if (!input) return;
+
+      rawCharacters[index] = char;
+
+      if (!char) {
+        input.value = '';
+        if (maskTimers[index]) clearTimeout(maskTimers[index]);
+        return;
+      }
+
+      // Animasi pop kecil saat karakter masuk
+      input.classList.remove('pop');
+      void input.offsetWidth;
+      input.classList.add('pop');
+
+      if (isPasswordRevealed) {
+        input.value = char;
+      } else {
+        // Tampilkan karakter asli sejenak
+        input.value = char;
+        if (maskTimers[index]) clearTimeout(maskTimers[index]);
+
+        // Setelah 400ms, sembunyikan menjadi titik '•'
+        maskTimers[index] = setTimeout(() => {
+          if (!isPasswordRevealed && rawCharacters[index]) {
+            input.value = '•';
+          }
+        }, 400);
+      }
+    }
+
+    /* ----------------------------------------------------------
+     * 3. PENANGANAN INPUT & NAVIGASI KEYBOARD LENGKAP
+     * ---------------------------------------------------------- */
+    function handleBoxInput(e, index) {
+      if (currentState === AppState.LOCKED) return;
+
+      const input = e.target;
+      const char = input.value.slice(-1); // Ambil karakter terakhir yang diketik
+
+      if (char) {
+        setBoxCharacter(index, char);
+
+        // Hapus tanda error jika pengguna mulai mengetik ulang
+        if (card.classList.contains('state-error')) {
+          card.classList.remove('state-error');
+          errorBanner.style.display = 'none';
+        }
+
+        // Pindah otomatis ke kotak berikutnya
+        const inputs = getInputs();
+        if (index < PASSWORD_LENGTH - 1) {
+          inputs[index + 1].focus();
+        }
+
+        checkCompletion();
+      } else {
+        setBoxCharacter(index, '');
+        checkCompletion();
+      }
+    }
+
+    function handleBoxKeyDown(e, index) {
+      if (currentState === AppState.LOCKED) return;
+      const inputs = getInputs();
+
+      if (e.key === 'Backspace') {
+        if (!rawCharacters[index] && index > 0) {
+          // Jika kotak saat ini kosong, mundur dan kosongkan kotak sebelumnya
+          e.preventDefault();
+          setBoxCharacter(index - 1, '');
+          inputs[index - 1].focus();
+          checkCompletion();
+        } else {
+          // Kosongkan kotak saat ini
+          setBoxCharacter(index, '');
+          checkCompletion();
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (index > 0) inputs[index - 1].focus();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (index < PASSWORD_LENGTH - 1) inputs[index + 1].focus();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        inputs[0].focus();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        inputs[PASSWORD_LENGTH - 1].focus();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        handleFormSubmit();
+      }
+    }
+
+    // Penanganan Paste (Ctrl+V) mengisi semua kotak sekaligus
+    function handleBoxPaste(e) {
+      e.preventDefault();
+      if (currentState === AppState.LOCKED) return;
+
+      const pastedText = (e.clipboardData || window.clipboardData).getData('text').trim();
+      if (!pastedText) return;
+
+      const chars = pastedText.slice(0, PASSWORD_LENGTH).split('');
+      const inputs = getInputs();
+
+      chars.forEach((c, idx) => {
+        setBoxCharacter(idx, c);
+      });
+
+      const nextFocusIdx = Math.min(chars.length, PASSWORD_LENGTH - 1);
+      inputs[nextFocusIdx].focus();
+      checkCompletion();
+    }
+
+    // Periksa apakah SEMUA kotak sudah terisi
+    function checkCompletion() {
+      const allFilled = rawCharacters.every(c => c !== '');
+      submitBtn.disabled = !allFilled;
+
+      if (allFilled && AUTO_SUBMIT && currentState === AppState.IDLE) {
+        handleFormSubmit();
+      }
+    }
+
+    /* ----------------------------------------------------------
+     * 4. TOGGLE TAMPILKAN / SEMBUNYIKAN SEMUA KARAKTER (MATA)
+     * ---------------------------------------------------------- */
+    btnToggleEye.addEventListener('click', () => {
+      isPasswordRevealed = !isPasswordRevealed;
+      const inputs = getInputs();
+
+      if (isPasswordRevealed) {
+        eyeSvgShow.style.display = 'none';
+        eyeSvgHide.style.display = 'block';
+        eyeLabelText.textContent = 'Sembunyikan';
+        btnToggleEye.setAttribute('aria-label', 'Sembunyikan karakter password');
+
+        // Tampilkan semua karakter asli
+        inputs.forEach((input, idx) => {
+          if (maskTimers[idx]) clearTimeout(maskTimers[idx]);
+          input.value = rawCharacters[idx] || '';
+        });
+      } else {
+        eyeSvgShow.style.display = 'block';
+        eyeSvgHide.style.display = 'none';
+        eyeLabelText.textContent = 'Lihat';
+        btnToggleEye.setAttribute('aria-label', 'Tampilkan karakter password');
+
+        // Samarkan semua karakter menjadi titik '•'
+        inputs.forEach((input, idx) => {
+          if (rawCharacters[idx]) {
+            input.value = '•';
+          }
+        });
+      }
+    });
+
+    /* ----------------------------------------------------------
+     * 5. SUBMIT & VERIFIKASI (STATE MACHINE)
+     * ---------------------------------------------------------- */
+    function handleFormSubmit() {
+      if (currentState === AppState.LOADING || currentState === AppState.LOCKED) return;
+
+      // Jika state SUKSES dan tombol "Lanjutkan →" diklik
+      if (currentState === AppState.SUCCESS) {
+        showRedirectToast();
+        return;
+      }
+
+      const allFilled = rawCharacters.every(c => c !== '');
+      if (!allFilled) return;
+
+      const enteredPassword = rawCharacters.join('');
+
+      // Masuk ke STATE LOADING
+      setLoadingState();
+
+      // Panggil fungsi verifikasi (dapat diganti fetch ke backend)
+      verifyPassword(enteredPassword).then(isCorrect => {
+        if (isCorrect) {
+          setSuccessState();
+        } else {
+          setErrorState();
+        }
+      });
+    }
+
+    /*
+     * Fungsi verifikasi password:
+     * Saat ini menggunakan pengecekan lokal client-side.
+     * Untuk menyambungkan ke backend (misalnya PHP):
+     *
+     * async function verifyPassword(password) {
+     *   const res = await fetch('login.php', {
+     *     method: 'POST',
+     *     headers: { 'Content-Type': 'application/json' },
+     *     body: JSON.stringify({ password: password })
+     *   });
+     *   const data = await res.json();
+     *   return data.success;
+     * }
+     */
+    function verifyPassword(password) {
+      return new Promise((resolve) => {
+        // Simulasi delay jaringan 1.5 detik agar progress bar terlihat mengisi penuh
+        setTimeout(() => {
+          resolve(password === CORRECT_PASSWORD);
+        }, 1500);
+      });
+    }
+
+    /* ----------------------------------------------------------
+     * A. STATE: LOADING
+     * ---------------------------------------------------------- */
+    function setLoadingState() {
+      currentState = AppState.LOADING;
+      card.classList.remove('state-error');
+      card.classList.add('state-loading');
+
+      const inputs = getInputs();
+      inputs.forEach(input => input.disabled = true);
+      submitBtn.disabled = true;
+      btnText.textContent = 'Memverifikasi...';
+      errorBanner.style.display = 'none';
+    }
+
+    /* ----------------------------------------------------------
+     * B. STATE: SUKSES
+     * ---------------------------------------------------------- */
+    function setSuccessState() {
+      currentState = AppState.SUCCESS;
+      card.classList.remove('state-loading', 'state-error');
+      card.classList.add('state-success');
+
+      cardTitle.textContent = 'Berhasil Diverifikasi';
+      cardSubtitle.innerHTML = 'Akunmu sudah terverifikasi dengan aman';
+
+      const inputs = getInputs();
+      inputs.forEach((input, idx) => {
+        // Stagger animasi kotak hijau
+        input.style.transition = `all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) ${idx * 0.08}s`;
+        input.value = '•';
+      });
+
+      btnText.textContent = 'Lanjutkan →';
+      submitBtn.disabled = false;
+
+      launchConfetti();
+    }
+
+    /* ----------------------------------------------------------
+     * C. STATE: ERROR
+     * ---------------------------------------------------------- */
+    function setErrorState() {
+      failedAttempts++;
+      currentState = AppState.ERROR;
+      card.classList.remove('state-loading');
+      card.classList.add('state-error');
+
+      // Animasi getar (shake) horizontal ~400ms
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+
+      btnText.textContent = 'Verifikasi Password';
+      submitBtn.disabled = true;
+
+      const inputs = getInputs();
+      inputs.forEach(input => input.disabled = false);
+
+      // Setelah getar selesai, kosongkan semua kotak dan fokus ke kotak pertama
+      setTimeout(() => {
+        rawCharacters = new Array(PASSWORD_LENGTH).fill('');
+        inputs.forEach(input => input.value = '');
+
+        if (failedAttempts >= 3) {
+          setLockedState(30);
+        } else {
+          errorBanner.style.display = 'flex';
+          errorMessage.textContent = `Password salah. Coba lagi (${failedAttempts}/3).`;
+          inputs[0].focus();
+        }
+      }, 420);
+    }
+
+    /* ----------------------------------------------------------
+     * D. STATE: TERKUNCI (LOCKOUT 30 DETIK)
+     * ---------------------------------------------------------- */
+    function setLockedState(seconds) {
+      currentState = AppState.LOCKED;
+      card.classList.remove('state-loading', 'state-error');
+
+      const inputs = getInputs();
+      inputs.forEach(input => input.disabled = true);
+      submitBtn.disabled = true;
+
+      errorBanner.style.display = 'flex';
+      errorMessage.textContent = 'Terlalu banyak percobaan salah. Kotak terkunci.';
+
+      let remaining = seconds;
+      lockTimerText.style.display = 'block';
+      updateLockDisplay(remaining);
+
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          unlockState();
+        } else {
+          updateLockDisplay(remaining);
+        }
+      }, 1000);
+    }
+
+    function updateLockDisplay(s) {
+      const sec = s < 10 ? '0' + s : s;
+      lockTimerText.textContent = `Coba lagi dalam 0:${sec}`;
+    }
+
+    function unlockState() {
+      currentState = AppState.IDLE;
+      failedAttempts = 0;
+      const inputs = getInputs();
+      inputs.forEach(input => input.disabled = false);
+      lockTimerText.style.display = 'none';
+      errorBanner.style.display = 'none';
+      btnText.textContent = 'Verifikasi Password';
+      inputs[0].focus();
+    }
+
+    /* ----------------------------------------------------------
+     * TOAST & HELPER FUNCTIONS
+     * ---------------------------------------------------------- */
+    function showRedirectToast() {
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function autofillDemoPassword() {
+      if (currentState === AppState.LOCKED || currentState === AppState.LOADING) return;
+      const demoChars = CORRECT_PASSWORD.split('');
+      const inputs = getInputs();
+
+      demoChars.forEach((c, idx) => {
+        if (idx < PASSWORD_LENGTH) {
+          setBoxCharacter(idx, c);
+        }
+      });
+
+      const nextFocus = Math.min(demoChars.length - 1, PASSWORD_LENGTH - 1);
+      if (inputs[nextFocus]) inputs[nextFocus].focus();
+      checkCompletion();
+    }
+
+    function handleForgotPassword() {
+      alert('Tautan pemulihan password telah dikirimkan ke nomor kurir terdaftar.');
+    }
+
+    if (btnClose) {
+      btnClose.addEventListener('click', () => {
+        if (confirm('Tutup jendela verifikasi password?')) {
+          card.style.opacity = '0.3';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            alert('Jendela verifikasi ditutup.');
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+          }, 300);
+        }
+      });
+    }
+
+    /* ==========================================================
+     * LIGHTWEIGHT CANVAS CONFETTI (VANILLA JS)
+     * ========================================================== */
+    function launchConfetti() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#6C5CE7', '#4F6BFF', '#22C55E', '#F59E0B', '#EC4899', '#38BDF8'];
+      const particles = [];
+      const particleCount = 75;
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: canvas.width / 2 + (Math.random() * 80 - 40),
+          y: canvas.height / 2 - 80,
+          w: Math.random() * 8 + 5,
+          h: Math.random() * 6 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() - 0.5) * 12,
+          vy: Math.random() * -11 - 4,
+          gravity: 0.35,
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+
+      let animationFrame;
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let activeCount = 0;
+
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.rotation += p.rotSpeed;
+          p.opacity -= 0.009;
+
+          if (p.opacity > 0 && p.y < canvas.height) {
+            activeCount++;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.globalAlpha = Math.max(0, p.opacity);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          }
+        });
+
+        if (activeCount > 0) {
+          animationFrame = requestAnimationFrame(render);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          cancelAnimationFrame(animationFrame);
+        }
+      }
+
+      render();
+    }
+
+    /* ----------------------------------------------------------
+     * AUTO-START ON LOAD
+     * ---------------------------------------------------------- */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderOtpBoxes();
+      // Fokus otomatis ke kotak pertama
+      setTimeout(() => {
+        const first = otpContainer.querySelector('.otp-input');
+        if (first) first.focus();
+      }, 100);
+    });
+  </script>
+</body>
+</html>

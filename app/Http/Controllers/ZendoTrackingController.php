@@ -52,9 +52,13 @@ class ZendoTrackingController extends Controller
             $isCourier = true;
         }
 
+        $configuredPin = (string) Setting::get('zendo_courier_pin', config('nucomu.contact.zendo_tracking.courier_pin', '1234'));
+        $courierPinLength = max(4, min(12, strlen($configuredPin ?: '1234')));
+
         return view('zendo.track', [
             'delivery' => $delivery,
             'isCourier' => $isCourier,
+            'courierPinLength' => $courierPinLength,
             'cafeLat' => $txSettings['cafe_lat'],
             'cafeLng' => $txSettings['cafe_lng'],
             'trackingConfig' => config('nucomu.contact.zendo_tracking'),
@@ -99,17 +103,18 @@ class ZendoTrackingController extends Controller
             }
         }
 
-        // 2. Otherwise verify via 4-digit Courier PIN
+        // 2. Otherwise verify via Courier PIN / Password from Admin Settings
         $validated = $request->validate([
-            'pin' => ['required_without:device_token', 'string', 'max:20'],
+            'pin' => ['required_without:device_token', 'string', 'max:50'],
         ]);
 
         $configuredPin = (string) Setting::get('zendo_courier_pin', config('nucomu.contact.zendo_tracking.courier_pin', '1234'));
+        $enteredPin = (string) ($validated['pin'] ?? '');
 
-        if (! hash_equals($configuredPin, (string) $validated['pin'])) {
+        if (! hash_equals($configuredPin, $enteredPin)) {
             return response()->json([
                 'success' => false,
-                'message' => 'PIN Kurir salah. Silakan coba lagi.',
+                'message' => 'PIN kurir salah. Silakan coba lagi.',
             ], 422);
         }
 
