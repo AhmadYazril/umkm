@@ -92,8 +92,8 @@
 
         <!-- Catalog CTA: Lihat Semua Menu (Dedicated Full Page Route) -->
         <div class="mt-14 text-center reveal-on-scroll">
-            <a href="{{ route('home') }}#menu" class="inline-flex items-center space-x-2 border-b-2 border-ink-black pb-1 text-ink-black text-xs font-semibold uppercase tracking-editorial-widest hover:text-medium-gray hover:border-medium-gray transition-colors">
-                <span>Lihat Semua Menu</span>
+            <a href="{{ route('menu.all') }}" class="inline-flex items-center space-x-2 border-b-2 border-ink-black pb-1 text-ink-black text-xs font-semibold uppercase tracking-editorial-widest hover:text-medium-gray hover:border-medium-gray transition-colors">
+                <span>Lihat Semua Menu (Katalog Lengkap)</span>
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
             </a>
         </div>

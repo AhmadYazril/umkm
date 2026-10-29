@@ -48,61 +48,120 @@
             </a>
         </div>
 
-        <!-- Full Catalog Grid -->
+        <!-- Full Catalog Grid (Popular Dish Floating Plate Layout + Expandable Options / Add to Cart on Click) -->
         @if(count($filteredMenu) > 0)
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                @foreach($filteredMenu as $item)
-                    <div class="bg-pure-white border border-soft-beige rounded p-4 sm:p-5 flex flex-col justify-between hover:border-ink-black transition-all duration-300 group shadow-sm">
-                        <div>
-                            <!-- Image -->
-                            <div class="relative overflow-hidden aspect-square rounded-sm mb-3.5 bg-warm-ivory img-editorial border border-light-gray/60">
-                                @php
-                                    $itemVideo = !empty($item['video']) ? $item['video'] : null;
-                                    if (!$itemVideo) {
-                                        $itemNameLower = strtolower($item['name'] ?? '');
-                                        if (str_contains($itemNameLower, 'tiramisu')) {
-                                            $itemVideo = 'videos/tiramisu.mp4';
-                                        } elseif (str_contains($itemNameLower, 'cheesecake')) {
-                                            $itemVideo = 'videos/chescake.mp4';
-                                        } elseif (str_contains($itemNameLower, 'spaghetti') || str_contains($itemNameLower, 'pasta')) {
-                                            $itemVideo = 'videos/spagheti.mp4';
-                                        } elseif (str_contains($itemNameLower, 'kopi susu') || str_contains($itemNameLower, 'nucomu coffee') || str_contains($itemNameLower, 'aren') || str_contains($itemNameLower, 'signature latte')) {
-                                            $itemVideo = 'videos/kopsu.mp4';
-                                        }
-                                    }
-                                @endphp
-                                @if($itemVideo)
-                                    <video class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 menu-lazy-video"
-                                           autoplay muted loop playsinline preload="metadata"
-                                           poster="{{ $item['image'] }}">
-                                        <source src="{{ asset($itemVideo) }}" type="video/mp4">
-                                    </video>
-                                @else
-                                    <img src="{{ $item['image'] }}" 
-                                         alt="{{ $item['name'] }}" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                @endif
-                                <span class="absolute top-2 left-2 bg-warm-ivory/95 backdrop-blur-sm px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-charcoal rounded z-10">
-                                    {{ $item['category_label'] }}
-                                </span>
-                            </div>
-
-                            <!-- Name, Short Info, Price -->
-                            <h3 class="font-editorial text-lg sm:text-xl font-bold text-ink-black leading-snug group-hover:underline underline-offset-2">
-                                {{ $item['name'] }}
-                            </h3>
-                            <p class="font-body text-[11px] text-medium-gray mt-1 line-clamp-2">
-                                {{ $item['short_info'] }}
-                            </p>
+            <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-start gap-x-6 gap-y-20 pt-16 pb-16">
+                @foreach($filteredMenu as $index => $item)
+                    @php
+                        $cat = $item['category'] ?? 'coffee';
+                        $unit = $item['unit'] ?? ($cat === 'coffee' || $cat === 'beverages' ? '/cup' : ($cat === 'dessert' ? '/slice' : '/porsi'));
+                        $hasOptions = !isset($item['options']) || !empty($item['options']);
+                        $opt1 = $hasOptions ? ($item['options'][0] ?? match($cat) {
+                            'coffee', 'beverages' => ['title' => 'Level Manis', 'choices' => ['Normal (100%)', 'Less Sugar (50%)', 'Tanpa Gula (0%)']],
+                            'meals' => ['title' => 'Pilihan Telur', 'choices' => ['Sunny Side Up', 'Over Medium', 'Well Done']],
+                            'dessert' => ['title' => 'Suhu Saji', 'choices' => ['Chilled (Dingin)', 'Room Temp', 'Warm (Hangat)']],
+                            'snacks' => ['title' => 'Pilihan Saus', 'choices' => ['Truffle Mayo', 'Smoky BBQ', 'Sambal Nucomu']],
+                            default => ['title' => 'Pilihan Rasa', 'choices' => ['Normal', 'Less Sugar', 'Tanpa Gula']]
+                        }) : null;
+                        $opt2 = $hasOptions ? ($item['options'][1] ?? match($cat) {
+                            'coffee', 'beverages' => ['title' => 'Penyajian', 'choices' => ['Dingin / Iced', 'Hangat / Hot', 'Extra Oat Milk']],
+                            'meals' => ['title' => 'Spicy Level', 'choices' => ['Mild', 'Medium Spicy', 'Extra Hot']],
+                            'dessert' => ['title' => 'Extra Topping', 'choices' => ['Vanilla Cream', 'Berry Compote', 'Original']],
+                            'snacks' => ['title' => 'Porsi', 'choices' => ['Regular Size', 'Sharing Size', 'Extra Parmesan']],
+                            default => ['title' => 'Penyajian', 'choices' => ['Dingin', 'Hangat']]
+                        }) : null;
+                    @endphp
+                    <div class="popular-dish-card group relative bg-white border border-stone-200/80 rounded-[2rem] p-5 pt-18 sm:pt-20 pb-5 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-fit self-start"
+                         data-category="{{ $item['category'] }}"
+                         data-item-id="{{ $item['id'] }}"
+                         onclick="togglePopularDishOptions(this)">
+                        
+                        <!-- Floating Circular Plate -->
+                        <div class="dish-plate-wrap absolute -top-12 sm:-top-16 left-1/2 -translate-x-1/2 w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden p-1.5 bg-white shadow-xl border border-stone-200/90 transition-transform duration-300 group-hover:scale-105 z-10 flex items-center justify-center">
+                            <img src="{{ $item['image'] }}" 
+                                 alt="{{ $item['name'] }}" 
+                                 class="w-full h-full object-cover rounded-full">
                         </div>
 
-                        <div class="pt-3 border-t border-light-gray/60 flex items-center justify-between mt-4">
-                            <span class="font-editorial text-base sm:text-lg font-bold text-ink-black">{{ $item['price_formatted'] }}</span>
-                            <a href="{{ route('nucomu.order', ['add' => $item['name']]) }}" 
-                               class="inline-flex items-center space-x-1 text-[11px] font-semibold uppercase tracking-wider text-ink-black border border-neutral-300 hover:border-neutral-900 px-3 py-1 rounded transition-colors">
-                                <span>Pesan</span>
-                                <span class="material-symbols-outlined text-xs">add</span>
-                            </a>
+                        <!-- Card Body: Name & Price ONLY ("cm keterangan harga sma nama", add keranjang tidak langsung muncul) -->
+                        <div class="text-center pt-2">
+                            <h3 class="font-editorial text-lg sm:text-xl font-bold text-neutral-900 leading-snug line-clamp-1 group-hover:text-black transition-colors">
+                                {{ $item['name'] }}
+                            </h3>
+                            <div class="mt-1 flex items-baseline justify-center space-x-1">
+                                <span class="card-price font-editorial text-lg font-bold text-neutral-900">
+                                    {{ $item['price_formatted'] }}
+                                </span>
+                                <span class="text-xs text-neutral-400 font-normal">
+                                    {{ $unit }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Options Panel: Expands on Click ("nanti kalau di-klik baru muncul") -->
+                        <div class="product-options-panel border-stone-150/80"
+                             onclick="event.stopPropagation()">
+                            
+                            @if($hasOptions)
+                                <div class="grid grid-cols-2 gap-3 mb-4 text-left">
+                                    <!-- Column 1 -->
+                                    @if($opt1)
+                                    <div>
+                                        <span class="text-xs font-bold text-neutral-800 block mb-2 tracking-tight">
+                                            {{ $opt1['title'] }}
+                                        </span>
+                                        <div class="space-y-1.5">
+                                            @foreach($opt1['choices'] as $cIdx => $choice)
+                                                <label class="flex items-center space-x-2 text-[11px] sm:text-xs text-neutral-600 cursor-pointer hover:text-neutral-900 select-none group">
+                                                    <input type="radio" 
+                                                           name="opt1_cat_{{ $item['id'] }}" 
+                                                           value="{{ $choice }}" 
+                                                           {{ $cIdx === 0 ? 'checked' : '' }}
+                                                           class="accent-neutral-900 w-3.5 h-3.5 cursor-pointer">
+                                                    <span class="group-hover:text-neutral-900">{{ $choice }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    <!-- Column 2 -->
+                                    @if($opt2)
+                                    <div>
+                                        <span class="text-xs font-bold text-neutral-800 block mb-2 tracking-tight">
+                                            {{ $opt2['title'] }}
+                                        </span>
+                                        <div class="space-y-1.5">
+                                            @foreach($opt2['choices'] as $cIdx => $choice)
+                                                <label class="flex items-center space-x-2 text-[11px] sm:text-xs text-neutral-600 cursor-pointer hover:text-neutral-900 select-none group">
+                                                    <input type="radio" 
+                                                           name="opt2_cat_{{ $item['id'] }}" 
+                                                           value="{{ $choice }}" 
+                                                           {{ $cIdx === 0 ? 'checked' : '' }}
+                                                           class="accent-neutral-900 w-3.5 h-3.5 cursor-pointer">
+                                                    <span class="group-hover:text-neutral-900">{{ $choice }}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+                            @else
+                                <!-- Menu Tanpa Varian: Keterangan singkat bila ada, tanpa opsi radio -->
+                                @if(!empty($item['short_info']))
+                                    <p class="text-[11px] text-neutral-500 text-center mb-3 leading-snug line-clamp-2">
+                                        {{ $item['short_info'] }}
+                                    </p>
+                                @endif
+                            @endif
+
+                            <!-- Add to Cart Button (Muncul setelah kartu diklik) -->
+                            <button type="button" 
+                                    onclick="event.stopPropagation(); submitPopularDishOrder(this.closest('.popular-dish-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')" 
+                                    class="w-full py-2.5 px-4 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-neutral-900/15 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
+                                <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
+                                <span>+ Add to Cart</span>
+                            </button>
                         </div>
                     </div>
                 @endforeach

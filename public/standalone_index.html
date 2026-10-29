@@ -1,0 +1,2408 @@
+﻿<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="uijHsA4xgE6NRmaeQTGYxT1A4g2JqKYDD5YhSPlO">
+    <title>Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan | Tulungagung</title>
+    <meta name="description" content="Nucomu Cafe Tulungagung — Ruang santai monokrom hangat untuk menikmati seduhan kopi single origin, dessert artisanal, dan obrolan bermakna.">
+
+    <!-- Google Fonts: Cormorant Garamond, Manrope & Alex Brush -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Material Symbols Outlined -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <!-- Tailwind CSS CDN with Nucomu Palette Configuration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'ink-black': '#191919',
+                        'charcoal': '#30302D',
+                        'warm-ivory': '#F5F2EC',
+                        'pure-white': '#FFFFFF',
+                        'light-gray': '#E5E4E0',
+                        'medium-gray': '#8A8A86',
+                        'soft-beige': '#E7DED1',
+                        'warm-stone': '#DAD7CF',
+                        'espresso-brown': '#54392B',
+                        'espresso-dark': '#3D281D',
+                        'accent-gold': '#C2A378',
+                    },
+                    fontFamily: {
+                        editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        script: ['"Alex Brush"', 'cursive'],
+                        body: ['Manrope', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        'editorial-widest': '0.15em',
+                        'editorial-tighter': '-0.02em',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom Nucomu CSS -->
+    <link rel="stylesheet" href="http://127.0.0.1:8000/css/nucomu.css">
+</head>
+<body class="bg-warm-ivory text-charcoal font-body antialiased selection:bg-ink-black selection:text-warm-ivory">
+
+    <!-- Header Navigation -->
+    <!-- Main Top Navbar (Styled with Nucomu Warm Ivory & Terracotta Theme) -->
+<header id="main-navbar" class="sticky top-0 left-0 right-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#54392B]/10 navbar-visible transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
+        
+        <!-- Official Brand Logo & Wordmark (Far Left) -->
+        <a href="http://127.0.0.1:8000#home" class="flex items-center space-x-3 group" aria-label="Nucomu Cafe">
+            <img src="http://127.0.0.1:8000/images/nucomu/nucomu_logo_brand.png" 
+                 alt="NUCOMU CAFE" 
+                 class="h-6 sm:h-7 md:h-8 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
+        </a>
+
+        <!-- Desktop Navigation Items (Theme-consistent Colors) -->
+        <nav class="hidden md:flex items-center space-x-6 lg:space-x-8">
+            <a href="http://127.0.0.1:8000#home" 
+               class="desktop-nav-link nav-link active font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
+                Home
+            </a>
+            <a href="http://127.0.0.1:8000#about" 
+               class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
+                About
+            </a>
+            <a href="http://127.0.0.1:8000#menu" 
+               class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
+                Menu
+            </a>
+            <a href="http://127.0.0.1:8000#gallery" 
+               class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
+                Gallery
+            </a>
+            <a href="http://127.0.0.1:8000#layanan" 
+               class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
+                Layanan
+            </a>
+            <a href="http://127.0.0.1:8000#contact" 
+               class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
+                Contact
+            </a>
+        </nav>
+
+
+
+        <!-- Mobile Hamburger Button (Only on small screens) -->
+        <div class="md:hidden flex items-center">
+            <button onclick="toggleMobileDrawer()" class="p-2 text-[#2A1D17] hover:text-[#E06D24] focus:outline-none transition-colors" aria-label="Buka Menu Navigasi">
+                <span class="material-symbols-outlined text-2xl">menu</span>
+            </button>
+        </div>
+
+    </div>
+</header>
+
+<!-- Mobile Navigation Drawer -->
+<div id="mobile-drawer" class="fixed inset-0 bg-[#2A1D17]/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+    <!-- Click backdrop to close -->
+    <div class="absolute inset-0" onclick="toggleMobileDrawer()"></div>
+
+    <!-- Slide-in Drawer Panel (Warm Ivory & Terracotta Theme) -->
+    <div id="mobile-drawer-panel" class="absolute top-0 right-0 w-4/5 max-w-sm h-full bg-[#FAF8F5] shadow-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-[#54392B]/15">
+        <div>
+            <!-- Drawer Header -->
+            <div class="flex items-center justify-between pb-5 border-b border-[#54392B]/10">
+                <img src="http://127.0.0.1:8000/images/nucomu/nucomu_logo_brand.png" 
+                     alt="NUCOMU CAFE" 
+                     class="h-6 w-auto object-contain">
+                <button onclick="toggleMobileDrawer()" class="p-2 text-[#54392B] hover:text-[#E06D24] transition-colors" aria-label="Tutup Menu">
+                    <span class="material-symbols-outlined text-2xl">close</span>
+                </button>
+            </div>
+
+            <!-- Drawer Links -->
+            <nav class="flex flex-col space-y-1.5 mt-6">
+                <a href="http://127.0.0.1:8000#home" onclick="toggleMobileDrawer()" class="text-sm font-bold text-[#2A1D17] py-2.5 border-b border-[#54392B]/10 hover:text-[#E06D24] transition-colors">Home</a>
+                <a href="http://127.0.0.1:8000#about" onclick="toggleMobileDrawer()" class="text-sm font-bold text-[#2A1D17] py-2.5 border-b border-[#54392B]/10 hover:text-[#E06D24] transition-colors">About</a>
+                <a href="http://127.0.0.1:8000#menu" onclick="toggleMobileDrawer()" class="text-sm font-bold text-[#2A1D17] py-2.5 border-b border-[#54392B]/10 hover:text-[#E06D24] transition-colors">Menu</a>
+                <a href="http://127.0.0.1:8000#gallery" onclick="toggleMobileDrawer()" class="text-sm font-bold text-[#2A1D17] py-2.5 border-b border-[#54392B]/10 hover:text-[#E06D24] transition-colors">Gallery</a>
+                <a href="http://127.0.0.1:8000#layanan" onclick="toggleMobileDrawer()" class="text-sm font-bold text-[#2A1D17] py-2.5 border-b border-[#54392B]/10 hover:text-[#E06D24] transition-colors">Layanan</a>
+                <a href="http://127.0.0.1:8000#contact" onclick="toggleMobileDrawer()" class="text-sm font-bold text-[#2A1D17] py-2.5 border-b border-[#54392B]/10 hover:text-[#E06D24] transition-colors">Contact</a>
+            </nav>
+        </div>
+
+        <!-- Drawer Bottom Actions -->
+        <div class="pt-6 border-t border-[#54392B]/10 flex flex-col space-y-4">
+            <button type="button" 
+                    onclick="toggleMobileDrawer(); openReservationModal('Mobile Drawer');" 
+                    class="w-full py-3.5 bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95">
+                Reservasi Tempat
+            </button>
+            <div class="text-center text-xs text-[#5C4E45] font-medium">
+                Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Main Content Flow -->
+    <main>
+            <!-- 1. Section Home / Hero (Flat-lay Overhead Composition) -->
+    <!-- SECTION 1: HOME / HERO (3 BALANCED CREATIVE SLIDES WITH 1-MINUTE AUTO-TRANSITION) -->
+<section id="home" class="relative min-h-[520px] sm:min-h-[570px] lg:min-h-[620px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero bg-[#FAF8F5]">
+
+    <!-- =========================================================================
+         SLIDE 0: WELCOME & SPECIALTY COFFEE (APPROVED OVERHEAD FLAT-LAY)
+         ========================================================================= -->
+    <div class="hero-slide-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out bg-cover bg-center flex items-center justify-center opacity-100 z-10"
+         style="background-image: url('http://127.0.0.1:8000/images/nucomu/hero_flatlay_bg.jpg');"
+         data-slide-index="0">
+        
+        <!-- Soft feathered center ambient glow for crisp typography -->
+        <div class="absolute inset-0 pointer-events-none" 
+             style="background: radial-gradient(ellipse 65% 65% at 50% 50%, rgba(246, 241, 234, 0.88) 0%, rgba(246, 241, 234, 0.55) 60%, rgba(246, 241, 234, 0.3) 100%);">
+        </div>
+
+        <!-- Center Content -->
+        <div class="hero-content-wrapper relative z-20 max-w-2xl mx-auto px-5 sm:px-8 text-center py-10 sm:py-12 lg:py-14 transition-all duration-700 ease-out transform translate-y-0 opacity-100">
+            <!-- Cursive Script Kicker -->
+            <p class="font-script text-2xl sm:text-4xl lg:text-5xl text-[#3C281E] mb-1.5 leading-tight">
+                Welcome to Our Cafe
+            </p>
+
+            <!-- Bold Editorial Serif Headline -->
+            <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight">
+                Good Coffee,<br>
+                Great Moments
+            </h1>
+
+            <!-- Nucomu Identity Touchpoint -->
+            <div class="inline-flex items-center space-x-2 mb-2.5 bg-white/60 backdrop-blur-sm px-3.5 py-0.5 rounded-full border border-[#54392B]/15">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
+                    Nucomu Cafe &bull; Tulungagung
+                </span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+            </div>
+
+            <!-- Sensory Subtitle -->
+            <p class="font-body text-xs sm:text-sm text-[#5C4E45] max-w-md mx-auto leading-relaxed mb-6 font-normal">
+                Nikmati seduhan kopi single origin Sendang Tulungagung, pastry artisanal, dan waktu yang terasa lebih berarti di ruang monokrom bernapas hangat.
+            </p>
+
+            <!-- Dual Pill CTAs -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a href="#menu" 
+                   class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 sm:px-8 sm:py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95">
+                    VIEW OUR MENU
+                </a>
+                <button type="button" 
+                        onclick="openReservationModal('Kunjungan Nucomu')" 
+                        class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-7 py-3 sm:px-8 sm:py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                    RESERVASI MEJA
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================================================
+         SLIDE 1: DISKON & PROMO 20% (SPLIT EDITORIAL VOUCHER BOARDING PASS)
+         Warm Ivory, Terracotta & Gold Palette
+         ========================================================================= -->
+    <div class="hero-slide-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out bg-gradient-to-br from-[#FDFBF7] via-[#F6EFE6] to-[#EFE3D2] flex items-center justify-center opacity-0 pointer-events-none z-0"
+         data-slide-index="1">
+        
+        <!-- Subtle Organic Background Texture & Ambient Shapes -->
+        <div class="absolute -right-20 -top-20 w-88 h-88 rounded-full bg-[#E06D24]/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 -bottom-20 w-88 h-88 rounded-full bg-[#C59D5F]/15 blur-3xl pointer-events-none"></div>
+
+        <div class="hero-content-wrapper relative z-20 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-14 transition-all duration-700 ease-out transform translate-y-4 opacity-0 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+                
+                <!-- Left Column: Story & Headline (Left Aligned) -->
+                <div class="lg:col-span-7 text-left">
+                    <div class="inline-flex items-center space-x-2 px-3 py-0.5 rounded-full bg-[#E06D24]/15 border border-[#E06D24]/30 text-[#E06D24] text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-3">
+                        <span class="material-symbols-outlined text-xs">local_offer</span>
+                        <span>Penawaran Terbatas &bull; Kunjungan Pertama</span>
+                    </div>
+
+                    <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 leading-[1.08] tracking-tight mb-3">
+                        Nikmati Diskon 20%<br>
+                        <span class="text-[#E06D24] italic">Momen Pertama</span> di Nucomu
+                    </h2>
+
+                    <p class="font-body text-xs sm:text-sm text-neutral-600 leading-relaxed max-w-lg mb-6 font-normal">
+                        Dapatkan potongan 20% untuk semua racikan kopi specialty, pastry buatan rumah, dan makanan berat di kunjungan pertama Anda. Cukup gunakan kode promo saat reservasi via WhatsApp.
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" 
+                                onclick="openReservationModal('Klaim Promo Diskon 20% Nucomu (Kode: NUCOMU20)')" 
+                                class="inline-flex items-center space-x-2 bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-6 py-2.5 sm:px-7 sm:py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95">
+                            <span>KLAIM PROMO SEKARANG</span>
+                            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                        </button>
+                        <a href="#menu" 
+                           class="inline-flex items-center space-x-2 bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-300 text-xs font-bold uppercase tracking-widest px-6 py-2.5 sm:px-7 sm:py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                            <span>LIHAT DAFTAR MENU</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Column: Creative Luxury Coffee Voucher Pass -->
+                <div class="lg:col-span-5 flex justify-center lg:justify-end">
+                    <div class="w-full max-w-sm bg-white rounded-3xl p-5 sm:p-6 shadow-xl border-2 border-dashed border-[#E06D24]/40 relative overflow-hidden transform lg:rotate-2 hover:rotate-0 transition-transform duration-300">
+                        
+                        <!-- Voucher Header -->
+                        <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
+                            <div class="flex items-center space-x-2">
+                                <img src="http://127.0.0.1:8000/images/nucomu/nucomu_logo_icon.png" alt="Logo" class="h-5 w-auto object-contain">
+                                <span class="font-bold text-xs uppercase tracking-wider text-neutral-900">NUCOMU VOUCHER</span>
+                            </div>
+                            <span class="text-[9px] font-bold uppercase px-2 py-0.5 rounded bg-[#E06D24]/10 text-[#E06D24] tracking-wider">
+                                SPECIAL PASS
+                            </span>
+                        </div>
+
+                        <!-- Big Discount Graphic -->
+                        <div class="py-3.5 text-center bg-gradient-to-b from-[#FDF8F3] to-white rounded-2xl my-2.5 border border-stone-100">
+                            <span class="font-editorial text-5xl sm:text-6xl font-extrabold text-[#E06D24] tracking-tight leading-none block">
+                                20%
+                            </span>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-800 mt-0.5 block">
+                                POTONGAN SEMUA MENU
+                            </span>
+                        </div>
+
+                        <!-- Promo Code Highlight Box -->
+                        <div class="bg-[#FAF6F0] p-2.5 rounded-xl border border-[#E06D24]/20 flex items-center justify-between mt-1.5">
+                            <div>
+                                <span class="text-[8px] uppercase tracking-wider font-bold text-neutral-500 block">KODE KUPON:</span>
+                                <span class="font-mono text-base font-bold text-[#E06D24] tracking-wider">NUCOMU20</span>
+                            </div>
+                            <button type="button" 
+                                    onclick="openReservationModal('Klaim Promo Kode: NUCOMU20')" 
+                                    class="px-2.5 py-1.5 rounded-lg bg-neutral-900 text-white text-[9px] font-bold uppercase tracking-wider hover:bg-[#E06D24] transition-colors">
+                                Salin & Klaim
+                            </button>
+                        </div>
+
+                        <!-- Terms Footer -->
+                        <div class="mt-3 pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[10px] text-neutral-500 font-medium">
+                            <span>Berlaku Dine-in & Reservasi</span>
+                            <span>Pusat Kota Tulungagung</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================================================
+         SLIDE 2: KOLABORASI KREATIF (MAGAZINE EDITORIAL COLLAGE LAYOUT)
+         Artisanal Warm Coffee Bar & Community Hub
+         ========================================================================= -->
+    <div class="hero-slide-item absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out bg-gradient-to-br from-[#F5F2EB] via-[#EDE7DC] to-[#E3DCce] flex items-center justify-center opacity-0 pointer-events-none z-0"
+         data-slide-index="2">
+        
+        <div class="hero-content-wrapper relative z-20 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-14 transition-all duration-700 ease-out transform translate-y-4 opacity-0 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+                
+                <!-- Left Column: Overlapping Visual Photo Collage -->
+                <div class="lg:col-span-5 relative order-2 lg:order-1 flex justify-center">
+                    <div class="relative w-full max-w-sm sm:max-w-md">
+                        <!-- Main Polaroid Photo (Barista / Manual Brew) -->
+                        <div class="bg-white p-2.5 sm:p-3 rounded-2xl shadow-xl border border-stone-200 transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+                            <div class="aspect-[4/3] rounded-xl overflow-hidden bg-stone-200">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8m-7gZzFNVGOKTwQIA84CWnVhGxzO3qIGH9lV_9Py5u0C3qC5Wr-ivYu1cOzDbFKcBFVc5wmFGyzJohqCsYBDDie7yGQ9yhHA6vbKt1MxSq0M8jJMv_o2gIY6dy6ZkWncykJGJNe2GEKBxxklPZf-maWTBiqi07v5JdOgy3xQS8ylylWkCbAUX7C6DejM5RKoP3JSg1dmKOGzs5j77Avi6hycjNHtauDAphlrHBZ56aHCr99845yP" 
+                                     alt="Manual Brew Workshop" 
+                                     class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-2 text-left">
+                                <span class="font-editorial text-xs sm:text-sm font-bold text-neutral-900 block">Manual Brew & Workshop</span>
+                                <span class="text-[9px] sm:text-[10px] text-neutral-500 font-medium">Kalibrasi & Edukasi Kopi Sendang</span>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Overlapping Card (Pop-up Showcase) -->
+                        <div class="absolute -bottom-4 -right-3 sm:-right-5 bg-white p-2 sm:p-2.5 rounded-2xl shadow-2xl border border-stone-200 w-36 sm:w-44 transform rotate-5 hover:rotate-0 transition-transform duration-300 hidden sm:block">
+                            <div class="aspect-square rounded-xl overflow-hidden bg-stone-200">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1P8f-EBGZgQflvyyKW_OfkYt5VXDhIHhyiA0jYpsYzEy8byioxZDaWsSPLkisOP-W_QT-VcYpPWvkAwmmTF7cezpEXN28i0_M-PWtTJW2KjxmleAQqtWyBLZ5zzD30p7EmZtIpIYtRROYCmwqv1pjfq6g5hxHEJFUqd4c3lkTBiGsN776sKI08OynnTy1V_3sxpZlFx503s6QqS_iNqoum8aQF1Xp2-LoEa2gp7yB4VmJ0MaV4UcZ" 
+                                     alt="Artisanal Creative Corner" 
+                                     class="w-full h-full object-cover">
+                            </div>
+                            <span class="text-[9px] font-bold text-neutral-900 mt-1 block text-center">Art & Pop-up Showcase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Editorial Text & Collaboration Actions -->
+                <div class="lg:col-span-7 text-left order-1 lg:order-2">
+                    <div class="inline-flex items-center space-x-2 px-3 py-0.5 rounded-full bg-[#54392B]/10 border border-[#54392B]/20 text-[#54392B] text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mb-3">
+                        <span class="material-symbols-outlined text-xs">handshake</span>
+                        <span>Ruang Kolaboratif &bull; Kreator Tulungagung</span>
+                    </div>
+
+                    <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 leading-[1.08] tracking-tight mb-3">
+                        Where Ideas<br>
+                        <span class="text-[#54392B] italic font-serif">Come to Brew</span>
+                    </h2>
+
+                    <p class="font-body text-xs sm:text-sm text-neutral-600 leading-relaxed max-w-lg mb-4.5 font-normal">
+                        Nucomu menyediakan ruang terbuka untuk kreator dan jenama lokal: pameran seni independen, pop-up store, workshop kriya mingguan, atau sesi diskusi komunitas kreatif di jantung Tulungagung.
+                    </p>
+
+                    <!-- Feature Tags -->
+                    <div class="flex flex-wrap gap-1.5 mb-5">
+                        <span class="px-2.5 py-0.5 bg-white/80 rounded-full border border-stone-200 text-xs font-semibold text-neutral-800">Pameran Karya Seni</span>
+                        <span class="px-2.5 py-0.5 bg-white/80 rounded-full border border-stone-200 text-xs font-semibold text-neutral-800">Workshop Barista</span>
+                        <span class="px-2.5 py-0.5 bg-white/80 rounded-full border border-stone-200 text-xs font-semibold text-neutral-800">Pop-up Showcase</span>
+                        <span class="px-2.5 py-0.5 bg-white/80 rounded-full border border-stone-200 text-xs font-semibold text-neutral-800">Space Rental Acara</span>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button type="button" 
+                                onclick="openReservationModal('Pengajuan Kolaborasi Nucomu')" 
+                                class="inline-flex items-center space-x-2 bg-neutral-900 hover:bg-[#54392B] text-white text-xs font-bold uppercase tracking-widest px-6 py-2.5 sm:px-7 sm:py-3 rounded-full shadow-lg transition-all duration-200 active:scale-95">
+                            <span>AJUKAN KOLABORASI</span>
+                            <span class="material-symbols-outlined text-xs">arrow_forward</span>
+                        </button>
+                        <a href="#layanan" 
+                           class="inline-flex items-center space-x-2 bg-white hover:bg-neutral-50 text-neutral-800 border border-neutral-300 text-xs font-bold uppercase tracking-widest px-6 py-2.5 sm:px-7 sm:py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                            <span>PELAJARI LAYANAN</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- =========================================================================
+         CAROUSEL NAVIGATION CONTROLS (ARROWS & BOTTOM DOTS)
+         ========================================================================= -->
+    <!-- Left & Right Carousel Arrows (Desktop Floating) -->
+    <button type="button" 
+            onclick="prevHeroSlide()" 
+            class="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+            aria-label="Slide Sebelumnya">
+        <span class="material-symbols-outlined text-xl">chevron_left</span>
+    </button>
+    <button type="button" 
+            onclick="nextHeroSlide()" 
+            class="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+            aria-label="Slide Berikutnya">
+        <span class="material-symbols-outlined text-xl">chevron_right</span>
+    </button>
+
+    <!-- Slide Indicator Dots -->
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2 bg-black/10 backdrop-blur-md px-3 py-1.5 rounded-full border border-black/5">
+        <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1"></button>
+        <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-400/70 hover:bg-neutral-600 transition-all duration-300" aria-label="Slide 2"></button>
+        <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-400/70 hover:bg-neutral-600 transition-all duration-300" aria-label="Slide 3"></button>
+    </div>
+
+</section>
+
+    <!-- 2. Section About (Cerita, Konsep & Fasilitas: Indoor, Outdoor, Musala, Toilet) -->
+    <!-- SECTION 2: ABOUT NUCOMU CAFE -->
+<section id="about" class="py-20 lg:py-28 bg-pure-white border-b border-light-gray/60">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        
+        <!-- SUBSECTION 2A: CERITA & KONSEP CAFE -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mb-24">
+            
+            <!-- Left Editorial Text Column -->
+            <div class="lg:col-span-5 reveal-on-scroll">
+                <span class="text-[11px] font-semibold uppercase tracking-editorial-widest text-medium-gray block mb-3">TENTANG NUCOMU</span>
+                <h2 class="font-editorial text-3xl sm:text-5xl font-bold text-ink-black leading-[1.15] mb-6">
+                    Lebih dari Sekadar Tempat Menikmati Kopi.
+                </h2>
+                <div class="w-12 h-0.5 bg-ink-black mb-6"></div>
+                <p class="font-body text-sm sm:text-base text-charcoal/80 leading-relaxed mb-6 font-normal">
+                    Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat. 
+                </p>
+                <p class="font-body text-sm text-medium-gray leading-relaxed mb-8">
+                    Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.
+                </p>
+
+                <div class="pt-2">
+                    <a href="#menu" class="inline-flex items-center space-x-2 text-xs font-semibold uppercase tracking-editorial-widest text-ink-black border-b border-ink-black pb-1 hover:text-medium-gray hover:border-medium-gray transition-colors">
+                        <span>Jelajahi Pilihan Menu</span>
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Asymmetric Image & Concept Highlight -->
+            <div class="lg:col-span-7 flex flex-col space-y-8 reveal-on-scroll">
+                <!-- Large Editorial Atmosphere Frame -->
+                <div class="relative bg-warm-ivory p-3.5 border border-soft-beige rounded">
+                    <div class="overflow-hidden aspect-[16/10] relative img-editorial rounded-sm">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1P8f-EBGZgQflvyyKW_OfkYt5VXDhIHhyiA0jYpsYzEy8byioxZDaWsSPLkisOP-W_QT-VcYpPWvkAwmmTF7cezpEXN28i0_M-PWtTJW2KjxmleAQqtWyBLZ5zzD30p7EmZtIpIYtRROYCmwqv1pjfq6g5hxHEJFUqd4c3lkTBiGsN776sKI08OynnTy1V_3sxpZlFx503s6QqS_iNqoum8aQF1Xp2-LoEa2gp7yB4VmJ0MaV4UcZ" 
+                             alt="Interior Nucomu Cafe Tulungagung" 
+                             class="w-full h-full object-cover">
+                        <div class="absolute bottom-3 left-3 bg-warm-ivory/95 backdrop-blur-sm px-3.5 py-1.5 border border-soft-beige text-[10px] font-semibold uppercase tracking-editorial-widest text-ink-black">
+                            ATMOSFER RUANG NUCOMU
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Concept Statement -->
+                <div class="p-6 sm:p-8 bg-warm-ivory/70 border border-soft-beige rounded">
+                    <p class="font-editorial text-xl sm:text-2xl italic text-ink-black leading-relaxed">
+                        "Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan."
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SUBSECTION 2B: FASILITAS CAFE (DYNAMIC ASYMMETRICAL EDITORIAL) -->
+        <div id="facilities" class="pt-12 sm:pt-16 lg:pt-20 border-t border-stone-200/80">
+            
+            <!-- Section Header (Editorial Asymmetric Split - Compact) -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-10 pb-6 border-b border-stone-200/80 reveal-on-scroll">
+                <div>
+                    <span class="inline-flex items-center space-x-1.5 text-[11px] font-bold uppercase tracking-widest text-[#E06D24] mb-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                        <span>Eksplorasi Ruang</span>
+                    </span>
+                    <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-light text-[#2A1D17]">
+                        Fasilitas <span class="font-editorial italic font-normal text-[#E06D24]">&amp; Area Cafe</span>
+                    </h2>
+                </div>
+                <p class="font-body text-xs sm:text-sm text-[#5C4E45] max-w-md font-normal leading-relaxed mt-2 md:mt-0">
+                    Dirancang dengan cermat untuk memenuhi kebutuhan kerja tenang, diskusi komunitas, hingga kenyamanan beribadah.
+                </p>
+            </div>
+
+            <!-- Facilities Grid Layout (Asymmetrical Alternating - Compact) -->
+            <div class="space-y-8 sm:space-y-10">
+                
+                <!-- Facility Item 1: Indoor Lounge (Image Left, Content Right) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center reveal-on-scroll">
+                    <div class="lg:col-span-7 group relative overflow-hidden rounded-2xl h-[240px] sm:h-[280px] lg:h-[300px] shadow-md border border-stone-200/80 bg-stone-100">
+                        <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop" 
+                             alt="Indoor Lounge Nucomu" 
+                             class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                        <div class="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur-md px-3.5 py-1 rounded-full shadow-sm border border-stone-200/70 text-[10px] font-bold text-[#E06D24] uppercase tracking-wider flex items-center space-x-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                            <span>AC &bull; High-Speed Wi-Fi &bull; Power Outlets</span>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 lg:pl-2 space-y-3 text-left">
+                        <span class="text-[11px] font-bold text-[#E06D24] uppercase tracking-widest block">01 / Workspace &amp; Lounge</span>
+                        <h3 class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] leading-tight">Indoor Lounge Work Space</h3>
+                        <p class="font-body text-xs sm:text-[13px] text-[#5C4E45] leading-relaxed font-normal">
+                            Area dalam ruangan ber-AC yang tenang dengan meja ergonomis, stopkontak melimpah di setiap sudut, serta koneksi internet cepat. Ideal untuk WFC (Work From Cafe) maupun rapat santai.
+                        </p>
+                        <ul class="space-y-2 pt-1 text-xs text-[#5C4E45]">
+                            <li class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
+                                <span>Suhu ruangan sejuk &amp; sirkulasi udara bersih</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
+                                <span>Pencahayaan hangat bebas silau untuk kenyamanan mata</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
+                                <span>Stopkontak di setiap meja &amp; Wi-Fi berkecepatan tinggi</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Facility Item 2: Outdoor Garden (Reversed: Content Left, Image Right) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center reveal-on-scroll">
+                    <div class="lg:col-span-5 lg:pr-2 space-y-3 text-left order-2 lg:order-1">
+                        <span class="text-[11px] font-bold text-[#E06D24] uppercase tracking-widest block">02 / Open Air &amp; Santai</span>
+                        <h3 class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] leading-tight">Outdoor Garden Terrace</h3>
+                        <p class="font-body text-xs sm:text-[13px] text-[#5C4E45] leading-relaxed font-normal">
+                            Taman terbuka bersuasana asri dengan naungan pepohonan rindang dan pencahayaan malam yang temaram romantis. Tempat favorit untuk menikmati senja, angin sepoi-sepoi, dan obrolan santai tanpa sekat kaku.
+                        </p>
+                        <ul class="space-y-2 pt-1 text-xs text-[#5C4E45]">
+                            <li class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
+                                <span>Smoking area yang lega dan asri</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
+                                <span>Suasana hijau teduh dengan bangku taman nyaman</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <span class="material-symbols-outlined text-[#E06D24] text-base">check_circle</span>
+                                <span>Atmosfer santai untuk bercengkerama sore hingga malam</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="lg:col-span-7 group relative overflow-hidden rounded-2xl h-[240px] sm:h-[280px] lg:h-[300px] shadow-md border border-stone-200/80 bg-stone-100 order-1 lg:order-2">
+                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop" 
+                             alt="Outdoor Garden Nucomu" 
+                             class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
+                        <div class="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur-md px-3.5 py-1 rounded-full shadow-sm border border-stone-200/70 text-[10px] font-bold text-[#E06D24] uppercase tracking-wider flex items-center space-x-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                            <span>Smoking Allowed &bull; Garden View</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Facility Item 3 & 4 Grid (Musala & Restroom - Compact) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6 pt-2">
+                    <!-- Musala -->
+                    <div class="bg-gradient-to-br from-[#FAF8F5] via-white to-[#F6EFE6]/40 p-5 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-all duration-300 space-y-3 text-left reveal-on-scroll">
+                        <div class="w-10 h-10 rounded-xl bg-[#E06D24]/10 border border-[#E06D24]/20 flex items-center justify-center text-[#E06D24] mb-2 shadow-sm">
+                            <span class="material-symbols-outlined text-xl">mosque</span>
+                        </div>
+                        <span class="text-[11px] font-bold text-[#E06D24] uppercase tracking-widest block">03 / Kenyamanan Ibadah</span>
+                        <h4 class="font-editorial text-xl sm:text-2xl font-bold text-[#2A1D17]">Musala Bersih &amp; Terpisah</h4>
+                        <p class="font-body text-xs text-[#5C4E45] font-normal leading-relaxed">
+                            Fasilitas musala khusus lengkap dengan sarana wudhu yang selalu terjaga kebersihannya, sajadah, mukena wangi, serta pendingin udara untuk kenyamanan dan ketenangan ibadah Anda.
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Sarana Wudhu Bersih</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Mukena &amp; Sajadah</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Sejuk &amp; Tenang</span>
+                        </div>
+                    </div>
+
+                    <!-- Kamar Mandi / Restroom -->
+                    <div class="bg-gradient-to-br from-[#FAF8F5] via-white to-[#EDE7DC]/40 p-5 sm:p-6 rounded-2xl border border-stone-200/90 shadow-sm hover:shadow-md transition-all duration-300 space-y-3 text-left reveal-on-scroll">
+                        <div class="w-10 h-10 rounded-xl bg-[#54392B]/10 border border-[#54392B]/20 flex items-center justify-center text-[#54392B] mb-2 shadow-sm">
+                            <span class="material-symbols-outlined text-xl">wc</span>
+                        </div>
+                        <span class="text-[11px] font-bold text-[#54392B] uppercase tracking-widest block">04 / Kebersihan Utama</span>
+                        <h4 class="font-editorial text-xl sm:text-2xl font-bold text-[#2A1D17]">Restroom Modern &amp; Higienis</h4>
+                        <p class="font-body text-xs text-[#5C4E45] font-normal leading-relaxed">
+                            Kamar mandi terpisah pria &amp; wanita dengan standar kebersihan berkala tinggi, dilengkapi sabun cuci tangan aromaterapi lembut, cermin estetis, dan ventilasi udara segar demi kenyamanan setiap pengunjung.
+                        </p>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Terpisah Pria &amp; Wanita</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Hand Wash Aromatik</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-white text-[10px] font-semibold text-neutral-700 border border-stone-200 shadow-sm">Sanitasi Teratur</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- 3. Section Menu (Signature Best Menu Switcher & Categories) -->
+    <!-- SECTION 3: MENU SHOWCASE (BEST MENU HERO SWITCHER & MENU CATEGORIES) -->
+<section id="menu" class="py-16 sm:py-20 lg:py-28 bg-[#FAF8F5] border-b border-light-gray/60 relative">
+    
+    <!-- =========================================================================
+         PART 0: BEST MENU INTERACTIVE SHOWCASE (MATCHING USER REFERENCE DESIGN)
+         Before Categories, interactive dish switcher with right-side pills
+         ========================================================================= -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 lg:mb-28">
+        
+        <!-- Section Title & Divider -->
+        <div class="text-center max-w-2xl mx-auto mb-10 reveal-on-scroll">
+            <span class="text-xs uppercase tracking-widest font-bold text-[#E06D24] block mb-2">NUCOMU SIGNATURE</span>
+            <h2 class="font-editorial text-3xl sm:text-5xl font-bold tracking-tight text-neutral-900 uppercase">
+                BEST MENU
+            </h2>
+            <div class="flex items-center justify-center space-x-3 mt-3">
+                <span class="w-12 h-px bg-neutral-300"></span>
+                <span class="text-[#E06D24] text-sm">♔</span>
+                <span class="w-12 h-px bg-neutral-300"></span>
+            </div>
+            <p class="font-body text-xs sm:text-sm text-neutral-500 mt-2">
+                Pilih menu di sisi kanan untuk melihat sajian unggulan kopi & dessert artisanal kami.
+            </p>
+        </div>
+
+        <!-- The Reference Showcase Card (Clean White, No Top Navbar, Responsive 3-Column Layout) -->
+        <div class="relative bg-white rounded-3xl sm:rounded-[2.5rem] shadow-xl border border-stone-150 p-6 sm:p-10 lg:p-14 overflow-hidden">
+            
+            <!-- Faded Watermark in Background -->
+            <div class="absolute -left-6 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.04] font-editorial font-extrabold text-[120px] sm:text-[180px] lg:text-[220px] leading-none text-neutral-900 z-0 tracking-tighter">
+                FOOD<br>ZONE
+            </div>
+
+            <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- 1. LEFT COLUMN: Bold Typography & Menu Story (~4 cols) -->
+                <div class="lg:col-span-4 flex flex-col justify-center text-left">
+                    <span class="text-[11px] uppercase tracking-widest font-bold text-[#E06D24] block mb-2">
+                        BEST CHOICE
+                    </span>
+                    <h3 id="best-hero-title" class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 leading-[1.05] tracking-tight transition-all duration-300">
+                        Basque<br>Cheesecake
+                    </h3>
+
+                    <div class="flex items-center space-x-3 my-4">
+                        <span class="w-10 h-0.5 bg-neutral-900"></span>
+                        <span id="best-hero-category" class="text-xs font-bold uppercase tracking-wider text-neutral-600">
+                            Dessert Artisanal
+                        </span>
+                    </div>
+
+                    <p id="best-hero-desc" class="font-body text-xs sm:text-sm text-neutral-600 leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
+                        Creamy baked basque cheesecake dengan burnt caramelized top yang gurih dan filling vanilla beans yang lumer di mulut.
+                    </p>
+                </div>
+
+                <!-- 2. CENTER COLUMN: Giant Plate, Order Pill, and Slide Dots (~5 cols) -->
+                <div class="lg:col-span-5 flex flex-col items-center justify-center my-4 lg:my-0">
+                    <!-- Big Round Plate with Soft Shadow -->
+                    <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-white shadow-2xl transition-all duration-500 ease-out border border-stone-100 flex items-center justify-center">
+                        <img id="best-hero-img" 
+                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW" 
+                             alt="Basque Burnt Cheesecake" 
+                             class="w-full h-full object-cover rounded-full shadow-inner transition-all duration-500">
+                    </div>
+
+                    <!-- Orange Pill Order Button Underneath -->
+                    <div class="mt-6 sm:-mt-5 relative z-20">
+                        <button id="best-hero-order-btn" 
+                                type="button"
+                                onclick="openReservationModal('Pesanan Best Menu: Basque Burnt Cheesecake')" 
+                                class="px-7 sm:px-8 py-3 rounded-full bg-[#E06D24] hover:bg-[#c95b17] text-white font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2.5 shadow-lg shadow-orange-500/25 transition-all duration-200 hover:scale-105 active:scale-95">
+                            <span id="best-hero-price">Rp 36.000</span>
+                            <span>ORDER</span>
+                            <span class="material-symbols-outlined text-base">chevron_right</span>
+                        </button>
+                    </div>
+
+                    <!-- Slide Dots Indicator -->
+                    <div class="flex items-center space-x-2 mt-4 sm:mt-6" id="best-dots-container">
+                                                    <button type="button" 
+                                    onclick="switchBestMenuItem(0)" 
+                                    class="best-menu-dot w-6 h-2 bg-[#E06D24] rounded-full transition-all duration-300"
+                                    aria-label="Menu 1">
+                            </button>
+                                                    <button type="button" 
+                                    onclick="switchBestMenuItem(1)" 
+                                    class="best-menu-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300"
+                                    aria-label="Menu 2">
+                            </button>
+                                                    <button type="button" 
+                                    onclick="switchBestMenuItem(2)" 
+                                    class="best-menu-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300"
+                                    aria-label="Menu 3">
+                            </button>
+                                                    <button type="button" 
+                                    onclick="switchBestMenuItem(3)" 
+                                    class="best-menu-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300"
+                                    aria-label="Menu 4">
+                            </button>
+                                            </div>
+                </div>
+
+                <!-- 3. RIGHT COLUMN: Interactive Vertical Stack of Pills (~3 cols) -->
+                <div class="lg:col-span-3 flex flex-col space-y-3.5 lg:-mr-14">
+                                            <div onclick="switchBestMenuItem(0)" 
+                             class="best-menu-pill active bg-[#E06D24] text-white shadow-lg shadow-orange-500/20 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
+                            
+                            <!-- Left: Thumbnail in white circle -->
+                            <div class="w-12 h-12 rounded-full overflow-hidden p-0.5 bg-white border border-stone-200 shadow-sm shrink-0">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW" 
+                                     alt="Basque Burnt Cheesecake" 
+                                     class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
+                            </div>
+
+                            <!-- Right Info: Title & Price -->
+                            <div class="flex-1 ml-3.5 mr-2 text-left">
+                                <span class="pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-white">
+                                    Basque Burnt Cheesecake
+                                </span>
+                                <span class="pill-price text-xs sm:text-sm font-bold block mt-0.5 text-white">
+                                    Rp 36.000
+                                </span>
+                            </div>
+                        </div>
+                                            <div onclick="switchBestMenuItem(1)" 
+                             class="best-menu-pill bg-white text-neutral-800 shadow-md hover:shadow-lg hover:-translate-x-1 border border-stone-100 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
+                            
+                            <!-- Left: Thumbnail in white circle -->
+                            <div class="w-12 h-12 rounded-full overflow-hidden p-0.5 bg-white border border-stone-200 shadow-sm shrink-0">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhQUToSR2pv7UGDRsVg0yHYM2mlzoXBmOO4JYxDv9HgooJGoCqCztL8l8YHO0dLsa0p8yHBHQkiHnU_YPcrg4e-J1QpkZxVVRNQK9qoFDhZN9_fWLO0c32j64rYuAbBsfC_vuAAF11Npuzcr0joNgL6lVyBAf4sG46x1OCQvhc5irZN-Lt7oA8xYivR0GLfsUMHRIx64NZyDa71WlGnGZvUxZq1nuebeCOoFFKfLodO44XeoRRWUsA" 
+                                     alt="Smoked Beef Sourdough" 
+                                     class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
+                            </div>
+
+                            <!-- Right Info: Title & Price -->
+                            <div class="flex-1 ml-3.5 mr-2 text-left">
+                                <span class="pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-neutral-800">
+                                    Smoked Beef Sourdough
+                                </span>
+                                <span class="pill-price text-xs sm:text-sm font-bold block mt-0.5 text-[#E06D24]">
+                                    Rp 38.000
+                                </span>
+                            </div>
+                        </div>
+                                            <div onclick="switchBestMenuItem(2)" 
+                             class="best-menu-pill bg-white text-neutral-800 shadow-md hover:shadow-lg hover:-translate-x-1 border border-stone-100 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
+                            
+                            <!-- Left: Thumbnail in white circle -->
+                            <div class="w-12 h-12 rounded-full overflow-hidden p-0.5 bg-white border border-stone-200 shadow-sm shrink-0">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPqLrA-TY5mFKhRtn4JKGIrRcBH3BdS1fNJjmW2YLU-LfY2vZYIA_IREh3dxqIRd_3_6MPxGC-J7zRVl8pKRzlzudFwVSwuU9vphdP0N_CE1PyBfm3Du_d5hJkNoLQixpClSDb4DslruxOf4KXQRbVYsb7BsgAoHgevN1ubGxFM6t1k9fceENXwk2soL3QsW9DfXM101g70CDkDFHiMpgGjdyd2NpQBTUZONVX29AZoUp8LvPw3fbk" 
+                                     alt="Nucomu Signature Latte" 
+                                     class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
+                            </div>
+
+                            <!-- Right Info: Title & Price -->
+                            <div class="flex-1 ml-3.5 mr-2 text-left">
+                                <span class="pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-neutral-800">
+                                    Nucomu Signature Latte
+                                </span>
+                                <span class="pill-price text-xs sm:text-sm font-bold block mt-0.5 text-[#E06D24]">
+                                    Rp 26.000
+                                </span>
+                            </div>
+                        </div>
+                                            <div onclick="switchBestMenuItem(3)" 
+                             class="best-menu-pill bg-white text-neutral-800 shadow-md hover:shadow-lg hover:-translate-x-1 border border-stone-100 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
+                            
+                            <!-- Left: Thumbnail in white circle -->
+                            <div class="w-12 h-12 rounded-full overflow-hidden p-0.5 bg-white border border-stone-200 shadow-sm shrink-0">
+                                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&amp;fit=crop&amp;q=80&amp;w=800" 
+                                     alt="Donut Choco Pistachio" 
+                                     class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
+                            </div>
+
+                            <!-- Right Info: Title & Price -->
+                            <div class="flex-1 ml-3.5 mr-2 text-left">
+                                <span class="pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-neutral-800">
+                                    Donut Choco Pistachio
+                                </span>
+                                <span class="pill-price text-xs sm:text-sm font-bold block mt-0.5 text-[#E06D24]">
+                                    Rp 28.000
+                                </span>
+                            </div>
+                        </div>
+                                    </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Data Injection for Instant Reactive Switching -->
+    <script>
+        window.nucomuBestMenuItems = [{"id":"basque-burnt-cheesecake","name":"Basque Burnt Cheesecake","display_title":"Basque\u003Cbr\u003ECheesecake","category":"dessert","category_label":"Dessert Artisanal","price":36000,"price_formatted":"Rp 36.000","description":"Creamy baked basque cheesecake dengan burnt caramelized top yang gurih dan filling vanilla beans yang lumer di mulut.","tags":["Best Seller","Artisanal Dairy"],"image":"https:\/\/lh3.googleusercontent.com\/aida-public\/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW"},{"id":"smoked-beef-toast","name":"Smoked Beef Sourdough","display_title":"Smoked Beef\u003Cbr\u003ESourdough","category":"meals","category_label":"Hearty Toast \u0026 Meals","price":38000,"price_formatted":"Rp 38.000","description":"Sourdough fermentasi 36 jam dengan irisan smoked brisket empuk, rempah lada hitam, dan keju mozarella leleh.","tags":["Chef Pick","Artisanal Bread"],"image":"https:\/\/lh3.googleusercontent.com\/aida-public\/AB6AXuAhQUToSR2pv7UGDRsVg0yHYM2mlzoXBmOO4JYxDv9HgooJGoCqCztL8l8YHO0dLsa0p8yHBHQkiHnU_YPcrg4e-J1QpkZxVVRNQK9qoFDhZN9_fWLO0c32j64rYuAbBsfC_vuAAF11Npuzcr0joNgL6lVyBAf4sG46x1OCQvhc5irZN-Lt7oA8xYivR0GLfsUMHRIx64NZyDa71WlGnGZvUxZq1nuebeCOoFFKfLodO44XeoRRWUsA"},{"id":"nucomu-signature-latte","name":"Nucomu Signature Latte","display_title":"Signature\u003Cbr\u003ELatte","category":"coffee","category_label":"Specialty Coffee","price":26000,"price_formatted":"Rp 26.000","description":"Double shot espresso dari biji kopi lokal Sendang Tulungagung dengan microfoam susu segar bersuhu kalibrasi presisi.","tags":["Daily Pick","Arabica Sendang"],"image":"https:\/\/lh3.googleusercontent.com\/aida-public\/AB6AXuCPqLrA-TY5mFKhRtn4JKGIrRcBH3BdS1fNJjmW2YLU-LfY2vZYIA_IREh3dxqIRd_3_6MPxGC-J7zRVl8pKRzlzudFwVSwuU9vphdP0N_CE1PyBfm3Du_d5hJkNoLQixpClSDb4DslruxOf4KXQRbVYsb7BsgAoHgevN1ubGxFM6t1k9fceENXwk2soL3QsW9DfXM101g70CDkDFHiMpgGjdyd2NpQBTUZONVX29AZoUp8LvPw3fbk"},{"id":"donut-choco-pistachio","name":"Donut Choco Pistachio","display_title":"Choco\u003Cbr\u003EPistachio","category":"dessert","category_label":"Signature Pastry","price":28000,"price_formatted":"Rp 28.000","description":"Flaky rolled artisanal pastry dengan balutan lelehan cokelat hitam Valrhona 70% dan taburan Iranian pistachio renyah.","tags":["Signature","Flaky Pastry"],"image":"https:\/\/images.unsplash.com\/photo-1555507036-ab1f4038808a?auto=format\u0026fit=crop\u0026q=80\u0026w=800"}];
+    </script>
+
+
+    <!-- =========================================================================
+         PART 1: OUR MENU CATEGORIES (6 Circular Thumbnails with Hover Zoom)
+         ========================================================================= -->
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-8">
+        <div class="text-center max-w-2xl mx-auto mb-10 reveal-on-scroll">
+            <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-ink-black uppercase">
+                OUR MENU CATEGORIES
+            </h2>
+            
+            <!-- Ornate Crown / Floral Motif Divider -->
+            <div class="flex items-center justify-center space-x-3 mt-3">
+                <span class="w-12 h-px bg-neutral-300"></span>
+                <span class="text-[#E06D24] text-sm">♔</span>
+                <span class="w-12 h-px bg-neutral-300"></span>
+            </div>
+        </div>
+
+        <!-- 6 Circular Category Items (Direct Filter Controls) -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6 max-w-5xl mx-auto mb-8 reveal-on-scroll">
+                            <button type="button" 
+                        onclick="handleCircularCategoryClick('coffee', this)" 
+                        class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
+                        data-cat-id="coffee">
+                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-[#E06D24] transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&amp;fit=crop&amp;q=80&amp;w=400" 
+                             alt="Coffee" 
+                             class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <span class="cat-circle-label mt-3 text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide text-center group-hover:text-[#E06D24] transition-colors">
+                        Coffee
+                    </span>
+                </button>
+                            <button type="button" 
+                        onclick="handleCircularCategoryClick('meals', this)" 
+                        class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
+                        data-cat-id="meals">
+                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-[#E06D24] transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&amp;fit=crop&amp;q=80&amp;w=400" 
+                             alt="Meals &amp; Toast" 
+                             class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <span class="cat-circle-label mt-3 text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide text-center group-hover:text-[#E06D24] transition-colors">
+                        Meals &amp; Toast
+                    </span>
+                </button>
+                            <button type="button" 
+                        onclick="handleCircularCategoryClick('dessert', this)" 
+                        class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
+                        data-cat-id="dessert">
+                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-[#E06D24] transition-all duration-300">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW" 
+                             alt="Desserts" 
+                             class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <span class="cat-circle-label mt-3 text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide text-center group-hover:text-[#E06D24] transition-colors">
+                        Desserts
+                    </span>
+                </button>
+                            <button type="button" 
+                        onclick="handleCircularCategoryClick('beverages', this)" 
+                        class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
+                        data-cat-id="beverages">
+                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-[#E06D24] transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&amp;fit=crop&amp;q=80&amp;w=400" 
+                             alt="Beverages" 
+                             class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <span class="cat-circle-label mt-3 text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide text-center group-hover:text-[#E06D24] transition-colors">
+                        Beverages
+                    </span>
+                </button>
+                            <button type="button" 
+                        onclick="handleCircularCategoryClick('snacks', this)" 
+                        class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
+                        data-cat-id="snacks">
+                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-[#E06D24] transition-all duration-300">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrJGwSp9FdrUg5ecAwMNOJZoazn41-puOe_9mywfUHGU9KA0tvEZ_gxjN7rPKwWbzzsWr3vAnXUdOewdaBPJlg_66Q1r1l760AYrH5ghVC_MAhoLOcRD9qJdqh5BZcy4SQXWGljA3RgwWhhXLE44h168Wu4DLSjhLnj0casL29Hhq9J6FCkxb4csnVw4oR6V6DdQpF8I6HUvt15GL_tX4p9fGsrPFZer8U1qRqsiOAlMwXjNI-6FRB" 
+                             alt="Food &amp; Snacks" 
+                             class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <span class="cat-circle-label mt-3 text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide text-center group-hover:text-[#E06D24] transition-colors">
+                        Food &amp; Snacks
+                    </span>
+                </button>
+                            <button type="button" 
+                        onclick="handleCircularCategoryClick('specials', this)" 
+                        class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
+                        data-cat-id="specials">
+                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-[#E06D24] transition-all duration-300">
+                        <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&amp;fit=crop&amp;q=80&amp;w=400" 
+                             alt="Chef Specials" 
+                             class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <span class="cat-circle-label mt-3 text-xs sm:text-sm font-semibold text-neutral-800 tracking-wide text-center group-hover:text-[#E06D24] transition-colors">
+                        Chef Specials
+                    </span>
+                </button>
+                    </div>
+
+        <!-- SEKAT AESTHETIC ANTARA KATEGORI & MENU -->
+        <div class="relative max-w-5xl mx-auto my-10 sm:my-12 flex items-center justify-center reveal-on-scroll">
+            <div class="flex-grow h-px bg-gradient-to-r from-transparent via-[#54392B]/20 to-[#54392B]/30"></div>
+            <div class="mx-4 sm:mx-6 flex items-center space-x-2.5 px-4 sm:px-5 py-1.5 rounded-full bg-white border border-stone-200/90 shadow-xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                <span class="material-symbols-outlined text-sm text-[#E06D24]">local_cafe</span>
+                <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
+                    Daftar Sajian Pilihan
+                </span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+            </div>
+            <div class="flex-grow h-px bg-gradient-to-l from-transparent via-[#54392B]/20 to-[#54392B]/30"></div>
+        </div>
+
+        <!-- 8 Menu Cards Grid (Clean & Direct, Text Header & Duplicate Tabs Removed) -->
+        <div id="recommendations-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-300 mb-12">
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="coffee">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPqLrA-TY5mFKhRtn4JKGIrRcBH3BdS1fNJjmW2YLU-LfY2vZYIA_IREh3dxqIRd_3_6MPxGC-J7zRVl8pKRzlzudFwVSwuU9vphdP0N_CE1PyBfm3Du_d5hJkNoLQixpClSDb4DslruxOf4KXQRbVYsb7BsgAoHgevN1ubGxFM6t1k9fceENXwk2soL3QsW9DfXM101g70CDkDFHiMpgGjdyd2NpQBTUZONVX29AZoUp8LvPw3fbk" 
+                                 alt="Nucomu Signature Latte" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    Bestseller
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Nucomu Signature Latte
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Double shot espresso Sendang Tulungagung &amp; microfoam sutra.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.9)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 26.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Nucomu Signature Latte')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="dessert">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW" 
+                                 alt="Basque Burnt Cheesecake" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    Bestseller
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Basque Burnt Cheesecake
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Karamelisasi burnt top dengan isian vanilla bean lumer.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.9)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 36.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Basque Burnt Cheesecake')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="dessert">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&amp;fit=crop&amp;q=80&amp;w=800" 
+                                 alt="Donut Choco Pistachio" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-orange-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    New
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Donut Choco Pistachio
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Flaky rolled pastry dengan cokelat Valrhona 70% &amp; pistachio.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.8)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 28.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Donut Choco Pistachio')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="beverages">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwsg6TshzDDy1SuhC2mWVRw36_NRPDFQLcqptnuahYTspiVU8O3eirlIMapk7YQqk8r7Zoac2oQ9J1wb24Dia-bdHMsL1TdayQeGzjyVq8bQQa7uNLlKMQw7QW8zKsHGABnP1sUVmFbB9-gqBqWgDozv_TJqdYDAyBhkEsV00mJKc2fnUsxwqANBn28UGSQGUVGRzsqcV2YLs4YRdUor_xTd_QGPmUVKZg7BuSqG8sulN03J2dUW44" 
+                                 alt="Cold Brew Reserve" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-stone-700 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    Craft Brew
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Cold Brew Reserve
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Slow-steeped 16 jam dengan floral peach notes tanpa gula.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.8)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 29.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Cold Brew Reserve')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="meals">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhQUToSR2pv7UGDRsVg0yHYM2mlzoXBmOO4JYxDv9HgooJGoCqCztL8l8YHO0dLsa0p8yHBHQkiHnU_YPcrg4e-J1QpkZxVVRNQK9qoFDhZN9_fWLO0c32j64rYuAbBsfC_vuAAF11Npuzcr0joNgL6lVyBAf4sG46x1OCQvhc5irZN-Lt7oA8xYivR0GLfsUMHRIx64NZyDa71WlGnGZvUxZq1nuebeCOoFFKfLodO44XeoRRWUsA" 
+                                 alt="Smoked Beef Sourdough" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-stone-800 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    Hearty
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Smoked Beef Sourdough
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Sourdough fermentasi 36 jam dengan irisan smoked brisket empuk.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.9)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 38.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Smoked Beef Sourdough')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="beverages">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZzF-QEOhO6l42evoRonVVJeoWmCI9Of5s1GOv__gosYW2x9Mdss-awHwlDltSoOosVrHAYTVZ81LRchApbrMhMVVmiC0IdiD5mpR_REC-ZCuYzFKUhq2OFztVFqEgSWwhXvqMq1Sy6LC7dL8f7hxJwngaj8Fvw48t076mQxpyQaeMy6aBRhfW8aDV_Ud-OmsySsCrZYPMv3wLFYco1dXj-R86F94q4YE0cLZ1D73Ygc9IomwdFNGE" 
+                                 alt="Matcha Ceremonial Uji" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    Organic
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Matcha Ceremonial Uji
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Grade A ceremonial matcha Kyoto dengan susu segar gurih.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.8)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 32.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Matcha Ceremonial Uji')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="snacks">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrJGwSp9FdrUg5ecAwMNOJZoazn41-puOe_9mywfUHGU9KA0tvEZ_gxjN7rPKwWbzzsWr3vAnXUdOewdaBPJlg_66Q1r1l760AYrH5ghVC_MAhoLOcRD9qJdqh5BZcy4SQXWGljA3RgwWhhXLE44h168Wu4DLSjhLnj0casL29Hhq9J6FCkxb4csnVw4oR6V6DdQpF8I6HUvt15GL_tX4p9fGsrPFZer8U1qRqsiOAlMwXjNI-6FRB" 
+                                 alt="Truffle Shoestring Fries" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-stone-700 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    Savory
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Truffle Shoestring Fries
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Kentang renyah berbalut black truffle oil &amp; parutan parmesan.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.7)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 27.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Truffle Shoestring Fries')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                            <div class="rec-card bg-white rounded-2xl shadow-sm border border-stone-200/80 overflow-hidden hover:shadow-xl hover:border-[#E06D24]/30 transition-all duration-300 flex flex-col justify-between group"
+                     data-category="beverages">
+                    <div>
+                        <!-- Card Image with Top Badge -->
+                        <div class="relative overflow-hidden aspect-[4/3] bg-warm-ivory">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtvWE9Js3Vjm-Q3mOe2XhJX5S2PzSAKW8XTbJYtBWPPdnNO9fxbM4CCcmMHIjC3PlxWFEwjPmm0zqnXmr6FBwEDoxQy-PzmeEUrO3ZnfNfNHKBGnivcrJd2RbVxVwzZHNGm0cGOHouT2UXf9gZ1kVmVeNu1y2GVah9_QyV8eKgtQMC3XWHzSrPrKPUFWMvzyirT-JTgCURfBb8MRp654J2vyAUie8iX_3WIFMj5adWFUY2_PnxKi9a" 
+                                 alt="Earl Grey Blossom Tea" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                                                            <span class="absolute top-3 left-3 bg-stone-700 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-md shadow-sm">
+                                    Refill Pot
+                                </span>
+                                                    </div>
+
+                        <!-- Card Body -->
+                        <div class="p-4 sm:p-5">
+                            <h4 class="font-editorial text-lg sm:text-xl font-bold text-[#2A1D17] group-hover:text-[#E06D24] transition-colors line-clamp-1">
+                                Earl Grey Blossom Tea
+                            </h4>
+                            
+                            <p class="text-xs text-[#5C4E45] font-normal mt-1 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+                                Teh hitam bergamot aromaterapi bunga lavender &amp; cornflower.
+                            </p>
+                            
+                            <!-- Star Rating and Price Row -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-100">
+                                <!-- Amber Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <span class="text-amber-400 text-xs tracking-tighter">★★★★★</span>
+                                    <span class="text-[11px] font-semibold text-neutral-500">(4.8)</span>
+                                </div>
+                                
+                                <!-- Price -->
+                                <span class="text-sm sm:text-base font-bold text-[#2A1D17] font-editorial">
+                                    Rp 24.000
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-0">
+                        <button type="button" 
+                                onclick="openReservationModal('Pesanan Menu: Earl Grey Blossom Tea')" 
+                                class="w-full py-2.5 px-3 rounded-lg bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-wider transition-colors duration-200 flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+                            <span>Pesan / Order</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+                    </div>
+
+        <!-- Empty State Fallback -->
+        <div id="recommendations-empty-state" class="hidden text-center py-12 bg-white rounded-2xl border border-neutral-100 mb-12 p-8">
+            <span class="material-symbols-outlined text-neutral-400 text-4xl mb-2">restaurant_menu</span>
+            <p class="font-editorial text-xl font-bold text-neutral-900">Sajian Sedang Disiapkan</p>
+            <p class="font-body text-xs text-neutral-500 mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
+        </div>
+
+        <!-- View Full Catalog Link -->
+        <div class="text-center reveal-on-scroll">
+            <a href="http://127.0.0.1:8000/menu" class="inline-flex items-center space-x-2.5 px-7 py-3 rounded-full bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-200 active:scale-95">
+                <span>Lihat Semua Menu (Katalog Lengkap)</span>
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+    <!-- 4. Section Gallery (Asymmetric Editorial Collage & Lightbox) -->
+    <!-- SECTION 5: GALLERY (ASYMMETRIC EDITORIAL COLLAGE & LIGHTBOX) -->
+<section id="gallery" class="py-20 lg:py-28 bg-warm-ivory border-b border-light-gray/60">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+            <div class="reveal-on-scroll">
+                <span class="text-[11px] font-semibold uppercase tracking-editorial-widest text-medium-gray block mb-2">GALERI FOTO</span>
+                <h2 class="font-editorial text-3xl sm:text-5xl font-bold text-ink-black tracking-tight">Ruang, Rasa & Cerita</h2>
+                <p class="font-body text-xs sm:text-sm text-charcoal/70 mt-2">
+                    Dokumentasi interior tenang, presisi barista, dan kreasi sajian harian di Nucomu Tulungagung.
+                </p>
+            </div>
+            
+            <div class="mt-4 md:mt-0 flex items-center space-x-3 text-[10px] font-semibold uppercase tracking-editorial-widest text-medium-gray reveal-on-scroll">
+                <span class="text-ink-black font-bold">Interior</span>
+                <span>•</span>
+                <span>Barista</span>
+                <span>•</span>
+                <span>Sajian</span>
+            </div>
+        </div>
+
+        <!-- Asymmetrical Editorial Bento / Collage Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- Frame 1 (Large Feature: Interior - 8 Columns on Desktop) -->
+            <div class="lg:col-span-8 bg-pure-white border border-soft-beige p-3 rounded group cursor-pointer"
+                 onclick="openLightbox(0)">
+                <div class="relative overflow-hidden aspect-[16/10] w-full rounded-sm bg-light-gray">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1P8f-EBGZgQflvyyKW_OfkYt5VXDhIHhyiA0jYpsYzEy8byioxZDaWsSPLkisOP-W_QT-VcYpPWvkAwmmTF7cezpEXN28i0_M-PWtTJW2KjxmleAQqtWyBLZ5zzD30p7EmZtIpIYtRROYCmwqv1pjfq6g5hxHEJFUqd4c3lkTBiGsN776sKI08OynnTy1V_3sxpZlFx503s6QqS_iNqoum8aQF1Xp2-LoEa2gp7yB4VmJ0MaV4UcZ" 
+                         alt="Main Hall &amp; Window Seat" 
+                         data-full-src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1P8f-EBGZgQflvyyKW_OfkYt5VXDhIHhyiA0jYpsYzEy8byioxZDaWsSPLkisOP-W_QT-VcYpPWvkAwmmTF7cezpEXN28i0_M-PWtTJW2KjxmleAQqtWyBLZ5zzD30p7EmZtIpIYtRROYCmwqv1pjfq6g5hxHEJFUqd4c3lkTBiGsN776sKI08OynnTy1V_3sxpZlFx503s6QqS_iNqoum8aQF1Xp2-LoEa2gp7yB4VmJ0MaV4UcZ"
+                         class="gallery-trigger-img w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Frame 2 (Plated Dessert & Pastry - 4 Columns on Desktop) -->
+            <div class="lg:col-span-4 bg-pure-white border border-soft-beige p-3 rounded group cursor-pointer"
+                 onclick="openLightbox(1)">
+                <div class="relative overflow-hidden aspect-square w-full rounded-sm bg-light-gray">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW" 
+                         alt="Artisanal Bakery &amp; Dessert Table" 
+                         data-full-src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW"
+                         class="gallery-trigger-img w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Frame 3 (Barista Manual Brew - 4 Columns) -->
+            <div class="sm:col-span-1 lg:col-span-4 bg-pure-white border border-soft-beige p-3 rounded group cursor-pointer"
+                 onclick="openLightbox(2)">
+                <div class="relative overflow-hidden aspect-[4/3] w-full rounded-sm bg-light-gray">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8m-7gZzFNVGOKTwQIA84CWnVhGxzO3qIGH9lV_9Py5u0C3qC5Wr-ivYu1cOzDbFKcBFVc5wmFGyzJohqCsYBDDie7yGQ9yhHA6vbKt1MxSq0M8jJMv_o2gIY6dy6ZkWncykJGJNe2GEKBxxklPZf-maWTBiqi07v5JdOgy3xQS8ylylWkCbAUX7C6DejM5RKoP3JSg1dmKOGzs5j77Avi6hycjNHtauDAphlrHBZ56aHCr99845yP" 
+                         alt="Manual Brew Pour-Over Calibration" 
+                         data-full-src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8m-7gZzFNVGOKTwQIA84CWnVhGxzO3qIGH9lV_9Py5u0C3qC5Wr-ivYu1cOzDbFKcBFVc5wmFGyzJohqCsYBDDie7yGQ9yhHA6vbKt1MxSq0M8jJMv_o2gIY6dy6ZkWncykJGJNe2GEKBxxklPZf-maWTBiqi07v5JdOgy3xQS8ylylWkCbAUX7C6DejM5RKoP3JSg1dmKOGzs5j77Avi6hycjNHtauDAphlrHBZ56aHCr99845yP"
+                         class="gallery-trigger-img w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Frame 4 (Sanctuary Corner Reading - 4 Columns) -->
+            <div class="sm:col-span-1 lg:col-span-4 bg-pure-white border border-soft-beige p-3 rounded group cursor-pointer"
+                 onclick="openLightbox(3)">
+                <div class="relative overflow-hidden aspect-[4/3] w-full rounded-sm bg-light-gray">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV_A6Fr7bLkswFSyUmyzvJfcEC5rgM0uL7IAjT1et2FKZ4AwJBGnoYTOEf7RX2gjFtNWGNyMDTVel2AxOGmOrRw9k3sUAyDUTiHNO4hNljdiuFgJIszxRg8AbpQ85dT0jtsvxAKMr8XWBus-ZEg3s3kJniLg8xy9s5gyFoeecaev2L4C5R_1dYuVfO9Um4hAPYOSwIykWkUgGQSzK4e69xGz6Rc-OlAUeQQlNVOLFMSOsksUcAGM0D" 
+                         alt="Sanctuary Corner Reading Seat" 
+                         data-full-src="https://lh3.googleusercontent.com/aida-public/AB6AXuAV_A6Fr7bLkswFSyUmyzvJfcEC5rgM0uL7IAjT1et2FKZ4AwJBGnoYTOEf7RX2gjFtNWGNyMDTVel2AxOGmOrRw9k3sUAyDUTiHNO4hNljdiuFgJIszxRg8AbpQ85dT0jtsvxAKMr8XWBus-ZEg3s3kJniLg8xy9s5gyFoeecaev2L4C5R_1dYuVfO9Um4hAPYOSwIykWkUgGQSzK4e69xGz6Rc-OlAUeQQlNVOLFMSOsksUcAGM0D"
+                         class="gallery-trigger-img w-full h-full object-cover">
+                </div>
+            </div>
+
+            <!-- Frame 5 (Latte Art & Barista Extraction - 4 Columns) -->
+            <div class="sm:col-span-1 lg:col-span-4 bg-pure-white border border-soft-beige p-3 rounded group cursor-pointer"
+                 onclick="openLightbox(4)">
+                <div class="relative overflow-hidden aspect-[4/3] w-full rounded-sm bg-light-gray">
+                    <img src="https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&amp;fit=crop&amp;q=80&amp;w=800" 
+                         alt="Latte Art &amp; Morning Extraction" 
+                         data-full-src="https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&amp;fit=crop&amp;q=80&amp;w=800"
+                         class="gallery-trigger-img w-full h-full object-cover">
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+    <!-- 6. Section Reviews (Google Reviews Hub with Honest Fallback, After Gallery & Before Layanan) -->
+    <!-- SECTION 6: REVIEWS (WHAT OUR CLIENTS SAY — MATCHING USER REFERENCE DESIGN) -->
+<section id="reviews" class="py-16 sm:py-20 lg:py-24 bg-[#FAF8F5] border-b border-light-gray/60">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        
+        <!-- Section Header with Highlighted Orange Text -->
+        <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-14 reveal-on-scroll">
+            <h2 class="font-editorial text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-neutral-900">
+                Apa kata <span class="text-[#E06D24]">pengunjung kami</span>
+            </h2>
+            <div class="flex items-center justify-center space-x-3 mt-3">
+                <span class="w-10 h-px bg-neutral-300"></span>
+                <span class="text-[#E06D24] text-xs">★</span>
+                <span class="w-10 h-px bg-neutral-300"></span>
+            </div>
+            <p class="font-body text-xs sm:text-sm text-neutral-500 mt-2">
+                Cerita dan pengalaman nyata dari mereka yang telah menikmati kopi, suasana, dan momen santai di Nucomu Cafe.
+            </p>
+        </div>
+
+        <!-- Review Slides Container -->
+        <div class="relative max-w-6xl mx-auto">
+            
+            <!-- Slide 1 (First 3 Reviews) -->
+            <div class="review-slide grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-300">
+                                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-150 flex items-start space-x-4 relative hover:shadow-md transition-shadow group">
+                        <!-- Left: Circular Avatar -->
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100 shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&amp;fit=crop&amp;q=80&amp;w=200" 
+                                 alt="Anna K." 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+
+                        <!-- Right: Info, Rating & Comment -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm sm:text-base text-neutral-900 leading-snug">
+                                Anna K.
+                            </h4>
+                            
+                            <!-- Star Rating (Amber / Orange) -->
+                            <div class="flex items-center space-x-0.5 my-1 text-[#E06D24] text-xs sm:text-sm">
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                            </div>
+
+                            <p class="text-xs text-neutral-600 leading-relaxed font-normal mt-1.5">
+                                Kopi latte-nya juara, susunya creamy dan lembut banget. Tempatnya sangat nyaman buat kerja laptopan atau sekadar santai sore bersama teman.
+                            </p>
+
+                            <!-- Orange Quote Icon at bottom -->
+                            <span class="text-[#E06D24] text-2xl font-serif font-black leading-none block mt-2 select-none">
+                                ”
+                            </span>
+                        </div>
+                    </div>
+                                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-150 flex items-start space-x-4 relative hover:shadow-md transition-shadow group">
+                        <!-- Left: Circular Avatar -->
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100 shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&amp;fit=crop&amp;q=80&amp;w=200" 
+                                 alt="Igor S." 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+
+                        <!-- Right: Info, Rating & Comment -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm sm:text-base text-neutral-900 leading-snug">
+                                Igor S.
+                            </h4>
+                            
+                            <!-- Star Rating (Amber / Orange) -->
+                            <div class="flex items-center space-x-0.5 my-1 text-[#E06D24] text-xs sm:text-sm">
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                            </div>
+
+                            <p class="text-xs text-neutral-600 leading-relaxed font-normal mt-1.5">
+                                Basque Burnt Cheesecake dan kopi single origin Sendang-nya wajib dicoba. Suasananya tenang, sejuk, dan stopkontak ada di setiap meja indoor.
+                            </p>
+
+                            <!-- Orange Quote Icon at bottom -->
+                            <span class="text-[#E06D24] text-2xl font-serif font-black leading-none block mt-2 select-none">
+                                ”
+                            </span>
+                        </div>
+                    </div>
+                                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-150 flex items-start space-x-4 relative hover:shadow-md transition-shadow group">
+                        <!-- Left: Circular Avatar -->
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100 shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;q=80&amp;w=200" 
+                                 alt="Maria V." 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+
+                        <!-- Right: Info, Rating & Comment -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm sm:text-base text-neutral-900 leading-snug">
+                                Maria V.
+                            </h4>
+                            
+                            <!-- Star Rating (Amber / Orange) -->
+                            <div class="flex items-center space-x-0.5 my-1 text-[#E06D24] text-xs sm:text-sm">
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                            </div>
+
+                            <p class="text-xs text-neutral-600 leading-relaxed font-normal mt-1.5">
+                                Nuansa monokromnya estetik dan adem. Fasilitas musala dan toiletnya sangat bersih serta wangi, bikin betah berlama-lama.
+                            </p>
+
+                            <!-- Orange Quote Icon at bottom -->
+                            <span class="text-[#E06D24] text-2xl font-serif font-black leading-none block mt-2 select-none">
+                                ”
+                            </span>
+                        </div>
+                    </div>
+                            </div>
+
+            <!-- Slide 2 (Next 3 Reviews, initially hidden) -->
+            <div class="review-slide hidden grid grid-cols-1 md:grid-cols-3 gap-6 transition-all duration-300">
+                                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-150 flex items-start space-x-4 relative hover:shadow-md transition-shadow group">
+                        <!-- Left: Circular Avatar -->
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100 shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&amp;fit=crop&amp;q=80&amp;w=200" 
+                                 alt="Dimas P." 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+
+                        <!-- Right: Info, Rating & Comment -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm sm:text-base text-neutral-900 leading-snug">
+                                Dimas P.
+                            </h4>
+                            
+                            <!-- Star Rating (Amber / Orange) -->
+                            <div class="flex items-center space-x-0.5 my-1 text-[#E06D24] text-xs sm:text-sm">
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                            </div>
+
+                            <p class="text-xs text-neutral-600 leading-relaxed font-normal mt-1.5">
+                                Manual brew pour-over dieksekusi dengan presisi tinggi. Salah satu coffee shop dengan kualitas biji kopi paling konsisten di Tulungagung.
+                            </p>
+
+                            <!-- Orange Quote Icon at bottom -->
+                            <span class="text-[#E06D24] text-2xl font-serif font-black leading-none block mt-2 select-none">
+                                ”
+                            </span>
+                        </div>
+                    </div>
+                                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-150 flex items-start space-x-4 relative hover:shadow-md transition-shadow group">
+                        <!-- Left: Circular Avatar -->
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100 shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&amp;fit=crop&amp;q=80&amp;w=200" 
+                                 alt="Citra L." 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+
+                        <!-- Right: Info, Rating & Comment -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm sm:text-base text-neutral-900 leading-snug">
+                                Citra L.
+                            </h4>
+                            
+                            <!-- Star Rating (Amber / Orange) -->
+                            <div class="flex items-center space-x-0.5 my-1 text-[#E06D24] text-xs sm:text-sm">
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                            </div>
+
+                            <p class="text-xs text-neutral-600 leading-relaxed font-normal mt-1.5">
+                                Smoked beef sourdough toast-nya gurih mantap dan porsinya pas. Area outdoor rindang banget saat senja, asyik buat nongkrong.
+                            </p>
+
+                            <!-- Orange Quote Icon at bottom -->
+                            <span class="text-[#E06D24] text-2xl font-serif font-black leading-none block mt-2 select-none">
+                                ”
+                            </span>
+                        </div>
+                    </div>
+                                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-stone-150 flex items-start space-x-4 relative hover:shadow-md transition-shadow group">
+                        <!-- Left: Circular Avatar -->
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shrink-0 border border-stone-200 bg-stone-100 shadow-sm">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&amp;fit=crop&amp;q=80&amp;w=200" 
+                                 alt="Fajar N." 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        </div>
+
+                        <!-- Right: Info, Rating & Comment -->
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-sm sm:text-base text-neutral-900 leading-snug">
+                                Fajar N.
+                            </h4>
+                            
+                            <!-- Star Rating (Amber / Orange) -->
+                            <div class="flex items-center space-x-0.5 my-1 text-[#E06D24] text-xs sm:text-sm">
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                                    <span>★</span>
+                                                            </div>
+
+                            <p class="text-xs text-neutral-600 leading-relaxed font-normal mt-1.5">
+                                Wi-Fi stabil kencang dan tempatnya kondusif buat remote work. Cold brew reserve-nya segar dengan aftertaste manis alami buah persik.
+                            </p>
+
+                            <!-- Orange Quote Icon at bottom -->
+                            <span class="text-[#E06D24] text-2xl font-serif font-black leading-none block mt-2 select-none">
+                                ”
+                            </span>
+                        </div>
+                    </div>
+                            </div>
+
+            <!-- Dots Indicator Underneath (Matching Reference Design) -->
+            <div class="flex items-center justify-center space-x-2 mt-8 sm:mt-10">
+                <button type="button" 
+                        onclick="switchReviewSlide(0)" 
+                        class="review-dot w-6 h-2 bg-[#E06D24] rounded-full transition-all duration-300" 
+                        aria-label="Slide 1">
+                </button>
+                <button type="button" 
+                        onclick="switchReviewSlide(1)" 
+                        class="review-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300" 
+                        aria-label="Slide 2">
+                </button>
+            </div>
+
+            <!-- Subtle Google Maps Link at bottom -->
+            <div class="text-center mt-6">
+                <a href="https://share.google/N0prufsNzP2HWoe9V" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="inline-flex items-center space-x-1.5 text-[11px] font-semibold uppercase tracking-wider text-neutral-500 hover:text-[#E06D24] transition-colors">
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    <span>Buka Ulasan Resmi di Google Maps</span>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+    <!-- 7. Section Layanan (Detail Layanan & Modal Reservasi WhatsApp) -->
+    <!-- SECTION 7: LAYANAN & PEMESANAN (SERVICES & ORDERING) -->
+<section id="layanan" class="py-10 sm:py-14 bg-[#FAF8F5] border-b border-light-gray/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Section Header (Compact Spacing, Large Font) -->
+        <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-10 reveal-on-scroll">
+            <div class="inline-flex items-center space-x-2 px-3 py-0.5 rounded-full bg-[#E06D24]/10 border border-[#E06D24]/20 text-[#E06D24] text-[11px] font-bold uppercase tracking-widest mb-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                <span>Kemudahan Akses &amp; Reservasi</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+            </div>
+            <h2 class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-light text-[#2A1D17] leading-tight">
+                Layanan &amp; <span class="font-editorial italic font-normal text-[#E06D24]">Pemesanan</span>
+            </h2>
+            <p class="font-body text-xs sm:text-sm text-[#5C4E45] font-normal mt-2 max-w-lg mx-auto leading-relaxed">
+                Pilih cara terbaik untuk menikmati sajian kopi dan suasana hangat Nucomu Cafe sesuai kebutuhan Anda.
+            </p>
+        </div>
+
+        <!-- ASYMMETRICAL SERVICES BENTO GRID (1 ROW ON DESKTOP: 7 COLS / 5 COLS) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch">
+            
+            <!-- LEFT FEATURED CARD: RESERVASI MEJA & ACARA PRIVAT (7 COLS) -->
+            <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 lg:p-9 border border-[#E06D24]/25 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-left relative overflow-hidden bg-gradient-to-br from-white via-[#FAF8F5] to-[#F7EFE6]/50 reveal-on-scroll">
+                
+                <!-- Ambient Glow Corner -->
+                <div class="absolute -top-12 -right-12 w-40 h-40 bg-[#E06D24]/5 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div>
+                    <!-- Top Badge Row -->
+                    <div class="flex items-center justify-between mb-3.5">
+                        <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#E06D24] text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                            <span class="material-symbols-outlined text-xs">stars</span>
+                            <span>Rekomendasi Momen</span>
+                        </span>
+                        <span class="text-[11px] font-bold text-[#E06D24] uppercase tracking-widest">
+                            01 / DINE-IN &amp; PRIVATE EVENTS
+                        </span>
+                    </div>
+
+                    <!-- Title (Large & Prominent) -->
+                    <h3 class="font-editorial text-3xl sm:text-4xl lg:text-[2.6rem] font-bold text-[#2A1D17] leading-tight mb-3">
+                        Reservasi Meja &amp; Acara Privat
+                    </h3>
+
+                    <!-- Narrative -->
+                    <p class="font-body text-xs sm:text-sm text-[#5C4E45] leading-relaxed mb-4">
+                        Pesan meja khusus untuk kebutuhan kerja tim, ulang tahun, gathering, atau momen intim bersama pasangan agar kepastian tempat terjaga tanpa perlu khawatir kehabisan area favorit.
+                    </p>
+
+                    <!-- Pilihan Momen Chips (Compact & Clean) -->
+                    <div class="mb-5">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-500 block mb-2">
+                            Pilihan Momen Spesial:
+                        </span>
+                        <div class="flex flex-wrap gap-1.5">
+                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
+                                <span class="material-symbols-outlined text-xs text-[#E06D24]">celebration</span>
+                                <span>Ulang Tahun</span>
+                            </span>
+                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
+                                <span class="material-symbols-outlined text-xs text-[#E06D24]">groups</span>
+                                <span>Meeting &amp; Kerja Tim</span>
+                            </span>
+                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
+                                <span class="material-symbols-outlined text-xs text-[#E06D24]">handshake</span>
+                                <span>Gathering Komunitas</span>
+                            </span>
+                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-white border border-stone-200 text-[11px] font-semibold text-[#54392B] shadow-2xs">
+                                <span class="material-symbols-outlined text-xs text-[#E06D24]">favorite</span>
+                                <span>Private Dining</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Checklist (Tight Spacing) -->
+                    <ul class="space-y-2 text-xs text-[#5C4E45] mb-6">
+                        <li class="flex items-center space-x-2.5">
+                            <span class="material-symbols-outlined text-[#E06D24] text-lg">check_circle</span>
+                            <span>Bebas pilih area Indoor AC sejuk atau Outdoor Garden asri</span>
+                        </li>
+                        <li class="flex items-center space-x-2.5">
+                            <span class="material-symbols-outlined text-[#E06D24] text-lg">check_circle</span>
+                            <span>Dukungan penataan meja, bunga, &amp; ucapan personal khusus</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- CTA Action Row -->
+                <div class="pt-4 border-t border-stone-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <button type="button" 
+                            onclick="openReservationModal('Reservasi Meja & Acara Privat')" 
+                            class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full shadow-md shadow-orange-500/20 transition-all duration-200 active:scale-95">
+                        <span>Buka Form Reservasi Meja</span>
+                        <span class="material-symbols-outlined text-sm">calendar_month</span>
+                    </button>
+                    <span class="text-[11px] text-neutral-500 font-medium">
+                        &bull; Konfirmasi cepat via WhatsApp
+                    </span>
+                </div>
+            </div>
+
+            <!-- RIGHT COMPANION STACK: WHATSAPP DIRECT & GRABFOOD (5 COLS) -->
+            <div class="lg:col-span-5 flex flex-col justify-between gap-4 lg:gap-5">
+                
+                <!-- CARD 1: WHATSAPP DIRECT DELIVERY -->
+                <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-6 border border-stone-200/90 shadow-md hover:border-emerald-500/50 hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group reveal-on-scroll relative overflow-hidden flex-1">
+                    <div>
+                        <!-- Top Row: Icon + Badge -->
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 shadow-2xs group-hover:scale-105 transition-transform">
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.067-2.228-.567-1.78-.737-2.909-2.544-2.998-2.663-.088-.119-.724-.962-.724-1.834 0-.872.457-1.302.62-1.479.163-.177.356-.222.475-.222.119 0 .238.002.341.008.109.006.255-.041.399.305.148.356.505 1.233.549 1.322.044.089.073.193.015.311-.059.119-.089.193-.178.297-.089.104-.187.232-.267.311-.089.089-.182.185-.078.363.104.178.462.763.992 1.235.684.609 1.261.798 1.439.887.178.089.282.074.386-.044.104-.119.444-.518.563-.696.119-.178.238-.148.399-.089.163.059 1.034.488 1.212.577.178.089.297.133.341.207.044.074.044.43-.1.835z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-[10px] font-bold text-[#E06D24] uppercase tracking-widest">
+                                    02 / DIRECT COURIER
+                                </span>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold uppercase tracking-wider">
+                                Respon &lt; 15 Mnt
+                            </span>
+                        </div>
+
+                        <!-- Card Title (Large Font) -->
+                        <h4 class="font-editorial text-2xl sm:text-[1.65rem] font-bold text-[#2A1D17] leading-tight mb-1.5">
+                            Pesan Delivery via WhatsApp
+                        </h4>
+                        <p class="font-body text-xs text-[#5C4E45] leading-relaxed mb-3">
+                            Pesan langsung melalui WhatsApp resmi Nucomu atau kurir Zendo Tulungagung untuk pengiriman pesanan kopi hangat sampai ke tempat Anda.
+                        </p>
+
+                        <!-- Feature Badges -->
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full bg-stone-100 text-[10px] font-semibold text-neutral-700">Kurir Zendo Tulungagung</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-stone-100 text-[10px] font-semibold text-neutral-700">Kemasan Aman &amp; Hangat</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Link / Button -->
+                    <div class="pt-3 border-t border-stone-100">
+                        <a href="https://wa.me/6281234567890?text=Halo+Nucomu+Cafe%2C+saya+ingin+memesan+menu+untuk+delivery..." 
+                           target="_blank" 
+                           class="inline-flex items-center justify-between w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-sm shadow-emerald-600/20 transition-all duration-200 active:scale-95">
+                            <span>Chat WhatsApp Sekarang</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- CARD 2: GRABFOOD ONLINE DELIVERY -->
+                <div class="bg-white rounded-3xl p-5 sm:p-6 lg:p-6 border border-stone-200/90 shadow-md hover:border-green-500/50 hover:shadow-lg transition-all duration-300 flex flex-col justify-between text-left group reveal-on-scroll relative overflow-hidden flex-1">
+                    <div>
+                        <!-- Top Row: Icon + Badge -->
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center border border-green-100 shadow-2xs group-hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-xl">two_wheeler</span>
+                                </div>
+                                <span class="text-[10px] font-bold text-[#E06D24] uppercase tracking-widest">
+                                    03 / ONLINE DELIVERY APP
+                                </span>
+                            </div>
+                            <span class="px-2.5 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold uppercase tracking-wider">
+                                Promo Merchant
+                            </span>
+                        </div>
+
+                        <!-- Card Title (Large Font) -->
+                        <h4 class="font-editorial text-2xl sm:text-[1.65rem] font-bold text-[#2A1D17] leading-tight mb-1.5">
+                            Pesan Online via GrabFood
+                        </h4>
+                        <p class="font-body text-xs text-[#5C4E45] leading-relaxed mb-3">
+                            Nikmati kemudahan pemesanan instan, promo voucher diskon aplikasi, dan fleksibilitas metode pembayaran digital melalui aplikasi GrabFood resmi Nucomu.
+                        </p>
+
+                        <!-- Feature Badges -->
+                        <div class="flex flex-wrap gap-1.5 mb-3">
+                            <span class="px-2.5 py-0.5 rounded-full bg-stone-100 text-[10px] font-semibold text-neutral-700">Menu Lengkap &amp; Update</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-stone-100 text-[10px] font-semibold text-neutral-700">Banyak Promo Diskon</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Link / Button -->
+                    <div class="pt-3 border-t border-stone-100">
+                        <a href="https://food.grab.com" 
+                           target="_blank" 
+                           class="inline-flex items-center justify-between w-full bg-green-600 hover:bg-green-700 text-white font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-sm shadow-green-600/20 transition-all duration-200 active:scale-95">
+                            <span>Buka di GrabFood</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+    <!-- 8. Section Contact (Lokasi, Jam Operasional & Petunjuk Arah) -->
+    <!-- SECTION 8: CONTACT & LOCATION (BEFORE FOOTER) -->
+<section id="contact" class="py-16 sm:py-20 lg:py-24 bg-[#FAF8F5] border-b border-light-gray/60">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            
+            <!-- Left Info Column (5 Cols) -->
+            <div class="lg:col-span-5 reveal-on-scroll">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#E06D24]/10 border border-[#E06D24]/20 text-[#E06D24] text-[11px] font-bold uppercase tracking-widest mb-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                    <span>LOKASI &amp; KONTAK RESMI</span>
+                </div>
+                <h2 class="font-editorial text-3xl sm:text-5xl font-bold text-[#2A1D17] mb-6 leading-tight">
+                    Kunjungi Nucomu di Tulungagung.
+                </h2>
+
+                <div class="space-y-5 text-sm text-[#5C4E45] mb-8 font-body">
+                    <!-- Address & Landmark -->
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-2xl bg-white border border-stone-200 shadow-2xs flex items-center justify-center text-[#E06D24] shrink-0 mt-0.5">
+                            <span class="material-symbols-outlined text-xl">location_on</span>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-[#2A1D17]">Alamat</h4>
+                            <p class="text-xs sm:text-sm text-[#5C4E45] mt-1 leading-relaxed font-medium">
+                                Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221
+                            </p>
+                                                            <span class="inline-block mt-1.5 px-2.5 py-0.5 rounded bg-stone-100 text-[11px] font-semibold text-neutral-700">
+                                    Patokan: Sekitar 1 menit ke arah timur dari Bravo Supermarket Tulungagung (Utara Jalan)
+                                </span>
+                                                    </div>
+                    </div>
+
+                    <!-- Hours -->
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-2xl bg-white border border-stone-200 shadow-2xs flex items-center justify-center text-[#E06D24] shrink-0 mt-0.5">
+                            <span class="material-symbols-outlined text-xl">schedule</span>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-[#2A1D17]">Jam Operasional</h4>
+                            <p class="text-xs sm:text-sm text-[#5C4E45] mt-1 font-semibold text-[#2A1D17]">
+                                Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB
+                            </p>
+                            <span class="text-[11px] text-neutral-500 block mt-0.5">Bar kopi &amp; dine-in buka setiap hari</span>
+                        </div>
+                    </div>
+
+                    <!-- Direct WhatsApp -->
+                    <div class="flex items-start space-x-4">
+                        <div class="w-10 h-10 rounded-2xl bg-white border border-stone-200 shadow-2xs flex items-center justify-center text-emerald-600 shrink-0 mt-0.5">
+                            <span class="material-symbols-outlined text-xl">chat</span>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-[#2A1D17]">Layanan WhatsApp</h4>
+                            <p class="text-xs sm:text-sm text-[#5C4E45] mt-1">
+                                <a href="https://wa.me/6281234567890" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="text-emerald-700 hover:text-emerald-800 font-bold underline underline-offset-4">
+                                    +62 812-3456-7890
+                                </a>
+                            </p>
+                            <span class="text-[11px] text-neutral-500 block mt-0.5">Pemesanan takeaway, hampers &amp; reservasi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Maps Direction Button -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <a href="https://share.google/N0prufsNzP2HWoe9V" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="inline-flex items-center justify-center space-x-2.5 bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3.5 rounded-full shadow-md shadow-orange-500/20 transition-all duration-200 active:scale-95">
+                        <span class="material-symbols-outlined text-base">directions</span>
+                        <span>Buka Rute Google Maps</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Visual Locator Frame (7 Cols - Interactive Google Maps) -->
+            <div class="lg:col-span-7 reveal-on-scroll">
+                <div class="bg-white p-3 sm:p-4 border border-stone-200/90 rounded-3xl shadow-lg relative">
+                    <div class="w-full h-[320px] sm:h-[380px] lg:h-[420px] relative bg-stone-100 overflow-hidden rounded-2xl border border-stone-200">
+                        <!-- Interactive Google Maps Iframe -->
+                        <iframe src="https://maps.google.com/maps?q=Nucomu+Cafe+Plosokandang+Kedungwaru+Tulungagung&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                                width="100%" 
+                                height="100%" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy" 
+                                referrerpolicy="no-referrer-when-downgrade" 
+                                title="Peta Lokasi Nucomu Cafe Tulungagung"
+                                class="w-full h-full object-cover">
+                        </iframe>
+                    </div>
+
+                    <div class="mt-3.5 px-2 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-neutral-500 font-medium">
+                        <span class="flex items-center space-x-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Plosokandang, Kedungwaru, Tulungagung</span>
+                        </span>
+                        <a href="https://share.google/N0prufsNzP2HWoe9V" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-[#E06D24] hover:text-[#c95b17] font-bold inline-flex items-center space-x-1 transition-colors">
+                            <span>Buka di Google Maps</span>
+                            <span class="material-symbols-outlined text-sm">open_in_new</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Global Footer -->
+    <!-- GLOBAL FOOTER -->
+<footer class="bg-ink-black text-warm-ivory pt-16 pb-12 border-t border-charcoal">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        
+        <!-- Main Footer Columns -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-charcoal/80">
+            
+            <!-- Col 1: Brand & Identity (4 Cols) -->
+            <div class="lg:col-span-4 flex flex-col">
+                <a href="http://127.0.0.1:8000#home" class="flex items-center space-x-3 mb-5 group">
+                    <div class="w-10 h-10 rounded-full bg-warm-ivory text-ink-black flex items-center justify-center font-editorial text-xl font-bold">
+                        N
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-editorial text-2xl font-bold tracking-tight text-warm-ivory">Nucomu Cafe</span>
+                        <span class="text-[9px] uppercase tracking-editorial-widest text-medium-gray font-semibold">SLOW HOSPITALITY & ROASTERY</span>
+                    </div>
+                </a>
+                <p class="font-body text-xs text-light-gray/70 leading-relaxed mb-6 max-w-sm font-normal">
+                    Ruang santai bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan momen-momen sederhana yang berkesan.
+                </p>
+                <div class="mt-auto">
+                    <span class="font-editorial text-xl italic text-soft-beige">"Tempat Kembali, Rasa yang Dirindukan."</span>
+                </div>
+            </div>
+
+            <!-- Col 2: Navigation Links (5 Items strictly: Home, About, Menu, Gallery, Layanan) (3 Cols) -->
+            <div class="lg:col-span-3">
+                <h4 class="text-[11px] font-semibold uppercase tracking-editorial-widest text-medium-gray mb-5">
+                    Navigasi
+                </h4>
+                <ul class="space-y-3 font-body text-xs text-light-gray/80">
+                    <li>
+                        <a href="http://127.0.0.1:8000#home" class="hover:text-warm-ivory transition-colors">Home</a>
+                    </li>
+                    <li>
+                        <a href="http://127.0.0.1:8000#about" class="hover:text-warm-ivory transition-colors">About</a>
+                    </li>
+                    <li>
+                        <a href="http://127.0.0.1:8000#menu" class="hover:text-warm-ivory transition-colors">Menu</a>
+                    </li>
+                    <li>
+                        <a href="http://127.0.0.1:8000#gallery" class="hover:text-warm-ivory transition-colors">Gallery</a>
+                    </li>
+                    <li>
+                        <a href="http://127.0.0.1:8000#layanan" class="hover:text-warm-ivory transition-colors">Layanan</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Col 3: Operational Hours & Location (2 Cols) -->
+            <div class="lg:col-span-2">
+                <h4 class="text-[11px] font-semibold uppercase tracking-editorial-widest text-medium-gray mb-5">
+                    Jam Buka
+                </h4>
+                <p class="text-xs text-light-gray/85 font-medium mb-0.5">Senin – Sabtu:</p>
+                <p class="font-editorial text-base text-warm-ivory mb-2">11:00 – 21:00 WIB</p>
+                <p class="text-xs text-light-gray/85 font-medium mb-0.5">Minggu:</p>
+                <p class="font-editorial text-base text-warm-ivory mb-2">11:00 – 22:00 WIB</p>
+                <p class="text-[11px] text-medium-gray leading-relaxed">
+                    Dine-in, takeaway &amp; reservasi
+                </p>
+            </div>
+
+            <!-- Col 4: Social Media, Google Maps & WhatsApp (3 Cols) -->
+            <div class="lg:col-span-3">
+                <h4 class="text-[11px] font-semibold uppercase tracking-editorial-widest text-medium-gray mb-5">
+                    Hubungi & Ikuti Kami
+                </h4>
+                
+                <!-- Social Media Links (Instagram, TikTok, WhatsApp, Google Maps) -->
+                <div class="flex items-center space-x-3 mb-5">
+                    <!-- Instagram -->
+                    <a href="https://instagram.com/nucomucafe" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-9 h-9 rounded-full bg-charcoal text-warm-ivory flex items-center justify-center hover:bg-warm-ivory hover:text-ink-black transition-colors"
+                       aria-label="Instagram Nucomu Cafe">
+                        <span class="text-xs font-bold font-body">IG</span>
+                    </a>
+
+                    <!-- TikTok -->
+                    <a href="https://tiktok.com/@nucomucafe" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-9 h-9 rounded-full bg-charcoal text-warm-ivory flex items-center justify-center hover:bg-warm-ivory hover:text-ink-black transition-colors"
+                       aria-label="TikTok Nucomu Cafe">
+                        <span class="text-xs font-bold font-body">TT</span>
+                    </a>
+
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/6281234567890" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-9 h-9 rounded-full bg-charcoal text-warm-ivory flex items-center justify-center hover:bg-warm-ivory hover:text-ink-black transition-colors"
+                       aria-label="WhatsApp Nucomu Cafe">
+                        <span class="material-symbols-outlined text-base">chat</span>
+                    </a>
+
+                    <!-- Google Maps Link -->
+                    <a href="https://share.google/N0prufsNzP2HWoe9V" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="w-9 h-9 rounded-full bg-charcoal text-warm-ivory flex items-center justify-center hover:bg-warm-ivory hover:text-ink-black transition-colors"
+                       aria-label="Google Maps Nucomu Cafe">
+                        <span class="material-symbols-outlined text-base">location_on</span>
+                    </a>
+                </div>
+
+                <p class="text-xs text-light-gray/70">
+                    WhatsApp: <span class="text-warm-ivory font-medium">+62 812-3456-7890</span>
+                </p>
+                <p class="text-[11px] text-medium-gray mt-1 leading-relaxed">
+                    Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Copyright Row (Without Back to Top button as specified) -->
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-[11px] text-light-gray/50">
+            <p>&copy; 2026 Nucomu Cafe. Seluruh Hak Cipta Dilindungi. Tulungagung, Jawa Timur.</p>
+            <p class="mt-2 sm:mt-0 text-[10px] text-medium-gray tracking-wider">
+                DESIGNED WITH EDITORIAL MINIMALISM & WARM HOSPITALITY
+            </p>
+        </div>
+
+    </div>
+</footer>
+
+    <!-- Global Interactive Modals -->
+    <!-- Lightbox Modal for Gallery Images -->
+<div id="lightbox-modal" 
+     class="fixed inset-0 z-50 bg-ink-black/90 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"
+     onclick="closeLightbox()">
+    
+    <!-- Top Bar Controls -->
+    <div class="absolute top-5 right-5 z-20 flex items-center space-x-4" onclick="event.stopPropagation()">
+        <span id="lightbox-counter" class="text-xs uppercase tracking-widest text-light-gray font-semibold">1 / 5</span>
+        <button onclick="closeLightbox()" 
+                class="w-10 h-10 rounded-full bg-charcoal/80 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
+                aria-label="Tutup Lightbox">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button onclick="prevLightbox(event)" 
+            class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-charcoal/70 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
+            aria-label="Foto Sebelumnya">
+        <span class="material-symbols-outlined text-2xl">chevron_left</span>
+    </button>
+    <button onclick="nextLightbox(event)" 
+            class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-charcoal/70 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
+            aria-label="Foto Berikutnya">
+        <span class="material-symbols-outlined text-2xl">chevron_right</span>
+    </button>
+
+    <!-- Image Display Container (No captions displayed on photo as instructed) -->
+    <div class="relative max-w-5xl max-h-[85vh] p-2 flex items-center justify-center" onclick="event.stopPropagation()">
+        <img id="lightbox-image" 
+             src="" 
+             alt="Nucomu Cafe Gallery Preview" 
+             class="max-w-full max-h-[80vh] object-contain rounded shadow-2xl border border-white/10 transition-opacity duration-200">
+        <p id="lightbox-title" class="sr-only"></p>
+    </div>
+</div>
+    <!-- Service Detail Modal -->
+<div id="service-detail-modal" 
+     class="fixed inset-0 z-50 bg-ink-black/75 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"
+     onclick="closeServiceDetailModal()">
+    
+    <div class="bg-warm-ivory rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-soft-beige relative max-h-[90vh] overflow-y-auto"
+         onclick="event.stopPropagation()">
+        
+        <!-- Close Button -->
+        <button onclick="closeServiceDetailModal()" 
+                class="absolute top-5 right-5 w-8 h-8 rounded-full bg-light-gray/60 hover:bg-ink-black hover:text-warm-ivory text-charcoal flex items-center justify-center transition-colors"
+                aria-label="Tutup Detail Layanan">
+            <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+
+        <!-- Service Image Frame -->
+        <div class="w-full h-52 sm:h-64 rounded-xl overflow-hidden mb-6 bg-light-gray border border-soft-beige">
+            <img id="service-modal-image" src="" alt="Detail Layanan Nucomu" class="w-full h-full object-cover">
+        </div>
+
+        <!-- Meta & Title -->
+        <div class="mb-4">
+            <span id="service-modal-category" class="text-[10px] font-semibold uppercase tracking-editorial-widest text-medium-gray block mb-1">
+                KATEGORI LAYANAN
+            </span>
+            <h3 id="service-modal-title" class="font-editorial text-2xl sm:text-3xl font-bold text-ink-black">
+                Nama Layanan
+            </h3>
+        </div>
+
+        <!-- Full Description -->
+        <div class="mb-6">
+            <p id="service-modal-desc" class="font-body text-xs sm:text-sm text-charcoal/85 leading-relaxed font-normal">
+                Deskripsi lengkap layanan.
+            </p>
+        </div>
+
+        <!-- Suggested Area -->
+        <div class="p-4 bg-pure-white rounded border border-soft-beige mb-6 flex items-center space-x-3">
+            <span class="material-symbols-outlined text-ink-black">meeting_room</span>
+            <div class="text-xs">
+                <span class="font-semibold text-ink-black block">Rekomendasi Area:</span>
+                <span id="service-modal-area" class="text-medium-gray">Indoor / Outdoor</span>
+            </div>
+        </div>
+
+        <!-- Action: Reservasi Sekarang Button -->
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+            <button id="service-modal-reserve-btn" 
+                    type="button" 
+                    class="w-full sm:flex-1 py-3.5 bg-ink-black text-warm-ivory text-xs font-semibold uppercase tracking-widest rounded hover:bg-neutral-800 transition-colors text-center">
+                Reservasi Acara Ini
+            </button>
+            <button onclick="closeServiceDetailModal()" 
+                    type="button" 
+                    class="w-full sm:w-auto px-6 py-3.5 border border-charcoal/30 text-charcoal text-xs font-semibold uppercase tracking-widest rounded hover:border-ink-black transition-colors">
+                Tutup
+            </button>
+        </div>
+
+    </div>
+</div>
+    <!-- Reservation Modal Form -->
+<div id="reservation-modal" 
+     class="fixed inset-0 z-50 bg-ink-black/75 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"
+     onclick="closeReservationModal()">
+    
+    <div class="bg-warm-ivory rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-soft-beige relative max-h-[92vh] overflow-y-auto"
+         onclick="event.stopPropagation()">
+        
+        <!-- Close Button -->
+        <button onclick="closeReservationModal()" 
+                class="absolute top-5 right-5 w-8 h-8 rounded-full bg-light-gray/60 hover:bg-ink-black hover:text-warm-ivory text-charcoal flex items-center justify-center transition-colors"
+                aria-label="Tutup Formulir Reservasi">
+            <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+
+        <!-- Modal Header -->
+        <div class="border-b border-soft-beige pb-4 mb-5">
+            <span class="text-[10px] font-semibold uppercase tracking-editorial-widest text-medium-gray block mb-1">
+                FORMULIR KUNJUNGAN RESMI
+            </span>
+            <h3 class="font-editorial text-2xl sm:text-3xl font-bold text-ink-black">
+                Reservasi Nucomu Cafe
+            </h3>
+            <p class="font-body text-xs text-charcoal/70 mt-1">
+                Silakan lengkapi detail berikut. Rincian pengajuan akan otomatis terangkum untuk dikonfirmasi melalui WhatsApp staf Nucomu.
+            </p>
+        </div>
+
+        <!-- Inline Error Box -->
+        <div id="res-error-box" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded leading-relaxed">
+            <!-- Injected via JavaScript -->
+        </div>
+
+        <!-- Success Feedback Toast -->
+        <div id="res-success-toast" class="hidden mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded text-center font-medium">
+            Pengajuan berhasil dirangkum. Membuka WhatsApp...
+        </div>
+
+        <!-- Reservation Form -->
+        <form id="reservation-form" onsubmit="return handleReservationSubmit(event)" class="space-y-4">
+            <!-- 1. Nama Pemesan -->
+            <div>
+                <label for="res-name" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                    Nama Pemesan <span class="text-red-600">*</span>
+                </label>
+                <input type="text" 
+                       id="res-name" 
+                       name="fullName" 
+                       required 
+                       placeholder="Contoh: Raditya Danendra" 
+                       class="w-full px-3.5 py-2.5 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors">
+            </div>
+
+            <!-- 2. WhatsApp & 3. Jumlah Tamu -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="res-phone" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                        Nomor WhatsApp Aktif <span class="text-red-600">*</span>
+                    </label>
+                    <input type="tel" 
+                           id="res-phone" 
+                           name="phone" 
+                           required 
+                           placeholder="081234567890" 
+                           class="w-full px-3.5 py-2.5 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors">
+                </div>
+                <div>
+                    <label for="res-guests" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                        Jumlah Tamu <span class="text-red-600">*</span>
+                    </label>
+                    <select id="res-guests" 
+                            name="guestCount" 
+                            required 
+                            class="w-full px-3.5 py-2.5 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors">
+                        <option value="1 - 2 Orang">1 – 2 Orang (Meja Intim)</option>
+                        <option value="3 - 5 Orang" selected>3 – 5 Orang (Meja Reguler)</option>
+                        <option value="6 - 10 Orang">6 – 10 Orang (Meja Komunal)</option>
+                        <option value="10+ Orang">10+ Orang (Group Gathering)</option>
+                        <option value="Acara Privat (Seluruh Ruang)">Acara Privat (Seluruh Ruang)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 4. Tanggal & 5. Waktu -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="res-date" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                        Tanggal Acara <span class="text-red-600">*</span>
+                    </label>
+                    <input type="date" 
+                           id="res-date" 
+                           name="date" 
+                           required 
+                           class="w-full px-3.5 py-2.5 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors">
+                </div>
+                <div>
+                    <label for="res-time" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                        Waktu Kedatangan <span class="text-red-600">*</span>
+                    </label>
+                    <input type="time" 
+                           id="res-time" 
+                           name="time" 
+                           required 
+                           value="15:00"
+                           class="w-full px-3.5 py-2.5 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors">
+                </div>
+            </div>
+
+            <!-- 6. Jenis Acara / Layanan & 7. Pilihan Area -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="res-service-type" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                        Jenis Acara / Layanan <span class="text-red-600">*</span>
+                    </label>
+                    <select id="res-service-type" 
+                            name="serviceType" 
+                            required 
+                            class="w-full px-3.5 py-2.5 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors">
+                        <option value="Santai & Ngopi Reguler">Santai & Ngopi Reguler</option>
+                        <option value="Birthday Treats">Birthday Treats</option>
+                        <option value="Bridal Party & Shower">Bridal Party & Shower</option>
+                        <option value="Penyewaan Area Cafe">Penyewaan Area Cafe</option>
+                        <option value="Engagement Gathering">Engagement Gathering</option>
+                        <option value="Workshop & Creative Class">Workshop & Creative Class</option>
+                        <option value="Pop-up & Brand Collaboration">Pop-up & Brand Collaboration</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="res-area" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                        Pilihan Area <span class="text-red-600">*</span>
+                    </label>
+                    <select id="res-area" 
+                            name="area" 
+                            required 
+                            class="w-full px-3.5 py-2.5 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors">
+                        <option value="Indoor (AC & Working Space)">Indoor (AC & Working Space)</option>
+                        <option value="Outdoor (Smoking Area & Garden)">Outdoor (Smoking Area & Garden)</option>
+                        <option value="Fleksibel (Sesuai Ketersediaan)">Fleksibel (Sesuai Ketersediaan)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 8. Catatan Khusus -->
+            <div>
+                <label for="res-notes" class="block text-[11px] font-semibold uppercase tracking-wider text-charcoal mb-1">
+                    Catatan Khusus (Opsional)
+                </label>
+                <textarea id="res-notes" 
+                          name="notes" 
+                          rows="2" 
+                          placeholder="Contoh: Butuh meja dekat stopkontak, request lilin cake ulang tahun..." 
+                          class="w-full px-3.5 py-2 rounded bg-pure-white border border-soft-beige text-xs font-body text-charcoal focus:outline-none focus:border-ink-black transition-colors"></textarea>
+            </div>
+
+            <!-- Submit Action -->
+            <div class="pt-2">
+                <button type="submit" 
+                        class="w-full py-3.5 bg-ink-black text-warm-ivory text-xs font-semibold uppercase tracking-widest rounded hover:bg-neutral-800 transition-colors flex items-center justify-center space-x-2">
+                    <span>Lanjutkan Kirim via WhatsApp</span>
+                    <span class="material-symbols-outlined text-sm">send</span>
+                </button>
+                <p class="text-[10px] text-medium-gray text-center mt-2 leading-relaxed">
+                    *Pesan formulir akan disusun dan dibuka di WhatsApp resmi Nucomu Cafe (+62 812-3456-7890) untuk konfirmasi ketersediaan meja.
+                </p>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+    <!-- Global Client Script Config & Bundle -->
+    <script>
+        window.NUCOMU_WA_NUMBER = "6281234567890";
+    </script>
+    <script src="http://127.0.0.1:8000/js/nucomu.js"></script>
+</body>
+</html>
+
