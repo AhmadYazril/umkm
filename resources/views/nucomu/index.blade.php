@@ -1,41 +1,34 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nucomu Cafe - Story & Review Experience</title>
+    <title>Nucomu Cafe - Story &amp; Review Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        obsidian: '#0c0c0f',
-                        charcoal: '#15151c',
-                        goldAccent: '#f59e0b',
-                        violetAccent: '#8b5cf6',
-                        cyanAccent: '#06b6d4',
-                        roseAccent: '#f43f5e'
+                        warmIvory: '#FAF8F5',
+                        pureWhite: '#FFFFFF',
+                        inkBlack: '#191919',
+                        charcoal: '#30302D',
+                        warmStone: '#E5E5E5'
                     },
                     fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        sans: ['Manrope', 'Plus Jakarta Sans', 'sans-serif'],
+                        editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+                        body: ['Manrope', 'sans-serif'],
                     },
                     borderRadius: {
                         'story': '2rem',
                         'super': '2.5rem'
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 5s infinite ease-in-out',
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%, 100%': { opacity: '0.25', filter: 'blur(60px)' },
-                            '50%': { opacity: '0.6', filter: 'blur(90px)' },
-                        }
                     }
                 }
             }
@@ -43,14 +36,12 @@
     </script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0c0c0f; }
-        ::-webkit-scrollbar-thumb { background: #232330; border-radius: 9999px; }
+        ::-webkit-scrollbar-track { background: #FAF8F5; }
+        ::-webkit-scrollbar-thumb { background: #DAD7CF; border-radius: 9999px; }
 
         .glass-card {
-            background: rgba(21, 21, 28, 0.75);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #FFFFFF;
+            border: 1px solid #E5E5E5;
         }
 
         .wide-story-frame {
@@ -66,37 +57,32 @@
         }
     </style>
 </head>
-<body class="bg-obsidian text-gray-100 font-sans selection:bg-goldAccent selection:text-black min-h-screen relative overflow-x-hidden">
-
-    {{-- Ambient Glow Background --}}
-    <div class="fixed top-10 left-1/4 w-96 h-96 rounded-full bg-goldAccent/15 pointer-events-none z-0 blur-3xl"></div>
-    <div class="fixed top-1/2 right-10 w-[30rem] h-[30rem] rounded-full bg-violetAccent/15 pointer-events-none z-0 blur-3xl"></div>
-    <div class="fixed bottom-10 left-10 w-96 h-96 rounded-full bg-cyanAccent/15 pointer-events-none z-0 blur-3xl"></div>
+<body class="bg-[#FAF8F5] text-[#1C1C1C] font-sans selection:bg-[#1C1C1C] selection:text-white min-h-screen relative overflow-x-hidden">
 
     {{-- HEADER / NAVIGATION --}}
-    <header class="sticky top-0 z-50 glass-card border-b border-white/5 px-6 py-4">
+    <header class="sticky top-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E5E5E5] px-6 py-4">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-goldAccent via-amber-500 to-rose-500 p-0.5 shadow-lg shadow-goldAccent/20 group-hover:scale-105 transition-transform duration-300">
-                    <div class="w-full h-full bg-obsidian rounded-[14px] flex items-center justify-center">
-                        <i class="fa-solid fa-mug-hot text-transparent bg-clip-text bg-gradient-to-r from-goldAccent to-rose-400 text-lg"></i>
+                <div class="w-10 h-10 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                    <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
+                        <i class="fa-solid fa-mug-hot text-[#1C1C1C] text-lg"></i>
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-extrabold tracking-tight text-white">NUCOMU</span>
-                    <span class="text-[9px] uppercase tracking-widest text-goldAccent font-semibold -mt-1">Coffee & Stories</span>
+                    <span class="text-xl font-bold tracking-tight text-[#1C1C1C] font-editorial">NUCOMU</span>
+                    <span class="text-[9px] uppercase tracking-widest text-[#8A8A8A] font-semibold -mt-1 font-body">Coffee &amp; Stories</span>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                <a href="#gallery" class="hover:text-goldAccent transition-colors">Galeri Story</a>
-                <a href="#reviews" class="hover:text-goldAccent transition-colors">Ulasan Pelanggan</a>
-                <a href="{{ route('nucomu.order') }}" class="hover:text-goldAccent transition-colors">
-                    <i class="fa-solid fa-utensils mr-1"></i> Pesan Menu
+            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold text-[#666666] uppercase tracking-wider font-body">
+                <a href="#gallery" class="hover:text-[#1C1C1C] transition-colors">Galeri Story</a>
+                <a href="#reviews" class="hover:text-[#1C1C1C] transition-colors">Ulasan Pelanggan</a>
+                <a href="{{ route('nucomu.order') }}" class="hover:text-[#1C1C1C] transition-colors">
+                    <i class="fa-solid fa-utensils mr-1 text-[#1C1C1C]"></i> Pesan Menu
                 </a>
             </nav>
 
-            <button onclick="openReviewModal()" class="px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider text-black bg-gradient-to-r from-goldAccent via-amber-400 to-yellow-300 shadow-lg shadow-goldAccent/20 hover:scale-105 active:scale-95 transition-all">
+            <button onclick="openReviewModal()" class="px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider text-white bg-[#1C1C1C] hover:bg-black shadow-xs hover:scale-105 active:scale-95 transition-all font-body">
                 <i class="fa-solid fa-pen-nib mr-1.5"></i> Tulis Ulasan
             </button>
         </div>
@@ -105,14 +91,14 @@
     {{-- HERO --}}
     <section class="pt-10 pb-6 px-6 text-center relative z-10">
         <div class="max-w-2xl mx-auto space-y-3">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-semibold text-goldAccent">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Open Daily: 08:00 - 23:00 WIB
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E5E5E5] text-[11px] font-semibold text-[#1C1C1C] shadow-2xs font-body">
+                <span class="w-2 h-2 rounded-full bg-[#1C1C1C] animate-pulse"></span> Open Daily: 08:00 - 23:00 WIB
             </div>
-            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-                Suasana, Rasa, & <br>
-                <span class="bg-gradient-to-r from-goldAccent via-rose-400 to-violetAccent bg-clip-text text-transparent">Cerita Nucomu Cafe</span>
+            <h1 class="text-3xl sm:text-5xl font-semibold tracking-tight leading-tight text-[#1C1C1C] font-editorial">
+                Suasana, Rasa, &amp; <br>
+                <span>Cerita Nucomu Cafe</span>
             </h1>
-            <p class="text-gray-400 text-xs sm:text-sm">Nikmati momen harian dan ulasan pengunjung yang berganti otomatis.</p>
+            <p class="text-[#666666] text-xs sm:text-sm font-body">Nikmati momen harian dan ulasan pengunjung yang berganti otomatis.</p>
         </div>
     </section>
 
@@ -120,57 +106,64 @@
     <section id="gallery" class="py-6 px-4 relative z-10">
         <div class="max-w-3xl mx-auto">
             <div class="flex items-center justify-between mb-3 px-1">
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
-                    <h2 class="text-xs sm:text-sm font-bold tracking-wider uppercase text-white">Live Story Feed</h2>
+                <div class="flex items-center gap-2.5">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1C1C1C] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[#1C1C1C]"></span>
+                    </span>
+                    <span class="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.22em] font-body">04 / LIVE STORY FEED</span>
                 </div>
-                <span id="storyStatusTag" class="text-[10px] font-mono text-gray-400 bg-white/5 px-3 py-1 rounded-full border border-white/10">
+                <span id="storyStatusTag" class="text-[10px] sm:text-[11px] font-medium text-[#777777] bg-white px-3.5 py-1 rounded-full border border-[#E5E5E5] shadow-2xs font-body">
                     Otomatis Berganti • Hover untuk Pause
                 </span>
             </div>
 
-            <div id="storyContainer"
-                 class="wide-story-frame w-full rounded-story relative overflow-hidden glass-card shadow-2xl border border-white/15 cursor-pointer group select-none transition-transform duration-300"
-                 onmouseenter="pauseStory()" onmouseleave="resumeStory()">
+            <div class="relative group/story-outer">
+                <div class="absolute inset-0 bg-[#E8E8E8] rounded-[2.1rem] pointer-events-none z-0 transform translate-y-1 sm:translate-y-1.5 opacity-60" aria-hidden="true"></div>
 
-                <img id="storyImage" src="" alt="Gallery Image" class="w-full h-full object-cover transition-all duration-700 ease-in-out transform scale-100 group-hover:scale-105">
+                <div id="storyContainer"
+                     class="wide-story-frame w-full rounded-story relative z-10 overflow-hidden bg-neutral-900 shadow-md border border-[#E5E5E5] cursor-pointer group select-none transition-transform duration-300"
+                     onmouseenter="pauseStory()" onmouseleave="resumeStory()">
 
-                <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none"></div>
+                    <img id="storyImage" src="" alt="Gallery Image" class="w-full h-full object-cover transition-all duration-700 ease-in-out transform scale-100 group-hover:scale-105">
 
-                <div class="absolute top-0 left-0 right-0 p-5 sm:p-6 z-20 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full p-0.5 bg-gradient-to-tr from-goldAccent via-rose-500 to-violetAccent shadow-lg">
-                            <img id="storyAvatar" src="" class="w-full h-full rounded-full object-cover">
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-1.5">
-                                <span id="storyAuthor" class="text-xs sm:text-sm font-bold text-white drop-shadow-md">Barista Corner</span>
-                                <i class="fa-solid fa-circle-check text-cyan-400 text-xs"></i>
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/15 to-black/85 pointer-events-none"></div>
+
+                    <div class="absolute top-0 left-0 right-0 p-5 sm:p-6 z-20 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full p-0.5 bg-white/40 backdrop-blur-md shadow-md border border-white/50">
+                                <img id="storyAvatar" src="" class="w-full h-full rounded-full object-cover">
                             </div>
-                            <span id="storyTime" class="text-[10px] sm:text-xs text-gray-300 drop-shadow">Baru saja</span>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span id="storyAuthor" class="text-xs sm:text-sm font-semibold text-white drop-shadow-sm font-body">Barista Corner</span>
+                                    <i class="fa-solid fa-circle-check text-white/90 text-xs"></i>
+                                </div>
+                                <span id="storyTime" class="text-[10px] sm:text-xs text-neutral-300 drop-shadow-sm font-body">Baru saja</span>
+                            </div>
                         </div>
+                        <span id="storyCategoryBadge" class="text-[10px] sm:text-xs font-semibold uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-[#1C1C1C]/80 backdrop-blur-md border border-white/20 text-white shadow-md font-body">#CraftCoffee</span>
                     </div>
-                    <span id="storyCategoryBadge" class="text-[10px] sm:text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-black/60 backdrop-blur border border-white/20 text-goldAccent shadow-lg">#CraftCoffee</span>
-                </div>
 
-                <div class="absolute inset-0 z-10 flex">
-                    <div class="w-1/3 h-full" onclick="prevStory(event)"></div>
-                    <div class="w-2/3 h-full" onclick="nextStory(event)"></div>
-                </div>
-
-                <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-20 space-y-2 pointer-events-none">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/15 text-[10px] sm:text-xs font-semibold text-white">
-                        <i class="fa-solid fa-location-dot text-rose-400"></i> Nucomu Main Bar
+                    <div class="absolute inset-0 z-10 flex">
+                        <div class="w-1/3 h-full" onclick="prevStory(event)"></div>
+                        <div class="w-2/3 h-full" onclick="nextStory(event)"></div>
                     </div>
-                    <h3 id="storyTitle" class="text-lg sm:text-2xl font-black text-white leading-tight drop-shadow-md">Loading Story...</h3>
-                    <p id="storyDesc" class="text-xs sm:text-sm text-gray-200 leading-relaxed drop-shadow max-w-xl">Please wait...</p>
-                </div>
 
-                <div class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/15 flex items-center justify-center text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <i class="fa-solid fa-chevron-left text-sm"></i>
-                </div>
-                <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/15 flex items-center justify-center text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                    <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-20 space-y-2 pointer-events-none">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C1C1C]/80 backdrop-blur-md border border-white/20 text-[10px] sm:text-xs font-semibold text-white font-body">
+                            <i class="fa-solid fa-location-dot text-neutral-300"></i> Nucomu Main Bar
+                        </div>
+                        <h3 id="storyTitle" class="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight drop-shadow font-editorial">Loading Story...</h3>
+                        <p id="storyDesc" class="text-xs sm:text-sm text-neutral-200 leading-relaxed drop-shadow max-w-xl font-body">Please wait...</p>
+                    </div>
+
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white backdrop-blur-md shadow-lg border border-white/50 flex items-center justify-center text-[#1C1C1C] opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </div>
+                    <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white backdrop-blur-md shadow-lg border border-white/50 flex items-center justify-center text-[#1C1C1C] opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -180,17 +173,17 @@
     <section class="py-4 px-4 relative z-10">
         <div class="max-w-3xl mx-auto">
             <a href="{{ route('nucomu.order') }}"
-               class="flex items-center justify-between w-full px-6 py-4 rounded-2xl glass-card border border-goldAccent/20 hover:border-goldAccent/50 transition-all group">
+               class="flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-white border border-[#E5E5E5] hover:border-[#1C1C1C]/40 shadow-2xs hover:shadow-xs transition-all group font-body">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-goldAccent/10 border border-goldAccent/20 flex items-center justify-center text-goldAccent">
+                    <div class="w-10 h-10 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C]">
                         <i class="fa-solid fa-utensils"></i>
                     </div>
                     <div>
-                        <span class="font-bold text-white block text-sm">Pesan Menu Sekarang</span>
-                        <span class="text-xs text-gray-400">Pilih menu, isi nama — tampilkan ke kasir</span>
+                        <span class="font-bold text-[#1C1C1C] block text-sm">Pesan Menu Sekarang</span>
+                        <span class="text-xs text-[#666666]">Pilih menu, isi nama — tampilkan ke kasir</span>
                     </div>
                 </div>
-                <i class="fa-solid fa-arrow-right text-goldAccent group-hover:translate-x-1 transition-transform"></i>
+                <i class="fa-solid fa-arrow-right text-[#1C1C1C] group-hover:translate-x-1 transition-transform"></i>
             </a>
         </div>
     </section>
@@ -198,59 +191,58 @@
     {{-- 2. REVIEWS --}}
     <section id="reviews" class="py-12 px-4 relative z-10">
         <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-6 space-y-1">
-                <div class="inline-flex items-center gap-1.5 text-goldAccent text-xs font-bold uppercase tracking-wider">
-                    <i class="fa-solid fa-star"></i> Ulasan Pengunjung Nucomu Cafe
+            <div class="text-center mb-8 space-y-2">
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-xs sm:text-[13px] font-bold text-[#666666] uppercase tracking-[0.22em] font-body">05 / ULASAN PENGUNJUNG</span>
+                    <div class="w-10 h-px bg-[#DDDDDD]" aria-hidden="true"></div>
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-bold text-white">Kata Mereka Tentang Nucomu</h2>
-                <p class="text-xs text-gray-400">Pengalaman langsung dari para pengunjung Nucomu Cafe Tulungagung.</p>
+                <h2 class="text-2xl sm:text-3xl font-semibold text-[#1C1C1C] font-editorial">Kata Mereka Tentang Nucomu</h2>
+                <p class="text-xs text-[#666666] font-body">Pengalaman langsung dari para pengunjung Nucomu Cafe Tulungagung.</p>
             </div>
 
             <div class="max-w-3xl mx-auto mb-8">
                 <div id="reviewContainer"
-                     class="w-full glass-card rounded-story p-6 sm:p-10 relative overflow-hidden border border-white/15 shadow-2xl transition-all duration-500"
+                     class="w-full bg-white rounded-story p-6 sm:p-10 relative overflow-hidden border border-[#E5E5E5] shadow-sm transition-all duration-500 font-body"
                      onmouseenter="pauseReview()" onmouseleave="resumeReview()">
 
                     <div class="space-y-6 relative z-10">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <img id="reviewAvatar" src="" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-goldAccent/40 shadow-xl">
+                                <img id="reviewAvatar" src="" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-[#E5E5E5] shadow-xs bg-neutral-100">
                                 <div>
-                                    <h4 id="reviewName" class="text-base sm:text-lg font-bold text-white">Loading...</h4>
-                                    <p id="reviewHandle" class="text-xs text-goldAccent font-medium">Local Guide</p>
+                                    <h4 id="reviewName" class="text-base sm:text-lg font-bold text-[#1C1C1C]">Loading...</h4>
+                                    <p id="reviewHandle" class="text-xs text-[#8A8A8A] font-medium">Local Guide</p>
                                 </div>
                             </div>
-                            <div id="reviewStars" class="flex text-goldAccent text-sm sm:text-base gap-1 bg-white/5 px-3 py-1.5 rounded-full border border-white/10"></div>
+                            <div id="reviewStars" class="flex text-[#1C1C1C] text-sm sm:text-base gap-1 bg-[#F5F5F5] px-3.5 py-1.5 rounded-full border border-[#E5E5E5]"></div>
                         </div>
 
                         <div class="relative py-2">
-                            <i class="fa-solid fa-quote-left text-4xl text-white/10 absolute -top-4 -left-2"></i>
-                            <p id="reviewText" class="text-sm sm:text-base text-gray-200 leading-relaxed italic relative z-10 pl-3 sm:pl-4">"Ulasan..."</p>
+                            <i class="fa-solid fa-quote-left text-3xl sm:text-4xl text-[#E5E5E5] absolute -top-4 -left-2"></i>
+                            <p id="reviewText" class="text-sm sm:text-base text-[#1C1C1C] leading-relaxed italic relative z-10 pl-3 sm:pl-4">"Ulasan..."</p>
                         </div>
 
-                        <div id="reviewPhotoWrap" class="hidden rounded-2xl overflow-hidden border border-white/15 max-h-52 bg-black/40">
+                        <div id="reviewPhotoWrap" class="hidden rounded-2xl overflow-hidden border border-[#E5E5E5] max-h-52 bg-neutral-100">
                             <img id="reviewPhotoImg" src="" alt="Foto Ulasan" class="w-full h-52 object-cover">
                         </div>
 
-                        <div class="pt-4 border-t border-white/10 flex items-center justify-between text-xs sm:text-sm">
-                            <span class="text-gray-400 text-xs">Pesanan Favorit:</span>
-                            <span id="reviewOrderTag" class="font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3.5 py-1.5 rounded-full text-xs sm:text-sm">
-                                <i class="fa-solid fa-mug-saucer mr-1.5"></i> Special Coffee
+                        <div class="pt-4 border-t border-[#E5E5E5] flex items-center justify-between text-xs sm:text-sm">
+                            <span class="text-[#8A8A8A] text-xs">Pesanan Favorit:</span>
+                            <span id="reviewOrderTag" class="font-semibold text-[#1C1C1C] bg-[#F5F5F5] border border-[#E5E5E5] px-3.5 py-1.5 rounded-full text-xs sm:text-sm">
+                                <i class="fa-solid fa-mug-saucer mr-1.5 text-[#1C1C1C]"></i> Special Coffee
                             </span>
                         </div>
                     </div>
-
-                    <div class="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-goldAccent/10 blur-3xl pointer-events-none"></div>
                 </div>
 
                 <div class="text-center mt-5">
-                    <button onclick="openReviewModal()" class="text-xs sm:text-sm font-semibold text-goldAccent hover:text-amber-300 transition-colors inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-goldAccent/20 hover:border-goldAccent">
-                        <i class="fa-solid fa-plus-circle"></i> Tambah ulasan pengalaman Anda
+                    <button onclick="openReviewModal()" class="text-xs sm:text-sm font-semibold text-[#1C1C1C] hover:text-black transition-colors inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-[#E5E5E5] hover:border-[#1C1C1C] shadow-2xs font-body">
+                        <i class="fa-solid fa-plus-circle text-[#1C1C1C]"></i> Tambah ulasan pengalaman Anda
                     </button>
                 </div>
             </div>
 
-            <div id="nucomuReviewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="nucomuReviewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-body">
                 @foreach($reviews as $rev)
                     @php
                         $cardImages = !empty($rev['review_images']) && is_array($rev['review_images'])
@@ -258,41 +250,43 @@
                             : (!empty($rev['review_image']) ? [$rev['review_image']] : []);
                         $isHiddenInitially = $loop->index >= 3;
                     @endphp
-                    <div class="glass-card rounded-2xl p-5 border border-white/10 flex flex-col justify-between {{ $isHiddenInitially ? 'extra-nucomu-review hidden' : '' }}">
+                    <div class="bg-white rounded-2xl p-5 border border-[#E5E5E5] shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between {{ $isHiddenInitially ? 'extra-nucomu-review hidden' : '' }}">
                         <div>
                             <div class="flex items-start justify-between gap-2 mb-3">
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ $rev['avatar_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' }}" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-white/15 bg-rose-600">
+                                    <img src="{{ $rev['avatar_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' }}" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-[#E5E5E5] bg-neutral-100">
                                     <div>
-                                        <h5 class="text-sm font-bold text-white">{{ $rev['name'] }}</h5>
-                                        <span class="text-[11px] text-gray-400 block">{{ $rev['handle'] ?? 'Pengunjung Nucomu' }}</span>
+                                        <h5 class="text-sm font-bold text-[#1C1C1C]">{{ $rev['name'] }}</h5>
+                                        <span class="text-[11px] text-[#8A8A8A] block">{{ $rev['handle'] ?? 'Pengunjung Nucomu' }}</span>
                                     </div>
                                 </div>
-                                <span class="text-[10px] text-gray-500">{{ $rev['time_ago'] ?? '' }}</span>
+                                <span class="text-[10px] text-[#8A8A8A]">{{ $rev['time_ago'] ?? '' }}</span>
                             </div>
-                            <div class="flex items-center gap-1 text-goldAccent text-xs mb-2">
+                            <div class="flex items-center gap-1 text-[#1C1C1C] text-xs mb-2">
                                 @for($i = 0; $i < ($rev['rating'] ?? 5); $i++)
                                     <i class="fa-solid fa-star"></i>
                                 @endfor
                             </div>
-                            <p class="text-xs text-gray-300 leading-relaxed mb-3 whitespace-pre-line">{{ $rev['content'] }}</p>
+                            <p class="text-xs text-[#555555] leading-relaxed mb-3 whitespace-pre-line">{{ $rev['content'] }}</p>
                             @if(count($cardImages) > 1)
-                                <div class="grid grid-cols-2 gap-1.5 mb-3 rounded-xl overflow-hidden border border-white/10">
+                                <div class="grid grid-cols-2 gap-1.5 mb-3 rounded-xl overflow-hidden border border-[#E5E5E5]">
                                     @foreach($cardImages as $imgUrl)
-                                        <div class="aspect-[4/3] bg-black/40 overflow-hidden">
+                                        <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
                                             <img src="{{ $imgUrl }}" alt="Foto ulasan {{ $rev['name'] }}" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover">
                                         </div>
                                     @endforeach
                                 </div>
                             @elseif(count($cardImages) === 1)
-                                <div class="mb-3 rounded-xl overflow-hidden border border-white/10 h-36 bg-black/40">
+                                <div class="mb-3 rounded-xl overflow-hidden border border-[#E5E5E5] h-36 bg-neutral-100">
                                     <img src="{{ $cardImages[0] }}" alt="Foto ulasan {{ $rev['name'] }}" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover">
                                 </div>
                             @endif
                         </div>
-                        <div class="pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px]">
-                            <span class="text-gray-500">Favorit:</span>
-                            <span class="text-rose-400 font-medium">{{ $rev['order_tag'] ?? 'Menu Nucomu' }}</span>
+                        <div class="pt-2.5 border-t border-[#E5E5E5] flex items-center justify-between text-[11px]">
+                            <span class="text-[#8A8A8A]">Favorit:</span>
+                            <span class="text-[#1C1C1C] font-medium bg-[#F5F5F5] border border-[#E5E5E5] px-2.5 py-0.5 rounded-full">
+                                <i class="fa-solid fa-mug-saucer mr-1 text-[10px] text-[#1C1C1C]"></i> {{ $rev['order_tag'] ?? 'Menu Nucomu' }}
+                            </span>
                         </div>
                     </div>
                 @endforeach
@@ -303,83 +297,86 @@
                     <button type="button"
                             id="toggleNucomuReviewsBtn"
                             onclick="toggleNucomuReviews()"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-card border border-goldAccent/30 hover:border-goldAccent text-xs sm:text-sm font-bold text-white transition-all">
-                        <i class="fa-solid fa-layer-group text-goldAccent"></i>
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white hover:bg-[#1C1C1C] hover:text-white border border-[#1C1C1C] text-xs sm:text-sm font-bold text-[#1C1C1C] shadow-2xs hover:shadow-xs transition-all font-body">
+                        <i class="fa-solid fa-layer-group"></i>
                         <span id="toggleNucomuReviewsText">View All Ulasan ({{ count($reviews) }} Ulasan)</span>
-                        <i id="toggleNucomuReviewsChevron" class="fa-solid fa-chevron-down text-xs text-goldAccent transition-transform duration-300"></i>
+                        <i id="toggleNucomuReviewsChevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
                     </button>
                 </div>
             @endif
         </div>
     </section>
 
-    {{-- MODAL ULASAN --}}
-    <div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="glass-card w-full max-w-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-2xl relative transform scale-95 transition-transform duration-300 max-h-[92vh] overflow-y-auto" id="modalContent">
-            <button onclick="closeReviewModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-colors">
-                <i class="fa-solid fa-xmark"></i>
+    {{-- MODAL ULASAN (MONOCHROME) --}}
+    <div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1C1C]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeReviewModal()">
+        <div class="bg-[#FAFAFA] w-full max-w-md rounded-3xl p-6 sm:p-8 border border-[#E5E5E5] shadow-2xl relative transform scale-95 transition-transform duration-300 max-h-[92vh] overflow-y-auto font-body" id="modalContent" onclick="event.stopPropagation()">
+            <button onclick="closeReviewModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] hover:bg-[#1C1C1C] hover:text-white transition-colors shadow-2xs">
+                <i class="fa-solid fa-xmark text-sm"></i>
             </button>
 
             <div class="flex items-center gap-3 mb-5">
-                <div class="w-10 h-10 rounded-xl bg-goldAccent/10 border border-goldAccent/20 flex items-center justify-center text-goldAccent">
-                    <i class="fa-solid fa-pen-to-square"></i>
+                <div class="w-10 h-10 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C]">
+                    <i class="fa-solid fa-pen-to-square text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-base font-bold text-white">Tulis Ulasan Nucomu</h3>
-                    <p class="text-[11px] text-gray-400">Bagikan kesan &amp; foto pengalaman Anda</p>
+                    <h3 class="text-base font-bold text-[#1C1C1C]">Tulis Ulasan Nucomu</h3>
+                    <p class="text-[11px] text-[#666666]">Bagikan kesan &amp; foto pengalaman Anda</p>
                 </div>
             </div>
 
             {{-- Flash success --}}
             @if(session('review_success'))
-                <div class="mb-4 p-3 bg-emerald-950/60 border border-emerald-800 text-emerald-300 rounded-xl text-xs">
-                    <i class="fa-solid fa-circle-check mr-1.5"></i> {{ session('review_success') }}
+                <div class="mb-4 p-3.5 bg-white border border-[#E5E5E5] text-[#1C1C1C] rounded-xl text-xs font-medium">
+                    <i class="fa-solid fa-circle-check mr-1.5 text-[#1C1C1C]"></i> {{ session('review_success') }}
                 </div>
             @endif
 
             <form action="{{ route('nucomu.review.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
                 @csrf
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Nama Lengkap *</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Nama Lengkap *</label>
                     <input type="text" name="name" required placeholder="Nama Anda"
-                        class="w-full bg-black/40 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors">
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Status / Info Singkat</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Status / Info Singkat</label>
                     <input type="text" name="handle" placeholder="Contoh: Local Guide / Pengunjung"
-                        class="w-full bg-black/40 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors">
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Pesanan Anda</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Pesanan Anda</label>
                     <input type="text" name="order_tag" placeholder="Misal: Cheesecake & Nucomu Coffee"
-                        class="w-full bg-black/40 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors">
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Rating Bintang</label>
-                    <div class="flex gap-2 text-lg text-gray-600" id="starRating">
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Rating Bintang</label>
+                    <div class="flex gap-2 text-lg text-stone-300" id="starRating">
                         @for($i = 1; $i <= 5; $i++)
-                            <i class="fa-solid fa-star cursor-pointer hover:text-goldAccent transition-colors" onclick="setRating({{ $i }})"></i>
+                            <i class="fa-solid fa-star cursor-pointer hover:text-[#1C1C1C] transition-colors text-[#1C1C1C]" onclick="setRating({{ $i }})"></i>
                         @endfor
                     </div>
                     <input type="hidden" name="rating" id="ratingInput" value="5">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Ulasan Singkat *</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Ulasan Singkat *</label>
                     <textarea name="content" rows="3" required placeholder="Tuliskan kesan rasa kopi, dessert, dan suasana di Nucomu Cafe..."
-                        class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-goldAccent transition-colors resize-none"></textarea>
+                        class="w-full p-3 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors resize-none"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold text-gray-300 mb-1">Upload Foto (Opsional)</label>
-                    <input type="file" name="review_image" accept="image/*"
-                        class="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-gray-300 file:mr-3 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-goldAccent file:text-black">
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Upload Foto (Opsional)</label>
+                    <label class="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#F5F5F5] border border-dashed border-[#CCCCCC] hover:border-[#1C1C1C] text-xs text-[#666666] cursor-pointer transition-colors">
+                        <i class="fa-solid fa-camera text-[#1C1C1C]"></i>
+                        <span id="nucomuReviewImageLabel">Pilih foto dari perangkat Anda...</span>
+                        <input type="file" name="review_image" accept="image/*" class="hidden" onchange="if(this.files && this.files[0]) document.getElementById('nucomuReviewImageLabel').innerText = this.files[0].name;">
+                    </label>
                 </div>
 
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-goldAccent via-amber-400 to-yellow-300 text-black font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity shadow-md">
+                <button type="submit" class="w-full py-3.5 rounded-full bg-[#1C1C1C] hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95">
                     Kirim Ulasan Sekarang
                 </button>
             </form>
@@ -387,11 +384,11 @@
     </div>
 
     {{-- FOOTER --}}
-    <footer class="mt-12 border-t border-white/5 py-6 px-6 text-center text-[11px] text-gray-500 relative z-10">
+    <footer class="mt-12 border-t border-[#E5E5E5] py-8 px-6 text-center text-xs text-[#777777] relative z-10 font-body">
         <p>© {{ date('Y') }} Nucomu Cafe. Crafted for coffee lovers.</p>
-        <div class="mt-2 flex items-center justify-center gap-4">
-            <a href="{{ route('home') }}" class="hover:text-goldAccent transition-colors">← Kembali ke Beranda</a>
-            <a href="{{ route('nucomu.order') }}" class="hover:text-goldAccent transition-colors">Pesan Menu</a>
+        <div class="mt-3 flex items-center justify-center gap-6">
+            <a href="{{ route('home') }}" class="hover:text-[#1C1C1C] transition-colors">← Kembali ke Beranda</a>
+            <a href="{{ route('nucomu.order') }}" class="hover:text-[#1C1C1C] transition-colors">Pesan Menu</a>
         </div>
     </footer>
 
@@ -439,14 +436,20 @@
 
         function pauseStory() {
             isStoryPaused = true;
-            document.getElementById('storyStatusTag').innerText = 'PAUSED (Di-hold)';
-            document.getElementById('storyStatusTag').classList.add('text-goldAccent');
+            const tag = document.getElementById('storyStatusTag');
+            if (tag) {
+                tag.innerText = 'PAUSED (Di-hold)';
+                tag.classList.add('text-[#1C1C1C]', 'border-[#1C1C1C]/40', 'bg-[#F5F5F5]');
+            }
         }
 
         function resumeStory() {
             isStoryPaused = false;
-            document.getElementById('storyStatusTag').innerText = 'Otomatis Berganti • Hover untuk Pause';
-            document.getElementById('storyStatusTag').classList.remove('text-goldAccent');
+            const tag = document.getElementById('storyStatusTag');
+            if (tag) {
+                tag.innerText = 'Otomatis Berganti • Hover untuk Pause';
+                tag.classList.remove('text-[#1C1C1C]', 'border-[#1C1C1C]/40', 'bg-[#F5F5F5]');
+            }
         }
 
         // ============================================
@@ -463,7 +466,7 @@
             document.getElementById('reviewHandle').innerText = r.handle || 'Pengunjung Nucomu';
             document.getElementById('reviewAvatar').src = r.avatar_url || DEFAULT_AVATAR;
             document.getElementById('reviewText').innerText = '"' + r.content + '"';
-            document.getElementById('reviewOrderTag').innerHTML = '<i class="fa-solid fa-mug-saucer mr-1.5"></i> ' + (r.order_tag || 'Menu Spesial');
+            document.getElementById('reviewOrderTag').innerHTML = '<i class="fa-solid fa-mug-saucer mr-1.5 text-[#1C1C1C]"></i> ' + (r.order_tag || 'Menu Spesial');
 
             const photoWrap = document.getElementById('reviewPhotoWrap');
             const photoImg = document.getElementById('reviewPhotoImg');
@@ -523,8 +526,13 @@
             document.getElementById('ratingInput').value = rating;
             const stars = document.getElementById('starRating').children;
             for (let i = 0; i < stars.length; i++) {
-                stars[i].classList.toggle('text-goldAccent', i < rating);
-                stars[i].classList.toggle('text-gray-600', i >= rating);
+                if (i < rating) {
+                    stars[i].classList.add('text-[#1C1C1C]');
+                    stars[i].classList.remove('text-stone-300');
+                } else {
+                    stars[i].classList.remove('text-[#1C1C1C]');
+                    stars[i].classList.add('text-stone-300');
+                }
             }
         }
 
