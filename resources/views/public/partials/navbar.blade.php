@@ -25,8 +25,8 @@
                 {{-- Nav Links Group --}}
                 <div class="flex flex-1 items-center justify-evenly">
                     <a href="{{ route('home') }}" class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('home') ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-sm' : 'text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' }}">Beranda</a>
-                    <a href="{{ route('menu') }}" class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('menu*') ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-sm' : 'text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' }}">Menu</a>
-                    <a href="{{ route('about') }}" class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('about') ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-sm' : 'text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' }}">Cerita Kami</a>
+                    <a href="{{ route('home') }}#menu" class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10">Menu</a>
+                    <a href="{{ route('home') }}#about" class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10">Cerita Kami</a>
                     <a href="{{ route('gallery') }}" class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('gallery') ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-sm' : 'text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' }}">Galeri</a>
                     <a href="{{ route('contact') }}" class="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('contact') ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 shadow-sm' : 'text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10' }}">Kontak</a>
                 </div>
@@ -84,8 +84,8 @@
         <div id="mobile-menu" class="pointer-events-auto hidden md:hidden mt-2.5 rounded-3xl bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-2xl p-4 transition-all">
             <div class="space-y-1">
                 <a href="{{ route('home') }}" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Beranda</a>
-                <a href="{{ route('menu') }}" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Menu</a>
-                <a href="{{ route('about') }}" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Cerita Kami</a>
+                <a href="{{ route('home') }}#menu" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Menu</a>
+                <a href="{{ route('home') }}#about" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Cerita Kami</a>
                 <a href="{{ route('gallery') }}" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Galeri</a>
                 <a href="{{ route('contact') }}" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Kontak</a>
                 <a href="{{ route('cart') }}" class="block px-4 py-2.5 rounded-2xl text-xs font-semibold text-zinc-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10">Keranjang ({{ count(session('cart', [])) }})</a>

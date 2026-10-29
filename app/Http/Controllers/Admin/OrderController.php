@@ -46,7 +46,6 @@ class OrderController extends Controller
             'status' => 'required|in:pending,processing,ready,completed,cancelled',
             'payment_status' => 'nullable|in:unpaid,paid',
         ]);
-
         $data = ['status' => $request->status];
         if ($request->filled('payment_status')) {
             $data['payment_status'] = $request->payment_status;

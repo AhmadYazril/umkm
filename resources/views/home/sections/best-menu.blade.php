@@ -237,7 +237,6 @@
             <p class="font-editorial text-xl font-bold text-neutral-900">Sajian Sedang Disiapkan</p>
             <p class="font-body text-xs text-neutral-500 mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
         </div>
-
         <!-- View Full Catalog Link -->
         <div class="text-center reveal-on-scroll">
             <a href="{{ route('nucomu.order') }}" class="inline-flex items-center space-x-2.5 px-7 py-3 rounded-full bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-widest shadow-md transition-all duration-200 active:scale-95">

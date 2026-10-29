@@ -9,8 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavbarScroll();
     initScrollSpy();
     initScrollReveal();
+    initOurStory();
+    initFacilitiesGallery();
     initBestMenuCarousel();
     initGalleryLightbox();
+    initLayananSection();
     initKeyboardShortcuts();
 });
 
@@ -261,7 +264,7 @@ window.toggleMobileDrawer = function() {
    4. SCROLL REVEAL OBSERVER
    ========================================================================== */
 function initScrollReveal() {
-    const reveals = document.querySelectorAll('.reveal-on-scroll');
+    const reveals = document.querySelectorAll('.reveal-on-scroll, .reveal-from-left, .reveal-from-right, .reveal-fade-up');
     if (!reveals.length) return;
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -282,6 +285,691 @@ function initScrollReveal() {
     });
 
     reveals.forEach(el => revealObserver.observe(el));
+}
+
+/* ==========================================================================
+   4B. OUR STORY / ABOUT US SECTION (SCROLL REVEAL, CAROUSEL & TYPEWRITER)
+   ========================================================================== */
+function initOurStory() {
+    const storySection = document.getElementById('our-story-section') || document.getElementById('about');
+    const quoteWrapper = document.getElementById('story-quote-wrapper');
+    const typewriterTextEl = document.getElementById('story-typewriter-text');
+    const typewriterCursor = document.getElementById('story-typewriter-cursor');
+
+    if (!storySection) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 1. Entrance animation for Our Story section (Single-trigger, no replay on ordinary scroll up/down)
+    function triggerEntrance() {
+        storySection.classList.add('story-in-view');
+    }
+
+    if (prefersReducedMotion) {
+        triggerEntrance();
+    } else {
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    triggerEntrance();
+                    sectionObserver.unobserve(storySection);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+        sectionObserver.observe(storySection);
+    }
+
+    // Support re-triggering if user navigates back to #about or #our-story-section from elsewhere
+    window.addEventListener('hashchange', () => {
+        if (location.hash === '#about' || location.hash === '#our-story-section') {
+            if (!storySection.classList.contains('story-in-view')) {
+                triggerEntrance();
+            }
+        }
+    });
+
+    // 2. Automatic Image Carousel with Smooth Crossfade & Manual Controls
+    initStoryCarousel(prefersReducedMotion);
+
+    // 3. Typewriter animation for Quote
+    if (!quoteWrapper || !typewriterTextEl) return;
+
+    const quoteFullText = '“Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.”';
+
+    if (prefersReducedMotion) {
+        typewriterTextEl.textContent = quoteFullText;
+        if (typewriterCursor) typewriterCursor.classList.add('hidden');
+        return;
+    }
+
+    // Reset text initially so it types character by character on view
+    typewriterTextEl.textContent = '';
+    if (typewriterCursor) typewriterCursor.classList.remove('hidden');
+
+    let isTypingStarted = false;
+
+    const quoteObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting && !isTypingStarted) {
+                isTypingStarted = true;
+                quoteObserver.unobserve(quoteWrapper);
+
+                let charIndex = 0;
+                const typingSpeed = 26; // 26ms per char (within 20–35ms spec)
+
+                function typeNextChar() {
+                    if (charIndex < quoteFullText.length) {
+                        typewriterTextEl.textContent = quoteFullText.slice(0, charIndex + 1);
+                        charIndex++;
+                        setTimeout(typeNextChar, typingSpeed);
+                    } else {
+                        // Typing complete: hold cursor briefly then smoothly fade it out
+                        setTimeout(() => {
+                            if (typewriterCursor) {
+                                typewriterCursor.style.transition = 'opacity 0.4s ease-out';
+                                typewriterCursor.style.opacity = '0';
+                                setTimeout(() => {
+                                    typewriterCursor.classList.add('hidden');
+                                }, 400);
+                            }
+                        }, 700);
+                    }
+                }
+
+                // Brief delay after entering view before typing starts
+                setTimeout(typeNextChar, 200);
+            }
+        });
+    }, {
+        threshold: 0.2,
+        rootMargin: '0px 0px -30px 0px'
+    });
+
+    quoteObserver.observe(quoteWrapper);
+}
+
+/**
+ * Story Frame Image Carousel (Smooth Crossfade, 5.5s interval, Touch Swipe & Desktop Controls)
+ */
+function initStoryCarousel(prefersReducedMotion) {
+    const frame = document.getElementById('story-carousel-frame');
+    if (!frame) return;
+
+    const slides = frame.querySelectorAll('.story-carousel-slide');
+    if (!slides || slides.length <= 1) return;
+
+    const prevBtn = document.getElementById('story-carousel-prev');
+    const nextBtn = document.getElementById('story-carousel-next');
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+    const intervalMs = 5500; // 5.5s autoplay cycle
+    let autoplayTimer = null;
+    let isUserInteracting = false;
+
+    function showSlide(newIndex) {
+        if (newIndex === currentIndex) return;
+
+        const normalizedIndex = (newIndex + totalSlides) % totalSlides;
+        const currentSlide = slides[currentIndex];
+        const nextSlide = slides[normalizedIndex];
+
+        // Smooth Crossfade: Fade out current, Fade in next
+        currentSlide.classList.remove('active', 'opacity-100', 'z-10');
+        currentSlide.classList.add('opacity-0', 'z-0', 'pointer-events-none');
+        currentSlide.setAttribute('aria-hidden', 'true');
+
+        nextSlide.classList.add('active', 'opacity-100', 'z-10');
+        nextSlide.classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+        nextSlide.setAttribute('aria-hidden', 'false');
+
+        currentIndex = normalizedIndex;
+    }
+
+    function advanceNext() {
+        showSlide(currentIndex + 1);
+    }
+
+    function advancePrev() {
+        showSlide(currentIndex - 1);
+    }
+
+    function startAutoplay() {
+        if (prefersReducedMotion) return;
+        stopAutoplay();
+        autoplayTimer = setInterval(() => {
+            if (!isUserInteracting) {
+                advanceNext();
+            }
+        }, intervalMs);
+    }
+
+    function stopAutoplay() {
+        if (autoplayTimer) {
+            clearInterval(autoplayTimer);
+            autoplayTimer = null;
+        }
+    }
+
+    // Desktop hover & focus controls
+    frame.addEventListener('mouseenter', () => {
+        isUserInteracting = true;
+        stopAutoplay();
+    });
+
+    frame.addEventListener('mouseleave', () => {
+        isUserInteracting = false;
+        startAutoplay();
+    });
+
+    frame.addEventListener('focusin', () => {
+        isUserInteracting = true;
+        stopAutoplay();
+    });
+
+    frame.addEventListener('focusout', () => {
+        isUserInteracting = false;
+        startAutoplay();
+    });
+
+    // Keyboard navigation (ArrowLeft & ArrowRight)
+    frame.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            advancePrev();
+            stopAutoplay();
+            startAutoplay();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            advanceNext();
+            stopAutoplay();
+            startAutoplay();
+        }
+    });
+
+    // Manual navigation buttons
+    if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            advancePrev();
+            stopAutoplay();
+            startAutoplay();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            advanceNext();
+            stopAutoplay();
+            startAutoplay();
+        });
+    }
+
+    // Mobile touch swipe gestures
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    frame.addEventListener('touchstart', (e) => {
+        if (e.changedTouches && e.changedTouches.length > 0) {
+            touchStartX = e.changedTouches[0].clientX;
+            touchStartY = e.changedTouches[0].clientY;
+            isUserInteracting = true;
+            stopAutoplay();
+        }
+    }, { passive: true });
+
+    frame.addEventListener('touchend', (e) => {
+        if (e.changedTouches && e.changedTouches.length > 0) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+
+            // Threshold of 35px horizontal travel, ensuring horizontal intent > vertical scroll
+            if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX < 0) {
+                    advanceNext(); // Swiped left -> next
+                } else {
+                    advancePrev(); // Swiped right -> prev
+                }
+            }
+
+            isUserInteracting = false;
+            startAutoplay();
+        }
+    }, { passive: true });
+
+    // Initial autoplay start
+    startAutoplay();
+}
+
+/* ==========================================================================
+   4C. INTERACTIVE FLOATING GALLERY (INDOOR / OUTDOOR — 2-SLOT ASYMMETRIC)
+   ========================================================================== */
+function initFacilitiesGallery() {
+    const galleryEl = document.querySelector('[data-facilities-gallery]');
+    if (!galleryEl) return;
+
+    const data = window.NUCOMU_FACILITIES_DATA;
+    if (!data) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Elements
+    const tabButtons = galleryEl.querySelectorAll('[data-facility-category-trigger]');
+    const arrowPrev = document.getElementById('facility-category-prev');
+    const arrowNext = document.getElementById('facility-category-next');
+    const infoPane = document.getElementById('facility-info-pane');
+    const infoLabel = document.getElementById('facility-info-label');
+    const infoTitle = document.getElementById('facility-info-title');
+    const infoDesc = document.getElementById('facility-info-desc');
+    const infoFeatures = document.getElementById('facility-info-features');
+
+    const photoStack = document.getElementById('facility-photo-stack');
+    const categoryStacks = galleryEl.querySelectorAll('[data-facility-category-stack]');
+
+    // Floating Cards A (Top-Right) & B (Bottom-Left)
+    const cardA = document.getElementById('facility-card-a');
+    const cardABadge = document.getElementById('facility-card-a-badge');
+    const cardASubtitle = document.getElementById('facility-card-a-subtitle');
+
+    const cardB = document.getElementById('facility-card-b');
+    const cardBCaption = document.getElementById('facility-card-b-caption');
+    const cardBMeta = document.getElementById('facility-card-b-meta');
+    const cardBCounter = document.getElementById('facility-card-b-counter');
+    const cardBDots = document.getElementById('facility-card-b-dots');
+
+    let currentCategory = 'indoor';
+    let currentPhotoIndex = 0;
+    let autoplayTimer = null;
+    let isPaused = false;
+    let pauseResumeTimeout = null;
+
+    const AUTOPLAY_INTERVAL = 1500; // 1,5 detik per foto sesuai instruksi user
+    const MANUAL_PAUSE_DURATION = 3500; // Jeda singkat setelah klik manual sebelum lanjut autoplay
+
+    // 0. Entrance Animation: Sisi Kiri (Teks) dari Kiri, Sisi Kanan (Foto) dari Kanan (Slow & Ultra-Smooth)
+    function triggerEntrance() {
+        galleryEl.classList.add('facility-in-view');
+    }
+
+    if (prefersReducedMotion) {
+        triggerEntrance();
+    } else {
+        const galleryObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    triggerEntrance();
+                    galleryObserver.unobserve(galleryEl);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -40px 0px'
+        });
+        galleryObserver.observe(galleryEl);
+    }
+
+    // Support re-triggering if navigated via anchor hash (#facilities)
+    window.addEventListener('hashchange', () => {
+        if (location.hash === '#facilities' || location.hash === '#facilities-interactive-gallery') {
+            if (!galleryEl.classList.contains('facility-in-view')) {
+                triggerEntrance();
+            }
+        }
+    });
+
+    // 1. Crossfade slide assignment logic for 2-slot asymmetric floating photo frames
+    function updatePhotoSlots(categoryKey, activeIndex) {
+        const stack = galleryEl.querySelector(`[data-facility-category-stack="${categoryKey}"]`);
+        if (!stack) return;
+
+        const catData = data[categoryKey];
+        if (!catData || !catData.photos) return;
+        const total = catData.photos.length;
+        if (total === 0) return;
+
+        const subIndex = total > 1 ? (activeIndex + 1) % total : 0;
+
+        // A. Update Main Slides (Smooth Crossfade Fade In / Fade Out)
+        const mainSlides = stack.querySelectorAll('.facility-slide-main');
+        mainSlides.forEach((slide) => {
+            const idx = parseInt(slide.getAttribute('data-slide-index'), 10);
+            if (idx === activeIndex) {
+                slide.classList.add('active', 'opacity-100', 'z-10');
+                slide.classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+                slide.setAttribute('aria-hidden', 'false');
+            } else {
+                slide.classList.remove('active', 'opacity-100', 'z-10');
+                slide.classList.add('opacity-0', 'z-0', 'pointer-events-none');
+                slide.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        // B. Update Sub Slides (Smooth Crossfade Fade In / Fade Out)
+        const subSlides = stack.querySelectorAll('.facility-slide-sub');
+        subSlides.forEach((slide) => {
+            const idx = parseInt(slide.getAttribute('data-slide-index'), 10);
+            if (idx === subIndex) {
+                slide.classList.add('active', 'opacity-100', 'z-10');
+                slide.classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+                slide.setAttribute('aria-hidden', 'false');
+                const img = slide.querySelector('img');
+                if (img && img.loading === 'lazy') {
+                    img.loading = 'eager';
+                }
+            } else {
+                slide.classList.remove('active', 'opacity-100', 'z-10');
+                slide.classList.add('opacity-0', 'z-0', 'pointer-events-none');
+                slide.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        // Preload foto antrean berikutnya agar transisi tetap instan tanpa jeda load
+        if (total > 2) {
+            const nextQueuedIdx = (activeIndex + 2) % total;
+            const queuedSlide = stack.querySelector(`.facility-slide-sub[data-slide-index="${nextQueuedIdx}"]`);
+            if (queuedSlide) {
+                const img = queuedSlide.querySelector('img');
+                if (img && img.loading === 'lazy') {
+                    img.loading = 'eager';
+                }
+            }
+        }
+
+        // C. Update Floating Card B (Caption & Penghitung/Dots)
+        const activePhoto = catData.photos[activeIndex];
+        if (activePhoto && cardBCaption) {
+            cardBCaption.textContent = activePhoto.caption || '';
+        }
+
+        if (cardBMeta) {
+            if (total <= 1) {
+                cardBMeta.classList.add('hidden');
+            } else {
+                cardBMeta.classList.remove('hidden');
+                if (cardBCounter) {
+                    cardBCounter.textContent = `${activeIndex + 1} / ${total}`;
+                }
+                if (cardBDots) {
+                    cardBDots.innerHTML = '';
+                    for (let i = 0; i < total; i++) {
+                        const dot = document.createElement('span');
+                        dot.className = `facility-counter-dot transition-all duration-300 ${
+                            i === activeIndex
+                                ? 'w-3.5 h-1.5 bg-[#242424] rounded-full'
+                                : 'w-1.5 h-1.5 bg-[#D1D5DB] rounded-full'
+                        }`;
+                        cardBDots.appendChild(dot);
+                    }
+                }
+            }
+        }
+    }
+
+    // 2. Select specific photo within active category (circular queue)
+    function selectPhoto(targetIndex, isManual = true) {
+        const catData = data[currentCategory];
+        if (!catData || !catData.photos) return;
+        const total = catData.photos.length;
+        if (total <= 1) return;
+
+        currentPhotoIndex = (targetIndex + total) % total;
+        updatePhotoSlots(currentCategory, currentPhotoIndex);
+
+        if (isManual) {
+            // Jeda autoplay ±8 detik setelah interaksi manual
+            pauseAutoplay();
+            if (pauseResumeTimeout) clearTimeout(pauseResumeTimeout);
+            pauseResumeTimeout = setTimeout(() => {
+                if (!isPaused) {
+                    startAutoplay();
+                }
+            }, MANUAL_PAUSE_DURATION);
+        }
+    }
+
+    // 3. Category Switching logic (Indoor <-> Outdoor)
+    function switchCategory(targetCategory) {
+        if (!data[targetCategory] || targetCategory === currentCategory) return;
+
+        stopAutoplay();
+        if (pauseResumeTimeout) clearTimeout(pauseResumeTimeout);
+
+        currentCategory = targetCategory;
+        currentPhotoIndex = 0;
+
+        // A. Update Tabs Styling & ARIA
+        tabButtons.forEach(btn => {
+            const isTarget = btn.getAttribute('data-facility-category-trigger') === targetCategory;
+            btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+            if (isTarget) {
+                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-[#242424] text-white shadow-xs focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2';
+            } else {
+                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-transparent text-[#666666] hover:text-[#1C1C1C] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2';
+            }
+        });
+
+        // B. Update Information Pane with subtle crossfade
+        if (infoPane) {
+            infoPane.classList.remove('opacity-100', 'translate-y-0');
+            infoPane.classList.add('opacity-0', 'translate-y-2');
+
+            setTimeout(() => {
+                const catData = data[targetCategory];
+                if (infoLabel) infoLabel.textContent = catData.badge;
+                if (infoTitle) infoTitle.textContent = catData.title;
+                if (infoDesc) infoDesc.textContent = catData.description;
+
+                if (infoFeatures) {
+                    infoFeatures.innerHTML = '';
+                    catData.features.forEach(feat => {
+                        const li = document.createElement('li');
+                        li.className = 'flex items-center gap-3';
+                        li.innerHTML = `
+                            <span class="w-5 h-5 rounded-full bg-[#1C1C1C]/6 border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] shrink-0" aria-hidden="true">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                                </svg>
+                            </span>
+                            <span>${feat}</span>
+                        `;
+                        infoFeatures.appendChild(li);
+                    });
+                }
+
+                infoPane.classList.remove('opacity-0', 'translate-y-2');
+                infoPane.classList.add('opacity-100', 'translate-y-0');
+            }, 180);
+        }
+
+        // C. Update Floating Card A (Kanan Atas) with smooth fade
+        if (cardA) {
+            cardA.classList.remove('opacity-100', 'translate-y-0');
+            cardA.classList.add('opacity-0', '-translate-y-1');
+
+            setTimeout(() => {
+                const catData = data[targetCategory];
+                if (cardABadge) {
+                    cardABadge.textContent = catData.room_label;
+                }
+                if (cardASubtitle) {
+                    cardASubtitle.textContent = catData.subtitle || catData.title;
+                }
+                cardA.classList.remove('opacity-0', '-translate-y-1');
+                cardA.classList.add('opacity-100', 'translate-y-0');
+            }, 180);
+        }
+
+        // D. Switch Category Photo Stacks
+        categoryStacks.forEach(stack => {
+            const isTarget = stack.getAttribute('data-facility-category-stack') === targetCategory;
+            if (isTarget) {
+                stack.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
+                stack.classList.add('opacity-100', 'pointer-events-auto', 'z-10');
+                stack.setAttribute('aria-hidden', 'false');
+            } else {
+                stack.classList.remove('opacity-100', 'pointer-events-auto', 'z-10');
+                stack.classList.add('opacity-0', 'pointer-events-none', 'z-0');
+                stack.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        // E. Reset photo slots for newly activated category
+        updatePhotoSlots(targetCategory, 0);
+
+        // F. Restart autoplay if category has multiple photos
+        const total = data[targetCategory].photos ? data[targetCategory].photos.length : 0;
+        if (total > 1 && !prefersReducedMotion && !isPaused) {
+            startAutoplay();
+        }
+    }
+
+    // 4. Autoplay Handlers (±6 detik)
+    function startAutoplay() {
+        if (prefersReducedMotion) return;
+        stopAutoplay();
+
+        const catData = data[currentCategory];
+        if (!catData || !catData.photos || catData.photos.length <= 1) return;
+
+        autoplayTimer = setInterval(() => {
+            if (!isPaused && !document.hidden) {
+                selectPhoto(currentPhotoIndex + 1, false);
+            }
+        }, AUTOPLAY_INTERVAL);
+    }
+
+    function pauseAutoplay() {
+        if (autoplayTimer) {
+            clearInterval(autoplayTimer);
+            autoplayTimer = null;
+        }
+    }
+
+    function stopAutoplay() {
+        pauseAutoplay();
+    }
+
+    // 5. Wire Category Tab Click Events
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetCat = btn.getAttribute('data-facility-category-trigger');
+            switchCategory(targetCat);
+        });
+    });
+
+    // 6. Wire Category Arrow Buttons (Berpindah Kategori Indoor <-> Outdoor)
+    if (arrowPrev) {
+        arrowPrev.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nextCat = currentCategory === 'indoor' ? 'outdoor' : 'indoor';
+            switchCategory(nextCat);
+        });
+    }
+
+    if (arrowNext) {
+        arrowNext.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nextCat = currentCategory === 'indoor' ? 'outdoor' : 'indoor';
+            switchCategory(nextCat);
+        });
+    }
+
+    // 7. Wire Photo Card Click Delegation (Hanya Frame SUB yang memicu pergantian ke foto berikutnya)
+    if (photoStack) {
+        photoStack.addEventListener('click', (e) => {
+            const subFrame = e.target.closest('.facility-frame-sub');
+            if (subFrame) {
+                e.preventDefault();
+                selectPhoto(currentPhotoIndex + 1, true);
+            }
+        });
+
+        // Hover & Focus Autoplay Pause
+        photoStack.addEventListener('mouseenter', () => {
+            isPaused = true;
+            pauseAutoplay();
+        });
+
+        photoStack.addEventListener('mouseleave', () => {
+            isPaused = false;
+            startAutoplay();
+        });
+
+        photoStack.addEventListener('focusin', () => {
+            isPaused = true;
+            pauseAutoplay();
+        });
+
+        photoStack.addEventListener('focusout', () => {
+            isPaused = false;
+            startAutoplay();
+        });
+
+        // Mobile Touch Gestures (Swipe Left / Right)
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        photoStack.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length > 0) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                isPaused = true;
+                pauseAutoplay();
+            }
+        }, { passive: true });
+
+        photoStack.addEventListener('touchend', (e) => {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                const touchEndX = e.changedTouches[0].clientX;
+                const touchEndY = e.changedTouches[0].clientY;
+                const diffX = touchEndX - touchStartX;
+                const diffY = touchEndY - touchStartY;
+
+                // Threshold 35px horizontal travel, memastikan intensi horizontal > scroll vertikal
+                if (Math.abs(diffX) > 35 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX < 0) {
+                        selectPhoto(currentPhotoIndex + 1, true); // Swipe kiri -> foto berikutnya
+                    } else {
+                        selectPhoto(currentPhotoIndex - 1, true); // Swipe kanan -> foto sebelumnya
+                    }
+                }
+
+                isPaused = false;
+                startAutoplay();
+            }
+        }, { passive: true });
+    }
+
+    // 8. Document Visibility Change (Pause saat tab browser tidak aktif)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            pauseAutoplay();
+        } else {
+            if (!isPaused) {
+                startAutoplay();
+            }
+        }
+    });
+
+    // 9. Inisialisasi awal kategori Indoor
+    updatePhotoSlots('indoor', 0);
+    startAutoplay();
+
+    // 10. Expose API
+    window.nucomuGallery = {
+        selectPhoto,
+        switchCategory,
+        getState: () => ({ currentCategory, currentPhotoIndex })
+    };
 }
 
 /* ==========================================================================
@@ -716,39 +1404,377 @@ window.closeServiceDetailModal = function() {
 };
 
 /* ==========================================================================
-   9. RESERVATION MODAL & WHATSAPP GENERATOR
+   9. RESERVATION MODAL & LAYANAN DETAIL PANEL
    ========================================================================== */
 let currentLayananCategory = 'Bridal';
 
-window.toggleLayananPackagePreview = function(category) {
+window.selectLayananCategoryChip = function(category) {
     currentLayananCategory = category;
-    const wrap = document.getElementById('layanan-package-options-wrap');
-    const label = document.getElementById('layanan-selected-cat-label');
-    const btnBridal = document.getElementById('layanan-btn-bridal');
-    const btnBirthday = document.getElementById('layanan-btn-birthday');
+    const btnBridal = document.getElementById('layanan-chip-bridal');
+    const btnBirthday = document.getElementById('layanan-chip-birthday');
+    const descBridal = document.getElementById('layanan-desc-bridal');
+    const descBirthday = document.getElementById('layanan-desc-birthday');
 
-    if (wrap) wrap.classList.remove('hidden');
-    if (label) {
-        label.innerText = `Pilihan Paket Acara ${category} — Klik salah satu paket untuk reservasi:`;
-    }
-    if (btnBridal && btnBirthday) {
-        if (category === 'Bridal') {
-            btnBridal.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-rose-50 border-2 border-[#E06D24] text-xs font-bold text-[#2A1D17] shadow-sm transition-all';
-            btnBirthday.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-amber-50 border border-stone-200 hover:border-amber-300 text-xs font-bold text-[#54392B] shadow-2xs transition-all';
-        } else {
-            btnBirthday.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-amber-50 border-2 border-[#E06D24] text-xs font-bold text-[#2A1D17] shadow-sm transition-all';
-            btnBridal.className = 'inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-rose-50 border border-stone-200 hover:border-rose-300 text-xs font-bold text-[#54392B] shadow-2xs transition-all';
+    const activeClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[#242424] text-white shadow-xs focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 inline-flex items-center justify-center text-center whitespace-nowrap';
+    const inactiveClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-white border border-[#CCCCCC] text-[#444444] hover:border-[#8A8A8A] hover:text-[#1C1C1C] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 inline-flex items-center justify-center text-center whitespace-nowrap';
+
+    if (category === 'Bridal') {
+        if (btnBridal) {
+            btnBridal.setAttribute('aria-selected', 'true');
+            btnBridal.className = activeClasses;
+        }
+        if (btnBirthday) {
+            btnBirthday.setAttribute('aria-selected', 'false');
+            btnBirthday.className = inactiveClasses;
+        }
+        if (descBridal) {
+            descBridal.classList.remove('hidden', 'opacity-0');
+            descBridal.classList.add('opacity-100');
+        }
+        if (descBirthday) {
+            descBirthday.classList.add('hidden', 'opacity-0');
+            descBirthday.classList.remove('opacity-100');
+        }
+    } else {
+        if (btnBirthday) {
+            btnBirthday.setAttribute('aria-selected', 'true');
+            btnBirthday.className = activeClasses;
+        }
+        if (btnBridal) {
+            btnBridal.setAttribute('aria-selected', 'false');
+            btnBridal.className = inactiveClasses;
+        }
+        if (descBirthday) {
+            descBirthday.classList.remove('hidden', 'opacity-0');
+            descBirthday.classList.add('opacity-100');
+        }
+        if (descBridal) {
+            descBridal.classList.add('hidden', 'opacity-0');
+            descBridal.classList.remove('opacity-100');
         }
     }
 };
 
+window.toggleLayananPackagePreview = window.selectLayananCategoryChip;
+
+// Dukungan tombol panah / toggle cepat antar paket
+window.toggleLayananCategory = function() {
+    if (currentLayananCategory === 'Bridal') {
+        window.selectLayananCategoryChip('Birthday');
+    } else {
+        window.selectLayananCategoryChip('Bridal');
+    }
+};
+
+/* ==========================================================================
+   DETAIL PANEL TOGGLE & NOTCH POSITIONING
+   ========================================================================== */
+window.toggleLayananDetailPanel = function() {
+    const panelWrapper = document.getElementById('layanan-detail-panel');
+    const toggleBtn = document.getElementById('btn-toggle-layanan-detail');
+    const toggleText = document.getElementById('btn-toggle-layanan-text');
+    const toggleIcon = document.getElementById('btn-toggle-layanan-icon');
+    const cardReservasi = document.getElementById('layanan-card-reservasi');
+
+    if (!panelWrapper || !toggleBtn) return;
+
+    const isOpen = panelWrapper.classList.contains('is-open');
+
+    if (isOpen) {
+        window.closeLayananDetailPanel();
+    } else {
+        panelWrapper.classList.remove('hidden');
+        panelWrapper.setAttribute('aria-hidden', 'false');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        if (toggleText) toggleText.textContent = 'Tutup Detail';
+        if (toggleIcon) toggleIcon.classList.add('rotate-180');
+
+        if (cardReservasi) {
+            cardReservasi.classList.add('is-active');
+        }
+
+        requestAnimationFrame(() => {
+            panelWrapper.classList.add('is-open');
+            window.updateLayananNotchPosition();
+
+            setTimeout(() => {
+                const rect = panelWrapper.getBoundingClientRect();
+                if (rect.bottom > window.innerHeight) {
+                    panelWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 300);
+        });
+    }
+};
+
+window.closeLayananDetailPanel = function() {
+    const panelWrapper = document.getElementById('layanan-detail-panel');
+    const toggleBtn = document.getElementById('btn-toggle-layanan-detail');
+    const toggleText = document.getElementById('btn-toggle-layanan-text');
+    const toggleIcon = document.getElementById('btn-toggle-layanan-icon');
+    const cardReservasi = document.getElementById('layanan-card-reservasi');
+
+    if (!panelWrapper || !panelWrapper.classList.contains('is-open')) return;
+
+    panelWrapper.classList.remove('is-open');
+    panelWrapper.setAttribute('aria-hidden', 'true');
+    if (toggleBtn) {
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        if (typeof toggleBtn.focus === 'function') {
+            toggleBtn.focus();
+        }
+    }
+    if (toggleText) toggleText.textContent = 'Lihat Detail';
+    if (toggleIcon) toggleIcon.classList.remove('rotate-180');
+
+    if (cardReservasi) {
+        cardReservasi.classList.remove('is-active');
+    }
+
+    setTimeout(() => {
+        if (!panelWrapper.classList.contains('is-open')) {
+            panelWrapper.classList.add('hidden');
+        }
+    }, 400);
+};
+
+window.updateLayananNotchPosition = function() {
+    const card = document.getElementById('layanan-card-reservasi');
+    const panel = document.getElementById('layanan-detail-card');
+    const notch = document.getElementById('layanan-panel-notch');
+    if (!card || !panel || !notch) return;
+
+    const cardRect = card.getBoundingClientRect();
+    const panelRect = panel.getBoundingClientRect();
+    const notchX = (cardRect.left + cardRect.width / 2) - panelRect.left;
+    notch.style.left = `${Math.round(notchX)}px`;
+};
+
+window.addEventListener('resize', () => {
+    const panel = document.getElementById('layanan-detail-panel');
+    if (panel && panel.classList.contains('is-open')) {
+        window.updateLayananNotchPosition();
+    }
+});
+
+window.openReservationWithCurrentCategory = function() {
+    const triggerBtn = document.getElementById('btn-layanan-open-reservation') || document.getElementById('btn-open-reservasi-layanan') || document.activeElement;
+    window.openReservationModal(currentLayananCategory || 'Reservasi Meja & Acara Privat', triggerBtn);
+};
+
 window.pickLayananPackageAndOpenModal = function(pkgCode, pkgName, priceShort, pkgDesc) {
-    window.openReservationModal(currentLayananCategory);
+    const triggerEl = document.activeElement;
+    window.openReservationModal(currentLayananCategory, triggerEl);
     const targetCard = document.querySelector(`.res-pkg-card[data-section="${currentLayananCategory}"][data-pkg-code="${pkgCode}"]`);
     if (targetCard) {
         window.selectReservationPackage(currentLayananCategory, pkgName, priceShort, pkgDesc, targetCard);
     }
 };
+
+/* ==========================================================================
+   LAYANAN DETAIL PANEL - PHOTO GALLERY & AREA SWITCHER (INDOOR / OUTDOOR)
+   ========================================================================== */
+const DEFAULT_LAYANAN_PHOTOS = {
+    indoor: [
+        {
+            src: '/images/nucomu/nucomu_story_4.png',
+            alt: 'Area Meja Indoor & Sudut Nucomu Cafe',
+            title: 'Area Indoor',
+            subtitle: 'Bebas pilih area Indoor AC sejuk'
+        },
+        {
+            src: '/images/nucomu/nucomu_story_2.png',
+            alt: 'Indoor Lounge & Meja Kerja Nucomu Cafe',
+            title: 'Area Indoor',
+            subtitle: 'Bebas pilih area Indoor AC sejuk'
+        },
+        {
+            src: '/images/nucomu/nucomu_story_1.png',
+            alt: 'Espresso Bar & Counter Seduh Nucomu Cafe',
+            title: 'Area Indoor',
+            subtitle: 'Bebas pilih area Indoor AC sejuk'
+        }
+    ],
+    outdoor: [
+        {
+            src: '/images/nucomu/nucomu_outdoor_2.png',
+            alt: 'Outdoor Garden Terrace Nucomu Cafe',
+            title: 'Area Outdoor',
+            subtitle: 'Bebas pilih area Outdoor Garden asri'
+        },
+        {
+            src: '/images/nucomu/nucomu_outdoor_3.png',
+            alt: 'Outdoor Reserved Table Nucomu Cafe',
+            title: 'Area Outdoor',
+            subtitle: 'Bebas pilih area Outdoor Garden asri'
+        },
+        {
+            src: '/images/nucomu/Beranda Kafe Nucomu yang Hangat.png',
+            alt: 'Teras Depan Kafe Nucomu',
+            title: 'Area Outdoor',
+            subtitle: 'Bebas pilih area Outdoor Garden asri'
+        }
+    ]
+};
+
+let currentLayananArea = 'indoor';
+let currentLayananPhotoIdx = 0;
+
+function getLayananPhotosList() {
+    const source = window.NUCOMU_LAYANAN_PHOTOS || DEFAULT_LAYANAN_PHOTOS;
+    return source[currentLayananArea] || source.indoor;
+}
+
+window.renderLayananPhoto = function() {
+    const list = getLayananPhotosList();
+    if (!list || list.length === 0) return;
+
+    if (currentLayananPhotoIdx >= list.length) currentLayananPhotoIdx = 0;
+    if (currentLayananPhotoIdx < 0) currentLayananPhotoIdx = list.length - 1;
+
+    const photo = list[currentLayananPhotoIdx];
+    const imgEl = document.getElementById('layanan-photo-img');
+    const titleEl = document.getElementById('layanan-photo-title');
+    const subtitleEl = document.getElementById('layanan-photo-subtitle');
+    const counterEl = document.getElementById('layanan-photo-counter');
+    const toggleBtn = document.getElementById('btn-toggle-layanan-area');
+    const pillEl = document.querySelector('.group\\/pill');
+
+    if (imgEl && photo) {
+        imgEl.src = photo.src;
+        imgEl.alt = photo.alt;
+    }
+    if (titleEl && photo) {
+        titleEl.textContent = photo.title;
+    }
+    if (subtitleEl && photo) {
+        subtitleEl.textContent = photo.subtitle;
+    }
+    if (counterEl) {
+        counterEl.textContent = `${currentLayananPhotoIdx + 1}/${list.length}`;
+    }
+    const nextAreaLabel = currentLayananArea === 'indoor' ? 'Area Outdoor' : 'Area Indoor';
+    if (toggleBtn) {
+        toggleBtn.setAttribute('title', `Ganti ke ${nextAreaLabel}`);
+        toggleBtn.setAttribute('aria-label', `Ganti ke ${nextAreaLabel}`);
+    }
+    if (pillEl) {
+        pillEl.setAttribute('aria-label', `Ganti ke ${nextAreaLabel}`);
+    }
+};
+
+window.nextLayananPhoto = function() {
+    const list = getLayananPhotosList();
+    if (!list || list.length === 0) return;
+    currentLayananPhotoIdx = (currentLayananPhotoIdx + 1) % list.length;
+    window.renderLayananPhoto();
+};
+
+window.prevLayananPhoto = function() {
+    const list = getLayananPhotosList();
+    if (!list || list.length === 0) return;
+    currentLayananPhotoIdx = (currentLayananPhotoIdx - 1 + list.length) % list.length;
+    window.renderLayananPhoto();
+};
+
+window.toggleLayananPhotoArea = function() {
+    currentLayananArea = (currentLayananArea === 'indoor') ? 'outdoor' : 'indoor';
+    currentLayananPhotoIdx = 0;
+    window.renderLayananPhoto();
+};
+
+function initLayananSection() {
+    const section = document.getElementById('layanan');
+    if (!section) return;
+
+    // 1. Entrance animation on scroll into view
+    function triggerEntrance() {
+        section.classList.add('layanan-in-view');
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        triggerEntrance();
+    } else {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    triggerEntrance();
+                    observer.unobserve(section);
+                }
+            });
+        }, {
+            threshold: 0.12,
+            rootMargin: '0px 0px -30px 0px'
+        });
+
+        observer.observe(section);
+
+        window.addEventListener('hashchange', () => {
+            if (location.hash === '#layanan') {
+                triggerEntrance();
+            }
+        });
+    }
+
+    // 2. Initialize photo display
+    window.renderLayananPhoto();
+}
+
+let lastReservationTriggerElement = null;
+let reservationFocusTrapHandler = null;
+
+function setupReservationFocusTrap(modal) {
+    teardownReservationFocusTrap(modal);
+
+    const focusableSelectors = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    // Focus close button or first input shortly after modal opens
+    setTimeout(() => {
+        const firstInput = document.getElementById('res-name');
+        if (firstInput && typeof firstInput.focus === 'function') {
+            firstInput.focus();
+        } else {
+            const firstFocusable = modal.querySelector(focusableSelectors);
+            if (firstFocusable && typeof firstFocusable.focus === 'function') {
+                firstFocusable.focus();
+            }
+        }
+    }, 60);
+
+    reservationFocusTrapHandler = function(e) {
+        if (e.key !== 'Tab') return;
+
+        const focusables = Array.from(modal.querySelectorAll(focusableSelectors)).filter(
+            el => el.offsetParent !== null && !el.closest('.hidden')
+        );
+
+        if (focusables.length === 0) return;
+
+        const firstEl = focusables[0];
+        const lastEl = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+            if (document.activeElement === firstEl || !modal.contains(document.activeElement)) {
+                e.preventDefault();
+                lastEl.focus();
+            }
+        } else {
+            if (document.activeElement === lastEl || !modal.contains(document.activeElement)) {
+                e.preventDefault();
+                firstEl.focus();
+            }
+        }
+    };
+
+    modal.addEventListener('keydown', reservationFocusTrapHandler);
+}
+
+function teardownReservationFocusTrap(modal) {
+    if (reservationFocusTrapHandler && modal) {
+        modal.removeEventListener('keydown', reservationFocusTrapHandler);
+        reservationFocusTrapHandler = null;
+    }
+}
 
 window.resetReservationEventCategory = function() {
     const promptEl = document.getElementById('res-empty-category-prompt');
@@ -757,6 +1783,14 @@ window.resetReservationEventCategory = function() {
     const birthdaySec = document.getElementById('res-section-birthday');
     const btnBridal = document.getElementById('btn-choose-bridal');
     const btnBirthday = document.getElementById('btn-choose-birthday');
+    const iconBoxBridal = document.getElementById('icon-box-bridal');
+    const iconBoxBirthday = document.getElementById('icon-box-birthday');
+    const labelBridal = document.getElementById('label-cat-bridal');
+    const labelBirthday = document.getElementById('label-cat-birthday');
+    const titleBridal = document.getElementById('title-cat-bridal');
+    const titleBirthday = document.getElementById('title-cat-birthday');
+    const subBridal = document.getElementById('sub-cat-bridal');
+    const subBirthday = document.getElementById('sub-cat-birthday');
     const checkBridal = document.getElementById('check-cat-bridal');
     const checkBirthday = document.getElementById('check-cat-birthday');
 
@@ -765,20 +1799,51 @@ window.resetReservationEventCategory = function() {
         summaryBar.classList.add('hidden');
         summaryBar.classList.remove('flex');
     }
-    if (bridalSec) bridalSec.classList.add('hidden');
-    if (birthdaySec) birthdaySec.classList.add('hidden');
+    if (bridalSec) {
+        bridalSec.classList.add('hidden');
+        bridalSec.classList.remove('is-entered');
+    }
+    if (birthdaySec) {
+        birthdaySec.classList.add('hidden');
+        birthdaySec.classList.remove('is-entered');
+    }
 
     if (btnBridal) {
-        btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-rose-400 bg-gradient-to-br from-[#FFFDFB] to-rose-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+        btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
     }
-    if (btnBirthday) {
-        btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-amber-400 bg-gradient-to-br from-[#FFFDFB] to-amber-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+    if (iconBoxBridal) {
+        iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+    }
+    if (labelBridal) {
+        labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+    }
+    if (titleBridal) {
+        titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+    }
+    if (subBridal) {
+        subBridal.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
     }
     if (checkBridal) {
-        checkBridal.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+        checkBridal.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+    }
+
+    if (btnBirthday) {
+        btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
+    }
+    if (iconBoxBirthday) {
+        iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+    }
+    if (labelBirthday) {
+        labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+    }
+    if (titleBirthday) {
+        titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+    }
+    if (subBirthday) {
+        subBirthday.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
     }
     if (checkBirthday) {
-        checkBirthday.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+        checkBirthday.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
     }
 
     const serviceInput = document.getElementById('res-service-type');
@@ -797,6 +1862,14 @@ window.chooseReservationEventCategory = function(categoryKey) {
     const birthdaySec = document.getElementById('res-section-birthday');
     const btnBridal = document.getElementById('btn-choose-bridal');
     const btnBirthday = document.getElementById('btn-choose-birthday');
+    const iconBoxBridal = document.getElementById('icon-box-bridal');
+    const iconBoxBirthday = document.getElementById('icon-box-birthday');
+    const labelBridal = document.getElementById('label-cat-bridal');
+    const labelBirthday = document.getElementById('label-cat-birthday');
+    const titleBridal = document.getElementById('title-cat-bridal');
+    const titleBirthday = document.getElementById('title-cat-birthday');
+    const subBridal = document.getElementById('sub-cat-bridal');
+    const subBirthday = document.getElementById('sub-cat-birthday');
     const checkBridal = document.getElementById('check-cat-bridal');
     const checkBirthday = document.getElementById('check-cat-birthday');
 
@@ -807,19 +1880,59 @@ window.chooseReservationEventCategory = function(categoryKey) {
     }
 
     if (key === 'bridal') {
-        if (bridalSec) bridalSec.classList.remove('hidden');
-        if (birthdaySec) birthdaySec.classList.add('hidden');
-        if (btnBridal) {
-            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#E06D24] ring-2 ring-[#E06D24]/20 bg-gradient-to-br from-[#FFFDFB] to-rose-50/70 transition-all duration-200 flex items-center justify-between gap-3 shadow-md';
+        if (birthdaySec) {
+            birthdaySec.classList.add('hidden');
+            birthdaySec.classList.remove('is-entered');
         }
-        if (btnBirthday) {
-            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-amber-400 bg-gradient-to-br from-[#FFFDFB] to-amber-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+        if (bridalSec) {
+            bridalSec.classList.remove('hidden');
+            bridalSec.classList.add('is-entering');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    bridalSec.classList.remove('is-entering');
+                    bridalSec.classList.add('is-entered');
+                });
+            });
+        }
+
+        // Active Bridal Button: #242424 with white text, and label #B5B5B5 (WCAG AA compliant)
+        if (btnBridal) {
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#242424] ring-2 ring-[#242424]/10 bg-[#242424] text-white transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[#242424]';
+        }
+        if (iconBoxBridal) {
+            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center shrink-0 transition-colors';
+        }
+        if (labelBridal) {
+            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+        }
+        if (titleBridal) {
+            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-white block leading-tight transition-colors';
+        }
+        if (subBridal) {
+            subBridal.className = 'text-[11px] text-white/75 block mt-0.5 transition-colors';
         }
         if (checkBridal) {
-            checkBridal.className = 'w-6 h-6 rounded-full bg-[#E06D24] text-white flex items-center justify-center text-xs font-bold transition-all shrink-0';
+            checkBridal.className = 'w-6 h-6 rounded-full bg-white text-[#242424] border border-white flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
+        }
+
+        // Inactive Birthday Button: clean white card with #8A8A8A label
+        if (btnBirthday) {
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
+        }
+        if (iconBoxBirthday) {
+            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+        }
+        if (labelBirthday) {
+            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+        }
+        if (titleBirthday) {
+            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+        }
+        if (subBirthday) {
+            subBirthday.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
         }
         if (checkBirthday) {
-            checkBirthday.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+            checkBirthday.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
         }
 
         const firstBridalCard = document.querySelector('.res-pkg-card[data-section="Bridal"][data-pkg-code="A"]');
@@ -833,19 +1946,59 @@ window.chooseReservationEventCategory = function(categoryKey) {
             );
         }
     } else if (key === 'birthday') {
-        if (birthdaySec) birthdaySec.classList.remove('hidden');
-        if (bridalSec) bridalSec.classList.add('hidden');
-        if (btnBirthday) {
-            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#E06D24] ring-2 ring-[#E06D24]/20 bg-gradient-to-br from-[#FFFDFB] to-amber-50/70 transition-all duration-200 flex items-center justify-between gap-3 shadow-md';
+        if (bridalSec) {
+            bridalSec.classList.add('hidden');
+            bridalSec.classList.remove('is-entered');
         }
-        if (btnBridal) {
-            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-stone-200/90 hover:border-rose-400 bg-gradient-to-br from-[#FFFDFB] to-rose-50/40 transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs';
+        if (birthdaySec) {
+            birthdaySec.classList.remove('hidden');
+            birthdaySec.classList.add('is-entering');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    birthdaySec.classList.remove('is-entering');
+                    birthdaySec.classList.add('is-entered');
+                });
+            });
+        }
+
+        // Active Birthday Button: #242424 with white text, and label #B5B5B5 (WCAG AA compliant)
+        if (btnBirthday) {
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#242424] ring-2 ring-[#242424]/10 bg-[#242424] text-white transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[#242424]';
+        }
+        if (iconBoxBirthday) {
+            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center shrink-0 transition-colors';
+        }
+        if (labelBirthday) {
+            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+        }
+        if (titleBirthday) {
+            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-white block leading-tight transition-colors';
+        }
+        if (subBirthday) {
+            subBirthday.className = 'text-[11px] text-white/75 block mt-0.5 transition-colors';
         }
         if (checkBirthday) {
-            checkBirthday.className = 'w-6 h-6 rounded-full bg-[#E06D24] text-white flex items-center justify-center text-xs font-bold transition-all shrink-0';
+            checkBirthday.className = 'w-6 h-6 rounded-full bg-white text-[#242424] border border-white flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
+        }
+
+        // Inactive Bridal Button: clean white card with #8A8A8A label
+        if (btnBridal) {
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
+        }
+        if (iconBoxBridal) {
+            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+        }
+        if (labelBridal) {
+            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+        }
+        if (titleBridal) {
+            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+        }
+        if (subBridal) {
+            subBridal.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
         }
         if (checkBridal) {
-            checkBridal.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+            checkBridal.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
         }
 
         const firstBirthdayCard = document.querySelector('.res-pkg-card[data-section="Birthday"][data-pkg-code="A"]');
@@ -863,9 +2016,15 @@ window.chooseReservationEventCategory = function(categoryKey) {
 
 window.switchEventPackageSectionTab = window.chooseReservationEventCategory;
 
-window.openReservationModal = function(preferredService = '') {
+window.openReservationModal = function(preferredService = '', triggerEl = null) {
     const modal = document.getElementById('reservation-modal');
     if (!modal) return;
+
+    if (triggerEl && typeof triggerEl.focus === 'function') {
+        lastReservationTriggerElement = triggerEl;
+    } else if (document.activeElement && typeof document.activeElement.focus === 'function') {
+        lastReservationTriggerElement = document.activeElement;
+    }
 
     const lower = (preferredService || '').toLowerCase();
     if (lower === 'birthday' || lower.includes('ulang tahun') || lower.includes('paket birthday')) {
@@ -884,9 +2043,12 @@ window.openReservationModal = function(preferredService = '') {
         if (!dateInput.value) dateInput.value = today;
     }
 
+    modal.classList.remove('modal-closing');
     modal.classList.remove('opacity-0', 'pointer-events-none');
-    modal.classList.add('opacity-100');
+    modal.classList.add('opacity-100', 'modal-open');
     document.body.classList.add('overflow-hidden');
+
+    setupReservationFocusTrap(modal);
 };
 
 window.selectReservationPackage = function(sectionName, packageName, priceShort, packageDesc, cardElement) {
@@ -905,40 +2067,30 @@ window.selectReservationPackage = function(sectionName, packageName, priceShort,
     if (summaryEl) summaryEl.innerText = `${sectionName} — ${packageName} : ${priceShort}`;
     if (detailEl) detailEl.innerText = packageDesc;
 
-    // Reset all package cards
+    // Reset all package cards to monochrome default
     const allCards = document.querySelectorAll('.res-pkg-card');
     allCards.forEach(card => {
-        card.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-stone-200/90 bg-white/80 hover:border-[#E06D24]/50 hover:bg-white transition-all duration-200 flex flex-col justify-between relative';
+        card.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[#E5E5E5] bg-white hover:border-[#CCCCCC] transition-all duration-200 flex flex-col justify-between relative shadow-2xs';
         const check = card.querySelector('.res-pkg-check');
         if (check) {
-            check.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-stone-100 text-transparent border border-stone-300';
+            check.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#F5F5F5] text-transparent border border-[#E5E5E5]';
         }
     });
 
     // Highlight active card
     if (cardElement) {
-        cardElement.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[#E06D24] bg-white ring-2 ring-[#E06D24]/20 shadow-md transition-all duration-200 flex flex-col justify-between relative';
+        cardElement.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border-2 border-[#242424] bg-white ring-2 ring-[#242424]/10 shadow-sm transition-all duration-200 flex flex-col justify-between relative';
         const activeCheck = cardElement.querySelector('.res-pkg-check');
         if (activeCheck) {
-            activeCheck.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#E06D24] text-white';
+            activeCheck.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#242424] text-white border border-[#242424] res-check-pop';
         }
     }
 
-    // Highlight active section container & badge
-    const bridalSec = document.getElementById('res-section-bridal');
-    const birthdaySec = document.getElementById('res-section-birthday');
+    // Highlight active section badge
     const bridalBadge = document.getElementById('badge-active-bridal');
     const birthdayBadge = document.getElementById('badge-active-birthday');
 
     if (sectionName.toLowerCase() === 'bridal') {
-        if (bridalSec) {
-            bridalSec.classList.add('border-2', 'border-[#E06D24]/30');
-            bridalSec.classList.remove('border', 'border-stone-200/90');
-        }
-        if (birthdaySec) {
-            birthdaySec.classList.remove('border-2', 'border-[#E06D24]/30');
-            birthdaySec.classList.add('border', 'border-stone-200/90');
-        }
         if (bridalBadge) {
             bridalBadge.classList.remove('hidden');
             bridalBadge.classList.add('inline-flex');
@@ -948,14 +2100,6 @@ window.selectReservationPackage = function(sectionName, packageName, priceShort,
             birthdayBadge.classList.remove('inline-flex');
         }
     } else {
-        if (birthdaySec) {
-            birthdaySec.classList.add('border-2', 'border-[#E06D24]/30');
-            birthdaySec.classList.remove('border', 'border-stone-200/90');
-        }
-        if (bridalSec) {
-            bridalSec.classList.remove('border-2', 'border-[#E06D24]/30');
-            bridalSec.classList.add('border', 'border-stone-200/90');
-        }
         if (birthdayBadge) {
             birthdayBadge.classList.remove('hidden');
             birthdayBadge.classList.add('inline-flex');
@@ -969,10 +2113,25 @@ window.selectReservationPackage = function(sectionName, packageName, priceShort,
 
 window.closeReservationModal = function() {
     const modal = document.getElementById('reservation-modal');
-    if (!modal) return;
-    modal.classList.add('opacity-0', 'pointer-events-none');
-    modal.classList.remove('opacity-100');
-    document.body.classList.remove('overflow-hidden');
+    if (!modal || modal.classList.contains('pointer-events-none')) return;
+
+    teardownReservationFocusTrap(modal);
+
+    modal.classList.remove('modal-open');
+    modal.classList.add('modal-closing');
+
+    setTimeout(() => {
+        modal.classList.remove('opacity-100', 'modal-closing');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        document.body.classList.remove('overflow-hidden');
+
+        if (lastReservationTriggerElement && typeof lastReservationTriggerElement.focus === 'function') {
+            try {
+                lastReservationTriggerElement.focus();
+            } catch (err) {}
+            lastReservationTriggerElement = null;
+        }
+    }, 280);
 };
 
 window.handleReservationSubmit = function(e) {
@@ -989,36 +2148,78 @@ window.handleReservationSubmit = function(e) {
     const area = document.getElementById('res-area').value;
     const notes = document.getElementById('res-notes').value.trim();
 
+    // Reset previous error outlines
+    ['res-name', 'res-phone', 'res-date', 'res-time', 'res-guests', 'res-area'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('res-field-error');
+    });
+
     // Validation checks
     let errors = [];
+    let firstInvalidEl = null;
 
     if (!fullName || fullName.length < 2) {
         errors.push("Nama pemesan wajib diisi dengan benar.");
+        const el = document.getElementById('res-name');
+        if (el) {
+            el.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = el;
+        }
     }
 
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     if (!cleanPhone || cleanPhone.length < 9) {
         errors.push("Nomor WhatsApp tidak valid (minimal 9 digit).");
+        const el = document.getElementById('res-phone');
+        if (el) {
+            el.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = el;
+        }
     }
 
     if (!date) {
         errors.push("Tanggal acara wajib ditentukan.");
+        const el = document.getElementById('res-date');
+        if (el) {
+            el.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = el;
+        }
     }
 
     if (!time) {
         errors.push("Waktu acara wajib dipilih.");
+        const el = document.getElementById('res-time');
+        if (el) {
+            el.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = el;
+        }
     }
 
     if (!guestCount) {
         errors.push("Jumlah tamu wajib dipilih.");
+        const el = document.getElementById('res-guests');
+        if (el) {
+            el.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = el;
+        }
     }
 
     if (!serviceType) {
         errors.push("Paket acara wajib dipilih.");
+        const promptEl = document.getElementById('res-empty-category-prompt');
+        if (promptEl) {
+            promptEl.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = promptEl;
+        }
     }
 
     if (!area) {
         errors.push("Pilihan area wajib ditentukan.");
+        const el = document.getElementById('res-area');
+        if (el) {
+            el.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = el;
+        }
     }
 
     const errorContainer = document.getElementById('res-error-box');
@@ -1026,8 +2227,12 @@ window.handleReservationSubmit = function(e) {
         if (errorContainer) {
             errorContainer.innerHTML = errors.map(err => `<div>• ${err}</div>`).join('');
             errorContainer.classList.remove('hidden');
+            errorContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         } else {
             alert(errors.join("\n"));
+        }
+        if (firstInvalidEl && typeof firstInvalidEl.focus === 'function') {
+            firstInvalidEl.focus();
         }
         return false;
     }
@@ -1054,6 +2259,8 @@ window.handleReservationSubmit = function(e) {
 
     const encodedMsg = encodeURIComponent(message);
     const waUrl = `https://wa.me/${waNumber.replace(/[^0-9]/g, '')}?text=${encodedMsg}`;
+    window.__lastGeneratedWaMessage = message;
+    window.__lastGeneratedWaUrl = waUrl;
 
     // Show confirmation & redirect to WhatsApp
     const successToast = document.getElementById('res-success-toast');
@@ -1113,9 +2320,20 @@ function formatDisplayDate(dateStr) {
 function initKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
+            // Bila modal reservasi sedang terbuka, Escape hanya menutup modal dulu, bukan panel detail
+            const resModal = document.getElementById('reservation-modal');
+            const isResModalOpen = resModal && !resModal.classList.contains('hidden') && (resModal.classList.contains('modal-open') || resModal.classList.contains('opacity-100')) && !resModal.classList.contains('pointer-events-none');
+            
+            if (isResModalOpen) {
+                window.closeReservationModal();
+                return;
+            }
+
             window.closeLightbox();
             window.closeServiceDetailModal();
-            window.closeReservationModal();
+            if (typeof window.closeLayananDetailPanel === 'function') {
+                window.closeLayananDetailPanel();
+            }
             const drawer = document.getElementById('mobile-drawer');
             if (drawer && !drawer.classList.contains('pointer-events-none')) {
                 window.toggleMobileDrawer();

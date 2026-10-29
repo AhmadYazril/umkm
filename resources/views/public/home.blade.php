@@ -65,7 +65,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                 </svg>
             </a>
-            <a href="{{ route('menu') }}" class="btn-outline rounded-full text-xs px-8 py-3.5 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-zinc-300/80 dark:border-white/20 text-zinc-950 dark:text-white hover:bg-white dark:hover:bg-zinc-800 w-full sm:w-auto text-center shadow-sm">
+            <a href="{{ route('home') }}#menu" class="btn-outline rounded-full text-xs px-8 py-3.5 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-md border-zinc-300/80 dark:border-white/20 text-zinc-950 dark:text-white hover:bg-white dark:hover:bg-zinc-800 w-full sm:w-auto text-center shadow-sm">
                 Buka Buku Menu Lengkap
             </a>
         </div>
@@ -129,7 +129,7 @@
             </div>
             
             {{-- Option Link Kanan Atas (Floating Pill Button) --}}
-            <a href="{{ route('menu') }}" class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-white/10 text-xs font-bold uppercase tracking-wider text-zinc-950 dark:text-white shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all">
+            <a href="{{ route('home') }}#menu" class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-white/10 text-xs font-bold uppercase tracking-wider text-zinc-950 dark:text-white shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all">
                 <span>Lihat Semua Menu</span>
                 <svg class="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -207,7 +207,7 @@
         </div>
 
         <div class="text-center mt-14 reveal">
-            <a href="{{ route('menu') }}" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest border border-zinc-900/30 dark:border-white/30 text-zinc-900 dark:text-white hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900 transition-all shadow-sm hover:shadow-lg">
+            <a href="{{ route('home') }}#menu" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest border border-zinc-900/30 dark:border-white/30 text-zinc-900 dark:text-white hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900 transition-all shadow-sm hover:shadow-lg">
                 <span>Lihat Seluruh Katalog Menu</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
