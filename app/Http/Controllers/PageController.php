@@ -12,13 +12,6 @@ use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
-    public function about()
-    {
-        $settings = Setting::pluck('value', 'key');
-
-        return view('public.about', compact('settings'));
-    }
-
     public function gallery()
     {
         $gallery = GalleryItem::orderBy('sort_order')->get();
@@ -81,5 +74,10 @@ class PageController extends Controller
         $events = Event::where('is_active', true)->orderBy('date')->get();
 
         return view('public.events', compact('events'));
+    }
+
+    public function services()
+    {
+        return view('public.services');
     }
 }

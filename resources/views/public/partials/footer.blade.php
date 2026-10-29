@@ -26,7 +26,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                     </svg>
                 </a>
-                <a href="{{ route('menu') }}"
+                <a href="{{ route('home') }}#menu"
                    class="inline-flex items-center gap-2 px-7 py-3.5 border border-white/20 text-zinc-300 text-[11px] font-semibold tracking-widest uppercase rounded-full hover:border-white hover:bg-white hover:text-zinc-950 hover:scale-105 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
                     Lihat Menu
                 </a>
@@ -145,8 +145,8 @@
                 <ul class="space-y-3">
                     @foreach([
                         ['route' => 'home',        'label' => 'Beranda'],
-                        ['route' => 'menu',        'label' => 'Menu'],
-                        ['route' => 'about',       'label' => 'Cerita Kami'],
+                        ['url'   => route('home').'#menu', 'label' => 'Menu'],
+                        ['url'   => route('home').'#about', 'label' => 'Cerita Kami'],
                         ['route' => 'gallery',     'label' => 'Galeri'],
                         ['route' => 'facilities',  'label' => 'Fasilitas'],
                         ['route' => 'reservation', 'label' => 'Reservasi'],
@@ -154,7 +154,7 @@
                         ['route' => 'order.track', 'label' => 'Lacak Pesanan'],
                     ] as $nav)
                     <li>
-                        <a href="{{ route($nav['route']) }}"
+                        <a href="{{ $nav['url'] ?? route($nav['route']) }}"
                            class="text-zinc-500 hover:text-white text-sm transition-all duration-200 hover:translate-x-1 inline-flex items-center gap-1.5 group">
                             <span class="w-0 group-hover:w-2 h-px bg-white transition-all duration-200 overflow-hidden"></span>
                             {{ $nav['label'] }}
@@ -168,7 +168,7 @@
             <div class="lg:col-span-2">
                 <h3 class="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 mb-6">Pesan Cepat</h3>
                 <div class="space-y-3">
-                    <a href="{{ route('menu') }}"
+                    <a href="{{ route('home') }}#menu"
                        class="flex items-center gap-3 p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.07] hover:bg-white/[0.12] hover:border-white/30 hover:-translate-y-1 hover:translate-x-1 hover:shadow-xl hover:shadow-black/60 transition-all duration-300 group">
                         <span class="text-lg group-hover:scale-125 transition-transform duration-300 inline-block">☕</span>
                         <div>

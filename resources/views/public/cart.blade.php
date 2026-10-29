@@ -201,7 +201,7 @@
                 <p class="text-zinc-400 text-sm max-w-md mx-auto mb-6">
                     Anda belum memilih menu apa pun. Silakan lihat katalog menu kami untuk mulai memesan.
                 </p>
-                <a href="{{ route('menu') }}" class="inline-flex items-center px-6 py-3 rounded-full bg-white text-zinc-950 font-bold text-xs uppercase tracking-wider hover:bg-zinc-200 transition-colors">
+                <a href="{{ route('home') }}#menu" class="inline-flex items-center px-6 py-3 rounded-full bg-white text-zinc-950 font-bold text-xs uppercase tracking-wider hover:bg-zinc-200 transition-colors">
                     Jelajahi Menu Nucomu
                 </a>
             </div>
