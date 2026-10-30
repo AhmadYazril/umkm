@@ -110,13 +110,13 @@
 
                             <!-- Tombol Pesan Sekarang (Pill Gray di Kiri Bawah) -->
                             <div class="pt-4 mt-auto">
-                                <a href="{{ route('nucomu.order', ['mode' => 'zendo']) }}" 
-                                   class="inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
+                                <button type="button" onclick="setModalProcessMethod('zendo'); openCartModal();" 
+                                   class="inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
                                     <span>Pesan Sekarang</span>
                                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
-                                </a>
+                                </button>
                             </div>
                         </div>
 

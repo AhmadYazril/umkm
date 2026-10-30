@@ -527,6 +527,88 @@
             margin-top: 10px;
         }
 
+        /* Keypad Angka Kurir (3x4 Layout) */
+        .verify-keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+            margin-top: 14px;
+            margin-bottom: 4px;
+            width: 100%;
+        }
+        .verify-key-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 5px 2px;
+            border-radius: 13px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            color: #0F172A;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .verify-key-btn:hover:not(:disabled) {
+            background: #F1F5F9;
+            border-color: #C4B5FD;
+            color: #6C5CE7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.12);
+        }
+        .verify-key-btn:active:not(:disabled),
+        .verify-key-btn.key-pressed {
+            transform: scale(0.93);
+            background: #EDE9FE;
+            border-color: #6C5CE7;
+            color: #6C5CE7;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.22);
+        }
+        .verify-key-num {
+            font-size: 19px;
+            font-weight: 800;
+            line-height: 1.1;
+            font-family: inherit;
+        }
+        .verify-key-sub {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #94A3B8;
+            line-height: 1;
+            margin-top: 1px;
+            text-transform: uppercase;
+        }
+        .verify-key-btn:hover .verify-key-sub {
+            color: #8B5CF6;
+        }
+        .verify-key-clear {
+            color: #64748B;
+            background: #F8FAFC;
+        }
+        .verify-key-icon-clear {
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+        .verify-key-backspace {
+            color: #64748B;
+        }
+        .verify-key-icon-backspace {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+        .verify-key-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         #verifyConfettiCanvas {
             position: fixed;
             top: 0; left: 0;
@@ -1386,7 +1468,8 @@
                 currentVerifyState = VerifyState.IDLE;
             }
 
-            const char = e.target.value.slice(-1);
+            const cleanDigits = (e.target.value || '').replace(/[^0-9]/g, '');
+            const char = cleanDigits.slice(-1);
 
             if (char) {
                 setBoxCharacter(index, char);
@@ -1409,6 +1492,7 @@
                 }
                 checkOtpCompletion();
             } else {
+                e.target.value = '';
                 setBoxCharacter(index, '');
                 checkOtpCompletion();
             }
@@ -1453,12 +1537,135 @@
             const text = (e.clipboardData || window.clipboardData).getData('text').trim();
             if (!text) return;
 
-            const chars = text.slice(0, PASSWORD_LENGTH).split('');
+            const digitsOnly = text.replace(/[^0-9]/g, '');
+            const chars = digitsOnly.slice(0, PASSWORD_LENGTH).split('');
             chars.forEach((c, idx) => setBoxCharacter(idx, c));
 
             const inputs = getOtpInputs();
             const nextIdx = Math.min(chars.length, PASSWORD_LENGTH - 1);
             if (inputs[nextIdx]) inputs[nextIdx].focus();
+            checkOtpCompletion();
+        }
+
+        // ==========================================================
+        // KEYPAD ANGKA KURIR (INTERAKTIF & KEYBOARD LISTENER)
+        // ==========================================================
+        function initKeypad() {
+            const keypad = document.getElementById('verifyKeypad');
+            if (!keypad) return;
+
+            keypad.addEventListener('click', (e) => {
+                if (currentVerifyState === VerifyState.LOADING || currentVerifyState === VerifyState.LOCKED) return;
+                
+                const keyBtn = e.target.closest('.verify-key-btn');
+                if (!keyBtn || keyBtn.disabled) return;
+
+                // Efek visual tombol ditekan
+                keyBtn.classList.add('key-pressed');
+                setTimeout(() => keyBtn.classList.remove('key-pressed'), 140);
+
+                const digit = keyBtn.dataset.n;
+                const action = keyBtn.dataset.action;
+
+                if (digit !== undefined) {
+                    handleKeypadDigit(digit);
+                } else if (action === 'backspace') {
+                    handleKeypadBackspace();
+                } else if (action === 'clear') {
+                    handleKeypadClear();
+                }
+            });
+
+            // Keyboard listener global saat modal aktif
+            document.addEventListener('keydown', (e) => {
+                const overlay = document.getElementById('verifyModalOverlay');
+                if (!overlay || !overlay.classList.contains('active')) return;
+                if (currentVerifyState === VerifyState.LOCKED || currentVerifyState === VerifyState.LOADING) return;
+
+                // Jika mengetik angka 0-9 saat tidak sedang fokus di dalam kotak OTP
+                if (/^[0-9]$/.test(e.key) && document.activeElement && !document.activeElement.classList.contains('verify-otp-input')) {
+                    e.preventDefault();
+                    handleKeypadDigit(e.key);
+                    const keyBtn = document.querySelector(`.verify-key-btn[data-n="${e.key}"]`);
+                    if (keyBtn) {
+                        keyBtn.classList.add('key-pressed');
+                        setTimeout(() => keyBtn.classList.remove('key-pressed'), 140);
+                    }
+                } else if (e.key === 'Backspace' && document.activeElement && !document.activeElement.classList.contains('verify-otp-input')) {
+                    e.preventDefault();
+                    handleKeypadBackspace();
+                    const keyBtn = document.querySelector('.verify-key-backspace');
+                    if (keyBtn) {
+                        keyBtn.classList.add('key-pressed');
+                        setTimeout(() => keyBtn.classList.remove('key-pressed'), 140);
+                    }
+                }
+            });
+        }
+
+        function handleKeypadDigit(digit) {
+            if (currentVerifyState === VerifyState.LOCKED || currentVerifyState === VerifyState.LOADING) return;
+            if (currentVerifyState === VerifyState.ERROR) {
+                currentVerifyState = VerifyState.IDLE;
+                const card = document.getElementById('verifyCardBox');
+                const banner = document.getElementById('verifyErrorBanner');
+                if (card) card.classList.remove('state-error');
+                if (banner) banner.style.display = 'none';
+            }
+
+            const inputs = getOtpInputs();
+            let targetIdx = rawCharacters.findIndex(c => !c || c === '');
+            if (targetIdx === -1) {
+                const focusedIdx = inputs.findIndex(inp => inp === document.activeElement);
+                targetIdx = focusedIdx !== -1 ? focusedIdx : PASSWORD_LENGTH - 1;
+            }
+
+            setBoxCharacter(targetIdx, digit);
+
+            if (targetIdx < PASSWORD_LENGTH - 1) {
+                if (inputs[targetIdx + 1]) inputs[targetIdx + 1].focus();
+            } else {
+                if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                    document.activeElement.blur();
+                }
+            }
+
+            checkOtpCompletion();
+        }
+
+        function handleKeypadBackspace() {
+            if (currentVerifyState === VerifyState.LOCKED || currentVerifyState === VerifyState.LOADING) return;
+            const inputs = getOtpInputs();
+            const focusedIdx = inputs.findIndex(inp => inp === document.activeElement);
+
+            let targetIdx = -1;
+            if (focusedIdx !== -1 && rawCharacters[focusedIdx]) {
+                targetIdx = focusedIdx;
+            } else if (focusedIdx > 0 && !rawCharacters[focusedIdx]) {
+                targetIdx = focusedIdx - 1;
+            } else {
+                for (let i = PASSWORD_LENGTH - 1; i >= 0; i--) {
+                    if (rawCharacters[i] && rawCharacters[i] !== '') {
+                        targetIdx = i;
+                        break;
+                    }
+                }
+            }
+
+            if (targetIdx !== -1) {
+                setBoxCharacter(targetIdx, '');
+                if (inputs[targetIdx]) inputs[targetIdx].focus();
+                checkOtpCompletion();
+            }
+        }
+
+        function handleKeypadClear() {
+            if (currentVerifyState === VerifyState.LOCKED || currentVerifyState === VerifyState.LOADING) return;
+            for (let i = 0; i < PASSWORD_LENGTH; i++) {
+                setBoxCharacter(i, '');
+            }
+            const inputs = getOtpInputs();
+            if (inputs[0]) inputs[0].focus();
             checkOtpCompletion();
         }
 
@@ -1551,6 +1758,7 @@
                 input.value = '';
                 input.disabled = false;
             });
+            document.querySelectorAll('.verify-key-btn').forEach(btn => btn.disabled = false);
 
             if (statusText) statusText.textContent = 'Memeriksa PIN...';
             if (cardTitle) cardTitle.textContent = 'Verifikasi Dirimu';
@@ -1583,6 +1791,7 @@
             card.classList.add('state-loading');
             const inputs = getOtpInputs();
             inputs.forEach(input => input.disabled = true);
+            document.querySelectorAll('.verify-key-btn').forEach(btn => btn.disabled = true);
             if (statusText) statusText.textContent = 'Memeriksa PIN...';
             if (errorBanner) errorBanner.style.display = 'none';
 
@@ -1644,6 +1853,7 @@
                         card.classList.add('shake');
 
                         inputs.forEach(input => input.disabled = false);
+                        document.querySelectorAll('.verify-key-btn').forEach(btn => btn.disabled = false);
 
                         setTimeout(() => {
                             rawCharacters = new Array(PASSWORD_LENGTH).fill('');
@@ -1667,6 +1877,7 @@
                 currentVerifyState = VerifyState.IDLE;
                 card.classList.remove('state-loading');
                 inputs.forEach(input => input.disabled = false);
+                document.querySelectorAll('.verify-key-btn').forEach(btn => btn.disabled = false);
                 if (errorBanner && errorMsg) {
                     errorBanner.style.display = 'flex';
                     errorMsg.textContent = 'Gagal menghubungi server. Periksa koneksi internet.';
@@ -1682,6 +1893,7 @@
             const inputs = getOtpInputs();
 
             inputs.forEach(input => input.disabled = true);
+            document.querySelectorAll('.verify-key-btn').forEach(btn => btn.disabled = true);
             if (errorBanner && errorMsg) {
                 errorBanner.style.display = 'flex';
                 errorMsg.textContent = 'Terlalu banyak percobaan salah. Kotak terkunci.';
@@ -1715,6 +1927,7 @@
 
             if (card) card.classList.remove('state-error');
             inputs.forEach(input => input.disabled = false);
+            document.querySelectorAll('.verify-key-btn').forEach(btn => btn.disabled = false);
             if (lockText) lockText.style.display = 'none';
             if (errorBanner) errorBanner.style.display = 'none';
             if (inputs[0]) inputs[0].focus();
@@ -1776,6 +1989,7 @@
         function startAllTrackingInit() {
             initMap();
             renderOtpBoxes();
+            initKeypad();
 
             // Auto-restore Mode Kurir permanen jika perangkat ini sebelumnya sudah diverifikasi via PIN
             if (!isCourierMode && !window.location.search.includes('view=customer')) {
@@ -1905,7 +2119,61 @@
                     </div>
                 </div>
 
-                <!-- 5. Status / Loading Indicator Otomatis (Tanpa Tombol Submit) -->
+                <!-- 5. Keypad Angka Kurir (3x4 Layout) -->
+                <div class="verify-keypad-grid" id="verifyKeypad" aria-label="Keyboard Angka Kurir">
+                    <button type="button" class="verify-key-btn" data-n="1">
+                        <span class="verify-key-num">1</span>
+                        <span class="verify-key-sub">&nbsp;</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="2">
+                        <span class="verify-key-num">2</span>
+                        <span class="verify-key-sub">ABC</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="3">
+                        <span class="verify-key-num">3</span>
+                        <span class="verify-key-sub">DEF</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="4">
+                        <span class="verify-key-num">4</span>
+                        <span class="verify-key-sub">GHI</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="5">
+                        <span class="verify-key-num">5</span>
+                        <span class="verify-key-sub">JKL</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="6">
+                        <span class="verify-key-num">6</span>
+                        <span class="verify-key-sub">MNO</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="7">
+                        <span class="verify-key-num">7</span>
+                        <span class="verify-key-sub">PQRS</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="8">
+                        <span class="verify-key-num">8</span>
+                        <span class="verify-key-sub">TUV</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="9">
+                        <span class="verify-key-num">9</span>
+                        <span class="verify-key-sub">WXYZ</span>
+                    </button>
+                    <button type="button" class="verify-key-btn verify-key-clear" data-action="clear" title="Bersihkan Angka" aria-label="Bersihkan">
+                        <span class="verify-key-icon-clear">C</span>
+                        <span class="verify-key-sub">CLEAR</span>
+                    </button>
+                    <button type="button" class="verify-key-btn" data-n="0">
+                        <span class="verify-key-num">0</span>
+                        <span class="verify-key-sub">+</span>
+                    </button>
+                    <button type="button" class="verify-key-btn verify-key-backspace" data-action="backspace" title="Hapus Digit Terakhir" aria-label="Hapus Digit">
+                        <svg class="verify-key-icon-backspace" viewBox="0 0 24 24">
+                            <path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/>
+                        </svg>
+                        <span class="verify-key-sub">DEL</span>
+                    </button>
+                </div>
+
+                <!-- 6. Status / Loading Indicator Otomatis (Tanpa Tombol Submit) -->
                 <div class="verify-auto-status" id="verifyAutoStatus">
                     <span class="verify-spinner-inline" id="verifyInlineSpinner"></span>
                     <span id="verifyStatusText">Memeriksa PIN...</span>

@@ -133,11 +133,13 @@ class NucomuFeatureTest extends TestCase
         Setting::set('zendo_courier_2_phone', '081398765432');
         Setting::set('zendo_courier_2_status', 'idle');
 
-        $orderPage = $this->get(route('nucomu.order'));
+        $orderPage = $this->get(route('home'));
         $orderPage->assertStatus(200);
         $orderPage->assertSee('Kurir Zendo');
         $orderPage->assertSee('2 Kurir Siaga');
         $orderPage->assertSee('Kasir');
+
+        $this->get(route('nucomu.order'))->assertRedirect(route('home', ['#menu' => true]));
 
         // Order 1: Picks randomly between idle Courier 1 and Courier 2
         $zendoResponse1 = $this->postJson(route('nucomu.order.store'), [
@@ -352,8 +354,16 @@ class NucomuFeatureTest extends TestCase
         $secondDeliveryResponse->assertSee('Mode Kurir');
         $secondDeliveryResponse->assertSee('GPS Lock Aktif (Anti Fake GPS)');
 
-        // 6. Admin can update the Courier PIN and the new PIN takes effect
+        // 6. Admin can update the Courier PIN and the new PIN takes effect (numeric only)
         $adminUser = User::factory()->create(['role' => 'admin']);
+        $this->actingAs($adminUser)->post(route('admin.zendo.couriers.update'), [
+            'zendo_courier_pin' => 'abcd_non_numeric',
+            'zendo_courier_count' => 1,
+            'zendo_couriers' => [
+                ['name' => 'Kurir Zendo 1', 'phone' => '6285712345678'],
+            ],
+        ])->assertSessionHasErrors('zendo_courier_pin');
+
         $this->actingAs($adminUser)->post(route('admin.zendo.couriers.update'), [
             'zendo_courier_pin' => '7788',
             'zendo_courier_count' => 1,

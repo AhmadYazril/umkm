@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTP Animation Showcase — Dark Glassmorphism</title>
+
+  <!-- Google Fonts: Lato & JetBrains Mono (Fallback standard sans-serif & monospace) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================
+       1. CSS VARIABLES, THEME COLORS & GLOBAL RESET
+       ========================================================== */
+    :root {
+      --bg-dark: #050508;
+      --bg-canvas: #090912;
+      --glass-bg: rgba(255, 255, 255, 0.035);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-glow: rgba(255, 255, 255, 0.03);
+      
+      /* Aksen Warna Sesuai Spesifikasi */
+      --color-purple: #8b5cf6;       /* Aktif / Mengetik */
+      --color-purple-glow: rgba(139, 92, 246, 0.45);
+      --color-red: #ff4d5e;          /* Error / 401 */
+      --color-red-glow: rgba(255, 77, 94, 0.45);
+      --color-cyan: #2de2c5;         /* Sukses / 200 */
+      --color-cyan-glow: rgba(45, 226, 197, 0.5);
+
+      /* Syntax Highlighting Colors */
+      --syntax-keyword: #c084fc;     /* Ungu */
+      --syntax-string: #86efac;      /* Hijau */
+      --syntax-func: #60a5fa;        /* Biru */
+      --syntax-comment: #64748b;     /* Abu-abu */
+      --syntax-prop: #38bdf8;        /* Cyan cerah */
+      --syntax-op: #f472b6;          /* Pink */
+      --syntax-text: #e2e8f0;
+
+      --font-ui: 'Lato', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-code: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+      --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background-color: #020204;
+      background-image: 
+        radial-gradient(circle at 50% 10%, rgba(139, 92, 246, 0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(45, 226, 197, 0.04) 0%, transparent 45%),
+        radial-gradient(circle at 20% 80%, rgba(255, 77, 94, 0.04) 0%, transparent 45%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      color: #FFFFFF;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    /* ==========================================================
+       2. CANVAS VERTIKAL 9:16 DENGAN DARK GLASSMORPHISM
+       ========================================================== */
+    .phone-canvas {
+      width: 100%;
+      max-width: 440px;
+      height: 96vh;
+      max-height: 780px;
+      aspect-ratio: 9 / 16;
+      background: radial-gradient(circle at 50% 10%, #111022 0%, #080811 50%, var(--bg-dark) 100%);
+      border: 1px solid var(--glass-border);
+      border-radius: 36px;
+      box-shadow: 
+        0 30px 80px -20px rgba(0, 0, 0, 0.9),
+        0 0 50px rgba(139, 92, 246, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 22px 16px;
+      transition: box-shadow 0.4s ease;
+    }
+
+    /* Ambient Vignette & Dynamic Glow */
+    .phone-canvas::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 200px;
+      background: radial-gradient(ellipse, var(--color-purple) 0%, transparent 70%);
+      opacity: 0.18;
+      filter: blur(40px);
+      pointer-events: none;
+      transition: background 0.6s ease, opacity 0.6s ease;
+      z-index: 0;
+    }
+
+    .phone-canvas.state-success::before {
+      background: radial-gradient(ellipse, var(--color-cyan) 0%, transparent 70%);
+      opacity: 0.28;
+    }
+
+    .phone-canvas.state-error::before {
+      background: radial-gradient(ellipse, var(--color-red) 0%, transparent 70%);
+      opacity: 0.25;
+    }
+
+    /* Content Area Layering */
+    .canvas-inner {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+
+    /* Interactive Badge Indicator */
+    .interactive-pill {
+      align-self: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: #94A3B8;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .interactive-pill .dot-live {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-purple);
+      box-shadow: 0 0 8px var(--color-purple);
+      animation: pulseLive 1.8s infinite;
+    }
+
+    @keyframes pulseLive {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+
+    /* ==========================================================
+       3. HEADER: JUDUL & SUBJUDUL BERSPASI LEBAR
+       ========================================================== */
+    .app-header {
+      text-align: center;
+      margin-bottom: 12px;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      margin-bottom: 5px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .app-subtitle {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #8E8EA0;
+    }
+
+    /* ==========================================================
+       4. INDIKATOR 4 TITIK (LINGKARAN OUTLINE / FILLED)
+       ========================================================== */
+    .dots-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+      height: 24px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .dot-item {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      background: transparent;
+      transition: all 0.28s var(--ease-smooth);
+      position: relative;
+    }
+
+    /* State Titik Terisi (Ungu) */
+    .dot-item.filled {
+      background: var(--color-purple);
+      border-color: var(--color-purple);
+      box-shadow: 0 0 14px var(--color-purple-glow);
+      transform: scale(1.15);
+      animation: dotPop 0.25s var(--ease-bounce);
+    }
+
+    /* State Titik Error (Merah) */
+    .dot-item.error {
+      background: var(--color-red) !important;
+      border-color: var(--color-red) !important;
+      box-shadow: 0 0 16px var(--color-red-glow) !important;
+      transform: scale(1.15);
+    }
+
+    /* State Titik Sukses (Cyan-Teal) */
+    .dot-item.success {
+      background: var(--color-cyan) !important;
+      border-color: var(--color-cyan) !important;
+      box-shadow: 0 0 18px var(--color-cyan-glow) !important;
+      transform: scale(1.2);
+    }
+
+    @keyframes dotPop {
+      0% { transform: scale(0.6); }
+      60% { transform: scale(1.35); }
+      100% { transform: scale(1.15); }
+    }
+
+    /* Shake Animation untuk Seluruh Baris Titik + Keypad */
+    .shake {
+      animation: shakeContainer 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shakeContainer {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-9px) rotate(-1deg); }
+      30% { transform: translateX(8px) rotate(1deg); }
+      45% { transform: translateX(-6px) rotate(-0.5deg); }
+      60% { transform: translateX(5px) rotate(0.5deg); }
+      75% { transform: translateX(-3px); }
+      90% { transform: translateX(2px); }
+    }
+
+    /* ==========================================================
+       5. KEYPAD 3x4 (DARK GLASSMORPHISM & RIPPLE SCALE)
+       ========================================================== */
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 12px;
+      transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+    }
+
+    .key {
+      background: rgba(255, 255, 255, 0.032);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      border-radius: 14px;
+      height: 46px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s var(--ease-smooth);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .key:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(139, 92, 246, 0.35);
+      box-shadow: 0 0 14px rgba(139, 92, 246, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* Efek tombol menyala dengan ring ungu + scale 0.95 */
+    .key:active,
+    .key.active-tap {
+      transform: scale(0.95);
+      background: rgba(139, 92, 246, 0.22);
+      border-color: var(--color-purple);
+      box-shadow: 
+        0 0 0 2px var(--color-purple),
+        0 0 18px var(--color-purple-glow);
+    }
+
+    /* Ripple visual pseudo element */
+    .key::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at center, rgba(139, 92, 246, 0.5) 0%, transparent 70%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .key.active-tap::after {
+      opacity: 1;
+    }
+
+    .key .num {
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .key .sub {
+      font-size: 7.8px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #71717A;
+      line-height: 1;
+      margin-top: 1px;
+      text-transform: uppercase;
+    }
+
+    .key:hover .sub,
+    .key.active-tap .sub {
+      color: #C4B5FD;
+    }
+
+    /* Tombol Kosong / Spacer */
+    .key.empty-key {
+      background: transparent;
+      border-color: transparent;
+      cursor: default;
+      box-shadow: none;
+    }
+    .key.empty-key:hover {
+      background: transparent;
+      transform: none;
+      box-shadow: none;
+      border-color: transparent;
+    }
+
+    /* Tombol Backspace ⌫ */
+    .key.backspace-key {
+      color: #94A3B8;
+    }
+    .key.backspace-key svg {
+      width: 19px;
+      height: 19px;
+      fill: currentColor;
+    }
+    .key.backspace-key:hover {
+      color: #FFFFFF;
+      border-color: rgba(255, 77, 94, 0.4);
+      box-shadow: 0 0 14px rgba(255, 77, 94, 0.2);
+    }
+    .key.backspace-key.active-tap {
+      border-color: var(--color-red);
+      box-shadow: 0 0 0 2px var(--color-red), 0 0 16px var(--color-red-glow);
+      color: var(--color-red);
+    }
+
+    /* ==========================================================
+       6. PANEL CODE EDITOR BERGAYA VS CODE
+       ========================================================== */
+    .editor-card {
+      background: rgba(10, 10, 18, 0.82);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(16px);
+      border-radius: 14px;
+      overflow: hidden;
+      width: 100%;
+      margin-bottom: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+      font-family: var(--font-code);
+      transition: border-color 0.3s ease;
+    }
+
+    /* Window Header: Traffic-Light & Status Badge */
+    .editor-header {
+      background: rgba(255, 255, 255, 0.025);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .editor-traffic-lights {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .traffic-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #FF5F56; }
+    .dot-yellow { background: #FFBD2E; }
+    .dot-green { background: #27C93F; }
+
+    .editor-tab {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #CBD5E1;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .editor-tab svg {
+      width: 11px;
+      height: 11px;
+      fill: #F59E0B;
+    }
+
+    /* Badge Status di Kanan ("● unsaved" oranye / "✓ saved" hijau) */
+    .editor-status-badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.25s ease;
+    }
+
+    .editor-status-badge.unsaved {
+      color: #F59E0B;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+    }
+
+    .editor-status-badge.saved {
+      color: #10B981;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+    }
+
+    /* Area Kode dengan Nomor Baris & Syntax Highlighting */
+    .editor-body {
+      padding: 8px 10px;
+      font-size: 9.6px;
+      line-height: 1.45;
+      overflow-x: auto;
+      max-height: 152px;
+      white-space: pre;
+    }
+
+    .code-line {
+      display: flex;
+      align-items: flex-start;
+      padding: 0 4px;
+      border-radius: 4px;
+      transition: background 0.18s ease, border-left 0.18s ease;
+      min-height: 14px;
+    }
+
+    .code-line .line-num {
+      width: 18px;
+      flex-shrink: 0;
+      color: #4B5563;
+      user-select: none;
+      font-size: 9px;
+      text-align: right;
+      padding-right: 8px;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      margin-right: 8px;
+    }
+
+    .code-line .line-content {
+      flex: 1;
+      color: var(--syntax-text);
+      word-break: break-all;
+    }
+
+    /* Baris yang sedang "dieksekusi": highlight latar tipis + garis ungu di sisi kiri */
+    .code-line.executing {
+      background: rgba(139, 92, 246, 0.15) !important;
+      border-left: 2.5px solid var(--color-purple) !important;
+      margin-left: -2.5px;
+    }
+
+    .code-line.executing .line-num {
+      color: #C084FC;
+      font-weight: 700;
+    }
+
+    /* Syntax Highlighting Tokens */
+    .tok-kw { color: var(--syntax-keyword); font-weight: 600; }
+    .tok-str { color: var(--syntax-string); }
+    .tok-fn { color: var(--syntax-func); }
+    .tok-cm { color: var(--syntax-comment); font-style: italic; }
+    .tok-op { color: var(--syntax-op); }
+    .tok-prop { color: var(--syntax-prop); }
+
+    /* Blinking typing cursor */
+    .typing-cursor {
+      display: inline-block;
+      width: 6px;
+      height: 12px;
+      background: var(--color-purple);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blinkCursor 0.8s infinite;
+    }
+
+    @keyframes blinkCursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ==========================================================
+       7. PANEL TERMINAL LOG BERGAYA MONOSPACE
+       ========================================================== */
+    .terminal-card {
+      background: rgba(5, 5, 10, 0.9);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px);
+      border-radius: 12px;
+      padding: 7px 10px;
+      font-family: var(--font-code);
+      min-height: 58px;
+      max-height: 64px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .terminal-label {
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #94A3B8;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .terminal-logs {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+      font-size: 9.2px;
+      line-height: 1.35;
+    }
+
+    .log-line {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      opacity: 0;
+      transform: translateY(3px);
+      animation: logSlide 0.22s var(--ease-smooth) forwards;
+    }
+
+    @keyframes logSlide {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .log-default { color: #A1A1AA; }
+    .log-error { color: var(--color-red); font-weight: 600; }
+    .log-success { color: var(--color-cyan); font-weight: 600; }
+
+    /* ==========================================================
+       8. ACCESS GRANTED OVERLAY (PERISAI SVG + CENTANG ANIMASI)
+       ========================================================== */
+    .access-granted-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(17, 16, 34, 0.96) 0%, rgba(5, 5, 8, 0.98) 100%);
+      backdrop-filter: blur(18px);
+      border-radius: 36px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease-smooth), transform 0.4s var(--ease-smooth);
+      transform: scale(0.95);
+    }
+
+    .access-granted-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    /* Ikon Perisai dengan Denyut Neon Cyan */
+    .shield-icon-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .shield-svg {
+      width: 86px;
+      height: 86px;
+      fill: none;
+      stroke: var(--color-cyan);
+      stroke-width: 2.2;
+      filter: drop-shadow(0 0 16px rgba(45, 226, 197, 0.65));
+      animation: shieldPulse 2.2s infinite ease-in-out;
+    }
+
+    @keyframes shieldPulse {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 14px rgba(45, 226, 197, 0.6)); }
+      50% { transform: scale(1.04); filter: drop-shadow(0 0 24px rgba(45, 226, 197, 0.9)); }
+    }
+
+    /* Centang di Tengah dengan Animasi Stroke-Dashoffset */
+    .shield-check-path {
+      stroke-dasharray: 60;
+      stroke-dashoffset: 60;
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.65, 0, 0.45, 1);
+    }
+
+    .access-granted-overlay.show .shield-check-path {
+      stroke-dashoffset: 0;
+    }
+
+    .access-granted-title {
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--color-cyan);
+      text-shadow: 0 0 20px rgba(45, 226, 197, 0.7);
+      margin-bottom: 8px;
+    }
+
+    .access-granted-sub {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94A3B8;
+      letter-spacing: 0.08em;
+    }
+
+    /* ==========================================================
+       9. WATERMARK (FADE KE GELAP DI AKHIR TIMELINE)
+       ========================================================== */
+    .watermark-overlay {
+      position: absolute;
+      inset: 0;
+      background: #050508;
+      border-radius: 36px;
+      z-index: 60;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .watermark-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .watermark-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 18px;
+      border-radius: 999px;
+      color: #CBD5E1;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .watermark-badge svg {
+      width: 18px;
+      height: 18px;
+      fill: var(--color-purple);
+    }
+
+    /* Responsive scaling on small heights */
+    @media (max-height: 700px) {
+      .phone-canvas {
+        transform: scale(0.88);
+        transform-origin: center center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================
+       CANVAS VERTIKAL RASIO 9:16
+       ========================================================== -->
+  <div class="phone-canvas" id="canvasFrame">
+    <div class="canvas-inner" id="canvasInner">
+
+      <!-- Top Row: Interactive Status Pill -->
+      <div class="interactive-pill" id="interactiveBadge">
+        <span class="dot-live"></span>
+        <span id="badgeModeText">Loop Showcase</span>
+      </div>
+
+      <!-- 1 & 2. Judul "OTP Animation" & Subjudul "ENTER YOUR 4-DIGIT CODE" -->
+      <header class="app-header" id="appHeader">
+        <h1 class="app-title">OTP Animation</h1>
+        <p class="app-subtitle">ENTER YOUR 4-DIGIT CODE</p>
+      </header>
+
+      <!-- 3. 4 Indikator Titik (Lingkaran Outline / Filled) -->
+      <div class="dots-container" id="dotsContainer">
+        <div class="dot-item" data-index="0"></div>
+        <div class="dot-item" data-index="1"></div>
+        <div class="dot-item" data-index="2"></div>
+        <div class="dot-item" data-index="3"></div>
+      </div>
+
+      <!-- 4. Keypad 3x4 Glassmorphic -->
+      <div class="keypad-grid" id="keypad">
+        <!-- Baris 1: 1, 2 (ABC), 3 (DEF) -->
+        <button type="button" class="key" data-n="1">
+          <span class="num">1</span>
+          <span class="sub">&nbsp;</span>
+        </button>
+        <button type="button" class="key" data-n="2">
+          <span class="num">2</span>
+          <span class="sub">ABC</span>
+        </button>
+        <button type="button" class="key" data-n="3">
+          <span class="num">3</span>
+          <span class="sub">DEF</span>
+        </button>
+
+        <!-- Baris 2: 4 (GHI), 5 (JKL), 6 (MNO) -->
+        <button type="button" class="key" data-n="4">
+          <span class="num">4</span>
+          <span class="sub">GHI</span>
+        </button>
+        <button type="button" class="key" data-n="5">
+          <span class="num">5</span>
+          <span class="sub">JKL</span>
+        </button>
+        <button type="button" class="key" data-n="6">
+          <span class="num">6</span>
+          <span class="sub">MNO</span>
+        </button>
+
+        <!-- Baris 3: 7 (PQRS), 8 (TUV), 9 (WXYZ) -->
+        <button type="button" class="key" data-n="7">
+          <span class="num">7</span>
+          <span class="sub">PQRS</span>
+        </button>
+        <button type="button" class="key" data-n="8">
+          <span class="num">8</span>
+          <span class="sub">TUV</span>
+        </button>
+        <button type="button" class="key" data-n="9">
+          <span class="num">9</span>
+          <span class="sub">WXYZ</span>
+        </button>
+
+        <!-- Baris 4: Kosong / Spacer, 0, Backspace (⌫) -->
+        <div class="key empty-key"></div>
+        <button type="button" class="key" data-n="0">
+          <span class="num">0</span>
+          <span class="sub">+</span>
+        </button>
+        <button type="button" class="key backspace-key" data-action="backspace" title="Backspace" aria-label="Hapus Digit">
+          <svg viewBox="0 0 24 24">
+            <path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 5. Panel Code Editor Bergaya VS Code -->
+      <div class="editor-card" id="editorCard">
+        <div class="editor-header">
+          <div class="editor-traffic-lights">
+            <span class="traffic-dot dot-red"></span>
+            <span class="traffic-dot dot-yellow"></span>
+            <span class="traffic-dot dot-green"></span>
+          </div>
+          <div class="editor-tab">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 3h18v18H3V3zm15 14.5c0-.83-.67-1.5-1.5-1.5-.23 0-.44.05-.64.15L15.4 15c.38-.47.6-.97.6-1.5 0-1.66-1.34-3-3-3-1.66 0-3 1.34-3 3 0 .53.22 1.03.6 1.5l-.46 1.15c-.2-.1-.41-.15-.64-.15-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5c0-.23-.05-.44-.15-.64l.89-.35c.78.62 1.76.99 2.76.99 1 0 1.98-.37 2.76-.99l.89.35c-.1.2-.15.41-.15.64 0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5z"/>
+            </svg>
+            <span>otp.js</span>
+          </div>
+          <div class="editor-status-badge unsaved" id="editorStatusBadge">
+            <span>● unsaved</span>
+          </div>
+        </div>
+
+        <div class="editor-body" id="editorBody">
+          <!-- Baris kode akan diketik secara otomatis oleh JS -->
+        </div>
+      </div>
+
+      <!-- 6. Panel Terminal Kecil -->
+      <div class="terminal-card" id="terminalCard">
+        <div class="terminal-header">
+          <span class="terminal-label">TERMINAL</span>
+        </div>
+        <div class="terminal-logs" id="terminalLogs">
+          <!-- Log akan muncul bertahap di sini -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 7. Access Granted Overlay (Perisai + Centang SVG) -->
+    <div class="access-granted-overlay" id="accessGrantedOverlay">
+      <div class="shield-icon-wrap">
+        <svg class="shield-svg" viewBox="0 0 24 24">
+          <!-- Bentuk Perisai -->
+          <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
+          <!-- Centang di Tengah dengan Animasi Stroke Dashoffset -->
+          <path class="shield-check-path" d="M8.5 12.2l2.3 2.3 4.8-4.8" stroke="#2de2c5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="access-granted-title">ACCESS GRANTED</h2>
+      <p class="access-granted-sub">KURIR ZENDO VERIFIED</p>
+    </div>
+
+    <!-- 8. Watermark Fade Out Overlay -->
+    <div class="watermark-overlay" id="watermarkOverlay">
+      <div class="watermark-badge">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+        </svg>
+        <span>@nucomu.cafe • OTP Showcase</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ==========================================================
+       JAVASCRIPT VANILLA: TIMELINE & INTERAKTIF (TANPA LIBRARY)
+       ========================================================== -->
+  <script>
+    // Data Baris Kode yang akan diketik di Code Editor
+    const CODE_LINES = [
+      { num: 1, text: '// otp.js — by Antigravity Studio', html: '<span class="tok-cm">// otp.js — by Antigravity Studio</span>' },
+      { num: 2, text: "const pad = document.querySelector('#keypad')", html: '<span class="tok-kw">const</span> <span class="tok-prop">pad</span> <span class="tok-op">=</span> <span class="tok-prop">document</span>.<span class="tok-fn">querySelector</span>(<span class="tok-str">\'#keypad\'</span>)' },
+      { num: 3, text: "let code = ''", html: '<span class="tok-kw">let</span> <span class="tok-prop">code</span> <span class="tok-op">=</span> <span class="tok-str">\'\'</span>' },
+      { num: 4, text: '', html: '' },
+      { num: 5, text: "pad.addEventListener('pointerdown', e => {", html: '<span class="tok-prop">pad</span>.<span class="tok-fn">addEventListener</span>(<span class="tok-str">\'pointerdown\'</span>, <span class="tok-prop">e</span> <span class="tok-op">=&gt;</span> {' },
+      { num: 6, text: "  const k = e.target.closest('.key'); if (!k) return", html: '&nbsp;&nbsp;<span class="tok-kw">const</span> <span class="tok-prop">k</span> <span class="tok-op">=</span> <span class="tok-prop">e</span>.<span class="tok-prop">target</span>.<span class="tok-fn">closest</span>(<span class="tok-str">\'.key\'</span>); <span class="tok-kw">if</span> (<span class="tok-op">!</span><span class="tok-prop">k</span>) <span class="tok-kw">return</span>' },
+      { num: 7, text: '  pad.press(k); code += k.dataset.n', html: '&nbsp;&nbsp;<span class="tok-prop">pad</span>.<span class="tok-fn">press</span>(<span class="tok-prop">k</span>); <span class="tok-prop">code</span> <span class="tok-op">+=</span> <span class="tok-prop">k</span>.<span class="tok-prop">dataset</span>.<span class="tok-prop">n</span>' },
+      { num: 8, text: '  if (code.length < 4) return', html: '&nbsp;&nbsp;<span class="tok-kw">if</span> (<span class="tok-prop">code</span>.<span class="tok-prop">length</span> <span class="tok-op">&lt;</span> <span class="tok-kw">4</span>) <span class="tok-kw">return</span>' },
+      { num: 9, text: '  api.check(code).then(ok => ok ? pad.verify() : pad.shake())', html: '&nbsp;&nbsp;<span class="tok-prop">api</span>.<span class="tok-fn">check</span>(<span class="tok-prop">code</span>).<span class="tok-fn">then</span>(<span class="tok-prop">ok</span> <span class="tok-op">=&gt;</span> <span class="tok-prop">ok</span> <span class="tok-op">?</span> <span class="tok-prop">pad</span>.<span class="tok-fn">verify</span>() <span class="tok-op">:</span> <span class="tok-prop">pad</span>.<span class="tok-fn">shake</span>())' },
+      { num: 10, text: '})', html: '})' }
+    ];
+
+    // State & Elemen DOM
+    const canvasFrame = document.getElementById('canvasFrame');
+    const dots = Array.from(document.querySelectorAll('.dot-item'));
+    const dotsContainer = document.getElementById('dotsContainer');
+    const keypad = document.getElementById('keypad');
+    const editorBody = document.getElementById('editorBody');
+    const editorStatusBadge = document.getElementById('editorStatusBadge');
+    const terminalLogs = document.getElementById('terminalLogs');
+    const accessGrantedOverlay = document.getElementById('accessGrantedOverlay');
+    const watermarkOverlay = document.getElementById('watermarkOverlay');
+    const badgeModeText = document.getElementById('badgeModeText');
+
+    let currentInput = '';
+    let isUserActive = false;
+    let userTimeout = null;
+    let abortTimeline = false;
+    let timelineRunning = false;
+
+    // Helper Utility: Sleep Promise
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    // ==========================================================
+    // TERMINAL LOG HELPER
+    // ==========================================================
+    function logTerminal(message, type = 'default') {
+      const line = document.createElement('div');
+      line.className = `log-line log-${type}`;
+      line.textContent = message;
+      terminalLogs.appendChild(line);
+      terminalLogs.scrollTop = terminalLogs.scrollHeight;
+
+      // Jaga maksimal 4 baris log agar rapi
+      if (terminalLogs.children.length > 4) {
+        terminalLogs.removeChild(terminalLogs.firstChild);
+      }
+    }
+
+    function clearTerminal() {
+      terminalLogs.innerHTML = '';
+    }
+
+    // ==========================================================
+    // CODE EDITOR: RENDER & HIGHLIGHT
+    // ==========================================================
+    function renderInitialEditor() {
+      editorBody.innerHTML = '';
+      CODE_LINES.forEach(line => {
+        const row = document.createElement('div');
+        row.className = 'code-line';
+        row.id = `line-${line.num}`;
+        row.innerHTML = `<span class="line-num">${line.num}</span><span class="line-content"></span>`;
+        editorBody.appendChild(row);
+      });
+    }
+
+    async function typeCodeInEditor() {
+      editorStatusBadge.className = 'editor-status-badge unsaved';
+      editorStatusBadge.innerHTML = '<span>● unsaved</span>';
+
+      renderInitialEditor();
+
+      for (let i = 0; i < CODE_LINES.length; i++) {
+        if (abortTimeline) return;
+        const line = CODE_LINES[i];
+        const row = document.getElementById(`line-${line.num}`);
+        if (!row) continue;
+        const contentEl = row.querySelector('.line-content');
+
+        // Beri kursor saat mengetik
+        contentEl.innerHTML = '<span class="typing-cursor"></span>';
+        await sleep(70);
+
+        contentEl.innerHTML = line.html;
+        await sleep(90);
+      }
+
+      // Selesai mengetik: Badge berubah jadi Saved
+      editorStatusBadge.className = 'editor-status-badge saved';
+      editorStatusBadge.innerHTML = '<span>✓ saved</span>';
+    }
+
+    function highlightCodeLine(lineNum) {
+      document.querySelectorAll('.code-line').forEach(el => el.classList.remove('executing'));
+      if (lineNum) {
+        const target = document.getElementById(`line-${lineNum}`);
+        if (target) {
+          target.classList.add('executing');
+        }
+      }
+    }
+
+    // ==========================================================
+    // KEYPAD & DOTS CONTROLLER
+    // ==========================================================
+    function pressKeyVisual(keyElement) {
+      if (!keyElement) return;
+      keyElement.classList.add('active-tap');
+      setTimeout(() => keyElement.classList.remove('active-tap'), 220);
+    }
+
+    function updateDots(length, state = 'filled') {
+      dots.forEach((dot, idx) => {
+        dot.className = 'dot-item';
+        if (idx < length) {
+          dot.classList.add(state);
+        }
+      });
+    }
+
+    function resetDots() {
+      dots.forEach(dot => {
+        dot.className = 'dot-item';
+      });
+    }
+
+    function triggerShake() {
+      dotsContainer.classList.remove('shake');
+      keypad.classList.remove('shake');
+      canvasFrame.classList.remove('state-error');
+
+      void dotsContainer.offsetWidth; // Force Reflow
+      void keypad.offsetWidth;
+
+      dotsContainer.classList.add('shake');
+      keypad.classList.add('shake');
+      canvasFrame.classList.add('state-error');
+
+      setTimeout(() => {
+        canvasFrame.classList.remove('state-error');
+      }, 700);
+    }
+
+    // ==========================================================
+    // UTAMA: TIMELINE ANIMASI SHOWCASE (±18 DETIK & LOOP)
+    // ==========================================================
+    async function runShowcaseTimeline() {
+      if (timelineRunning || isUserActive) return;
+      timelineRunning = true;
+      abortTimeline = false;
+
+      while (!abortTimeline && !isUserActive) {
+        // Reset state awal
+        badgeModeText.textContent = 'Loop Showcase';
+        accessGrantedOverlay.classList.remove('show');
+        watermarkOverlay.classList.remove('show');
+        canvasFrame.classList.remove('state-success', 'state-error');
+        resetDots();
+        clearTerminal();
+        highlightCodeLine(null);
+
+        // ----------------------------------------------------
+        // 1. 0 - 1 dtk: Intro. Fade-in & Stagger slide-up
+        // ----------------------------------------------------
+        keypad.style.opacity = '0';
+        keypad.style.transform = 'translateY(12px)';
+        await sleep(200);
+        keypad.style.opacity = '1';
+        keypad.style.transform = 'translateY(0)';
+        logTerminal('› system.init(otp_pad)', 'default');
+        await sleep(800);
+        if (abortTimeline || isUserActive) break;
+
+        // ----------------------------------------------------
+        // 2. 1 - 4 dtk: Editor mengetik kode baris demi baris
+        // ----------------------------------------------------
+        await typeCodeInEditor();
+        if (abortTimeline || isUserActive) break;
+        await sleep(400);
+
+        // ----------------------------------------------------
+        // 3. 4 - 8 dtk: Simulasi tekan tombol (5, 3, 8, 2)
+        // ----------------------------------------------------
+        const attempt1Keys = ['5', '3', '8', '2'];
+        for (let i = 0; i < attempt1Keys.length; i++) {
+          if (abortTimeline || isUserActive) break;
+          const num = attempt1Keys[i];
+          const btn = keypad.querySelector(`.key[data-n="${num}"]`);
+
+          pressKeyVisual(btn);
+          updateDots(i + 1, 'filled');
+          highlightCodeLine(7); // pad.press(k); code += k.dataset.n
+          logTerminal(`› tap ${num}`, 'default');
+
+          await sleep(550);
+          if (i === attempt1Keys.length - 1) {
+            highlightCodeLine(9); // api.check(code)...
+          } else {
+            highlightCodeLine(8); // if (code.length < 4) return
+          }
+          await sleep(250);
+        }
+        if (abortTimeline || isUserActive) break;
+
+        // ----------------------------------------------------
+        // 4. 8 - 10 dtk: Percobaan 1 SALAH (401 Error & Shake)
+        // ----------------------------------------------------
+        await sleep(300);
+        highlightCodeLine(9);
+        updateDots(4, 'error');
+        triggerShake();
+        logTerminal('✗ POST /verify 401 invalid code', 'error');
+
+        await sleep(1200);
+        resetDots();
+        highlightCodeLine(null);
+        await sleep(400);
+        if (abortTimeline || isUserActive) break;
+
+        // ----------------------------------------------------
+        // 5. 10 - 14 dtk: Percobaan 2 BENAR (Cyan Glow & 200 OK)
+        // ----------------------------------------------------
+        const attempt2Keys = ['1', '2', '3', '4'];
+        for (let i = 0; i < attempt2Keys.length; i++) {
+          if (abortTimeline || isUserActive) break;
+          const num = attempt2Keys[i];
+          const btn = keypad.querySelector(`.key[data-n="${num}"]`);
+
+          pressKeyVisual(btn);
+          updateDots(i + 1, 'filled');
+          highlightCodeLine(7);
+          logTerminal(`› tap ${num}`, 'default');
+
+          await sleep(450);
+        }
+        if (abortTimeline || isUserActive) break;
+
+        // Verifikasi Sukses
+        highlightCodeLine(9);
+        canvasFrame.classList.add('state-success');
+        updateDots(4, 'success');
+        logTerminal('✓ POST /verify 200 38ms', 'success');
+        await sleep(350);
+        logTerminal('✓ pad.verify() → unlocked', 'success');
+
+        await sleep(1000);
+        if (abortTimeline || isUserActive) break;
+
+        // ----------------------------------------------------
+        // 6. 14 - 16 dtk: Access Granted Shield SVG & Neon Pulse
+        // ----------------------------------------------------
+        accessGrantedOverlay.classList.add('show');
+        await sleep(2000);
+        if (abortTimeline || isUserActive) break;
+
+        // ----------------------------------------------------
+        // 7. 16 - 18 dtk: Fade to Dark & Watermark Showcase
+        // ----------------------------------------------------
+        watermarkOverlay.classList.add('show');
+        await sleep(2000);
+
+        // Ulangi siklus timeline
+      }
+
+      timelineRunning = false;
+    }
+
+    // ==========================================================
+    // INTERAKTIF: KLIK MANUAL & KEYBOARD LISTENER
+    // ==========================================================
+    function handleUserDigit(n) {
+      pauseAutoTimeline();
+
+      if (currentInput.length >= 4) return;
+      currentInput += n;
+
+      const btn = keypad.querySelector(`.key[data-n="${n}"]`);
+      pressKeyVisual(btn);
+      updateDots(currentInput.length, 'filled');
+      highlightCodeLine(7);
+      logTerminal(`› tap ${n} (user)`, 'default');
+
+      if (currentInput.length === 4) {
+        checkUserCode(currentInput);
+      } else {
+        highlightCodeLine(8);
+      }
+    }
+
+    function handleUserBackspace() {
+      pauseAutoTimeline();
+
+      if (currentInput.length > 0) {
+        currentInput = currentInput.slice(0, -1);
+        const backBtn = keypad.querySelector('.backspace-key');
+        pressKeyVisual(backBtn);
+        updateDots(currentInput.length, 'filled');
+        logTerminal('› ⌫ backspace', 'default');
+      }
+    }
+
+    function checkUserCode(code) {
+      highlightCodeLine(9);
+      // Validasi: kode '1234' atau '7788' dianggap benar, selain itu salah
+      if (code === '1234' || code === '7788') {
+        canvasFrame.classList.add('state-success');
+        updateDots(4, 'success');
+        logTerminal('✓ POST /verify 200 (user verified)', 'success');
+        logTerminal('✓ pad.verify() → unlocked', 'success');
+
+        setTimeout(() => {
+          accessGrantedOverlay.classList.add('show');
+          setTimeout(() => {
+            currentInput = '';
+            accessGrantedOverlay.classList.remove('show');
+            canvasFrame.classList.remove('state-success');
+            resetDots();
+            resumeAutoTimelineAfterDelay(2500);
+          }, 2400);
+        }, 600);
+
+      } else {
+        updateDots(4, 'error');
+        triggerShake();
+        logTerminal('✗ POST /verify 401 invalid code', 'error');
+
+        setTimeout(() => {
+          currentInput = '';
+          resetDots();
+          highlightCodeLine(null);
+          resumeAutoTimelineAfterDelay(3500);
+        }, 900);
+      }
+    }
+
+    function pauseAutoTimeline() {
+      isUserActive = true;
+      abortTimeline = true;
+      badgeModeText.textContent = 'Mode Interaktif';
+
+      if (userTimeout) clearTimeout(userTimeout);
+      userTimeout = setTimeout(() => {
+        isUserActive = false;
+        currentInput = '';
+        runShowcaseTimeline();
+      }, 5500);
+    }
+
+    function resumeAutoTimelineAfterDelay(ms) {
+      if (userTimeout) clearTimeout(userTimeout);
+      userTimeout = setTimeout(() => {
+        isUserActive = false;
+        currentInput = '';
+        runShowcaseTimeline();
+      }, ms);
+    }
+
+    // Pointer Listener pada Keypad
+    keypad.addEventListener('pointerdown', (e) => {
+      const k = e.target.closest('.key');
+      if (!k) return;
+
+      if (k.dataset.n !== undefined) {
+        handleUserDigit(k.dataset.n);
+      } else if (k.dataset.action === 'backspace') {
+        handleUserBackspace();
+      }
+    });
+
+    // Keyboard Listener (0-9 & Backspace)
+    document.addEventListener('keydown', (e) => {
+      if (/^[0-9]$/.test(e.key)) {
+        handleUserDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        handleUserBackspace();
+      }
+    });
+
+    // Start Timeline saat halaman selesai dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+      renderInitialEditor();
+      setTimeout(runShowcaseTimeline, 400);
+    });
+  </script>
+</body>
+</html>

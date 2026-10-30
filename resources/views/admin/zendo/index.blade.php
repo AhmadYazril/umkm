@@ -458,11 +458,14 @@
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
                         <div class="text-right sm:text-left">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-900 mb-1">PIN Kurir (Default: 1234)</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-amber-900 mb-1">PIN Kurir (Hanya Angka)</span>
                             <input type="text" name="zendo_courier_pin" id="zendoCourierPinInput"
                                    value="{{ old('zendo_courier_pin', $settings['zendo_courier_pin'] ?? '1234') }}"
-                                   maxlength="10" placeholder="1234" required
+                                   inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="1234" required
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                   onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                    class="w-32 px-3 py-2 rounded-xl border-2 border-amber-400 bg-white text-center font-mono font-black text-base text-amber-950 focus:border-amber-600 focus:outline-none tracking-widest shadow-xs">
+                            <span class="block text-[10px] text-amber-800/80 font-medium mt-0.5">Wajib digit angka (0-9)</span>
                         </div>
                     </div>
                 </div>

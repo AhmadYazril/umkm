@@ -43,10 +43,10 @@
 
                     <div class="flex flex-wrap items-center gap-3">
                         <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 32.000</span>
-                        <a href="{{ route('nucomu.order', ['add' => 'Tiramisu']) }}" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95">
+                        <button type="button" onclick="addToCart('tiramisu-nucomu', 'Classic Tiramisu', 32000, null, 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&q=80&w=800')" 
+                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
                             PESAN SEKARANG
-                        </a>
+                        </button>
                         <a href="#menu" 
                            class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                             DAFTAR MENU
@@ -109,10 +109,10 @@
 
                     <div class="flex flex-wrap items-center gap-3">
                         <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 36.000</span>
-                        <a href="{{ route('nucomu.order', ['add' => 'Cheesecake']) }}" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95">
+                        <button type="button" onclick="addToCart('basque-burnt-cheesecake', 'Basque Burnt Cheesecake', 36000, null, 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW')" 
+                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
                             PESAN SEKARANG
-                        </a>
+                        </button>
                         <a href="#menu" 
                            class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                             DAFTAR MENU
@@ -175,10 +175,10 @@
 
                     <div class="flex flex-wrap items-center gap-3">
                         <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 34.000</span>
-                        <a href="{{ route('nucomu.order', ['add' => 'Pasta Aglio Olio']) }}" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95">
+                        <button type="button" onclick="addToCart('spaghetti-aglio-olio', 'Spaghetti Aglio Olio', 34000, null, 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800')" 
+                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
                             PESAN SEKARANG
-                        </a>
+                        </button>
                         <a href="#menu" 
                            class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                             DAFTAR MENU
@@ -241,10 +241,10 @@
 
                     <div class="flex flex-wrap items-center gap-3">
                         <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 22.000</span>
-                        <a href="{{ route('nucomu.order', ['add' => 'Nucomu Coffee']) }}" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95">
+                        <button type="button" onclick="addToCart('nucomu-kopi-susu', 'Kopi Susu Nucomu', 22000, null, 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=800')" 
+                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
                             PESAN SEKARANG
-                        </a>
+                        </button>
                         <a href="#menu" 
                            class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                             DAFTAR MENU

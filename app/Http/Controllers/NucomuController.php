@@ -147,7 +147,8 @@ class NucomuController extends Controller
             'dynamicReviews',
             'eventPackages',
             'transactionMode',
-            'zendoWhatsapp'
+            'zendoWhatsapp',
+            'txSettings'
         ));
     }
 
@@ -335,7 +336,11 @@ class NucomuController extends Controller
             $filteredMenu = $allMenu;
         }
 
-        return view('menu.all', compact('brand', 'contact', 'filteredMenu', 'selectedCategory'));
+        $txSettings = $this->getTransactionSettings();
+        $transactionMode = $txSettings['transaction_mode'];
+        $zendoWhatsapp = $txSettings['zendo_whatsapp_clean'];
+
+        return view('menu.all', compact('brand', 'contact', 'filteredMenu', 'selectedCategory', 'txSettings', 'transactionMode', 'zendoWhatsapp'));
     }
 
     /**
@@ -1224,28 +1229,18 @@ class NucomuController extends Controller
         $cafeLng = $txSettings['cafe_lng'];
         $zendoTariff = $txSettings['zendo_tariff'];
 
-        if ($transactionMode === 'kasir') {
-            $initialProcessMethod = 'kasir';
-        } elseif ($transactionMode === 'zendo') {
-            $initialProcessMethod = 'zendo';
-        } else {
-            $requestedMode = strtolower((string) $request->query('mode', 'kasir'));
-            $initialProcessMethod = in_array($requestedMode, ['kasir', 'zendo'], true) ? $requestedMode : 'kasir';
+        if ($request->wantsJson()) {
+            return response()->json([
+                'categories' => $categories,
+                'menus' => $menus,
+                'transactionMode' => $transactionMode,
+                'zendoWhatsapp' => $zendoWhatsapp,
+                'zendoCouriers' => $zendoCouriers,
+            ]);
         }
 
-        return view('nucomu.order', compact(
-            'categories',
-            'menus',
-            'transactionMode',
-            'zendoWhatsapp',
-            'zendoCourierCount',
-            'zendoCouriers',
-            'zendoSendMode',
-            'cafeLat',
-            'cafeLng',
-            'zendoTariff',
-            'initialProcessMethod'
-        ));
+        // Standalone order page is deprecated; menu ordering is unified on the company profile
+        return redirect()->route('home', ['#menu' => true]);
     }
 
     /**
@@ -1277,8 +1272,10 @@ class NucomuController extends Controller
             'customer_lng' => 'nullable|numeric',
             'courier_index' => 'nullable|integer|min:1',
             'process_method' => 'nullable|string|in:kasir,zendo',
+            'dine_type' => 'nullable|string|in:dine_in,take_away',
+            'table_no' => 'nullable|string|max:50',
             'items' => 'required|array|min:1',
-            'items.*.menu_id' => 'required|integer',
+            'items.*.menu_id' => 'nullable',
             'items.*.menu_name' => 'required|string',
             'items.*.unit_price' => 'required|integer|min:0',
             'items.*.qty' => 'required|integer|min:1',
@@ -1322,7 +1319,21 @@ class NucomuController extends Controller
             : 0;
         $grandTotal = $subtotal + $deliveryFee;
 
-        $storedNotes = $rawNotes !== '' ? $rawNotes : null;
+        $dineType = $request->input('dine_type', 'dine_in');
+        $tableNo = trim((string) $request->input('table_no', ''));
+        $kasirParts = [];
+        if ($processMethod === 'kasir') {
+            if ($dineType === 'dine_in' && $tableNo !== '') {
+                $kasirParts[] = "[Nomor Meja: {$tableNo}]";
+            } elseif ($dineType === 'take_away') {
+                $kasirParts[] = "[Bawa Pulang / Take Away]";
+            }
+        }
+        if ($rawNotes !== '') {
+            $kasirParts[] = $rawNotes;
+        }
+        $storedNotes = count($kasirParts) > 0 ? implode(' | ', $kasirParts) : null;
+
         if ($processMethod === 'zendo') {
             $zendoParts = [
                 "[KURIR ZENDO] Kurir: {$courierName} (#{$courierIndex})",
@@ -1342,7 +1353,7 @@ class NucomuController extends Controller
         }
 
         try {
-            $order = DB::transaction(function () use ($request, $processMethod, $customerPhone, $storedNotes, $subtotal, $grandTotal) {
+            $order = DB::transaction(function () use ($request, $processMethod, $dineType, $customerPhone, $storedNotes, $subtotal, $grandTotal) {
                 $date = Carbon::now()->format('Ymd');
                 $count = Order::whereDate('created_at', today())->count() + 1;
                 $code = 'NCM-'.$date.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
@@ -1351,7 +1362,7 @@ class NucomuController extends Controller
                     'code' => $code,
                     'customer_name' => $request->customer_name,
                     'customer_phone' => $customerPhone !== '' ? $customerPhone : ($processMethod === 'zendo' ? 'Via Zendo WA' : '-'),
-                    'order_type' => $processMethod === 'zendo' ? 'take_away' : 'dine_in',
+                    'order_type' => $processMethod === 'zendo' ? 'take_away' : ($dineType === 'take_away' ? 'take_away' : 'dine_in'),
                     'notes' => $storedNotes,
                     'subtotal' => $subtotal,
                     'total' => $grandTotal,
@@ -1361,7 +1372,8 @@ class NucomuController extends Controller
                 ]);
 
                 foreach ($request->items as $item) {
-                    $validMenuId = Menu::whereKey($item['menu_id'])->exists() ? $item['menu_id'] : null;
+                    $menuIdVal = $item['menu_id'] ?? null;
+                    $validMenuId = is_numeric($menuIdVal) && Menu::whereKey($menuIdVal)->exists() ? (int) $menuIdVal : null;
 
                     OrderItem::create([
                         'order_id' => $order->id,
@@ -1369,7 +1381,7 @@ class NucomuController extends Controller
                         'menu_name' => $item['menu_name'],
                         'unit_price' => $item['unit_price'],
                         'qty' => $item['qty'],
-                        'options' => null,
+                        'options' => $item['options'] ?? null,
                         'line_total' => $item['line_total'],
                     ]);
                 }

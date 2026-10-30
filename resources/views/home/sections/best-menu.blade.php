@@ -71,8 +71,8 @@
                     <div class="mt-6 sm:-mt-5 relative z-20">
                         <button id="best-hero-order-btn" 
                                 type="button"
-                                onclick="openReservationModal('Pesanan Best Menu: {{ $bestMenu[0]['name'] }}')" 
-                                class="px-7 sm:px-8 py-2.5 rounded-full bg-[#B5ACA5] hover:bg-[#9E958E] text-white font-medium text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95">
+                                onclick="orderCurrentBestMenuItem()" 
+                                class="px-7 sm:px-8 py-2.5 rounded-full bg-[#B5ACA5] hover:bg-[#9E958E] text-white font-medium text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer">
                             <span id="best-hero-price" class="font-bold">{{ $bestMenu[0]['price_formatted'] }}</span>
                             <span class="font-bold">ORDER</span>
                             <span class="material-symbols-outlined text-sm">chevron_right</span>
@@ -277,15 +277,6 @@
                 </div>
             @endforeach
         </div>
-
-        <!-- Empty State Fallback -->
-        <div id="recommendations-empty-state" class="hidden text-center py-12 bg-white rounded-2xl border border-neutral-100 mb-12 p-8">
-            <span class="material-symbols-outlined text-neutral-400 text-4xl mb-2">restaurant_menu</span>
-            <p class="font-editorial text-xl font-bold text-neutral-900">Sajian Sedang Disiapkan</p>
-            <p class="font-body text-xs text-neutral-500 mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
-        </div>
-    </div>
-</section>
 
         <!-- Empty State Fallback -->
         <div id="recommendations-empty-state" class="hidden text-center py-12 bg-white rounded-2xl border border-neutral-100 mb-12 p-8">

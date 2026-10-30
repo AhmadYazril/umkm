@@ -1215,8 +1215,9 @@ window.switchBestMenuItem = function(index) {
             descEl.style.opacity = '1';
         }
         if (priceEl) priceEl.textContent = item.price_formatted;
+        window.currentBestMenuIndex = index;
         if (orderBtn) {
-            orderBtn.setAttribute('href', `/pesan?add=${encodeURIComponent(item.name)}`);
+            orderBtn.setAttribute('href', 'javascript:void(0)');
         }
 
         const videoEl = document.getElementById('best-hero-video');

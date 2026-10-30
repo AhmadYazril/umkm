@@ -73,9 +73,11 @@
 
                     <div class="pt-3 border-t border-light-gray/60 flex items-center justify-between mt-3">
                         <span class="font-editorial text-base sm:text-lg font-bold text-ink-black">{{ $item['price_formatted'] }}</span>
-                        <button onclick="openReservationModal('Order Menu: {{ $item['name'] }}')" 
-                                class="w-7 h-7 rounded-full bg-ink-black text-warm-ivory flex items-center justify-center text-xs hover:bg-neutral-800 transition-colors"
-                                aria-label="Pesan {{ $item['name'] }}">
+                        <button type="button" 
+                                onclick="addToCart('{{ $item['id'] }}', '{{ addslashes($item['name']) }}', {{ $item['price'] }}, null, '{{ $item['image'] }}')" 
+                                class="w-8 h-8 rounded-full bg-ink-black text-warm-ivory hover:bg-neutral-800 active:scale-95 flex items-center justify-center text-xs transition-all cursor-pointer shadow-xs"
+                                aria-label="Tambah {{ $item['name'] }} ke Keranjang"
+                                title="Tambah ke Keranjang">
                             <span class="material-symbols-outlined text-sm">add</span>
                         </button>
                     </div>

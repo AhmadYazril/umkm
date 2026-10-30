@@ -19,7 +19,7 @@
                class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
                 About
             </a>
-            <a href="{{ route('nucomu.order') }}" 
+            <a href="{{ route('home') }}#menu" 
                class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
                 Menu
             </a>
@@ -35,11 +35,13 @@
                class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
                 Contact
             </a>
-            <a href="{{ route('nucomu.order') }}" 
-               class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#15151c] text-amber-400 border border-amber-500/30 text-xs font-bold hover:bg-black transition-all">
-                <i class="fa-solid fa-utensils text-[11px]"></i>
-                <span>Pesan Menu</span>
-            </a>
+            <button type="button" 
+                    onclick="openCartModal()" 
+                    class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#15151c] text-amber-400 border border-amber-500/30 text-xs font-bold hover:bg-black transition-all cursor-pointer">
+                <i class="fa-solid fa-bag-shopping text-[11px]"></i>
+                <span>Keranjang</span>
+                <span id="nav-cart-badge" class="px-1.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black leading-none">0</span>
+            </button>
         </nav>
 
 
@@ -84,10 +86,17 @@
         </div>
 
         <!-- Drawer Bottom Actions -->
-        <div class="pt-6 border-t border-[#54392B]/10 flex flex-col space-y-4">
+        <div class="pt-6 border-t border-[#54392B]/10 flex flex-col space-y-3">
+            <button type="button" 
+                    onclick="toggleMobileDrawer(); openCartModal();" 
+                    class="w-full py-3.5 bg-[#15151c] hover:bg-black text-amber-400 border border-amber-500/30 text-xs font-bold uppercase tracking-wider rounded-xl text-center transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span>Buka Keranjang Pesanan</span>
+                <span id="drawer-cart-badge" class="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black">0</span>
+            </button>
             <button type="button" 
                     onclick="toggleMobileDrawer(); openReservationModal('Mobile Drawer');" 
-                    class="w-full py-3.5 bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95">
+                    class="w-full py-3 bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95">
                 Reservasi Tempat
             </button>
             <div class="text-center text-xs text-[#5C4E45] font-medium">

@@ -103,13 +103,16 @@ class SettingController extends Controller
     public function updateZendoCouriers(Request $request)
     {
         $request->validate([
-            'zendo_courier_pin' => 'nullable|string|max:20',
+            'zendo_courier_pin' => ['nullable', 'regex:/^[0-9]+$/', 'min:4', 'max:12'],
             'zendo_courier_count' => 'required|integer|min:1|max:50',
             'zendo_couriers' => 'required|array|min:1',
             'zendo_couriers.*.name' => 'nullable|string|max:100',
             'zendo_couriers.*.phone' => 'required|string|max:30',
             'zendo_couriers.*.status' => 'nullable|in:idle,delivering,almost_done',
         ], [
+            'zendo_courier_pin.regex' => 'PIN akses kurir hanya boleh berupa angka (0-9).',
+            'zendo_courier_pin.min' => 'PIN akses kurir minimal 4 digit angka.',
+            'zendo_courier_pin.max' => 'PIN akses kurir maksimal 12 digit angka.',
             'zendo_couriers.*.phone.required' => 'Nomor WhatsApp setiap kurir Zendo wajib diisi.',
         ]);
 
@@ -371,7 +374,7 @@ class SettingController extends Controller
     public function updateZendoTariff(Request $request)
     {
         $request->validate([
-            'zendo_courier_pin' => 'nullable|string|max:20',
+            'zendo_courier_pin' => ['nullable', 'regex:/^[0-9]+$/', 'min:4', 'max:12'],
             'zendo_send_mode' => 'nullable|in:auto_direct,wa_redirect',
             'zendo_public_url' => 'nullable|string|max:255',
             'zendo_wa_api_url' => 'nullable|string|max:255',
@@ -430,7 +433,7 @@ class SettingController extends Controller
     {
         $request->validate([
             'transaction_mode' => 'nullable|in:kasir,zendo,both',
-            'zendo_courier_pin' => 'nullable|string|max:20',
+            'zendo_courier_pin' => ['nullable', 'regex:/^[0-9]+$/', 'min:4', 'max:12'],
             'zendo_whatsapp' => 'nullable|string|max:30',
             'zendo_courier_count' => 'nullable|integer|min:1|max:50',
             'zendo_couriers' => 'nullable|array',
