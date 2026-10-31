@@ -7,9 +7,54 @@
     $connectedCouriers = collect($couriers)->where('is_connected', true);
     $activeOnlineCouriers = collect($couriers)->where('is_online', true);
     $tariff = $txSettings['zendo_tariff'] ?? [];
+    $hideLiveTracking = ($settings['hide_live_tracking'] ?? '0') === '1';
 @endphp
 
 <div class="max-w-7xl space-y-6">
+
+    {{-- Banner Status Fitur Live Tracking (Klien vs Sekolah Quick Toggle) --}}
+    <div class="rounded-2xl p-4 sm:p-5 border {{ $hideLiveTracking ? 'bg-zinc-900 border-rose-500/30' : 'bg-emerald-950/40 border-emerald-500/30' }} flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-start sm:items-center gap-3">
+            <div class="w-10 h-10 rounded-xl {{ $hideLiveTracking ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300' }} flex items-center justify-center shrink-0 text-base font-bold">
+                <i class="fa-solid {{ $hideLiveTracking ? 'fa-eye-slash' : 'fa-map-location-dot' }}"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wide">
+                        Status Fitur Live Tracking:
+                        <span class="{{ $hideLiveTracking ? 'text-rose-400' : 'text-emerald-400' }}">
+                            {{ $hideLiveTracking ? 'DISEMBUNYIKAN (Mode Klien)' : 'AKTIF PENUH (Mode Sekolah)' }}
+                        </span>
+                    </h3>
+                </div>
+                <p class="text-xs text-zinc-300 mt-0.5 leading-relaxed">
+                    @if($hideLiveTracking)
+                        Saat pesan, pelanggan <strong>langsung diarahkan ke WhatsApp</strong> dengan pesan berupa <strong>struk kasir ringkas</strong> (hanya total & menu, tanpa kata-kata panjang atau link live tracking).
+                    @else
+                        Pelanggan & kurir dapat mengakses fitur <strong>peta live tracking GPS</strong>, dan link pelacakan disertakan otomatis di pesan WhatsApp.
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <form action="{{ route('admin.settings.update') }}" method="POST" class="shrink-0 flex items-center gap-3">
+            @csrf
+            <input type="hidden" name="hide_live_tracking" value="{{ $hideLiveTracking ? '0' : '1' }}">
+            <div class="flex items-center gap-2">
+                <button type="submit" 
+                        title="{{ $hideLiveTracking ? 'Klik untuk aktifkan Peta Live (Mode Sekolah)' : 'Klik untuk sembunyikan Peta (Mode Klien)' }}"
+                        class="relative inline-flex h-8 w-14 shrink-0 cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out focus:outline-none select-none {{ ! $hideLiveTracking ? 'bg-[#7cb4fc] shadow-[0_0_12px_rgba(124,180,252,0.4)]' : 'bg-[#e2e8f0]' }}">
+                    <span class="pointer-events-none inline-block h-6 w-6 rounded-full bg-[#18181b] shadow-md transform transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ ! $hideLiveTracking ? 'translate-x-6' : 'translate-x-0' }}"></span>
+                </button>
+                <span class="text-xs font-bold {{ ! $hideLiveTracking ? 'text-sky-300' : 'text-zinc-400' }}">
+                    {{ ! $hideLiveTracking ? 'Live Tracking ON' : 'Live Tracking OFF' }}
+                </span>
+            </div>
+            <a href="{{ route('admin.settings.index') }}" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition" title="Buka Halaman Pengaturan">
+                ⚙️
+            </a>
+        </form>
+    </div>
 
     {{-- Header Banner: Konsep Grab-like Tracking & Anti Fake GPS --}}
     <div class="bg-gradient-to-br from-[#2B1F1A] via-[#3A2820] to-[#4A3328] rounded-2xl p-6 text-white shadow-lg border border-amber-900/30">

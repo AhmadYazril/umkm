@@ -103,6 +103,7 @@ class SettingController extends Controller
     public function updateZendoCouriers(Request $request)
     {
         $request->validate([
+            'hide_live_tracking' => 'nullable|in:0,1',
             'zendo_courier_pin' => ['nullable', 'regex:/^[0-9]+$/', 'min:4', 'max:12'],
             'zendo_courier_count' => 'required|integer|min:1|max:50',
             'zendo_couriers' => 'required|array|min:1',
@@ -115,6 +116,10 @@ class SettingController extends Controller
             'zendo_courier_pin.max' => 'PIN akses kurir maksimal 12 digit angka.',
             'zendo_couriers.*.phone.required' => 'Nomor WhatsApp setiap kurir Zendo wajib diisi.',
         ]);
+
+        if ($request->has('hide_live_tracking')) {
+            Setting::set('hide_live_tracking', $request->input('hide_live_tracking'));
+        }
 
         if ($request->filled('zendo_courier_pin')) {
             Setting::set('zendo_courier_pin', trim((string) $request->input('zendo_courier_pin')));
@@ -433,6 +438,7 @@ class SettingController extends Controller
     {
         $request->validate([
             'transaction_mode' => 'nullable|in:kasir,zendo,both',
+            'hide_live_tracking' => 'nullable|in:0,1',
             'zendo_courier_pin' => ['nullable', 'regex:/^[0-9]+$/', 'min:4', 'max:12'],
             'zendo_whatsapp' => 'nullable|string|max:30',
             'zendo_courier_count' => 'nullable|integer|min:1|max:50',
@@ -458,7 +464,7 @@ class SettingController extends Controller
             'cafe_name', 'cafe_tagline', 'cafe_subtitle', 'cafe_story', 'cafe_history',
             'cafe_concept', 'cafe_address', 'cafe_maps_url', 'cafe_whatsapp',
             'cafe_email', 'cafe_instagram', 'cafe_tiktok',
-            'transaction_mode', 'zendo_courier_pin', 'zendo_whatsapp', 'zendo_send_mode', 'zendo_public_url',
+            'transaction_mode', 'hide_live_tracking', 'zendo_courier_pin', 'zendo_whatsapp', 'zendo_send_mode', 'zendo_public_url',
             'zendo_wa_api_url', 'zendo_wa_api_token',
             'cafe_lat', 'cafe_lng',
             'zendo_tier_0_3', 'zendo_tier_3_4', 'zendo_tier_4_5',
@@ -532,6 +538,13 @@ class SettingController extends Controller
         }
         if ($request->has('tagline') && ! $request->has('cafe_tagline')) {
             Setting::set('cafe_tagline', $request->input('tagline'));
+        }
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengaturan berhasil disimpan.',
+            ]);
         }
 
         return back()->with('success', 'Pengaturan berhasil disimpan.');

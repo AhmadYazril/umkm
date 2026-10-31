@@ -93,8 +93,44 @@ class OrderController extends Controller
     {
         $order = Order::where('code', $code)->with('items')->firstOrFail();
         $whatsapp = Setting::get('cafe_whatsapp', '');
+        $hideLiveTracking = in_array((string) Setting::get('hide_live_tracking', '0'), ['1', 'true', 'yes'], true);
 
-        return view('public.order-confirmation', compact('order', 'whatsapp'));
+        $waUrl = null;
+        if (! empty($whatsapp)) {
+            $cleanWa = preg_replace('/[^0-9]/', '', $whatsapp);
+            if (str_starts_with($cleanWa, '0')) {
+                $cleanWa = '62'.substr($cleanWa, 1);
+            }
+            if ($hideLiveTracking) {
+                $cafeName = Setting::get('cafe_name', config('nucomu.brand.name', 'Nucomu Cafe'));
+                $lines = [
+                    '🧾 *STRUK PESANAN '.strtoupper($cafeName).'*',
+                    '================================',
+                    '*No. Pesanan:* #'.$order->code,
+                    '*Nama Pemesan:* '.$order->customer_name,
+                    '--------------------------------',
+                    '*Daftar Menu:*',
+                ];
+                foreach ($order->items as $idx => $it) {
+                    $num = $idx + 1;
+                    $lines[] = $num.'. '.$it->menu_name.' ('.$it->qty.'x @ Rp '.number_format($it->unit_price, 0, ',', '.').') = Rp '.number_format($it->line_total, 0, ',', '.');
+                }
+                $lines[] = '--------------------------------';
+                $lines[] = '*TOTAL PEMBAYARAN: Rp '.number_format($order->total, 0, ',', '.').'*';
+                if ($order->notes) {
+                    $lines[] = '--------------------------------';
+                    $lines[] = '*Catatan:* '.$order->notes;
+                }
+                $lines[] = '================================';
+                $lines[] = 'Terima kasih telah memesan!';
+                $waText = implode("\n", $lines);
+            } else {
+                $waText = 'Halo Nucomu Cafe, saya ingin konfirmasi pesanan #'.$order->code.' atas nama '.$order->customer_name.'. Total: Rp '.number_format($order->total, 0, ',', '.').'.';
+            }
+            $waUrl = 'https://wa.me/'.$cleanWa.'?text='.rawurlencode($waText);
+        }
+
+        return view('public.order-confirmation', compact('order', 'whatsapp', 'waUrl', 'hideLiveTracking'));
     }
 
     public function track(Request $request)

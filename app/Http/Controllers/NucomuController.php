@@ -439,6 +439,7 @@ class NucomuController extends Controller
         $rawCouriers = [];
         $courierCount = 1;
         $dbSettings = collect();
+        $hideLiveTracking = false;
 
         try {
             $dbSettings = Setting::pluck('value', 'key');
@@ -447,6 +448,8 @@ class NucomuController extends Controller
             if (in_array($dbMode, ['kasir', 'zendo', 'both'], true)) {
                 $mode = $dbMode;
             }
+
+            $hideLiveTracking = in_array((string) ($dbSettings['hide_live_tracking'] ?? '0'), ['1', 'true', 'yes'], true);
 
             if (! empty($dbSettings['zendo_whatsapp'])) {
                 $zendoWa = $dbSettings['zendo_whatsapp'];
@@ -531,6 +534,7 @@ class NucomuController extends Controller
 
         return [
             'transaction_mode' => $mode,
+            'hide_live_tracking' => $hideLiveTracking,
             'zendo_whatsapp' => $primaryPhone,
             'zendo_whatsapp_clean' => $primaryClean,
             'zendo_courier_count' => $courierCount,
@@ -1012,6 +1016,65 @@ class NucomuController extends Controller
     }
 
     /**
+     * Build compact receipt-style WhatsApp message text (Client Mode: No tracking link, struk format).
+     */
+    protected function buildZendoReceiptText(
+        string $orderCode,
+        string $customerName,
+        ?string $customerPhone,
+        ?string $deliveryAddress,
+        array $items,
+        int $subtotal,
+        int $deliveryFee,
+        int $grandTotal,
+        ?string $notes = null
+    ): string {
+        $cafeName = Setting::get('cafe_name', config('nucomu.brand.name', 'Nucomu Cafe'));
+        $lines = [
+            '🧾 *STRUK PESANAN '.strtoupper($cafeName).'*',
+            '================================',
+            "*No. Pesanan:* #{$orderCode}",
+            "*Nama Pemesan:* {$customerName}",
+        ];
+
+        if (! empty($customerPhone) && $customerPhone !== '-' && $customerPhone !== 'Via Zendo WA') {
+            $lines[] = "*No. WhatsApp:* {$customerPhone}";
+        }
+
+        if (! empty($deliveryAddress)) {
+            $lines[] = "*Alamat Pengiriman:* {$deliveryAddress}";
+        }
+
+        $lines[] = '--------------------------------';
+        $lines[] = '*Daftar Menu:*';
+
+        foreach (array_values($items) as $idx => $item) {
+            $num = $idx + 1;
+            $qty = (int) ($item['qty'] ?? 1);
+            $unitFormatted = 'Rp '.number_format((int) ($item['unit_price'] ?? 0), 0, ',', '.');
+            $lineFormatted = 'Rp '.number_format((int) ($item['line_total'] ?? 0), 0, ',', '.');
+            $lines[] = "{$num}. {$item['menu_name']} ({$qty}x @ {$unitFormatted}) = {$lineFormatted}";
+        }
+
+        $lines[] = '--------------------------------';
+        $lines[] = 'Subtotal: Rp '.number_format($subtotal, 0, ',', '.');
+        if ($deliveryFee > 0) {
+            $lines[] = 'Ongkir: Rp '.number_format($deliveryFee, 0, ',', '.');
+        }
+        $lines[] = '*TOTAL PEMBAYARAN: Rp '.number_format($grandTotal, 0, ',', '.').'*';
+
+        if (! empty($notes) && $notes !== '-') {
+            $lines[] = '--------------------------------';
+            $lines[] = "*Catatan:* {$notes}";
+        }
+
+        $lines[] = '================================';
+        $lines[] = 'Terima kasih telah memesan!';
+
+        return implode("\n", $lines);
+    }
+
+    /**
      * Build formatted WhatsApp message text for Zendo courier order.
      */
     protected function buildZendoMessageText(
@@ -1029,8 +1092,23 @@ class NucomuController extends Controller
         ?string $notes,
         ?string $courierName = null,
         ?string $courierUrl = null,
-        ?string $trackingUrl = null
+        ?string $trackingUrl = null,
+        bool $hideLiveTracking = false
     ): string {
+        if ($hideLiveTracking) {
+            return $this->buildZendoReceiptText(
+                $orderCode,
+                $customerName,
+                $customerPhone,
+                $deliveryAddress,
+                $items,
+                $subtotal,
+                $deliveryFee,
+                $grandTotal,
+                $notes
+            );
+        }
+
         $greetingTarget = ! empty($courierName) ? "{$courierName} (Nucomu Cafe)" : 'Admin Kurir Zendo / Nucomu Cafe';
         $lines = [
             "Halo {$greetingTarget}, ada pesanan baru:",
@@ -1107,7 +1185,8 @@ class NucomuController extends Controller
         ?float $distanceKm = null,
         ?float $customerLat = null,
         ?float $customerLng = null,
-        ?string $courierName = null
+        ?string $courierName = null,
+        bool $hideLiveTracking = false
     ): string {
         $grandTotal = $subtotal + $deliveryFee;
         $message = $this->buildZendoMessageText(
@@ -1123,7 +1202,10 @@ class NucomuController extends Controller
             $customerLat,
             $customerLng,
             $notes,
-            $courierName
+            $courierName,
+            null,
+            null,
+            $hideLiveTracking
         );
 
         return 'https://wa.me/'.$zendoWaClean.'?text='.rawurlencode($message);
@@ -1400,6 +1482,7 @@ class NucomuController extends Controller
             // Create live delivery tracking record (customer/admin tracking link + courier-only GPS link)
             $trackingUrl = null;
             $courierUrl = null;
+            $hideLiveTracking = (bool) ($txSettings['hide_live_tracking'] ?? false);
             if ($processMethod === 'zendo') {
                 try {
                     $delivery = ZendoDelivery::create([
@@ -1416,14 +1499,16 @@ class NucomuController extends Controller
                         'destination_lat' => $customerLat,
                         'destination_lng' => $customerLng,
                     ]);
-                    $customBase = trim((string) ($txSettings['zendo_public_url'] ?? ''));
-                    if ($customBase !== '') {
-                        $customBase = rtrim($customBase, '/');
-                        $trackingUrl = $customBase.route('zendo.track', $delivery->tracking_token, false);
-                        $courierUrl = $customBase.route('zendo.courier.show', $delivery->courier_token, false);
-                    } else {
-                        $trackingUrl = route('zendo.track', $delivery->tracking_token);
-                        $courierUrl = route('zendo.courier.show', $delivery->courier_token);
+                    if (! $hideLiveTracking) {
+                        $customBase = trim((string) ($txSettings['zendo_public_url'] ?? ''));
+                        if ($customBase !== '') {
+                            $customBase = rtrim($customBase, '/');
+                            $trackingUrl = $customBase.route('zendo.track', $delivery->tracking_token, false);
+                            $courierUrl = $customBase.route('zendo.courier.show', $delivery->courier_token, false);
+                        } else {
+                            $trackingUrl = route('zendo.track', $delivery->tracking_token);
+                            $courierUrl = route('zendo.courier.show', $delivery->courier_token);
+                        }
                     }
                 } catch (\Throwable $deliveryEx) {
                     Log::warning('Gagal membuat data pelacakan Zendo: '.$deliveryEx->getMessage());
@@ -1446,7 +1531,8 @@ class NucomuController extends Controller
                 $rawNotes,
                 $courierName,
                 $courierUrl,
-                $trackingUrl
+                $trackingUrl,
+                $hideLiveTracking
             );
             $whatsappUrl = 'https://wa.me/'.$zendoWaClean.'?text='.rawurlencode($messageText);
 
@@ -1454,8 +1540,8 @@ class NucomuController extends Controller
             if ($processMethod === 'zendo') {
                 $autoSent = $this->dispatchZendoWhatsappMessage($zendoWaClean, $messageText, $txSettings);
 
-                // Also send the tracking link to the customer's WhatsApp (when gateway is configured)
-                if ($autoSent && $trackingUrl && $customerPhone !== '') {
+                // Also send the tracking link to the customer's WhatsApp (when gateway is configured and live tracking is enabled)
+                if (! $hideLiveTracking && $autoSent && $trackingUrl && $customerPhone !== '') {
                     $customerMessage = "Halo {$request->customer_name}, pesanan Nucomu Cafe #{$orderCode} sedang diproses oleh {$courierName}.\n\n"
                         ."📍 Lacak posisi kurir secara langsung:\n{$trackingUrl}\n\nTerima kasih!";
                     $this->dispatchZendoWhatsappMessage($this->normalizeWhatsappNumber($customerPhone), $customerMessage, $txSettings);
@@ -1481,7 +1567,8 @@ class NucomuController extends Controller
                     'code' => $orderCode,
                     'method' => 'kasir',
                 ]) : null,
-                'tracking_url' => $trackingUrl,
+                'tracking_url' => $hideLiveTracking ? null : $trackingUrl,
+                'hide_live_tracking' => $hideLiveTracking,
                 'whatsapp_url' => $whatsappUrl,
             ]);
         } catch (\Exception $e) {
@@ -1502,7 +1589,10 @@ class NucomuController extends Controller
                     $customerLat,
                     $customerLng,
                     $rawNotes,
-                    $courierName
+                    $courierName,
+                    null,
+                    null,
+                    $hideLiveTracking ?? false
                 );
                 $whatsappUrl = 'https://wa.me/'.$zendoWaClean.'?text='.rawurlencode($messageText);
                 $autoSent = $this->dispatchZendoWhatsappMessage($zendoWaClean, $messageText, $txSettings);
@@ -1523,6 +1613,8 @@ class NucomuController extends Controller
                     'delivery_fee' => $deliveryFee,
                     'grand_total' => $grandTotal,
                     'slip_url' => null,
+                    'tracking_url' => null,
+                    'hide_live_tracking' => $hideLiveTracking ?? false,
                     'whatsapp_url' => $whatsappUrl,
                 ]);
             }

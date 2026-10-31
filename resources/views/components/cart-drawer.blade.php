@@ -23,6 +23,7 @@
         ['index' => 1, 'name' => 'Kurir Zendo 1', 'phone' => $zendoWhatsapp, 'clean_phone' => $zendoWhatsapp]
     ];
     $initialProcessMethod = $transactionMode === 'zendo' ? 'zendo' : 'kasir';
+    $hideLiveTracking = (bool) ($txSettings['hide_live_tracking'] ?? false);
 @endphp
 
 <style>
@@ -315,7 +316,8 @@
                                    class="w-full bg-white border border-[#ded8ce] rounded-xl px-3.5 py-2 text-xs text-[#2c2825] font-mono placeholder-[#9c968f] focus:outline-none focus:border-[#2c2825] transition-colors">
                         </div>
 
-                        <!-- Map & GPS Controls -->
+                        @if (! $hideLiveTracking)
+                        <!-- Map & GPS Controls (Mode Sekolah / Peta Live Aktif) -->
                         <div class="bg-white border border-[#ded8ce] rounded-2xl p-3.5 space-y-3">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[11px] font-extrabold uppercase tracking-wider text-[#2c2825] flex items-center gap-1.5">
@@ -436,6 +438,24 @@
                                           class="w-full bg-white border border-[#ded8ce] rounded-xl p-2.5 text-xs text-[#2c2825] placeholder-[#9c968f] focus:outline-none focus:border-[#2c2825] transition-colors resize-none"></textarea>
                             </div>
                         </div>
+                        @else
+                        <!-- Mode Klien (Tanpa Peta & Tracking): Input Alamat Ringkas & Langsung WA -->
+                        <div class="bg-white border border-[#ded8ce] rounded-2xl p-3.5 space-y-3">
+                            <div>
+                                <label for="modalDeliveryAddress" class="block text-[11px] font-semibold text-[#2c2825] mb-1">
+                                    <i class="fa-solid fa-location-dot mr-1 text-[#2c2825]"></i> Alamat Lengkap Pengiriman <span class="text-rose-500">*</span>
+                                </label>
+                                <textarea id="modalDeliveryAddress" 
+                                          rows="3" 
+                                          placeholder="Tuliskan nama jalan, nomor rumah, RT/RW, desa/kelurahan, atau patokan rumah Anda..."
+                                          class="w-full bg-[#faf8f5] border border-[#ded8ce] rounded-xl p-3 text-xs text-[#2c2825] placeholder-[#9c968f] focus:outline-none focus:border-[#2c2825] transition-colors resize-none"></textarea>
+                            </div>
+                            <div class="flex items-center gap-2 p-2.5 bg-[#faf8f5] rounded-xl border border-[#ded8ce] text-[11px] text-[#5c5751]">
+                                <i class="fa-brands fa-whatsapp text-emerald-600 text-base shrink-0"></i>
+                                <span>Pesanan langsung diarahkan ke WhatsApp kasir/kurir dalam format <strong>struk ringkas</strong>.</span>
+                            </div>
+                        </div>
+                        @endif
                     </div>
 
                     <!-- 4. CATATAN PESANAN -->
@@ -527,6 +547,12 @@
                     <i class="fa-solid fa-receipt text-amber-200"></i>
                     <span>Buka Slip Lengkap & Cetak Struk</span>
                 </a>
+                <a id="modalSuccessWaBtn" 
+                   href="#" 
+                   class="hidden w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Buka WhatsApp Sekarang</span>
+                </a>
                 <a id="modalSuccessTrackingBtn" 
                    href="#" 
                    target="_blank" 
@@ -575,6 +601,7 @@
     const CART_ZENDO_TARIFF = @json($zendoTariff);
     const CART_ZENDO_COURIERS = @json($zendoCouriers);
     const CART_CSRF_TOKEN = '{{ csrf_token() }}';
+    const CART_HIDE_LIVE_TRACKING = {{ $hideLiveTracking ? 'true' : 'false' }};
 
     // Global in-memory cart persisted in localStorage
     window.nucomuCart = JSON.parse(localStorage.getItem('nucomu_cart') || '{}');
@@ -680,11 +707,13 @@
 
         if (kasirFields) kasirFields.classList.toggle('hidden', isZendo);
         if (zendoFields) zendoFields.classList.toggle('hidden', !isZendo);
-        if (zendoFeeRow) zendoFeeRow.classList.toggle('hidden', !isZendo);
+        if (zendoFeeRow) zendoFeeRow.classList.toggle('hidden', !isZendo || CART_HIDE_LIVE_TRACKING);
 
         if (paymentHint) {
             paymentHint.innerText = isZendo
-                ? '*Pesanan & titik lokasi langsung dikirim otomatis ke Kurir Zendo.'
+                ? (CART_HIDE_LIVE_TRACKING
+                    ? '*Pesanan langsung dikirimkan ke WhatsApp format struk ringkas.'
+                    : '*Pesanan & titik lokasi langsung dikirim otomatis ke Kurir Zendo.')
                 : '*Bayar di kasir setelah menunjukkan slip QR.';
         }
 
@@ -912,7 +941,7 @@
         if (itemsContainer) itemsContainer.innerHTML = html;
 
         const isZendo = modalCurrentMethod === 'zendo';
-        const activeDeliveryFee = isZendo ? modalDeliveryFee : 0;
+        const activeDeliveryFee = (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalDeliveryFee : 0;
         const grandTotal = subtotal + activeDeliveryFee;
 
         if (subtotalEl) subtotalEl.innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
@@ -1238,10 +1267,10 @@
             customer_phone: customerPhone,
             process_method: modalCurrentMethod,
             delivery_address: deliveryAddress,
-            destination_lat: isZendo ? modalSelectedLat : null,
-            destination_lng: isZendo ? modalSelectedLng : null,
-            distance_km: isZendo ? modalDistanceKm : 0,
-            delivery_fee: isZendo ? modalDeliveryFee : 0,
+            destination_lat: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalSelectedLat : null,
+            destination_lng: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalSelectedLng : null,
+            distance_km: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalDistanceKm : 0,
+            delivery_fee: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalDeliveryFee : 0,
             table_no: tableNo,
             notes: notes,
             items: items
@@ -1296,6 +1325,7 @@
         const typeEl = document.getElementById('modalSuccessType');
         const totalEl = document.getElementById('modalSuccessTotal');
         const slipLink = document.getElementById('modalSuccessSlipLink');
+        const waBtn = document.getElementById('modalSuccessWaBtn');
         const trackBtn = document.getElementById('modalSuccessTrackingBtn');
         const qrPlate = document.getElementById('modalQrPlate');
         const successBadge = document.getElementById('successBadge');
@@ -1316,23 +1346,50 @@
         if (slipLink && data.slip_url) {
             slipLink.href = data.slip_url;
             slipLink.classList.remove('hidden');
+        } else if (slipLink) {
+            slipLink.classList.add('hidden');
         }
 
         if (isZendo) {
             if (qrPlate) qrPlate.classList.add('hidden');
-            if (trackBtn && data.tracking_url) {
-                trackBtn.href = data.tracking_url;
-                trackBtn.classList.remove('hidden');
-            }
-            if (successBadge) successBadge.innerText = 'Pesanan Diteruskan ke Kurir Zendo';
-            if (successTitle) successTitle.innerText = 'Pesanan Berhasil Dikirim!';
-            if (successSubtext) successSubtext.innerText = 'Kurir Zendo akan segera menghubungi WhatsApp Anda untuk konfirmasi pengantaran.';
+            if (slipLink) slipLink.classList.add('hidden');
 
-            // Automatically open WhatsApp to courier if whatsapp_url is provided
-            if (data.whatsapp_url) {
-                window.open(data.whatsapp_url, '_blank');
+            const isHiddenTracking = data.hide_live_tracking || !data.tracking_url;
+
+            if (isHiddenTracking) {
+                // Mode Klien: Live tracking disembunyikan, langsung ke WhatsApp struk ringkas
+                if (trackBtn) trackBtn.classList.add('hidden');
+                if (waBtn && data.whatsapp_url) {
+                    waBtn.href = data.whatsapp_url;
+                    waBtn.classList.remove('hidden');
+                }
+                if (successBadge) successBadge.innerText = 'Pesanan Berhasil Disimpan';
+                if (successTitle) successTitle.innerText = 'Membuka WhatsApp...';
+                if (successSubtext) successSubtext.innerText = 'Pesanan langsung diteruskan ke WhatsApp dengan format struk belanja ringkas.';
+
+                // Langsung arahkan browser ke WhatsApp
+                if (data.whatsapp_url) {
+                    window.location.href = data.whatsapp_url;
+                }
+            } else {
+                // Mode Sekolah: Fitur Live Tracking aktif penuh
+                if (waBtn) waBtn.classList.add('hidden');
+                if (trackBtn && data.tracking_url) {
+                    trackBtn.href = data.tracking_url;
+                    trackBtn.classList.remove('hidden');
+                } else if (trackBtn) {
+                    trackBtn.classList.add('hidden');
+                }
+                if (successBadge) successBadge.innerText = 'Pesanan Diteruskan ke Kurir Zendo';
+                if (successTitle) successTitle.innerText = 'Pesanan Berhasil Dikirim!';
+                if (successSubtext) successSubtext.innerText = 'Kurir Zendo akan segera memproses pengantaran pesanan Anda.';
+
+                if (data.whatsapp_url) {
+                    window.open(data.whatsapp_url, '_blank');
+                }
             }
         } else {
+            if (waBtn) waBtn.classList.add('hidden');
             if (trackBtn) trackBtn.classList.add('hidden');
             if (qrPlate) qrPlate.classList.remove('hidden');
             if (successBadge) successBadge.innerText = 'Slip Pesanan Kasir Siap';

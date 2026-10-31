@@ -485,6 +485,7 @@
                                     </div>
                                 </div>
 
+                                @if (! ($hideLiveTracking ?? false))
                                 {{-- Interactive Leaflet Map Container --}}
                                 <div class="relative rounded-xl overflow-hidden border border-white/15">
                                     <div id="zendoMap" class="w-full h-52 sm:h-56 bg-zinc-900"></div>
@@ -524,6 +525,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                @endif
                             </div>
 
                             {{-- Detail Alamat Pengiriman --}}
@@ -1366,7 +1368,9 @@
                         renderCart();
                         resetSubmitButton();
 
-                        if (data.auto_sent) {
+                        if (data.hide_live_tracking && data.whatsapp_url) {
+                            window.location.href = data.whatsapp_url;
+                        } else if (data.auto_sent) {
                             showZendoDirectSuccessModal(data);
                         } else if (data.whatsapp_url) {
                             window.location.href = data.whatsapp_url;
@@ -1399,7 +1403,7 @@
             if (contactEl) {
                 contactEl.innerText = '+' + (data.zendo_contact || selectedCourierPhone || '{{ $zendoWhatsapp }}');
             }
-            if (trackingBtn && data.tracking_url) {
+            if (trackingBtn && data.tracking_url && !data.hide_live_tracking) {
                 trackingBtn.href = data.tracking_url;
                 trackingBtn.classList.remove('hidden');
             } else if (trackingBtn) {

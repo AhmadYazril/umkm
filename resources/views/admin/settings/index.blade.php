@@ -5,6 +5,10 @@
 @php
     $currentTransactionMode = $settings['transaction_mode'] ?? config('nucomu.contact.transaction_mode', 'both');
     $courierCount = isset($couriers) ? count($couriers) : (int) ($settings['zendo_courier_count'] ?? 1);
+    $hideLiveTracking = ($settings['hide_live_tracking'] ?? '0') === '1';
+    $isKasirActive = in_array($currentTransactionMode, ['both', 'kasir']);
+    $isZendoActive = in_array($currentTransactionMode, ['both', 'zendo']);
+    $isTrackingActive = ! $hideLiveTracking;
 @endphp
 <div class="max-w-5xl mx-auto space-y-8">
     
@@ -20,113 +24,161 @@
         </a>
     </div>
 
-    {{-- Form Pengaturan Mode Proses Transaksi --}}
-    <div class="bg-zinc-900 border border-amber-500/30 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800 pb-4">
+    {{-- Unified Card: Metode Transaksi (2 Pilihan) & Fitur Live Tracking (Toggle Switch Premium Sesuai Gambar) --}}
+    <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+        {{-- Header Card --}}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800 pb-5">
             <div>
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">
-                    Mode Transaksi Web Pelanggan
-                </span>
-                <h2 class="text-base sm:text-lg font-extrabold uppercase tracking-wider text-white">
-                    Pilih Metode Proses Transaksi di Halaman Pemesanan
+                <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 text-[10px] font-bold uppercase tracking-wider">
+                        Kontrol Transaksi & Pelacakan
+                    </span>
+                    <span id="headerTransactionBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700 text-[10px] font-bold">
+                        {{ $currentTransactionMode === 'both' ? 'Kasir + Zendo Aktif' : ($currentTransactionMode === 'kasir' ? 'Hanya Kasir Aktif' : 'Hanya Kurir Zendo Aktif') }}
+                    </span>
+                    <span id="headerTrackingBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full {{ $isTrackingActive ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40' : 'bg-zinc-800 text-zinc-400 border border-zinc-700' }} text-[10px] font-bold">
+                        {{ $isTrackingActive ? 'Mode Sekolah (Peta Live)' : 'Mode Klien (Struk WA)' }}
+                    </span>
+                </div>
+                <h2 class="text-base sm:text-lg font-black text-white tracking-wide">
+                    METODE TRANSAKSI & FITUR LIVE TRACKING
                 </h2>
+                <p class="text-xs text-zinc-400 mt-1">
+                    Atur status metode transaksi (hanya 2 metode: <strong>Kasir</strong> & <strong>Kurir Zendo</strong>) serta opsi Live Tracking kurir (Mode Sekolah dengan peta GPS vs Mode Klien dengan struk ringkas WA).
+                </p>
             </div>
-            <a href="{{ route('nucomu.order') }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/20 px-3.5 py-2 rounded-xl transition-colors self-start sm:self-auto">
-                <span>Lihat Halaman Pemesanan</span>
+            <a href="{{ route('home') }}#menu" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-500/10 border border-sky-500/20 px-3.5 py-2 rounded-xl transition-colors self-start sm:self-auto shrink-0">
+                <span>Cek Tampilan Web</span>
                 <span>↗</span>
             </a>
         </div>
 
-        <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
+        {{-- Form dengan 3 Toggle Switch Vertikal bergaris pemisah (Persis Sesuai Gambar Referensi) --}}
+        <form id="unifiedSettingsForm" action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
             @csrf
+            <input type="hidden" name="transaction_mode" id="inputTransactionMode" value="{{ $currentTransactionMode }}">
+            <input type="hidden" name="hide_live_tracking" id="inputHideLiveTracking" value="{{ $hideLiveTracking ? '1' : '0' }}">
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {{-- Opsi 1: Keduanya (Kasir & Zendo) --}}
-                <label class="relative cursor-pointer group">
-                    <input type="radio" name="transaction_mode" value="both" class="peer sr-only" {{ $currentTransactionMode === 'both' ? 'checked' : '' }}>
-                    <div class="h-full rounded-2xl p-4 bg-zinc-950 border-2 border-zinc-800 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-zinc-700 transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                    Fleksibel
-                                </span>
-                            </div>
-                            <h3 class="text-sm font-black text-white uppercase tracking-wide mb-1">Keduanya (Kasir & Zendo)</h3>
-                            <p class="text-xs text-zinc-400 leading-relaxed">
-                                Pelanggan bisa memilih sendiri saat pesan menu: mau proses lewat <strong>Kasir (QR Slip)</strong> atau diantar <strong>Kurir Zendo</strong>.
-                            </p>
+            {{-- 3 Toggle Switches List dengan separator garis horizontal --}}
+            <div class="rounded-2xl bg-zinc-950/80 border border-zinc-800/80 divide-y divide-zinc-800/80 overflow-hidden">
+                
+                {{-- TOGGLE ROW 1: METODE KASIR --}}
+                <div class="p-4 sm:p-6 flex items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
+                    <div class="space-y-1 pr-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-sm sm:text-base font-extrabold text-white tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-qrcode text-amber-400 text-sm"></i>
+                                <span>Metode Kasir (Slip QR & Bayar di Tempat)</span>
+                            </span>
+                            <span id="badgeKasir" class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $isKasirActive ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-zinc-800 text-zinc-500 border border-zinc-700' }}">
+                                {{ $isKasirActive ? 'AKTIF' : 'NONAKTIF' }}
+                            </span>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-bold text-amber-400">
-                            <span>Aktifkan Kasir + Zendo</span>
-                            <span>✓</span>
-                        </div>
+                        <p class="text-xs text-zinc-400 leading-relaxed max-w-2xl">
+                            Pelanggan memilih menu di website, lalu sistem menghasilkan <strong>Slip Pesanan & Kode QR</strong> untuk ditunjukkan dan dibayar langsung kepada kasir di kafe.
+                        </p>
                     </div>
-                </label>
 
-                {{-- Opsi 2: Kasir Saja --}}
-                <label class="relative cursor-pointer group">
-                    <input type="radio" name="transaction_mode" value="kasir" class="peer sr-only" {{ $currentTransactionMode === 'kasir' ? 'checked' : '' }}>
-                    <div class="h-full rounded-2xl p-4 bg-zinc-950 border-2 border-zinc-800 peer-checked:border-amber-400 peer-checked:bg-amber-500/10 hover:border-zinc-700 transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                                    Kasir QR
-                                </span>
-                            </div>
-                            <h3 class="text-sm font-black text-white uppercase tracking-wide mb-1">Proses Kasir Saja</h3>
-                            <p class="text-xs text-zinc-400 leading-relaxed">
-                                Pelanggan memilih menu di web lalu sistem membuat <strong>Slip Pesanan & QR Code</strong> untuk ditunjukkan dan dibayar di kasir.
-                            </p>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-bold text-cyan-400">
-                            <span>Hanya Kasir</span>
-                            <span>✓</span>
-                        </div>
-                    </div>
-                </label>
+                    {{-- Switch Toggle 1: Kasir --}}
+                    <button type="button" 
+                            role="switch" 
+                            aria-checked="{{ $isKasirActive ? 'true' : 'false' }}"
+                            id="toggleKasirTrack"
+                            onclick="toggleMethod('kasir')"
+                            class="relative inline-flex h-8 w-14 sm:h-9 sm:w-16 shrink-0 cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out focus:outline-none select-none {{ $isKasirActive ? 'bg-[#7cb4fc] shadow-[0_0_14px_rgba(124,180,252,0.4)]' : 'bg-[#e2e8f0]' }}">
+                        <span id="toggleKasirThumb"
+                              class="pointer-events-none inline-block h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-[#18181b] shadow-md transform transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $isKasirActive ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0' }}"></span>
+                    </button>
+                </div>
 
-                {{-- Opsi 3: Zendo Saja --}}
-                <label class="relative cursor-pointer group">
-                    <input type="radio" name="transaction_mode" value="zendo" class="peer sr-only" {{ $currentTransactionMode === 'zendo' ? 'checked' : '' }}>
-                    <div class="h-full rounded-2xl p-4 bg-zinc-950 border-2 border-zinc-800 peer-checked:border-emerald-400 peer-checked:bg-emerald-500/10 hover:border-zinc-700 transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                    Kurir Zendo
-                                </span>
-                            </div>
-                            <h3 class="text-sm font-black text-white uppercase tracking-wide mb-1">Proses Zendo Saja</h3>
-                            <p class="text-xs text-zinc-400 leading-relaxed">
-                                Pelanggan memilih menu & titik peta di web (tanpa bukti struk), lalu pesanan <strong>otomatis dikirim ke kurir Zendo yang tersedia</strong>.
-                            </p>
+                {{-- TOGGLE ROW 2: METODE KURIR ZENDO --}}
+                <div class="p-4 sm:p-6 flex items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
+                    <div class="space-y-1 pr-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-sm sm:text-base font-extrabold text-white tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-motorcycle text-emerald-400 text-sm"></i>
+                                <span>Metode Kurir Zendo (Delivery WhatsApp)</span>
+                            </span>
+                            <span id="badgeZendo" class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $isZendoActive ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-zinc-800 text-zinc-500 border border-zinc-700' }}">
+                                {{ $isZendoActive ? 'AKTIF' : 'NONAKTIF' }}
+                            </span>
                         </div>
-                        <div class="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-bold text-emerald-400">
-                            <span>Hanya Kurir Zendo</span>
-                            <span>✓</span>
-                        </div>
+                        <p class="text-xs text-zinc-400 leading-relaxed max-w-2xl">
+                            Pelanggan memesan untuk diantar langsung ke rumah/tujuan oleh Kurir Zendo, dan pesanan diteruskan secara instan melalui WhatsApp.
+                        </p>
                     </div>
-                </label>
+
+                    {{-- Switch Toggle 2: Zendo --}}
+                    <button type="button" 
+                            role="switch" 
+                            aria-checked="{{ $isZendoActive ? 'true' : 'false' }}"
+                            id="toggleZendoTrack"
+                            onclick="toggleMethod('zendo')"
+                            class="relative inline-flex h-8 w-14 sm:h-9 sm:w-16 shrink-0 cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out focus:outline-none select-none {{ $isZendoActive ? 'bg-[#7cb4fc] shadow-[0_0_14px_rgba(124,180,252,0.4)]' : 'bg-[#e2e8f0]' }}">
+                        <span id="toggleZendoThumb"
+                              class="pointer-events-none inline-block h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-[#18181b] shadow-md transform transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $isZendoActive ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0' }}"></span>
+                    </button>
+                </div>
+
+                {{-- TOGGLE ROW 3: FITUR LIVE TRACKING (MODE SEKOLAH VS KLIEN) --}}
+                <div class="p-4 sm:p-6 flex items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
+                    <div class="space-y-1 pr-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-sm sm:text-base font-extrabold text-white tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-map-location-dot text-sky-400 text-sm"></i>
+                                <span>Fitur Live Tracking Kurir & Peta GPS</span>
+                            </span>
+                            <span id="badgeTracking" class="text-[10px] font-bold px-2 py-0.5 rounded-full {{ $isTrackingActive ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-zinc-800 text-zinc-400 border border-zinc-700' }}">
+                                {{ $isTrackingActive ? 'MODE SEKOLAH (PETA AKTIF)' : 'MODE KLIEN (STRUK WA RINGKAS)' }}
+                            </span>
+                        </div>
+                        <p id="descTracking" class="text-xs text-zinc-400 leading-relaxed max-w-2xl">
+                            @if($isTrackingActive)
+                                <strong class="text-sky-300">Mode Sekolah / Ujian (Peta Aktif):</strong> Peta interaktif & GPS aktif saat checkout, tombol pelacakan live Grab-like tampil, dan 1 link live tracking disertakan di WhatsApp.
+                            @else
+                                <strong class="text-emerald-400">Mode Klien (Sembunyikan Peta):</strong> Peta ditiadakan total dari checkout, pesanan langsung membuka WhatsApp berupa format <strong class="text-white">struk ringkas belanja</strong> (hanya menu & total tanpa kata-kata panjang).
+                            @endif
+                        </p>
+                    </div>
+
+                    {{-- Switch Toggle 3: Live Tracking --}}
+                    <button type="button" 
+                            role="switch" 
+                            aria-checked="{{ $isTrackingActive ? 'true' : 'false' }}"
+                            id="toggleTrackingTrack"
+                            onclick="toggleTracking()"
+                            class="relative inline-flex h-8 w-14 sm:h-9 sm:w-16 shrink-0 cursor-pointer rounded-full p-1 transition-all duration-300 ease-in-out focus:outline-none select-none {{ $isTrackingActive ? 'bg-[#7cb4fc] shadow-[0_0_14px_rgba(124,180,252,0.4)]' : 'bg-[#e2e8f0]' }}">
+                        <span id="toggleTrackingThumb"
+                              class="pointer-events-none inline-block h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-[#18181b] shadow-md transform transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] {{ $isTrackingActive ? 'translate-x-6 sm:translate-x-7' : 'translate-x-0' }}"></span>
+                    </button>
+                </div>
+
             </div>
 
-            {{-- Info Card Pemisahan Halaman Manajemen & Pemantauan Zendo --}}
-            <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h4 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300">
-                        Manajemen Nomor HP Kurir & Pemantauan Pengiriman Zendo Dipisahkan
-                    </h4>
-                    <p class="text-xs text-zinc-300 mt-1">
-                        Untuk mengatur banyak nomor HP kurir Zendo, memantau nomor HP kurir sedang mengantar pesanan ke mana saja, serta mengubah status pengiriman (Standby / Mengantar / Hampir Selesai), buka menu khusus <strong>Kurir & Pantau Zendo</strong>.
-                    </p>
+            {{-- Link Pantau Kurir Zendo Quick Banner --}}
+            <div class="bg-zinc-950/60 border border-zinc-800/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-users-gear text-base"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-white">Kelola Nomor HP Kurir & Pemantauan Pengiriman</h4>
+                        <p class="text-[11px] text-zinc-400 mt-0.5">Atur daftar kurir Zendo, status pengantaran, dan pantau lokasi pengantaran di menu Zendo.</p>
+                    </div>
                 </div>
-                <a href="{{ route('admin.zendo.index') }}"
-                   class="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-black text-xs whitespace-nowrap transition shrink-0">
+                <a href="{{ route('admin.zendo.index') }}" class="px-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-bold text-xs transition shrink-0 text-center">
                     Buka Halaman Zendo →
                 </a>
             </div>
 
-            <div class="flex justify-end">
-                <button type="submit" class="bg-amber-400 hover:bg-amber-300 text-zinc-950 font-black text-xs uppercase tracking-wider px-6 py-3 rounded-xl transition-all shadow-lg">
-                    Simpan Mode Proses Transaksi
+            {{-- Bottom Action Bar --}}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-zinc-800/80">
+                <div id="autoSaveStatusText" class="flex items-center gap-2 text-xs text-zinc-500">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>Perubahan tersimpan otomatis seketika saat switch digeser.</span>
+                </div>
+                <button type="submit" class="bg-sky-500 hover:bg-sky-400 text-zinc-950 font-black text-xs uppercase tracking-wider px-6 py-2.5 rounded-xl transition-all shadow-lg hover:shadow-sky-500/20 cursor-pointer self-end sm:self-auto">
+                    Simpan Semua Pengaturan
                 </button>
             </div>
         </form>
@@ -236,4 +288,167 @@
     </div>
 
 </div>
+
+<script>
+    let stateKasir = {{ $isKasirActive ? 'true' : 'false' }};
+    let stateZendo = {{ $isZendoActive ? 'true' : 'false' }};
+    let stateTracking = {{ $isTrackingActive ? 'true' : 'false' }};
+
+    function updateSwitchVisual(trackId, thumbId, isOn) {
+        const track = document.getElementById(trackId);
+        const thumb = document.getElementById(thumbId);
+        if (!track || !thumb) return;
+
+        track.setAttribute('aria-checked', isOn ? 'true' : 'false');
+        if (isOn) {
+            track.classList.remove('bg-[#e2e8f0]');
+            track.classList.add('bg-[#7cb4fc]', 'shadow-[0_0_14px_rgba(124,180,252,0.4)]');
+            thumb.classList.remove('translate-x-0');
+            thumb.classList.add('translate-x-6', 'sm:translate-x-7');
+        } else {
+            track.classList.remove('bg-[#7cb4fc]', 'shadow-[0_0_14px_rgba(124,180,252,0.4)]');
+            track.classList.add('bg-[#e2e8f0]');
+            thumb.classList.remove('translate-x-6', 'sm:translate-x-7');
+            thumb.classList.add('translate-x-0');
+        }
+    }
+
+    function toggleMethod(type) {
+        if (type === 'kasir') {
+            if (stateKasir && !stateZendo) {
+                showAdminToast('Minimal 1 metode transaksi harus tetap aktif!', 'warning');
+                return;
+            }
+            stateKasir = !stateKasir;
+            updateSwitchVisual('toggleKasirTrack', 'toggleKasirThumb', stateKasir);
+        } else if (type === 'zendo') {
+            if (stateZendo && !stateKasir) {
+                showAdminToast('Minimal 1 metode transaksi harus tetap aktif!', 'warning');
+                return;
+            }
+            stateZendo = !stateZendo;
+            updateSwitchVisual('toggleZendoTrack', 'toggleZendoThumb', stateZendo);
+        }
+
+        let mode = 'both';
+        if (stateKasir && stateZendo) mode = 'both';
+        else if (stateKasir && !stateZendo) mode = 'kasir';
+        else if (!stateKasir && stateZendo) mode = 'zendo';
+
+        document.getElementById('inputTransactionMode').value = mode;
+        updateDynamicBadges();
+        triggerAsyncSave();
+    }
+
+    function toggleTracking() {
+        stateTracking = !stateTracking;
+        updateSwitchVisual('toggleTrackingTrack', 'toggleTrackingThumb', stateTracking);
+        document.getElementById('inputHideLiveTracking').value = stateTracking ? '0' : '1';
+        updateDynamicBadges();
+        triggerAsyncSave();
+    }
+
+    function updateDynamicBadges() {
+        const badgeKasir = document.getElementById('badgeKasir');
+        const badgeZendo = document.getElementById('badgeZendo');
+        const badgeTracking = document.getElementById('badgeTracking');
+        const descTracking = document.getElementById('descTracking');
+        const headerTxBadge = document.getElementById('headerTransactionBadge');
+        const headerTrackBadge = document.getElementById('headerTrackingBadge');
+
+        if (badgeKasir) {
+            badgeKasir.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full ' + (stateKasir ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-zinc-800 text-zinc-500 border border-zinc-700');
+            badgeKasir.innerText = stateKasir ? 'AKTIF' : 'NONAKTIF';
+        }
+
+        if (badgeZendo) {
+            badgeZendo.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full ' + (stateZendo ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-zinc-800 text-zinc-500 border border-zinc-700');
+            badgeZendo.innerText = stateZendo ? 'AKTIF' : 'NONAKTIF';
+        }
+
+        if (headerTxBadge) {
+            if (stateKasir && stateZendo) headerTxBadge.innerText = 'Kasir + Zendo Aktif';
+            else if (stateKasir) headerTxBadge.innerText = 'Hanya Kasir Aktif';
+            else headerTxBadge.innerText = 'Hanya Kurir Zendo Aktif';
+        }
+
+        if (badgeTracking) {
+            badgeTracking.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full ' + (stateTracking ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30' : 'bg-zinc-800 text-zinc-400 border border-zinc-700');
+            badgeTracking.innerText = stateTracking ? 'MODE SEKOLAH (PETA AKTIF)' : 'MODE KLIEN (STRUK WA RINGKAS)';
+        }
+
+        if (descTracking) {
+            descTracking.innerHTML = stateTracking
+                ? '<strong class="text-sky-300">Mode Sekolah / Ujian (Peta Aktif):</strong> Peta interaktif & GPS aktif saat checkout, tombol pelacakan live Grab-like tampil, dan 1 link live tracking disertakan di WhatsApp.'
+                : '<strong class="text-emerald-400">Mode Klien (Sembunyikan Peta):</strong> Peta ditiadakan total dari checkout, pesanan langsung membuka WhatsApp berupa format <strong class="text-white">struk ringkas belanja</strong> (hanya menu & total tanpa kata-kata panjang).';
+        }
+
+        if (headerTrackBadge) {
+            headerTrackBadge.className = 'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full ' + (stateTracking ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40' : 'bg-zinc-800 text-zinc-400 border border-zinc-700') + ' text-[10px] font-bold';
+            headerTrackBadge.innerText = stateTracking ? 'Mode Sekolah (Peta Live)' : 'Mode Klien (Struk WA)';
+        }
+    }
+
+    let autoSaveTimeout = null;
+    function triggerAsyncSave() {
+        clearTimeout(autoSaveTimeout);
+        const statusEl = document.getElementById('autoSaveStatusText');
+        if (statusEl) {
+            statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span><span class="text-amber-300">Menyimpan perubahan...</span>';
+        }
+
+        autoSaveTimeout = setTimeout(() => {
+            const form = document.getElementById('unifiedSettingsForm');
+            const formData = new FormData(form);
+
+            fetch('{{ route("admin.settings.update") }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (statusEl) {
+                    statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="text-emerald-300 font-bold">✓ Tersimpan otomatis</span>';
+                    setTimeout(() => {
+                        statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span><span>Perubahan tersimpan otomatis seketika saat switch digeser.</span>';
+                    }, 2500);
+                }
+                showAdminToast('✓ Pengaturan berhasil disimpan otomatis!', 'success');
+            })
+            .catch(err => {
+                if (statusEl) {
+                    statusEl.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span><span class="text-rose-300">Gagal auto-save. Silakan klik tombol Simpan.</span>';
+                }
+            });
+        }, 150);
+    }
+
+    function showAdminToast(message, type = 'success') {
+        let toast = document.getElementById('adminSettingsToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'adminSettingsToast';
+            toast.className = 'fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold transition-all duration-300 transform translate-y-10 opacity-0 pointer-events-none flex items-center gap-2.5';
+            document.body.appendChild(toast);
+        }
+
+        if (type === 'warning') {
+            toast.className = 'fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold transition-all duration-300 transform flex items-center gap-2.5 bg-amber-400 text-zinc-950 border border-amber-300';
+            toast.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-base"></i><span>' + message + '</span>';
+        } else {
+            toast.className = 'fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold transition-all duration-300 transform flex items-center gap-2.5 bg-zinc-900 text-sky-300 border border-sky-500/40';
+            toast.innerHTML = '<i class="fa-solid fa-circle-check text-sky-400 text-base"></i><span>' + message + '</span>';
+        }
+
+        toast.classList.remove('translate-y-10', 'opacity-0', 'pointer-events-none');
+        clearTimeout(window.adminToastTimer);
+        window.adminToastTimer = setTimeout(() => {
+            toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+        }, 2600);
+    }
+</script>
 @endsection
