@@ -114,18 +114,22 @@
                     {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) untuk Kedua Baris --}}
                     <div class="story-anim-right story-delay-2 mb-6">
                         <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight">
-                            <span class="block">Berawal dari Rasa,</span>
-                            <span class="block mt-1 sm:mt-1.5">Kembali karena Rindu.</span>
+                            @if(!empty($brand['story_headline']))
+                                {{ $brand['story_headline'] }}
+                            @else
+                                <span class="block">Berawal dari Rasa,</span>
+                                <span class="block mt-1 sm:mt-1.5">Kembali karena Rindu.</span>
+                            @endif
                         </h2>
                     </div>
 
                     {{-- 3 & 4. Deskripsi Nucomu Cafe (Dua Paragraf dengan Typografi Rapi & Proporsional) --}}
                     <div class="space-y-4 max-w-xl text-[15px] sm:text-base text-[#666666] leading-[1.8] font-body mb-8">
                         <p class="story-anim-right story-delay-3">
-                            Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.
+                            {{ $brand['story_p1'] ?? 'Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.' }}
                         </p>
                         <p class="story-anim-right story-delay-4">
-                            Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.
+                            {{ $brand['story_p2'] ?? 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.' }}
                         </p>
                     </div>
 

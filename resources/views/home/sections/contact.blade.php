@@ -81,7 +81,7 @@
                             01 / ALAMAT
                         </span>
                         <p class="font-body text-base sm:text-lg font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-3">
-                            {{ config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221') }}
+                            {{ $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221') }}
                         </p>
                         <div class="flex items-start gap-2 text-xs sm:text-[13px] text-[#666666] font-body leading-relaxed">
                             <svg class="w-4 h-4 text-[#8A8A8A] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -125,11 +125,11 @@
                             03 / LAYANAN WHATSAPP
                         </span>
                         <div class="mb-4">
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', config('nucomu.contact.whatsapp_number', '6281234567890')) }}" 
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contact['whatsapp_number'] ?? config('nucomu.contact.whatsapp_number', '6281234567890')) }}" 
                                target="_blank" 
                                rel="noopener noreferrer" 
                                class="inline-block font-body text-2xl sm:text-3xl font-bold text-[#1C1C1C] pb-1 border-b-2 border-[#1C1C1C] hover:text-[#555555] hover:border-[#555555] transition-colors tracking-tight">
-                                {{ config('nucomu.contact.whatsapp_display', '+62 812-3456-7890') }}
+                                {{ $contact['whatsapp_display'] ?? config('nucomu.contact.whatsapp_display', '+62 812-3456-7890') }}
                             </a>
                         </div>
                         <ul class="space-y-2 font-body text-xs sm:text-[13px] text-[#444444]">

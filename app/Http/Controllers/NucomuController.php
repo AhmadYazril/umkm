@@ -42,11 +42,38 @@ class NucomuController extends Controller
         $recommendations = config('nucomu.recommendations');
         $reviews = config('nucomu.reviews');
 
-        // Check if database settings override contact info
+        // Check if database settings override brand, contact, and content info
         try {
             $dbSettings = Setting::pluck('value', 'key');
             if (! empty($dbSettings['cafe_name'])) {
                 $brand['name'] = $dbSettings['cafe_name'];
+            }
+            if (! empty($dbSettings['cafe_tagline'])) {
+                $brand['tagline'] = $dbSettings['cafe_tagline'];
+            }
+            if (! empty($dbSettings['hero_title'])) {
+                $brand['hero_title'] = $dbSettings['hero_title'];
+            }
+            if (! empty($dbSettings['hero_subtitle'])) {
+                $brand['hero_subtitle'] = $dbSettings['hero_subtitle'];
+            }
+            if (! empty($dbSettings['hero_badge'])) {
+                $brand['hero_badge'] = $dbSettings['hero_badge'];
+            }
+            if (! empty($dbSettings['cafe_story_headline'])) {
+                $brand['story_headline'] = $dbSettings['cafe_story_headline'];
+            }
+            if (! empty($dbSettings['cafe_story_p1'])) {
+                $brand['story_p1'] = $dbSettings['cafe_story_p1'];
+            }
+            if (! empty($dbSettings['cafe_story_p2'])) {
+                $brand['story_p2'] = $dbSettings['cafe_story_p2'];
+            }
+            if (! empty($dbSettings['cafe_story'])) {
+                $brand['story'] = $dbSettings['cafe_story'];
+            }
+            if (! empty($dbSettings['cafe_concept'])) {
+                $brand['concept'] = $dbSettings['cafe_concept'];
             }
             if (! empty($dbSettings['cafe_address'])) {
                 $contact['address'] = $dbSettings['cafe_address'];
@@ -54,6 +81,24 @@ class NucomuController extends Controller
             if (! empty($dbSettings['cafe_whatsapp'])) {
                 $contact['whatsapp_number'] = $dbSettings['cafe_whatsapp'];
                 $contact['whatsapp_display'] = $dbSettings['cafe_whatsapp'];
+            }
+            if (! empty($dbSettings['cafe_instagram'])) {
+                $contact['instagram'] = $dbSettings['cafe_instagram'];
+            }
+            if (! empty($dbSettings['cafe_tiktok'])) {
+                $contact['tiktok'] = $dbSettings['cafe_tiktok'];
+            }
+            if (! empty($dbSettings['cafe_email'])) {
+                $contact['email'] = $dbSettings['cafe_email'];
+            }
+            if (! empty($dbSettings['cafe_maps_url'])) {
+                $contact['maps_url'] = $dbSettings['cafe_maps_url'];
+            }
+            if (! empty($dbSettings['google_places_api_key'])) {
+                $integrations['google_places_api_key'] = $dbSettings['google_places_api_key'];
+            }
+            if (! empty($dbSettings['google_place_id'])) {
+                $integrations['google_place_id'] = $dbSettings['google_place_id'];
             }
         } catch (\Throwable $e) {
             // Fallback gracefully to config
