@@ -19,5 +19,15 @@ class AdminUserSeeder extends Seeder
                 'role' => 'admin',
             ]
         );
+
+        User::updateOrCreate(
+            ['email' => 'kasir@nucomu.com'],
+            [
+                'name' => 'Kasir Nucomu',
+                'email' => 'kasir@nucomu.com',
+                'password' => Hash::make('password123'),
+                'role' => 'kasir',
+            ]
+        );
     }
 }

@@ -1516,6 +1516,12 @@ class NucomuController extends Controller
                 return $order;
             });
 
+            try {
+                KasirController::deductStockForOrderItems((array) $request->items);
+            } catch (\Throwable $stockEx) {
+                // Continue gracefully
+            }
+
             if ($processMethod === 'zendo') {
                 try {
                     Setting::set("zendo_courier_{$courierIndex}_last_order_at", now()->toDateTimeString());

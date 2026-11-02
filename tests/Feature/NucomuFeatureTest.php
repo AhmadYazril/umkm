@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\NucomuController;
 use App\Http\Controllers\ZendoTrackingController;
+use App\Models\Category;
+use App\Models\Menu;
+use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\Setting;
 use App\Models\User;
@@ -522,5 +526,219 @@ class NucomuFeatureTest extends TestCase
 
         $delivery->refresh();
         $this->assertSame('picked_up', $delivery->status);
+    }
+
+    public function test_kasir_workspace_requires_login_persists_cookie_and_supports_pos_and_qr_features(): void
+    {
+        // 1. Unauthenticated visit to /kasir redirects to /kasir/login
+        $unauthResponse = $this->get(route('kasir.index'));
+        $unauthResponse->assertRedirect(route('kasir.login'));
+
+        // Even if already logged into /admin, visiting /kasir without logging in via /kasir/login redirects to /kasir/login first
+        $adminUser = User::factory()->create(['role' => 'admin']);
+        $adminVisitWithoutKasirCookie = $this->actingAs($adminUser)->get(route('kasir.index'));
+        $adminVisitWithoutKasirCookie->assertRedirect(route('kasir.login'));
+        auth()->logout();
+
+        // 2. Login page loads cleanly with the Kasir account automatically ready and without exposing any password
+        $loginPage = $this->get(route('kasir.login'));
+        $loginPage->assertOk();
+        $loginPage->assertSee('Masuk ke Kasir');
+        $loginPage->assertSee('Kasir Nucomu');
+        $loginPage->assertSee('kasir@nucomu.com');
+        $loginPage->assertDontSee('password123');
+
+        // 3. Authenticate as kasir by entering ONLY the password and verify persistent cookie is set
+        $loginResponse = $this->post(route('kasir.login.post'), [
+            'password' => 'password123',
+        ]);
+        $loginResponse->assertRedirect(route('kasir.index'));
+        $loginResponse->assertCookie(KasirController::KASIR_COOKIE);
+
+        $kasirCookieValue = $loginResponse->getCookie(KasirController::KASIR_COOKIE, false)->getValue();
+        $this->assertNotEmpty($kasirCookieValue);
+
+        // 4. Simulate browser reopening after session expires: cookie alone restores auth without re-login
+        auth()->logout();
+        $this->assertGuest();
+
+        $restoredResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->get(route('kasir.index'));
+        $restoredResponse->assertOk();
+        $this->assertAuthenticated();
+        $this->assertSame('kasir@nucomu.com', auth()->user()->email);
+
+        // Visiting /kasir/login while holding valid cookie redirects straight to /kasir
+        auth()->logout();
+        $loginRedirect = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->get(route('kasir.login'));
+        $loginRedirect->assertRedirect(route('kasir.index'));
+
+        // 5. Verify categorized menu boxes (Minuman, Makanan, Snack, Dessert), no "Semua Menu", stock control, and QR features
+        $restoredResponse->assertSee('Kategori Minuman');
+        $restoredResponse->assertSee('Kategori Makanan');
+        $restoredResponse->assertSee('Kategori Snack');
+        $restoredResponse->assertSee('Kategori Dessert');
+        $restoredResponse->assertDontSee('Semua Kategori');
+        $restoredResponse->assertDontSee('Semua Menu');
+        $restoredResponse->assertSee('Stok Barang');
+        $restoredResponse->assertSee('Nucomu Signature Latte');
+        $restoredResponse->assertSee('kasirTapMenuBox', false);
+        $restoredResponse->assertSee('Scan QR');
+
+        // 5b. Cashier can control stock directly via POST /kasir/stok
+        $stockUpdateResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->postJson(route('kasir.stock.update'), [
+                'menu_id' => 1,
+                'stock' => 15,
+            ]);
+        $stockUpdateResponse->assertOk();
+        $stockUpdateResponse->assertJson([
+            'success' => true,
+            'menu_id' => 1,
+            'stock' => 15,
+            'is_available' => true,
+        ]);
+
+        // 6. Create an order from Kasir POS (and verify stock is automatically deducted: 15 - 2 = 13)
+        $createOrderResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->postJson(route('kasir.orders.store'), [
+                'customer_name' => 'Pelanggan Kasir 1',
+                'customer_phone' => '08123456789',
+                'order_type' => 'dine_in',
+                'table_no' => '03',
+                'payment_method' => 'qris',
+                'payment_status' => 'paid',
+                'notes' => 'Less sugar',
+                'items' => [
+                    [
+                        'menu_id' => 1,
+                        'menu_name' => 'Nucomu Signature Latte',
+                        'unit_price' => 28000,
+                        'qty' => 2,
+                    ],
+                ],
+            ]);
+
+        $createOrderResponse->assertOk();
+        $createOrderResponse->assertJson([
+            'success' => true,
+            'order' => [
+                'customer_name' => 'Pelanggan Kasir 1',
+                'total' => 56000,
+                'payment_status' => 'paid',
+            ],
+        ]);
+
+        $orderCode = $createOrderResponse->json('order.code');
+        $orderId = $createOrderResponse->json('order.id');
+        $this->assertNotEmpty($orderCode);
+        $this->assertSame(13, $createOrderResponse->json('stocks.1'));
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $orderId,
+            'code' => $orderCode,
+            'customer_name' => 'Pelanggan Kasir 1',
+            'total' => 56000,
+        ]);
+
+        // 7. Lookup order by code and by full QR URL
+        $lookupResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->getJson(route('kasir.orders.lookup', ['code' => $orderCode]));
+        $lookupResponse->assertOk();
+        $lookupResponse->assertJson([
+            'success' => true,
+            'order' => [
+                'code' => $orderCode,
+                'customer_name' => 'Pelanggan Kasir 1',
+            ],
+        ]);
+
+        $qrUrl = route('admin.orders.qr', ['code' => $orderCode]);
+        $lookupByUrlResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->getJson(route('kasir.orders.lookup', ['code' => $qrUrl]));
+        $lookupByUrlResponse->assertOk();
+        $lookupByUrlResponse->assertJsonPath('order.code', $orderCode);
+
+        // 8. Update order status and payment status
+        $updateStatusResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->postJson(route('kasir.orders.status', ['order' => $orderId]), [
+                'status' => 'completed',
+                'payment_status' => 'paid',
+            ]);
+        $updateStatusResponse->assertOk();
+        $updateStatusResponse->assertJson([
+            'success' => true,
+            'order' => [
+                'status' => 'completed',
+                'payment_status' => 'paid',
+            ],
+        ]);
+
+        $this->assertSame('completed', Order::findOrFail($orderId)->status);
+
+        // 9. Thermal receipt renders properly
+        $receiptResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->get(route('kasir.orders.receipt', ['order' => $orderId]));
+        $receiptResponse->assertOk();
+        $receiptResponse->assertSee($orderCode);
+        $receiptResponse->assertSee('Nucomu Signature Latte');
+
+        // 9b. Verify full synchronization between DB Menu table, Admin Menu Panel (/admin/menu), and Kasir (/kasir)
+        $kopiCat = Category::create([
+            'name' => 'Kopi',
+            'slug' => 'kopi',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($adminUser)->post(route('admin.menus.store'), [
+            'category_id' => $kopiCat->id,
+            'name' => 'Es Kopi Susu Nucomu DB',
+            'description' => 'Menu langsung dari database',
+            'price' => 24000,
+            'stock' => 20,
+            'is_available' => 1,
+        ])->assertRedirect(route('admin.menus.index'));
+
+        $dbMenu = Menu::where('name', 'Es Kopi Susu Nucomu DB')->firstOrFail();
+        $this->assertSame(20, $dbMenu->stock);
+        $this->assertTrue($dbMenu->is_available);
+
+        // Kasir sync endpoint sees the DB menu and its exact stock (20)
+        $syncResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->getJson(route('kasir.sync'));
+        $syncResponse->assertOk();
+        $this->assertSame(20, $syncResponse->json("stocks.{$dbMenu->id}.stock"));
+
+        // Cashier updates stock in /kasir -> DB Menu model and /admin/menu reflect new stock (8)
+        $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->postJson(route('kasir.stock.update'), [
+                'menu_id' => $dbMenu->id,
+                'stock' => 8,
+            ])->assertOk();
+
+        $this->assertSame(8, $dbMenu->fresh()->stock);
+
+        // Admin toggles menu to unavailable (Habis) -> stock becomes 0 in DB and Kasir
+        $this->actingAs($adminUser)
+            ->post(route('admin.menus.toggleAvailable', $dbMenu->id))
+            ->assertRedirect();
+        $this->assertSame(0, $dbMenu->fresh()->stock);
+        $this->assertFalse($dbMenu->fresh()->is_available);
+
+        // Admin updates stock via inline stock endpoint -> stock becomes 30 and available in DB and Kasir
+        $this->actingAs($adminUser)
+            ->postJson(route('admin.menus.updateStock', $dbMenu->id), ['stock' => 30])
+            ->assertOk()
+            ->assertJson(['success' => true, 'stock' => 30, 'is_available' => true]);
+        $this->assertSame(30, $dbMenu->fresh()->stock);
+        $this->assertTrue($dbMenu->fresh()->is_available);
+
+        // 10. Logout clears session and expires persistent cookie
+        $logoutResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->post(route('kasir.logout'));
+        $logoutResponse->assertRedirect(route('kasir.login'));
+        $logoutResponse->assertCookieExpired(KasirController::KASIR_COOKIE);
     }
 }

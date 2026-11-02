@@ -44,6 +44,13 @@
                 </form>
             @endif
 
+            <a href="{{ route('kasir.index') }}" target="_blank"
+               class="px-3.5 py-2.5 rounded-xl bg-pure-white hover:bg-warm-stone border border-hairline text-xs font-bold text-ink-black transition shadow-xs flex items-center gap-2 btn-press"
+               title="Buka POS Kasir (/kasir)">
+                <i class="fa-solid fa-cash-register text-xs"></i>
+                <span>POS Kasir</span>
+            </a>
+
             <a href="{{ route('home') }}#all-menu-section" target="_blank"
                class="px-3.5 py-2.5 rounded-xl bg-pure-white hover:bg-warm-stone border border-hairline text-xs font-bold text-ink-black transition shadow-xs flex items-center gap-2 btn-press"
                title="Lihat Menu di Website Pelanggan">
@@ -209,13 +216,22 @@
                         </div>
                     </div>
 
-                    {{-- Deskripsi Singkat --}}
-                    <div>
-                        <label for="quick_description" class="block text-xs font-bold text-charcoal mb-1.5">
-                            Deskripsi Singkat / Catatan Rasa
-                        </label>
-                        <input type="text" name="description" id="quick_description" placeholder="Espresso house blend dengan susu segar dan gula aren alami..."
-                               class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2 text-xs text-ink-black focus:outline-none focus:border-ink-black focus:bg-white transition">
+                    {{-- Deskripsi Singkat & Stok Awal --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="sm:col-span-2">
+                            <label for="quick_description" class="block text-xs font-bold text-charcoal mb-1.5">
+                                Deskripsi Singkat / Catatan Rasa
+                            </label>
+                            <input type="text" name="description" id="quick_description" placeholder="Espresso house blend dengan susu segar dan gula aren alami..."
+                                   class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2 text-xs text-ink-black focus:outline-none focus:border-ink-black focus:bg-white transition">
+                        </div>
+                        <div>
+                            <label for="quick_stock" class="block text-xs font-bold text-charcoal mb-1.5">
+                                Stok Awal (Porsi)
+                            </label>
+                            <input type="number" name="stock" id="quick_stock" value="25" min="0" max="9999" required
+                                   class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2 text-xs font-mono font-bold text-ink-black focus:outline-none focus:border-ink-black focus:bg-white transition">
+                        </div>
                     </div>
 
                     {{-- Checkboxes Status --}}
@@ -371,17 +387,29 @@
                             @endif
                         </div>
 
-                        {{-- Quick Availability Floating Pill --}}
-                        <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                        {{-- Quick Availability Floating Pill & Live Stock Badge --}}
+                        @php
+                            $menuStockVal = $menu->stock !== null ? (int) $menu->stock : ($menu->is_available ? 25 : 0);
+                            if (!$menu->is_available) {
+                                $menuStockVal = 0;
+                            }
+                        @endphp
+                        <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
                             <form action="{{ route('admin.menus.toggleAvailable', $menu->id) }}" method="POST">
                                 @csrf
                                 <button type="submit" 
-                                        class="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs transition btn-press flex items-center gap-1.5 {{ $menu->is_available ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white' }}"
+                                        id="adminGridStatusBtn-{{ $menu->id }}"
+                                        class="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs transition btn-press flex items-center gap-1.5 {{ $menu->is_available && $menuStockVal > 0 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white' }}"
                                         title="Klik untuk mengubah ketersediaan">
                                     <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-                                    <span>{{ $menu->is_available ? 'Tersedia' : 'Habis' }}</span>
+                                    <span id="adminGridStatusText-{{ $menu->id }}">{{ $menu->is_available && $menuStockVal > 0 ? 'Tersedia' : 'Habis' }}</span>
                                 </button>
                             </form>
+
+                            <span id="adminGridStockPill-{{ $menu->id }}"
+                                  class="px-2 py-0.5 rounded-full text-[9.5px] font-mono font-bold shadow-xs border backdrop-blur-xs {{ $menuStockVal > 5 ? 'bg-white/95 text-ink-black border-hairline' : ($menuStockVal > 0 ? 'bg-amber-50/95 text-amber-800 border-amber-300' : 'bg-rose-600 text-white border-rose-700') }}">
+                                Stok: {{ $menuStockVal }}
+                            </span>
                         </div>
                     </div>
 
@@ -398,28 +426,47 @@
                     </div>
                 </div>
 
-                {{-- Price & Action Bar --}}
-                <div class="pt-3 border-t border-hairline flex items-center justify-between mt-3">
-                    <span class="font-mono font-bold text-xs sm:text-sm text-ink-black">
-                        Rp {{ number_format($menu->price, 0, ',', '.') }}
-                    </span>
-
-                    <div class="flex items-center gap-1">
-                        <a href="{{ route('admin.menus.edit', $menu->id) }}" 
-                           class="w-7 h-7 rounded-lg bg-warm-stone hover:bg-ink-black hover:text-white text-ink-black flex items-center justify-center text-xs transition btn-press" 
-                           title="Edit Menu">
-                            <i class="fa-solid fa-pen-to-square text-[10px]"></i>
-                        </a>
-
-                        <form action="{{ route('admin.menus.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Hapus menu {{ $menu->name }}?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" 
-                                    class="w-7 h-7 rounded-lg bg-warm-stone hover:bg-rose-50 text-muted-text hover:text-rose-700 flex items-center justify-center text-xs transition btn-press" 
-                                    title="Hapus Menu">
-                                <i class="fa-solid fa-trash-can text-[10px]"></i>
+                {{-- Inline Stock Control & Action Bar --}}
+                <div class="pt-3 border-t border-hairline space-y-2.5 mt-3">
+                    <div class="flex items-center justify-between bg-warm-ivory border border-hairline rounded-xl px-2.5 py-1.5">
+                        <span class="text-[10px] font-mono font-bold text-muted-text uppercase">Stok Kasir</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: -1 })"
+                                    class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
+                                -
                             </button>
-                        </form>
+                            <input type="number" id="adminGridStockInput-{{ $menu->id }}" value="{{ $menuStockVal }}" min="0" max="9999"
+                                   onchange="adjustAdminMenuStock({{ $menu->id }}, { stock: parseInt(this.value || '0', 10) })"
+                                   class="w-11 text-center bg-white border border-hairline rounded-lg py-0.5 text-[11px] font-mono font-bold text-ink-black focus:outline-none focus:border-ink-black">
+                            <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: 1 })"
+                                    class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="font-mono font-bold text-xs sm:text-sm text-ink-black">
+                            Rp {{ number_format($menu->price, 0, ',', '.') }}
+                        </span>
+
+                        <div class="flex items-center gap-1">
+                            <a href="{{ route('admin.menus.edit', $menu->id) }}" 
+                               class="w-7 h-7 rounded-lg bg-warm-stone hover:bg-ink-black hover:text-white text-ink-black flex items-center justify-center text-xs transition btn-press" 
+                               title="Edit Menu">
+                                <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                            </a>
+
+                            <form action="{{ route('admin.menus.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Hapus menu {{ $menu->name }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" 
+                                        class="w-7 h-7 rounded-lg bg-warm-stone hover:bg-rose-50 text-muted-text hover:text-rose-700 flex items-center justify-center text-xs transition btn-press" 
+                                        title="Hapus Menu">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
 
@@ -452,6 +499,7 @@
                         <th class="px-6 py-4">Menu</th>
                         <th class="px-6 py-4">Kategori</th>
                         <th class="px-6 py-4">Harga</th>
+                        <th class="px-6 py-4">Stok (Kasir &amp; DB)</th>
                         <th class="px-6 py-4">Ketersediaan</th>
                         <th class="px-6 py-4 text-right">Aksi</th>
                     </tr>
@@ -464,6 +512,10 @@
                                 $tableImg = asset('storage/' . $menu->image);
                             } elseif ($menu->image && (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://'))) {
                                 $tableImg = $menu->image;
+                            }
+                            $rowStock = $menu->stock !== null ? (int) $menu->stock : ($menu->is_available ? 25 : 0);
+                            if (!$menu->is_available) {
+                                $rowStock = 0;
                             }
                         @endphp
                         <tr class="hover:bg-warm-stone/30 transition-colors menu-table-row" data-menu-name="{{ strtolower($menu->name) }}">
@@ -501,10 +553,26 @@
                             </td>
 
                             <td class="px-6 py-3.5">
+                                <div class="inline-flex items-center gap-1 bg-warm-ivory border border-hairline rounded-xl p-1">
+                                    <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: -1 })"
+                                            class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
+                                        -
+                                    </button>
+                                    <input type="number" id="adminTableStockInput-{{ $menu->id }}" value="{{ $rowStock }}" min="0" max="9999"
+                                           onchange="adjustAdminMenuStock({{ $menu->id }}, { stock: parseInt(this.value || '0', 10) })"
+                                           class="w-12 text-center bg-white border border-hairline rounded-lg py-0.5 text-[11px] font-mono font-bold text-ink-black focus:outline-none focus:border-ink-black">
+                                    <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: 1 })"
+                                            class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
+                                        +
+                                    </button>
+                                </div>
+                            </td>
+
+                            <td class="px-6 py-3.5">
                                 <form action="{{ route('admin.menus.toggleAvailable', $menu->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="px-2.5 py-1 rounded-full text-[10px] font-bold border transition btn-press {{ $menu->is_available ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' }}">
-                                        {{ $menu->is_available ? '● Tersedia' : '○ Habis' }}
+                                    <button type="submit" id="adminTableStatusBtn-{{ $menu->id }}" class="px-2.5 py-1 rounded-full text-[10px] font-bold border transition btn-press {{ $menu->is_available && $rowStock > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' }}">
+                                        {{ $menu->is_available && $rowStock > 0 ? '● Tersedia' : '○ Habis' }}
                                     </button>
                                 </form>
                             </td>
@@ -645,6 +713,58 @@
                 row.style.display = 'none';
             }
         });
+    }
+
+    // 6. Live Stock Control Synced Between Admin, DB, and POS Kasir
+    async function adjustAdminMenuStock(menuId, payload) {
+        try {
+            const res = await fetch(`/admin/menu/${menuId}/stock`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) return;
+
+            const newStock = parseInt(data.stock, 10) || 0;
+            const isAvail = newStock > 0;
+
+            const gridInput = document.getElementById(`adminGridStockInput-${menuId}`);
+            if (gridInput) gridInput.value = newStock;
+            const tableInput = document.getElementById(`adminTableStockInput-${menuId}`);
+            if (tableInput) tableInput.value = newStock;
+
+            const gridPill = document.getElementById(`adminGridStockPill-${menuId}`);
+            if (gridPill) {
+                gridPill.textContent = `Stok: ${newStock}`;
+                gridPill.className = `px-2 py-0.5 rounded-full text-[9.5px] font-mono font-bold shadow-xs border backdrop-blur-xs ${newStock > 5 ? 'bg-white/95 text-ink-black border-hairline' : (newStock > 0 ? 'bg-amber-50/95 text-amber-800 border-amber-300' : 'bg-rose-600 text-white border-rose-700')}`;
+            }
+
+            const gridStatusBtn = document.getElementById(`adminGridStatusBtn-${menuId}`);
+            const gridStatusText = document.getElementById(`adminGridStatusText-${menuId}`);
+            if (gridStatusBtn && gridStatusText) {
+                gridStatusText.textContent = isAvail ? 'Tersedia' : 'Habis';
+                gridStatusBtn.className = `px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs transition btn-press flex items-center gap-1.5 ${isAvail ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white'}`;
+            }
+
+            const tableStatusBtn = document.getElementById(`adminTableStatusBtn-${menuId}`);
+            if (tableStatusBtn) {
+                tableStatusBtn.textContent = isAvail ? '● Tersedia' : '○ Habis';
+                tableStatusBtn.className = `px-2.5 py-1 rounded-full text-[10px] font-bold border transition btn-press ${isAvail ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200'}`;
+            }
+
+            if (typeof showAdminToast === 'function') {
+                showAdminToast(data.message || 'Stok diperbarui di DB & Kasir', 'success', 'Sinkron Stok');
+            }
+        } catch (err) {
+            if (typeof showAdminToast === 'function') {
+                showAdminToast('Gagal memperbarui stok menu', 'error', 'Error');
+            }
+        }
     }
 
     // Restore saved view preference

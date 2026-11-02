@@ -144,6 +144,39 @@
                     </div>
                 </div>
 
+                {{-- Stock & Quick Presets (Synced with Kasir & DB) --}}
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="stock" class="text-xs font-bold text-charcoal">
+                            Stok Porsi (Tersinkron ke POS Kasir) <span class="text-rose-600">*</span>
+                        </label>
+                        <span class="text-[10px] text-muted-text">Pilihan stok cepat:</span>
+                    </div>
+                    <div class="relative">
+                        <input type="number" name="stock" id="stock" value="{{ old('stock', isset($menu) ? ($menu->stock ?? ($menu->is_available ? 25 : 0)) : 25) }}" required min="0" max="9999" placeholder="25"
+                               class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2.5 pr-16 text-xs text-ink-black font-mono font-bold focus:outline-none focus:border-ink-black focus:bg-white transition">
+                        <span class="absolute right-3.5 top-2.5 text-[10px] font-mono font-bold text-muted-text uppercase">Porsi</span>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <button type="button" onclick="document.getElementById('stock').value = 0" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 border border-rose-200 transition">
+                            0 (Habis)
+                        </button>
+                        <button type="button" onclick="document.getElementById('stock').value = 10" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
+                            10 Porsi
+                        </button>
+                        <button type="button" onclick="document.getElementById('stock').value = 25" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
+                            25 Porsi
+                        </button>
+                        <button type="button" onclick="document.getElementById('stock').value = 50" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
+                            50 Porsi
+                        </button>
+                        <button type="button" onclick="document.getElementById('stock').value = 100" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
+                            100 Porsi
+                        </button>
+                    </div>
+                </div>
+
                 <div>
                     <label for="description" class="block text-xs font-bold text-charcoal mb-1.5">
                         Deskripsi Sajian &amp; Catatan Rasa

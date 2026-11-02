@@ -547,6 +547,15 @@
                     <span>Scan QR Kasir</span>
                 </a>
 
+                <a href="{{ route('kasir.index') }}" target="_blank"
+                   class="flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all duration-200 text-charcoal hover:text-ink-black hover:bg-warm-stone/80">
+                    <span class="flex items-center space-x-3">
+                        <i class="fa-solid fa-cash-register w-4 text-center"></i>
+                        <span>Buka POS Kasir</span>
+                    </span>
+                    <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-warm-stone text-ink-black border border-hairline">/kasir ↗</span>
+                </a>
+
                 <a href="{{ route('admin.zendo.index') }}" 
                    class="flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 {{ request()->routeIs('admin.zendo.*') ? 'bg-ink-black text-white font-bold shadow-xs' : 'text-charcoal hover:text-ink-black hover:bg-warm-stone/80' }}">
                     <i class="fa-solid fa-motorcycle w-4 text-center"></i>

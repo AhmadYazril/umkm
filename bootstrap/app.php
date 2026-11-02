@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ZendoTrackingController;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\KasirMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,9 +20,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->alias([
             'admin' => AdminMiddleware::class,
+            'kasir' => KasirMiddleware::class,
         ]);
         $middleware->encryptCookies(except: [
             ZendoTrackingController::DEVICE_COOKIE,
+            KasirController::KASIR_COOKIE,
         ]);
         $middleware->validateCsrfTokens(except: [
             'reservasi',

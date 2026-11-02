@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\KasirController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,6 +13,9 @@ class AuthController extends Controller
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
             return redirect()->route('admin.dashboard');
+        }
+        if (Auth::check() && Auth::user()->role === 'kasir') {
+            return redirect()->route('kasir.index');
         }
 
         return view('admin.auth.login');
@@ -24,8 +28,15 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            if (Auth::user()->role !== 'admin') {
+        if (Auth::attempt($credentials, false)) {
+            $user = Auth::user();
+            if ($user->role === 'kasir') {
+                $request->session()->regenerate();
+                KasirController::queueAuthCookie($user);
+
+                return redirect()->route('kasir.index');
+            }
+            if ($user->role !== 'admin') {
                 Auth::logout();
 
                 return back()->withErrors(['email' => 'Akun Anda tidak memiliki akses admin.']);

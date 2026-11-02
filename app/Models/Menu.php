@@ -18,6 +18,7 @@ class Menu extends Model
         'slug',
         'description',
         'price',
+        'stock',
         'image',
         'is_available',
         'is_featured',
@@ -28,6 +29,7 @@ class Menu extends Model
 
     protected $casts = [
         'price' => 'integer',
+        'stock' => 'integer',
         'is_available' => 'boolean',
         'is_featured' => 'boolean',
         'is_best_seller' => 'boolean',

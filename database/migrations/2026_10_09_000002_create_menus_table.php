@@ -19,6 +19,7 @@ return new class extends Migration
                 $table->string('slug')->unique();
                 $table->text('description')->nullable();
                 $table->unsignedInteger('price');
+                $table->integer('stock')->default(25);
                 $table->string('image')->nullable();
                 $table->boolean('is_available')->default(true);
                 $table->boolean('is_featured')->default(false);
@@ -27,6 +28,10 @@ return new class extends Migration
                 $table->integer('sort_order')->default(0);
                 $table->softDeletes();
                 $table->timestamps();
+            });
+        } elseif (! Schema::hasColumn('menus', 'stock')) {
+            Schema::table('menus', function (Blueprint $table) {
+                $table->integer('stock')->default(25)->after('price');
             });
         }
     }

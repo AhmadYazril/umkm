@@ -40,4 +40,18 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function isKasir(): bool
+    {
+        return in_array($this->role, ['kasir', 'admin'], true);
+    }
+
+    /**
+     * Disable remember_token column usage since the MySQL users table does not include remember_token
+     * and Kasir/Admin persistence is handled via dedicated signed cookies.
+     */
+    public function getRememberTokenName(): string
+    {
+        return '';
+    }
 }

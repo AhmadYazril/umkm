@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\KasirController;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -64,16 +65,23 @@ class OrderController extends Controller
     }
 
     /**
-     * QR Scan landing — admin scans QR, gets redirected here.
+     * QR Scan landing — admin or kasir scans QR, gets redirected here.
      * Accessible without login (public-facing via QR code).
      */
-    public function qrDetail(string $code)
+    public function qrDetail(Request $request, string $code)
     {
         $order = Order::where('code', $code)->with(['table', 'items'])->firstOrFail();
 
-        // Redirect to admin detail if logged in, else show simplified view
+        // Check or restore Kasir/Admin cookie auth
+        KasirController::checkOrRestoreKasirAuth($request);
+
         if (auth()->check()) {
-            return redirect()->route('admin.orders.show', $order->id);
+            if (auth()->user()->role === 'kasir') {
+                return redirect()->route('kasir.index', ['tab' => 'scan', 'code' => $order->code]);
+            }
+            if (auth()->user()->role === 'admin') {
+                return redirect()->route('admin.orders.show', $order->id);
+            }
         }
 
         // Guest view — simple order detail for kasir

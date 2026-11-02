@@ -114,12 +114,17 @@
             </div>
         </div>
 
-        {{-- Admin login button --}}
-        <div class="text-center">
+        {{-- Kasir & Admin login buttons --}}
+        <div class="text-center flex flex-col sm:flex-row items-center justify-center gap-2">
+            <a href="{{ route('kasir.index', ['tab' => 'scan', 'code' => $order->code]) }}"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ink-black text-white hover:bg-gray-800 text-xs font-bold transition shadow-xs">
+                <i class="fa-solid fa-cash-register text-xs"></i>
+                <span>Proses di Kasir (/kasir)</span>
+            </a>
             <a href="{{ route('admin.login') }}"
                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-hairline text-gray-700 hover:text-ink-black text-xs font-bold transition shadow-xs">
                 <i class="fa-solid fa-lock text-xs"></i> 
-                <span>Login Admin untuk Proses Pesanan</span>
+                <span>Login Admin</span>
             </a>
         </div>
 

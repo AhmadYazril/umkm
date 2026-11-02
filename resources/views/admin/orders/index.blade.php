@@ -18,7 +18,11 @@
                 Daftar transaksi pesanan dine-in, takeaway, kurir Zendo, dan scan slip QR kasir.
             </p>
         </div>
-        <div class="flex items-center gap-2.5">
+        <div class="flex flex-wrap items-center gap-2.5">
+            <a href="{{ route('kasir.index') }}" target="_blank" class="px-4 py-2.5 rounded-xl bg-pure-white hover:bg-warm-stone text-ink-black border border-hairline font-bold text-xs uppercase tracking-wider transition shadow-xs flex items-center gap-2 btn-press">
+                <i class="fa-solid fa-cash-register text-xs"></i>
+                <span>Buka POS Kasir</span>
+            </a>
             <a href="{{ route('admin.orders.scan') }}" class="px-4 py-2.5 rounded-xl bg-ink-black text-white font-bold text-xs uppercase tracking-wider hover:bg-charcoal transition shadow-xs flex items-center gap-2 btn-press">
                 <i class="fa-solid fa-qrcode text-xs"></i>
                 <span>Buka Scanner QR</span>

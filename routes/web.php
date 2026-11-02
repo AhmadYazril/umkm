@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\NucomuController;
 use App\Http\Controllers\OrderController;
@@ -78,6 +79,25 @@ Route::post('/zendo/kurir/keluar', [ZendoTrackingController::class, 'unbindCouri
 Route::get('/qr/pesanan/{code}', [AdminOrderController::class, 'qrDetail'])->name('admin.orders.qr');
 
 // ─────────────────────────────────────────────
+//  KASIR WORKSPACE ROUTES (/kasir)
+// ─────────────────────────────────────────────
+Route::prefix('kasir')->name('kasir.')->group(function () {
+    Route::get('/login', [KasirController::class, 'showLogin'])->name('login');
+    Route::post('/login', [KasirController::class, 'login'])->name('login.post');
+    Route::post('/logout', [KasirController::class, 'logout'])->name('logout');
+
+    Route::middleware('kasir')->group(function () {
+        Route::get('/', [KasirController::class, 'index'])->name('index');
+        Route::get('/sinkron', [KasirController::class, 'syncData'])->name('sync');
+        Route::post('/stok', [KasirController::class, 'updateStock'])->name('stock.update');
+        Route::post('/pesanan', [KasirController::class, 'storeOrder'])->name('orders.store');
+        Route::get('/pesanan/cari', [KasirController::class, 'lookupOrder'])->name('orders.lookup');
+        Route::post('/pesanan/{order}/status', [KasirController::class, 'updateOrderStatus'])->name('orders.status');
+        Route::get('/pesanan/{order}/struk', [KasirController::class, 'receipt'])->name('orders.receipt');
+    });
+});
+
+// ─────────────────────────────────────────────
 //  ADMIN ROUTES
 // ─────────────────────────────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -100,6 +120,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/menu/{menu}', [AdminMenuController::class, 'update'])->name('menus.update');
         Route::delete('/menu/{menu}', [AdminMenuController::class, 'destroy'])->name('menus.destroy');
         Route::post('/menu/{menu}/toggle-available', [AdminMenuController::class, 'toggleAvailable'])->name('menus.toggleAvailable');
+        Route::post('/menu/{menu}/stock', [AdminMenuController::class, 'updateStock'])->name('menus.updateStock');
         Route::post('/menu/{menu}/toggle-featured', [AdminMenuController::class, 'toggleFeatured'])->name('menus.toggleFeatured');
         Route::post('/menu/hapus-data-contoh', [AdminMenuController::class, 'deleteSampleData'])->name('menus.deleteSample');
         Route::post('/menu/{id}/restore', [AdminMenuController::class, 'restore'])->name('menus.restore');
