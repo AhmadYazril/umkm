@@ -75,24 +75,28 @@ class NucomuController extends Controller
             if (! empty($dbSettings['cafe_concept'])) {
                 $brand['concept'] = $dbSettings['cafe_concept'];
             }
-            if (! empty($dbSettings['cafe_address'])) {
+            if (! empty($dbSettings['cafe_address']) && ! str_contains($dbSettings['cafe_address'], '[ISI:')) {
                 $contact['address'] = $dbSettings['cafe_address'];
             }
-            if (! empty($dbSettings['cafe_whatsapp'])) {
-                $contact['whatsapp_number'] = $dbSettings['cafe_whatsapp'];
+            if (! empty($dbSettings['cafe_landmark']) && ! str_contains($dbSettings['cafe_landmark'], '[ISI:')) {
+                $contact['landmark'] = $dbSettings['cafe_landmark'];
+            }
+            if (! empty($dbSettings['cafe_whatsapp']) && ! str_contains($dbSettings['cafe_whatsapp'], '[ISI:')) {
+                $contact['whatsapp_number'] = preg_replace('/[^0-9]/', '', $dbSettings['cafe_whatsapp']);
                 $contact['whatsapp_display'] = $dbSettings['cafe_whatsapp'];
             }
-            if (! empty($dbSettings['cafe_instagram'])) {
+            if (! empty($dbSettings['cafe_instagram']) && ! str_contains($dbSettings['cafe_instagram'], '[ISI:')) {
                 $contact['instagram'] = $dbSettings['cafe_instagram'];
             }
-            if (! empty($dbSettings['cafe_tiktok'])) {
+            if (! empty($dbSettings['cafe_tiktok']) && ! str_contains($dbSettings['cafe_tiktok'], '[ISI:')) {
                 $contact['tiktok'] = $dbSettings['cafe_tiktok'];
             }
-            if (! empty($dbSettings['cafe_email'])) {
+            if (! empty($dbSettings['cafe_email']) && ! str_contains($dbSettings['cafe_email'], '[ISI:')) {
                 $contact['email'] = $dbSettings['cafe_email'];
             }
-            if (! empty($dbSettings['cafe_maps_url'])) {
+            if (! empty($dbSettings['cafe_maps_url']) && ! str_contains($dbSettings['cafe_maps_url'], '[ISI:')) {
                 $contact['maps_url'] = $dbSettings['cafe_maps_url'];
+                $contact['google_maps_url'] = $dbSettings['cafe_maps_url'];
             }
             if (! empty($dbSettings['google_places_api_key'])) {
                 $integrations['google_places_api_key'] = $dbSettings['google_places_api_key'];
@@ -1453,7 +1457,7 @@ class NucomuController extends Controller
             if ($dineType === 'dine_in' && $tableNo !== '') {
                 $kasirParts[] = "[Nomor Meja: {$tableNo}]";
             } elseif ($dineType === 'take_away') {
-                $kasirParts[] = "[Bawa Pulang / Take Away]";
+                $kasirParts[] = '[Bawa Pulang / Take Away]';
             }
         }
         if ($rawNotes !== '') {

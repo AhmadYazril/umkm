@@ -12,21 +12,21 @@ return [
     ],
 
     'contact' => [
-        'address' => 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221',
-        'landmark' => 'Sekitar 1 menit ke arah timur dari Bravo Supermarket Tulungagung (Utara Jalan)',
+        'address' => 'Jl. Mayor Sujadi, Manggisan, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221',
+        'landmark' => '200 meter ke timur dari Bravo Swalayan (sisi utara jalan sebelum perempatan).',
         'gps' => '8.0765° S, 111.9187° E',
         'hours' => 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB',
         'hours_brew' => 'Bar kopi & dine-in buka setiap hari',
-        'whatsapp_number' => env('NUCOMU_WHATSAPP_NUMBER', '6281234567890'),
-        'whatsapp_display' => '+62 812-3456-7890',
-        'zendo_whatsapp' => env('NUCOMU_ZENDO_WHATSAPP', '6281234567890'),
+        'whatsapp_number' => env('NUCOMU_WHATSAPP_NUMBER', '6285934960910'),
+        'whatsapp_display' => '+62 859-3496-0910',
+        'zendo_whatsapp' => env('NUCOMU_ZENDO_WHATSAPP', '6285934960910'),
         'zendo_courier_count' => (int) env('NUCOMU_ZENDO_COURIER_COUNT', 1),
         'zendo_couriers' => [
             [
                 'index' => 1,
                 'name' => 'Kurir Zendo 1',
-                'phone' => env('NUCOMU_ZENDO_WHATSAPP', '6281234567890'),
-                'clean_phone' => '6281234567890',
+                'phone' => env('NUCOMU_ZENDO_WHATSAPP', '6285934960910'),
+                'clean_phone' => '6285934960910',
             ],
         ],
         'transaction_mode' => env('NUCOMU_TRANSACTION_MODE', 'both'),

@@ -83,7 +83,7 @@
 
     <!-- Global Client Script Config & Bundle -->
     <script>
-        window.NUCOMU_WA_NUMBER = "{{ config('nucomu.contact.whatsapp_number', '6281234567890') }}";
+        window.NUCOMU_WA_NUMBER = "{{ preg_replace('/[^0-9]/', '', $contact['whatsapp_number'] ?? config('nucomu.contact.whatsapp_number', '6285934960910')) }}";
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="{{ asset('js/nucomu.js') }}"></script>
