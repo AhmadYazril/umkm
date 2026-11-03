@@ -2371,7 +2371,7 @@ window.handleReservationSubmit = function(e) {
     }
 
     // Format Indonesian WhatsApp message
-    const waNumber = window.NUCOMU_WA_NUMBER || '6281234567890';
+    const waNumber = window.NUCOMU_WA_NUMBER || '6285934960910';
     let message = `*RESERVASI KUNJUNGAN NUCOMU CAFE*\n\n`;
     message += `• *Nama Pemesan:* ${fullName}\n`;
     message += `• *WhatsApp:* ${phone}\n`;

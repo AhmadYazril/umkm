@@ -334,7 +334,7 @@
 
                     <div>
                         <label for="phone" class="block text-xs font-bold text-charcoal mb-1.5">Nomor WhatsApp CS / Kasir</label>
-                        <input type="text" name="phone" id="phone" value="{{ $settings['phone'] ?? $settings['cafe_whatsapp'] ?? '+62 812-3456-7890' }}" required
+                        <input type="text" name="phone" id="phone" value="{{ $settings['phone'] ?? $settings['cafe_whatsapp'] ?? '+62 859-3496-0910' }}" required
                             class="w-full bg-white border border-hairline rounded-xl px-4 py-2.5 text-xs text-ink-black font-mono focus:outline-none focus:border-ink-black">
                     </div>
                 </div>
@@ -342,7 +342,13 @@
                 <div>
                     <label for="address" class="block text-xs font-bold text-charcoal mb-1.5">Alamat Lengkap Kafe</label>
                     <textarea name="address" id="address" rows="2" required
-                        class="w-full bg-white border border-hairline rounded-xl px-4 py-2.5 text-xs text-ink-black focus:outline-none focus:border-ink-black">{{ $settings['address'] ?? $settings['cafe_address'] ?? 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221' }}</textarea>
+                        class="w-full bg-white border border-hairline rounded-xl px-4 py-2.5 text-xs text-ink-black focus:outline-none focus:border-ink-black">{{ $settings['address'] ?? $settings['cafe_address'] ?? 'Jl. Mayor Sujadi, Manggisan, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221' }}</textarea>
+                </div>
+
+                <div>
+                    <label for="cafe_landmark" class="block text-xs font-bold text-charcoal mb-1.5">Patokan Lokasi Kafe</label>
+                    <input type="text" name="cafe_landmark" id="cafe_landmark" value="{{ $settings['cafe_landmark'] ?? '200 meter ke timur dari Bravo Swalayan (sisi utara jalan sebelum perempatan).' }}"
+                        class="w-full bg-white border border-hairline rounded-xl px-4 py-2.5 text-xs text-ink-black focus:outline-none focus:border-ink-black">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">

@@ -462,7 +462,7 @@ class SettingController extends Controller
         $keys = [
             'store_name', 'phone', 'address', 'instagram', 'tagline',
             'cafe_name', 'cafe_tagline', 'cafe_subtitle', 'cafe_story', 'cafe_history',
-            'cafe_concept', 'cafe_address', 'cafe_maps_url', 'cafe_whatsapp',
+            'cafe_concept', 'cafe_address', 'cafe_landmark', 'cafe_maps_url', 'cafe_whatsapp',
             'cafe_email', 'cafe_instagram', 'cafe_tiktok',
             'hero_title', 'hero_subtitle', 'hero_badge',
             'cafe_story_headline', 'cafe_story_p1', 'cafe_story_p2',
