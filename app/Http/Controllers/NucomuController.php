@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Admin\OrderController;
+use App\Models\Banner;
 use App\Models\Category;
+use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\Menu;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Reservation;
+use App\Models\ReservationField;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Models\ZendoDelivery;
+use App\Support\FileUploadHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class NucomuController extends Controller
@@ -66,8 +69,35 @@ class NucomuController extends Controller
             if (! empty($dbSettings['cafe_story_p1'])) {
                 $brand['story_p1'] = $dbSettings['cafe_story_p1'];
             }
-            if (! empty($dbSettings['cafe_story_p2'])) {
-                $brand['story_p2'] = $dbSettings['cafe_story_p2'];
+            $brand['story_p2'] = ! empty($dbSettings['cafe_story_p2'])
+                ? $dbSettings['cafe_story_p2']
+                : 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.';
+            if (! empty($dbSettings['about_label'])) {
+                $brand['about_label'] = $dbSettings['about_label'];
+            }
+            if (! empty($dbSettings['about_quote'])) {
+                $brand['about_quote'] = $dbSettings['about_quote'];
+            }
+            if (! empty($dbSettings['about_button_text'])) {
+                $brand['about_button_text'] = $dbSettings['about_button_text'];
+            }
+            if (! empty($dbSettings['about_button_link'])) {
+                $brand['about_button_link'] = $dbSettings['about_button_link'];
+            }
+            $brand['about_media_type'] = $dbSettings['about_media_type'] ?? 'video';
+            $aboutMediaPath = $dbSettings['about_media_path'] ?? null;
+            if ($aboutMediaPath) {
+                if (str_starts_with($aboutMediaPath, 'http://') || str_starts_with($aboutMediaPath, 'https://')) {
+                    $brand['about_media_url'] = $aboutMediaPath;
+                } elseif (file_exists(public_path('uploads/about/'.$aboutMediaPath))) {
+                    $brand['about_media_url'] = asset('uploads/about/'.$aboutMediaPath);
+                } elseif (file_exists(public_path($aboutMediaPath))) {
+                    $brand['about_media_url'] = asset($aboutMediaPath);
+                } else {
+                    $brand['about_media_url'] = asset($aboutMediaPath);
+                }
+            } else {
+                $brand['about_media_url'] = asset('videos/tiramisu.mp4');
             }
             if (! empty($dbSettings['cafe_story'])) {
                 $brand['story'] = $dbSettings['cafe_story'];
@@ -75,29 +105,7 @@ class NucomuController extends Controller
             if (! empty($dbSettings['cafe_concept'])) {
                 $brand['concept'] = $dbSettings['cafe_concept'];
             }
-            if (! empty($dbSettings['cafe_address']) && ! str_contains($dbSettings['cafe_address'], '[ISI:')) {
-                $contact['address'] = $dbSettings['cafe_address'];
-            }
-            if (! empty($dbSettings['cafe_landmark']) && ! str_contains($dbSettings['cafe_landmark'], '[ISI:')) {
-                $contact['landmark'] = $dbSettings['cafe_landmark'];
-            }
-            if (! empty($dbSettings['cafe_whatsapp']) && ! str_contains($dbSettings['cafe_whatsapp'], '[ISI:')) {
-                $contact['whatsapp_number'] = preg_replace('/[^0-9]/', '', $dbSettings['cafe_whatsapp']);
-                $contact['whatsapp_display'] = $dbSettings['cafe_whatsapp'];
-            }
-            if (! empty($dbSettings['cafe_instagram']) && ! str_contains($dbSettings['cafe_instagram'], '[ISI:')) {
-                $contact['instagram'] = $dbSettings['cafe_instagram'];
-            }
-            if (! empty($dbSettings['cafe_tiktok']) && ! str_contains($dbSettings['cafe_tiktok'], '[ISI:')) {
-                $contact['tiktok'] = $dbSettings['cafe_tiktok'];
-            }
-            if (! empty($dbSettings['cafe_email']) && ! str_contains($dbSettings['cafe_email'], '[ISI:')) {
-                $contact['email'] = $dbSettings['cafe_email'];
-            }
-            if (! empty($dbSettings['cafe_maps_url']) && ! str_contains($dbSettings['cafe_maps_url'], '[ISI:')) {
-                $contact['maps_url'] = $dbSettings['cafe_maps_url'];
-                $contact['google_maps_url'] = $dbSettings['cafe_maps_url'];
-            }
+            $contact = array_merge($contact, self::getContactSettings());
             if (! empty($dbSettings['google_places_api_key'])) {
                 $integrations['google_places_api_key'] = $dbSettings['google_places_api_key'];
             }
@@ -111,16 +119,9 @@ class NucomuController extends Controller
         // Fetch stories from DB or fallback
         $stories = collect();
         try {
-            $stories = GalleryItem::orderBy('sort_order')->get()->map(function (GalleryItem $item) {
-                $imageUrl = null;
-                if ($item->image && file_exists(public_path('storage/'.$item->image))) {
-                    $imageUrl = asset('storage/'.$item->image);
-                } elseif ($item->image && (str_starts_with($item->image, 'http://') || str_starts_with($item->image, 'https://'))) {
-                    $imageUrl = $item->image;
-                }
-
+            $stories = GalleryItem::where('is_active', true)->orderBy('sort_order')->get()->map(function (GalleryItem $item) {
                 return [
-                    'image' => $imageUrl ?? 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80',
+                    'image' => $item->image_url,
                     'avatar_url' => $item->avatar_url ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
                     'author' => $item->author ?? 'Barista Corner',
                     'time_label' => $item->time_label ?? 'Baru saja',
@@ -176,14 +177,69 @@ class NucomuController extends Controller
         // Combine all Google Maps reviews and website-submitted reviews
         $dynamicReviews = $this->getCombinedReviews();
         $eventPackages = config('nucomu.event_packages', []);
+        // Active promotional banners scheduled for today
+        $activeBanners = collect();
+        try {
+            $activeBanners = Banner::activeNow()->orderBy('sort_order')->orderByDesc('id')->get();
+        } catch (\Throwable $e) {
+            // Graceful fallback
+        }
+
+        $dbFacilities = collect();
+        try {
+            $dbFacilities = Facility::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+        } catch (\Throwable $e) {
+            // Graceful fallback
+        }
+
+        $dbCategories = collect();
+        try {
+            $dbCategories = Category::where('is_active', true)->orderBy('sort_order')->get();
+            $liveMenus = Menu::available()->with('category')->orderBy('sort_order')->get();
+            if ($liveMenus->isNotEmpty()) {
+                $mappedLiveMenus = $liveMenus->map(function ($m) {
+                    $catSlug = $m->category ? ($m->category->slug ?: Str::slug($m->category->name)) : 'coffee';
+
+                    return [
+                        'id' => $m->slug ?: 'menu-'.$m->id,
+                        'name' => $m->name,
+                        'category' => $catSlug,
+                        'category_label' => $m->category->name ?? ucfirst($catSlug),
+                        'price' => (int) $m->price,
+                        'price_formatted' => 'Rp '.number_format($m->price, 0, ',', '.'),
+                        'short_info' => $m->description ?? 'Racikan pilihan Nucomu Cafe.',
+                        'image' => $m->image_url,
+                    ];
+                })->toArray();
+
+                $merged = array_merge($mappedLiveMenus, config('nucomu.all_menu', []));
+                $seen = [];
+                $uniqueAllMenu = [];
+                foreach ($merged as $item) {
+                    if (! isset($seen[$item['name']])) {
+                        $seen[$item['name']] = true;
+                        $uniqueAllMenu[] = $item;
+                    }
+                }
+                $allMenu = $uniqueAllMenu;
+            }
+        } catch (\Throwable $e) {
+            // Graceful fallback
+        }
+
         $txSettings = $this->getTransactionSettings();
         $transactionMode = $txSettings['transaction_mode'];
         $zendoWhatsapp = $txSettings['zendo_whatsapp_clean'];
 
+        $reservationFields = ReservationField::active()->get();
+
         return view('home.index', compact(
+            'activeBanners',
             'brand',
             'contact',
             'facilities',
+            'dbFacilities',
+            'dbCategories',
             'bestMenu',
             'allMenu',
             'gallery',
@@ -197,101 +253,23 @@ class NucomuController extends Controller
             'eventPackages',
             'transactionMode',
             'zendoWhatsapp',
-            'txSettings'
+            'txSettings',
+            'reservationFields'
         ));
     }
 
     /**
-     * Combine all Google Maps reviews (live Places API if configured + config Google Maps reviews)
-     * with website-submitted reviews from the local database.
+     * Get pinned reviews from the local database that have been curated by the admin.
+     * Only reviews with is_pinned = true and is_active = true are returned.
      */
     protected function getCombinedReviews(): Collection
     {
-        $googleMapsReviews = collect();
-
-        // 1. Optional live Google Places API reviews if API key & Place ID are configured
+        $pinnedReviews = collect();
         try {
-            $apiKey = config('nucomu.integrations.google_places_api_key');
-            $placeId = config('nucomu.integrations.google_place_id');
-
-            if (! empty($apiKey) && ! empty($placeId)) {
-                $livePlacesReviews = Cache::remember('nucomu_google_places_reviews', now()->addHours(6), function () use ($apiKey, $placeId) {
-                    $response = Http::timeout(4)->get('https://maps.googleapis.com/maps/api/place/details/json', [
-                        'place_id' => $placeId,
-                        'fields' => 'reviews,rating,user_ratings_total',
-                        'language' => 'id',
-                        'key' => $apiKey,
-                    ]);
-
-                    if ($response->successful()) {
-                        return $response->json('result.reviews', []);
-                    }
-
-                    return [];
-                });
-
-                if (! empty($livePlacesReviews) && is_array($livePlacesReviews)) {
-                    foreach ($livePlacesReviews as $item) {
-                        $googleMapsReviews->push([
-                            'name' => $item['author_name'] ?? 'Pengunjung Google Maps',
-                            'handle' => 'Ulasan Google Maps',
-                            'avatar_url' => $item['profile_photo_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-                            'rating' => (int) ($item['rating'] ?? 5),
-                            'content' => $item['text'] ?? 'Tempat nyaman dan kopi nikmat di Nucomu Cafe.',
-                            'order_tag' => 'Google Maps Review',
-                            'time_ago' => $item['relative_time_description'] ?? 'Google Maps',
-                            'source' => 'google_maps',
-                            'source_label' => 'Google Maps',
-                        ]);
-                    }
-                }
-            }
-        } catch (\Throwable $e) {
-            // Fallback to configured Google Maps reviews
-        }
-
-        // 2. Include all Google Maps reviews from config('nucomu.reviews')
-        $configGoogleReviews = collect(config('nucomu.reviews', []))->map(function (array $review) {
-            $rawImages = $review['review_images'] ?? (! empty($review['review_image']) ? [$review['review_image']] : []);
-            $resolvedImages = collect($rawImages)->filter()->map(function (string $img) {
-                if (! str_starts_with($img, 'http://') && ! str_starts_with($img, 'https://')) {
-                    return asset(ltrim($img, '/'));
-                }
-
-                return $img;
-            })->values()->all();
-
-            $primaryImage = $resolvedImages[0] ?? null;
-
-            return [
-                'name' => $review['name'] ?? 'Pengunjung Nucomu',
-                'handle' => $review['handle'] ?? 'Local Guide · Ulasan',
-                'avatar_url' => $review['avatar'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-                'rating' => (int) ($review['rating'] ?? 5),
-                'content' => $review['comment'] ?? '',
-                'order_tag' => $review['order_tag'] ?? 'Menu Nucomu',
-                'time_ago' => $review['time_ago'] ?? 'Baru-baru ini',
-                'review_image' => $primaryImage,
-                'review_images' => $resolvedImages,
-                'source' => 'google_maps',
-            ];
-        });
-
-        $googleMapsReviews = $configGoogleReviews->concat($googleMapsReviews)->unique(function (array $item) {
-            return strtolower($item['name'].'|'.$item['content']);
-        })->values();
-
-        // 3. Website reviews stored in database (submitted via website form, not sent to Google Maps)
-        $websiteReviews = collect();
-        try {
-            $sampleNames = ['rina s.', 'bagas p.', 'dewi a.', 'fajar m.', 'siti n.', 'reza k.', 'anisa t.', 'budi r.'];
-            $websiteReviews = Testimonial::where('is_active', true)
-                ->where('is_sample', false)
+            $pinnedReviews = Testimonial::where('is_active', true)
+                ->where('is_pinned', true)
                 ->latest()
                 ->get()
-                ->reject(function (Testimonial $t) use ($sampleNames) {
-                    return in_array(strtolower(trim($t->name)), $sampleNames, true);
-                })
                 ->map(function (Testimonial $t) {
                     $imgUrl = $t->review_image ?? null;
                     if ($imgUrl && ! str_starts_with($imgUrl, 'http://') && ! str_starts_with($imgUrl, 'https://')) {
@@ -299,28 +277,29 @@ class NucomuController extends Controller
                     }
 
                     return [
+                        'id' => $t->id,
                         'name' => $t->name,
                         'handle' => $t->handle ?? 'Pengunjung Nucomu',
                         'avatar_url' => $t->avatar_url ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+                        'avatar' => $t->avatar_url ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
                         'rating' => (int) $t->rating,
+                        'stars' => (int) $t->rating,
                         'content' => $t->content,
+                        'text' => $t->content,
+                        'comment' => $t->content,
                         'order_tag' => $t->order_tag ?? 'Menu Nucomu',
                         'time_ago' => $t->created_at ? $t->created_at->diffForHumans() : 'Baru saja',
                         'review_image' => $imgUrl,
                         'review_images' => $imgUrl ? [$imgUrl] : [],
                         'source' => $t->source ?: 'website',
+                        'is_pinned' => true,
                     ];
                 });
         } catch (\Throwable $e) {
             // Keep empty if DB is unavailable
         }
 
-        // Put all reviews together in one unified list (Google Maps reviews + Website reviews)
-        if (session()->has('review_success')) {
-            return $websiteReviews->concat($googleMapsReviews)->values();
-        }
-
-        return $googleMapsReviews->concat($websiteReviews)->values();
+        return $pinnedReviews;
     }
 
     /**
@@ -377,6 +356,12 @@ class NucomuController extends Controller
 
         $selectedCategory = $request->query('category', 'all');
 
+        $dbCategories = collect();
+        try {
+            $dbCategories = Category::where('is_active', true)->orderBy('sort_order')->get();
+        } catch (\Throwable $e) {
+        }
+
         if ($selectedCategory !== 'all') {
             $filteredMenu = $allMenu->filter(function ($item) use ($selectedCategory) {
                 return $item['category'] === $selectedCategory;
@@ -389,7 +374,7 @@ class NucomuController extends Controller
         $transactionMode = $txSettings['transaction_mode'];
         $zendoWhatsapp = $txSettings['zendo_whatsapp_clean'];
 
-        return view('menu.all', compact('brand', 'contact', 'filteredMenu', 'selectedCategory', 'txSettings', 'transactionMode', 'zendoWhatsapp'));
+        return view('menu.all', compact('brand', 'contact', 'filteredMenu', 'selectedCategory', 'dbCategories', 'txSettings', 'transactionMode', 'zendoWhatsapp'));
     }
 
     /**
@@ -400,16 +385,9 @@ class NucomuController extends Controller
         // Gallery stories from DB
         $stories = collect();
         try {
-            $stories = GalleryItem::orderBy('sort_order')->get()->map(function (GalleryItem $item) {
-                $imageUrl = null;
-                if ($item->image && file_exists(public_path('storage/'.$item->image))) {
-                    $imageUrl = asset('storage/'.$item->image);
-                } elseif ($item->image && (str_starts_with($item->image, 'http://') || str_starts_with($item->image, 'https://'))) {
-                    $imageUrl = $item->image;
-                }
-
+            $stories = GalleryItem::where('is_active', true)->orderBy('sort_order')->get()->map(function (GalleryItem $item) {
                 return [
-                    'image' => $imageUrl ?? 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80',
+                    'image' => $item->image_url,
                     'avatar_url' => $item->avatar_url ?? 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
                     'author' => $item->author ?? 'Barista Corner',
                     'time_label' => $item->time_label ?? 'Baru saja',
@@ -453,6 +431,77 @@ class NucomuController extends Controller
     }
 
     /**
+     * Get compiled contact settings merged from database and config fallbacks.
+     */
+    public static function getContactSettings(): array
+    {
+        $settings = collect();
+        try {
+            $settings = Setting::pluck('value', 'key');
+        } catch (\Throwable $e) {
+        }
+
+        $isPlaceholder = fn (?string $val) => empty($val) || str_starts_with(trim($val), '[ISI:');
+
+        $address = ! $isPlaceholder($settings['cafe_address'] ?? null)
+            ? trim($settings['cafe_address'])
+            : (string) config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221');
+
+        $rawCafeWa = ! $isPlaceholder($settings['cafe_whatsapp'] ?? null)
+            ? trim($settings['cafe_whatsapp'])
+            : (string) config('nucomu.contact.whatsapp_number', '6281234567890');
+        $cleanCafeWa = preg_replace('/[^0-9]/', '', $rawCafeWa);
+        if (str_starts_with($cleanCafeWa, '08')) {
+            $cleanCafeWa = '628'.substr($cleanCafeWa, 2);
+        } elseif (str_starts_with($cleanCafeWa, '8')) {
+            $cleanCafeWa = '628'.substr($cleanCafeWa, 1);
+        }
+
+        $rawZendoWa = ! $isPlaceholder($settings['zendo_whatsapp'] ?? null)
+            ? trim($settings['zendo_whatsapp'])
+            : (string) config('nucomu.contact.zendo_whatsapp', '6285707300240');
+        $cleanZendoWa = preg_replace('/[^0-9]/', '', $rawZendoWa);
+        if (str_starts_with($cleanZendoWa, '08')) {
+            $cleanZendoWa = '628'.substr($cleanZendoWa, 2);
+        } elseif (str_starts_with($cleanZendoWa, '8')) {
+            $cleanZendoWa = '628'.substr($cleanZendoWa, 1);
+        }
+
+        $instagram = ! $isPlaceholder($settings['cafe_instagram'] ?? null) ? trim($settings['cafe_instagram']) : null;
+        $tiktok = ! $isPlaceholder($settings['cafe_tiktok'] ?? null) ? trim($settings['cafe_tiktok']) : null;
+        $grabfood = ! $isPlaceholder($settings['grabfood_url'] ?? null) ? trim($settings['grabfood_url']) : null;
+        $email = ! $isPlaceholder($settings['cafe_email'] ?? null) ? trim($settings['cafe_email']) : null;
+        $mapsUrl = ! $isPlaceholder($settings['cafe_maps_url'] ?? null)
+            ? trim($settings['cafe_maps_url'])
+            : (string) config('nucomu.contact.google_maps_url', 'https://maps.google.com/?q=Nucomu+Cafe+Tulungagung');
+        $mapsEmbed = ! $isPlaceholder($settings['cafe_maps_embed'] ?? null) ? trim($settings['cafe_maps_embed']) : null;
+        $hours = ! $isPlaceholder($settings['cafe_opening_hours'] ?? null)
+            ? trim($settings['cafe_opening_hours'])
+            : (string) config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB');
+
+        $displayWa = '+'.substr($cleanCafeWa, 0, 2).' '.substr($cleanCafeWa, 2, 3).'-'.substr($cleanCafeWa, 5, 4).'-'.substr($cleanCafeWa, 9);
+
+        return [
+            'address' => $address,
+            'whatsapp_number' => $cleanCafeWa,
+            'whatsapp_clean' => $cleanCafeWa,
+            'whatsapp_display' => $displayWa,
+            'zendo_whatsapp' => $cleanZendoWa,
+            'zendo_whatsapp_clean' => $cleanZendoWa,
+            'instagram' => $instagram,
+            'instagram_url' => $instagram,
+            'tiktok' => $tiktok,
+            'tiktok_url' => $tiktok,
+            'grabfood_url' => $grabfood,
+            'email' => $email,
+            'maps_url' => $mapsUrl,
+            'maps_embed' => $mapsEmbed,
+            'hours' => $hours,
+            'opening_hours' => $hours,
+        ];
+    }
+
+    /**
      * Resolve transaction process settings (kasir / zendo / both), Zendo couriers list & WhatsApp numbers,
      * cafe coordinates, auto-send gateway settings, and Zendo distance tariff tiers.
      */
@@ -489,9 +538,27 @@ class NucomuController extends Controller
         $courierCount = 1;
         $dbSettings = collect();
         $hideLiveTracking = false;
+        $orderModeZendo = true;
+        $orderModeGrabfood = false;
+        $grabfoodUrl = '';
+        $zendoChatTemplate = OrderController::DEFAULT_ZENDO_TEMPLATE;
+
+        $orderModeDineIn = true;
+        $orderModeZendoTracking = false;
+        $orderModeZendoChat = true;
+        $orderDineInCash = true;
+        $orderDineInQris = true;
+        $qrisImage = null;
 
         try {
             $dbSettings = Setting::pluck('value', 'key');
+
+            if (! empty($dbSettings['grabfood_url'])) {
+                $grabfoodUrl = trim((string) $dbSettings['grabfood_url']);
+            }
+            if (! empty($dbSettings['zendo_chat_template'])) {
+                $zendoChatTemplate = (string) $dbSettings['zendo_chat_template'];
+            }
 
             $dbMode = $dbSettings['transaction_mode'] ?? null;
             if (in_array($dbMode, ['kasir', 'zendo', 'both'], true)) {
@@ -499,6 +566,49 @@ class NucomuController extends Controller
             }
 
             $hideLiveTracking = in_array((string) ($dbSettings['hide_live_tracking'] ?? '0'), ['1', 'true', 'yes'], true);
+
+            // Backward-compatible reading of the 3 transaction modes
+            if (isset($dbSettings['order_mode_dine_in'])) {
+                $orderModeDineIn = in_array((string) $dbSettings['order_mode_dine_in'], ['1', 'true', 'yes'], true);
+            } else {
+                $orderModeDineIn = in_array($mode, ['kasir', 'both'], true);
+            }
+
+            if (isset($dbSettings['order_mode_zendo_tracking'])) {
+                $orderModeZendoTracking = in_array((string) $dbSettings['order_mode_zendo_tracking'], ['1', 'true', 'yes'], true);
+            } else {
+                $orderModeZendoTracking = in_array($mode, ['zendo', 'both'], true) && ! $hideLiveTracking;
+            }
+
+            if (isset($dbSettings['order_mode_zendo_chat'])) {
+                $orderModeZendoChat = in_array((string) $dbSettings['order_mode_zendo_chat'], ['1', 'true', 'yes'], true);
+            } else {
+                $orderModeZendoChat = in_array($mode, ['zendo', 'both'], true) && $hideLiveTracking;
+            }
+
+            // Normalisasi saling mengunci jika di DB keduanya bernilai true: pelacakan menang, chat nonaktif
+            if ($orderModeZendoTracking && $orderModeZendoChat) {
+                $orderModeZendoChat = false;
+            }
+
+            // Sub-pengaturan Mode 1
+            $orderDineInCash = ! isset($dbSettings['order_dine_in_cash']) || in_array((string) $dbSettings['order_dine_in_cash'], ['1', 'true', 'yes'], true);
+            $orderDineInQris = ! isset($dbSettings['order_dine_in_qris']) || in_array((string) $dbSettings['order_dine_in_qris'], ['1', 'true', 'yes'], true);
+            $qrisImage = $dbSettings['qris_image'] ?? null;
+
+            // Pemetaan nilai turunan untuk legacy consumer
+            $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
+            $hideLiveTracking = $orderModeZendoChat && ! $orderModeZendoTracking;
+
+            if ($orderModeDineIn && $orderModeZendo) {
+                $mode = 'both';
+            } elseif ($orderModeDineIn) {
+                $mode = 'kasir';
+            } elseif ($orderModeZendo) {
+                $mode = 'zendo';
+            } else {
+                $mode = 'none';
+            }
 
             if (! empty($dbSettings['zendo_whatsapp'])) {
                 $zendoWa = $dbSettings['zendo_whatsapp'];
@@ -581,9 +691,22 @@ class NucomuController extends Controller
         $primaryPhone = (! empty($couriers[0]['phone'])) ? $couriers[0]['phone'] : (string) $zendoWa;
         $primaryClean = (! empty($couriers[0]['clean_phone'])) ? $couriers[0]['clean_phone'] : $this->normalizeWhatsappNumber((string) $zendoWa);
 
+        $isAnyModeActive = $orderModeDineIn || $orderModeZendoTracking || $orderModeZendoChat;
+
         return [
+            'order_mode_dine_in' => $orderModeDineIn,
+            'order_mode_zendo_tracking' => $orderModeZendoTracking,
+            'order_mode_zendo_chat' => $orderModeZendoChat,
+            'is_any_mode_active' => $isAnyModeActive,
+            'order_dine_in_cash' => $orderDineInCash,
+            'order_dine_in_qris' => $orderDineInQris,
+            'qris_image' => $qrisImage,
             'transaction_mode' => $mode,
             'hide_live_tracking' => $hideLiveTracking,
+            'order_mode_zendo' => $orderModeZendo,
+            'order_mode_grabfood' => false,
+            'grabfood_url' => $grabfoodUrl,
+            'zendo_chat_template' => $zendoChatTemplate,
             'zendo_whatsapp' => $primaryPhone,
             'zendo_whatsapp_clean' => $primaryClean,
             'zendo_courier_count' => $courierCount,
@@ -1007,6 +1130,22 @@ class NucomuController extends Controller
     }
 
     /**
+     * Calculate geodesic distance (in kilometers) between two coordinates using the Haversine formula.
+     */
+    public function calculateDistanceKm(float $lat1, float $lng1, float $lat2, float $lng2): float
+    {
+        $earthRadius = 6371.0; // Mean Earth radius in km
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLng = deg2rad($lng2 - $lng1);
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLng / 2) * sin($dLng / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        return round($earthRadius * $c, 1);
+    }
+
+    /**
      * Calculate Zendo delivery fee based on distance (km) from Nucomu Cafe to customer pin.
      *
      * Default tiers (Jan 2025):
@@ -1065,6 +1204,71 @@ class NucomuController extends Controller
     }
 
     /**
+     * Compile and format Zendo WhatsApp message from admin chat template or default template.
+     */
+    public function formatZendoChatMessage(
+        string $orderCode,
+        string $customerName,
+        ?string $customerPhone,
+        ?string $deliveryAddress,
+        array $items,
+        int $subtotal,
+        int $deliveryFee,
+        int $grandTotal,
+        ?string $notes = null,
+        ?string $trackingUrl = null,
+        bool $hideLiveTracking = true
+    ): string {
+        $orderList = [];
+        foreach (array_values($items) as $idx => $item) {
+            $num = $idx + 1;
+            $qty = (int) ($item['qty'] ?? 1);
+            $unitPrice = (int) ($item['unit_price'] ?? ($item['price'] ?? 0));
+            $lineTotal = (int) ($item['line_total'] ?? ($unitPrice * $qty));
+            $name = (string) ($item['menu_name'] ?? ($item['name'] ?? 'Menu'));
+            $unitFormatted = 'Rp '.number_format($unitPrice, 0, ',', '.');
+            $lineFormatted = 'Rp '.number_format($lineTotal, 0, ',', '.');
+            $orderList[] = "{$num}. {$name} ({$qty}x @ {$unitFormatted}) = {$lineFormatted}";
+        }
+        $daftarPesanan = count($orderList) > 0 ? implode("\n", $orderList) : '-';
+
+        $template = Setting::get('zendo_chat_template') ?: OrderController::DEFAULT_ZENDO_TEMPLATE;
+        // Normalize placeholders to avoid double "Rp Rp" if template has "Rp {total}"
+        $template = preg_replace('/Rp\s*(\{total\}|\{subtotal\}|\{ongkir\})/i', '$1', $template);
+
+        if ($hideLiveTracking) {
+            // Sesuaikan label ongkir di mode chat Zendo jika template lama masih memakai label ongkir standar
+            $template = preg_replace('/•\s*Ongkir:\s*\{ongkir\}/i', '• Ongkir (perkiraan, final dikonfirmasi kurir): {ongkir}', $template);
+        }
+
+        $replacements = [
+            '{kode_pesanan}' => $orderCode,
+            '{nama}' => $customerName,
+            '{telepon}' => (! empty($customerPhone) && $customerPhone !== '-' && $customerPhone !== 'Via Zendo WA') ? $customerPhone : '-',
+            '{alamat}' => ! empty($deliveryAddress) ? $deliveryAddress : '-',
+            '{daftar_pesanan}' => $daftarPesanan,
+            '{subtotal}' => 'Rp '.number_format($subtotal, 0, ',', '.'),
+            '{ongkir}' => 'Rp '.number_format($deliveryFee, 0, ',', '.'),
+            '{total}' => 'Rp '.number_format($grandTotal, 0, ',', '.'),
+            '{catatan}' => (! empty($notes) && $notes !== '-') ? $notes : '-',
+        ];
+
+        $message = str_replace(array_keys($replacements), array_values($replacements), $template);
+
+        if (! $hideLiveTracking && ! empty($trackingUrl)) {
+            if (str_contains($message, '{link_pelacakan}')) {
+                $message = str_replace('{link_pelacakan}', $trackingUrl, $message);
+            } else {
+                $message .= "\n\n📍 *Link Pelacakan:*\n".$trackingUrl;
+            }
+        } else {
+            $message = str_replace('{link_pelacakan}', '', $message);
+        }
+
+        return trim($message);
+    }
+
+    /**
      * Build compact receipt-style WhatsApp message text (Client Mode: No tracking link, struk format).
      */
     protected function buildZendoReceiptText(
@@ -1078,49 +1282,19 @@ class NucomuController extends Controller
         int $grandTotal,
         ?string $notes = null
     ): string {
-        $cafeName = Setting::get('cafe_name', config('nucomu.brand.name', 'Nucomu Cafe'));
-        $lines = [
-            '🧾 *STRUK PESANAN '.strtoupper($cafeName).'*',
-            '================================',
-            "*No. Pesanan:* #{$orderCode}",
-            "*Nama Pemesan:* {$customerName}",
-        ];
-
-        if (! empty($customerPhone) && $customerPhone !== '-' && $customerPhone !== 'Via Zendo WA') {
-            $lines[] = "*No. WhatsApp:* {$customerPhone}";
-        }
-
-        if (! empty($deliveryAddress)) {
-            $lines[] = "*Alamat Pengiriman:* {$deliveryAddress}";
-        }
-
-        $lines[] = '--------------------------------';
-        $lines[] = '*Daftar Menu:*';
-
-        foreach (array_values($items) as $idx => $item) {
-            $num = $idx + 1;
-            $qty = (int) ($item['qty'] ?? 1);
-            $unitFormatted = 'Rp '.number_format((int) ($item['unit_price'] ?? 0), 0, ',', '.');
-            $lineFormatted = 'Rp '.number_format((int) ($item['line_total'] ?? 0), 0, ',', '.');
-            $lines[] = "{$num}. {$item['menu_name']} ({$qty}x @ {$unitFormatted}) = {$lineFormatted}";
-        }
-
-        $lines[] = '--------------------------------';
-        $lines[] = 'Subtotal: Rp '.number_format($subtotal, 0, ',', '.');
-        if ($deliveryFee > 0) {
-            $lines[] = 'Ongkir: Rp '.number_format($deliveryFee, 0, ',', '.');
-        }
-        $lines[] = '*TOTAL PEMBAYARAN: Rp '.number_format($grandTotal, 0, ',', '.').'*';
-
-        if (! empty($notes) && $notes !== '-') {
-            $lines[] = '--------------------------------';
-            $lines[] = "*Catatan:* {$notes}";
-        }
-
-        $lines[] = '================================';
-        $lines[] = 'Terima kasih telah memesan!';
-
-        return implode("\n", $lines);
+        return $this->formatZendoChatMessage(
+            $orderCode,
+            $customerName,
+            $customerPhone,
+            $deliveryAddress,
+            $items,
+            $subtotal,
+            $deliveryFee,
+            $grandTotal,
+            $notes,
+            null,
+            true
+        );
     }
 
     /**
@@ -1144,78 +1318,19 @@ class NucomuController extends Controller
         ?string $trackingUrl = null,
         bool $hideLiveTracking = false
     ): string {
-        if ($hideLiveTracking) {
-            return $this->buildZendoReceiptText(
-                $orderCode,
-                $customerName,
-                $customerPhone,
-                $deliveryAddress,
-                $items,
-                $subtotal,
-                $deliveryFee,
-                $grandTotal,
-                $notes
-            );
-        }
-
-        $greetingTarget = ! empty($courierName) ? "{$courierName} (Nucomu Cafe)" : 'Admin Kurir Zendo / Nucomu Cafe';
-        $lines = [
-            "Halo {$greetingTarget}, ada pesanan baru:",
-            '',
-            "*Kode Pesanan:* #{$orderCode}",
-            "*Nama Pemesan:* {$customerName}",
-        ];
-
-        if (! empty($courierName)) {
-            $lines[] = "*Kurir Tujuan:* {$courierName}";
-        }
-        if (! empty($customerPhone) && $customerPhone !== '-' && $customerPhone !== 'Via Zendo WA') {
-            $lines[] = "*No. WhatsApp:* {$customerPhone}";
-        }
-        if (! empty($deliveryAddress)) {
-            $lines[] = "*Alamat Pengiriman:* {$deliveryAddress}";
-        }
-        if ($distanceKm !== null && $distanceKm > 0) {
-            $lines[] = '*Jarak dari Nucomu Cafe:* '.number_format($distanceKm, 1, ',', '.').' km';
-        }
-        if ($customerLat !== null && $customerLng !== null) {
-            $lines[] = "*Titik Lokasi Peta:* https://www.google.com/maps?q={$customerLat},{$customerLng}";
-        }
-
-        $lines[] = '';
-        $lines[] = '*Rincian Menu Pesanan:*';
-        foreach (array_values($items) as $idx => $item) {
-            $num = $idx + 1;
-            $unitFormatted = 'Rp '.number_format((int) $item['unit_price'], 0, ',', '.');
-            $lineFormatted = 'Rp '.number_format((int) $item['line_total'], 0, ',', '.');
-            $lines[] = "{$num}. {$item['menu_name']} ({$item['qty']}x @ {$unitFormatted}) = {$lineFormatted}";
-        }
-
-        $subtotalFormatted = 'Rp '.number_format($subtotal, 0, ',', '.');
-        $feeFormatted = 'Rp '.number_format($deliveryFee, 0, ',', '.');
-        $grandFormatted = 'Rp '.number_format($grandTotal, 0, ',', '.');
-
-        $lines[] = '';
-        $lines[] = "*Subtotal Menu:* {$subtotalFormatted}";
-        if ($deliveryFee > 0) {
-            $distLabel = $distanceKm !== null ? ' ('.number_format($distanceKm, 1, ',', '.').' km)' : '';
-            $lines[] = "*Ongkir Kurir Zendo{$distLabel}:* {$feeFormatted}";
-        }
-        $lines[] = "*Total Pembayaran:* {$grandFormatted}";
-        $lines[] = '*Catatan Tambahan:* '.(! empty($notes) ? $notes : '-');
-        $lines[] = '';
-
-        if (! empty($trackingUrl)) {
-            $lines[] = '📍 *LINK PELACAKAN PESANAN (1 LINK):*';
-            $lines[] = $trackingUrl;
-            $lines[] = 'Pelanggan: Buka link untuk pantau posisi kurir di peta secara live.';
-            $lines[] = 'Kurir: Klik "Masuk Mode Kurir" pada link di atas lalu masukkan PIN Kurir untuk mulai siarkan GPS & antar pesanan.';
-            $lines[] = '';
-        }
-
-        $lines[] = 'Mohon diproses pengirimannya melalui Kurir Zendo. Terima kasih!';
-
-        return implode("\n", $lines);
+        return $this->formatZendoChatMessage(
+            $orderCode,
+            $customerName,
+            $customerPhone,
+            $deliveryAddress,
+            $items,
+            $subtotal,
+            $deliveryFee,
+            $grandTotal,
+            $notes,
+            $trackingUrl,
+            $hideLiveTracking
+        );
     }
 
     /**
@@ -1380,19 +1495,164 @@ class NucomuController extends Controller
     public function storeOrder(Request $request)
     {
         $txSettings = $this->getTransactionSettings();
+        $isAnyModeActive = (bool) ($txSettings['is_any_mode_active'] ?? true);
+        $orderModeDineIn = (bool) ($txSettings['order_mode_dine_in'] ?? true);
+        $orderModeZendoTracking = (bool) ($txSettings['order_mode_zendo_tracking'] ?? false);
+        $orderModeZendoChat = (bool) ($txSettings['order_mode_zendo_chat'] ?? false);
+        $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
+
+        if (! $isAnyModeActive) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Layanan pemesanan sedang dinonaktifkan sementara oleh admin.',
+            ], 422);
+        }
+
         $allowedMode = $txSettings['transaction_mode'];
         $zendoCouriers = $txSettings['zendo_couriers'];
         $zendoSendMode = $txSettings['zendo_send_mode'];
         $zendoTariff = $txSettings['zendo_tariff'];
 
         $requestedMethod = strtolower((string) $request->input('process_method', 'kasir'));
-        if ($allowedMode === 'kasir') {
-            $processMethod = 'kasir';
-        } elseif ($allowedMode === 'zendo') {
-            $processMethod = 'zendo';
-        } else {
-            $processMethod = in_array($requestedMethod, ['kasir', 'zendo'], true) ? $requestedMethod : 'kasir';
+        if (! in_array($requestedMethod, ['kasir', 'zendo'], true)) {
+            $requestedMethod = $orderModeDineIn ? 'kasir' : 'zendo';
         }
+        $processMethod = $requestedMethod;
+
+        if ($processMethod === 'kasir' && ! $orderModeDineIn) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Layanan pemesanan makan di kafe sedang dinonaktifkan sementara oleh admin.',
+            ], 422);
+        }
+
+        if ($processMethod === 'zendo' && ! $orderModeZendo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Layanan pemesanan via Kurir Zendo sedang dinonaktifkan sementara oleh admin.',
+            ], 422);
+        }
+
+        if (! $request->filled('customer_lat') && $request->filled('destination_lat')) {
+            $request->merge(['customer_lat' => $request->input('destination_lat')]);
+        }
+        if (! $request->filled('customer_lng') && $request->filled('destination_lng')) {
+            $request->merge(['customer_lng' => $request->input('destination_lng')]);
+        }
+
+        $cafeLat = (float) ($txSettings['cafe_lat'] ?? config('nucomu.contact.cafe_lat', -8.0765099));
+        $cafeLng = (float) ($txSettings['cafe_lng'] ?? config('nucomu.contact.cafe_lng', 111.918712));
+
+        $rawLat = $request->input('customer_lat');
+        $rawLng = $request->input('customer_lng');
+        $hasValidCoords = is_numeric($rawLat) && is_numeric($rawLng)
+            && (float) $rawLat >= -90.0 && (float) $rawLat <= 90.0
+            && (float) $rawLng >= -180.0 && (float) $rawLng <= 180.0;
+
+        $customerLat = $hasValidCoords ? (float) $rawLat : null;
+        $customerLng = $hasValidCoords ? (float) $rawLng : null;
+
+        $distanceKm = null;
+        $deliveryFee = 0;
+
+        if ($processMethod === 'zendo') {
+            if ($hasValidCoords) {
+                // Hitung jarak garis lurus via Haversine formula
+                $straightKm = $this->calculateDistanceKm($cafeLat, $cafeLng, $customerLat, $customerLng);
+                $clientDist = is_numeric($request->input('distance_km')) ? (float) $request->input('distance_km') : null;
+
+                // Jika client mengirim jarak rute jalan yang wajar (>= jarak lurus dan tidak dimanipulasi jadi 0), gunakan; selain itu pakai jarak lurus server
+                if ($clientDist !== null && $clientDist >= $straightKm && $clientDist <= ($straightKm * 2.5 + 2.0)) {
+                    $distanceKm = round($clientDist, 1);
+                } else {
+                    $distanceKm = $straightKm;
+                }
+
+                $deliveryFee = $this->calculateZendoDeliveryFee($distanceKm, $zendoTariff);
+            } else {
+                // Tanpa koordinat GPS (Mode 3: Hanya Chat ke Zendo), pakai tarif dasar tetap yang tersimpan di server
+                $distanceKm = 1.5;
+                $deliveryFee = (int) ($zendoTariff['tier_0_3'] ?? 10000);
+            }
+        }
+
+        if (! $request->has('items') || ! is_array($request->input('items')) || empty($request->input('items'))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Keranjang pesanan masih kosong.',
+            ], 422);
+        }
+
+        $normalizedItems = [];
+        $menuExistsInDb = Menu::exists();
+
+        foreach ($request->input('items') as $idx => $item) {
+            $rawQty = $item['qty'] ?? null;
+            if (! is_numeric($rawQty) || (int) $rawQty < 1 || floor((float) $rawQty) != (float) $rawQty) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Jumlah pesanan (qty) untuk setiap menu harus berupa bilangan bulat minimal 1.',
+                ], 422);
+            }
+            $qty = (int) $rawQty;
+
+            $menuIdVal = $item['menu_id'] ?? $item['id'] ?? null;
+            $menu = null;
+            if (is_numeric($menuIdVal)) {
+                $menu = Menu::find((int) $menuIdVal);
+            }
+            if (! $menu && ! empty($item['menu_name'] ?? $item['name'] ?? null)) {
+                $menu = Menu::where('name', $item['menu_name'] ?? $item['name'])->first();
+            }
+
+            if ($menuExistsInDb) {
+                if (! $menu) {
+                    $itemLabel = $item['menu_name'] ?? $item['name'] ?? 'Menu #'.($idx + 1);
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Menu '{$itemLabel}' tidak ditemukan dalam daftar menu kami.",
+                    ], 422);
+                }
+
+                if (! $menu->is_available) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Menu '{$menu->name}' sedang tidak tersedia saat ini.",
+                    ], 422);
+                }
+
+                $unitPrice = (int) $menu->price;
+                $menuName = $menu->name;
+                $validMenuId = $menu->id;
+            } else {
+                $unitPrice = (int) ($item['unit_price'] ?? $item['price'] ?? 0);
+                $menuName = (string) ($item['menu_name'] ?? $item['name'] ?? 'Menu');
+                $validMenuId = is_numeric($menuIdVal) ? (int) $menuIdVal : null;
+            }
+
+            $lineTotal = $unitPrice * $qty;
+
+            $normalizedItems[] = [
+                'menu_id' => $validMenuId,
+                'menu_name' => $menuName,
+                'unit_price' => $unitPrice,
+                'qty' => $qty,
+                'line_total' => $lineTotal,
+                'options' => $item['options'] ?? null,
+            ];
+        }
+
+        $calcSubtotal = (int) collect($normalizedItems)->sum('line_total');
+        $grandTotal = $calcSubtotal + $deliveryFee;
+
+        $request->merge([
+            'items' => $normalizedItems,
+            'total' => $grandTotal,
+            'customer_lat' => $customerLat,
+            'customer_lng' => $customerLng,
+            'distance_km' => $distanceKm,
+        ]);
 
         $request->validate([
             'customer_name' => 'required|string|max:100',
@@ -1440,15 +1700,8 @@ class NucomuController extends Controller
         $deliveryAddress = trim((string) $request->input('delivery_address', ''));
         $rawNotes = trim((string) $request->input('notes', ''));
         $customerPhone = trim((string) $request->input('customer_phone', ''));
-        $distanceKm = $request->filled('distance_km') ? round((float) $request->input('distance_km'), 1) : ($processMethod === 'zendo' ? 1.5 : null);
-        $customerLat = $request->filled('customer_lat') ? (float) $request->input('customer_lat') : null;
-        $customerLng = $request->filled('customer_lng') ? (float) $request->input('customer_lng') : null;
 
-        $subtotal = (int) collect($request->items)->sum('line_total');
-        $deliveryFee = $processMethod === 'zendo'
-            ? $this->calculateZendoDeliveryFee((float) ($distanceKm ?? 1.5), $zendoTariff)
-            : 0;
-        $grandTotal = $subtotal + $deliveryFee;
+        $subtotal = $calcSubtotal;
 
         $dineType = $request->input('dine_type', 'dine_in');
         $tableNo = trim((string) $request->input('table_no', ''));
@@ -1465,17 +1718,27 @@ class NucomuController extends Controller
         }
         $storedNotes = count($kasirParts) > 0 ? implode(' | ', $kasirParts) : null;
 
+        $isTrackingMode = (bool) ($txSettings['order_mode_zendo_tracking'] ?? false);
+
         if ($processMethod === 'zendo') {
-            $zendoParts = [
-                "[KURIR ZENDO] Kurir: {$courierName} (#{$courierIndex})",
-                "HP_Kurir: {$zendoWaClean}",
-                'Tahap_Zendo: delivering',
-                'Alamat: '.$deliveryAddress,
-                'Jarak: '.number_format((float) $distanceKm, 1, '.', '').' km',
-                'Ongkir: Rp '.number_format($deliveryFee, 0, ',', '.'),
-            ];
-            if ($customerLat !== null && $customerLng !== null) {
-                $zendoParts[] = "Pin: {$customerLat},{$customerLng}";
+            if ($isTrackingMode) {
+                $zendoParts = [
+                    "[KURIR ZENDO] Kurir: {$courierName} (#{$courierIndex})",
+                    "HP_Kurir: {$zendoWaClean}",
+                    'Tahap_Zendo: delivering',
+                    'Alamat: '.$deliveryAddress,
+                    'Jarak: '.number_format((float) $distanceKm, 1, '.', '').' km',
+                    'Ongkir: Rp '.number_format($deliveryFee, 0, ',', '.'),
+                ];
+                if ($customerLat !== null && $customerLng !== null) {
+                    $zendoParts[] = "Pin: {$customerLat},{$customerLng}";
+                }
+            } else {
+                // Mode 3: Hanya Chat ke Zendo (tanpa live tracking kurir)
+                $zendoParts = [
+                    '[KURIR ZENDO] Alamat: '.$deliveryAddress,
+                    'Ongkir: Rp '.number_format($deliveryFee, 0, ',', '.'),
+                ];
             }
             if ($rawNotes !== '') {
                 $zendoParts[] = 'Catatan: '.$rawNotes;
@@ -1483,8 +1746,10 @@ class NucomuController extends Controller
             $storedNotes = implode(' | ', $zendoParts);
         }
 
+        $paymentMethod = ($processMethod === 'kasir' && $request->input('payment_method') === 'qris') ? 'qris' : 'cash';
+
         try {
-            $order = DB::transaction(function () use ($request, $processMethod, $dineType, $customerPhone, $storedNotes, $subtotal, $grandTotal) {
+            $order = DB::transaction(function () use ($request, $processMethod, $paymentMethod, $dineType, $customerPhone, $storedNotes, $subtotal, $grandTotal, $deliveryAddress, $deliveryFee, $distanceKm, $tableNo, $customerLat, $customerLng) {
                 $date = Carbon::now()->format('Ymd');
                 $count = Order::whereDate('created_at', today())->count() + 1;
                 $code = 'NCM-'.$date.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
@@ -1494,10 +1759,19 @@ class NucomuController extends Controller
                     'customer_name' => $request->customer_name,
                     'customer_phone' => $customerPhone !== '' ? $customerPhone : ($processMethod === 'zendo' ? 'Via Zendo WA' : '-'),
                     'order_type' => $processMethod === 'zendo' ? 'take_away' : ($dineType === 'take_away' ? 'take_away' : 'dine_in'),
+                    'delivery_address' => $processMethod === 'zendo' ? $deliveryAddress : null,
+                    'delivery_fee' => $deliveryFee,
+                    'form_data' => [
+                        'customer_lat' => $customerLat,
+                        'customer_lng' => $customerLng,
+                        'distance_km' => $distanceKm,
+                        'table_no' => $tableNo,
+                        'dine_type' => $dineType,
+                    ],
                     'notes' => $storedNotes,
                     'subtotal' => $subtotal,
                     'total' => $grandTotal,
-                    'payment_method' => 'cash',
+                    'payment_method' => $paymentMethod,
                     'payment_status' => 'unpaid',
                     'status' => $processMethod === 'zendo' ? 'processing' : 'pending',
                 ]);
@@ -1537,8 +1811,8 @@ class NucomuController extends Controller
             // Create live delivery tracking record (customer/admin tracking link + courier-only GPS link)
             $trackingUrl = null;
             $courierUrl = null;
-            $hideLiveTracking = (bool) ($txSettings['hide_live_tracking'] ?? false);
-            if ($processMethod === 'zendo') {
+            $hideLiveTracking = ! $isTrackingMode || (bool) ($txSettings['hide_live_tracking'] ?? false);
+            if ($processMethod === 'zendo' && $isTrackingMode) {
                 try {
                     $delivery = ZendoDelivery::create([
                         'order_id' => $order->id,
@@ -1618,6 +1892,8 @@ class NucomuController extends Controller
                 'subtotal' => $subtotal,
                 'delivery_fee' => $deliveryFee,
                 'grand_total' => $grandTotal,
+                'payment_method' => $paymentMethod,
+                'qris_image_url' => (! empty($txSettings['qris_image']) && file_exists(public_path($txSettings['qris_image']))) ? asset($txSettings['qris_image']) : null,
                 'slip_url' => $processMethod === 'kasir' ? route('nucomu.order.slip', [
                     'code' => $orderCode,
                     'method' => 'kasir',
@@ -1829,18 +2105,32 @@ class NucomuController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'handle' => 'nullable|string|max:50',
             'order_tag' => 'nullable|string|max:100',
-            'review_image' => 'nullable|image|max:5120',
+            'review_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'content.required' => 'Ulasan singkat wajib diisi.',
+            'rating.required' => 'Rating bintang wajib dipilih.',
+            'review_image.uploaded' => 'Foto ulasan gagal diunggah ke server.',
+            'review_image.image' => 'Berkas foto ulasan harus berupa gambar.',
+            'review_image.mimes' => 'Format foto ulasan harus JPG, PNG, atau WebP.',
+            'review_image.max' => 'Ukuran foto ulasan maksimal 5 MB.',
         ]);
 
         try {
             $uploadedImagePath = null;
-            if ($request->hasFile('review_image') && $request->file('review_image')->isValid()) {
+            if ($request->hasFile('review_image')) {
                 $file = $request->file('review_image');
-                $filename = 'review_'.time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
-                $destination = public_path('uploads/reviews');
-                if (! is_dir($destination)) {
-                    @mkdir($destination, 0755, true);
+                if (! $file->isValid()) {
+                    $errCode = $file->getError();
+                    $errMsg = FileUploadHelper::getErrorMessageForCode($errCode, 'Foto ulasan');
+
+                    return back()->withInput()->with('error', $errMsg);
                 }
+
+                $destination = public_path('uploads/reviews');
+                FileUploadHelper::ensureDirectoryWritable($destination, 'folder upload Ulasan');
+
+                $filename = 'review_'.time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
                 $file->move($destination, $filename);
                 $uploadedImagePath = 'uploads/reviews/'.$filename;
             }
@@ -1869,6 +2159,7 @@ class NucomuController extends Controller
                 'rating' => $request->rating,
                 'is_sample' => false,
                 'is_active' => true,
+                'is_pinned' => false,
             ];
 
             if (Schema::hasColumn('testimonials', 'source')) {
@@ -1891,98 +2182,283 @@ class NucomuController extends Controller
      */
     public function submitReservation(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'fullName' => ['required', 'string', 'min:2', 'max:100'],
-            'phone' => ['required', 'string', 'regex:/^([0-9\\s\\-\\+\\(\\)]*)$/', 'min:9', 'max:20'],
-            'date' => ['required', 'date'],
-            'time' => ['required', 'string'],
-            'guestCount' => ['required', 'string'],
-            'serviceType' => ['required', 'string'],
-            'eventSection' => ['nullable', 'string', 'max:100'],
-            'eventPackage' => ['nullable', 'string', 'max:255'],
-            'area' => ['required', 'string'],
-            'notes' => ['nullable', 'string', 'max:500'],
-        ], [
-            'fullName.required' => 'Nama lengkap wajib diisi.',
-            'phone.required' => 'Nomor WhatsApp aktif wajib diisi.',
-            'phone.regex' => 'Format nomor WhatsApp tidak valid.',
-            'date.required' => 'Tanggal acara wajib dipilih.',
-            'time.required' => 'Jam acara wajib ditentukan.',
-            'guestCount.required' => 'Jumlah tamu wajib ditentukan.',
-            'serviceType.required' => 'Paket acara wajib dipilih.',
-            'area.required' => 'Pilihan area (indoor/outdoor) wajib ditentukan.',
-        ]);
+        $activeFields = ReservationField::active()->get();
+        $errors = [];
+        $formData = [];
 
-        if ($validator->fails()) {
+        $months = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        // Fallback if no active fields in database
+        if ($activeFields->isEmpty()) {
+            $activeFields = collect([
+                (object) ['field_key' => 'name', 'label' => 'Nama Lengkap', 'type' => 'text', 'is_required' => true],
+                (object) ['field_key' => 'phone', 'label' => 'Nomor WhatsApp', 'type' => 'tel', 'is_required' => true],
+                (object) ['field_key' => 'date', 'label' => 'Tanggal Kedatangan', 'type' => 'date', 'is_required' => true],
+                (object) ['field_key' => 'time', 'label' => 'Jam Kedatangan', 'type' => 'time', 'is_required' => true],
+                (object) ['field_key' => 'guests', 'label' => 'Jumlah Tamu', 'type' => 'number', 'is_required' => true],
+                (object) ['field_key' => 'notes', 'label' => 'Catatan Tambahan', 'type' => 'textarea', 'is_required' => false],
+            ]);
+        }
+
+        foreach ($activeFields as $field) {
+            $key = $field->field_key;
+            $type = $field->type;
+            $isRequired = (bool) $field->is_required;
+            $label = $field->label;
+
+            if ($type === 'photo') {
+                $hasFile = $request->hasFile($key) || $request->hasFile("fields.{$key}");
+                $uploadedFile = $request->file($key) ?: $request->file("fields.{$key}");
+
+                if ($isRequired && ! $hasFile) {
+                    $errors[] = "Foto {$label} wajib diunggah.";
+                } elseif ($hasFile && $uploadedFile) {
+                    if (! $uploadedFile->isValid()) {
+                        $errCode = $uploadedFile->getError();
+                        $errors[] = FileUploadHelper::getErrorMessageForCode($errCode, 'Foto '.$label);
+                    } else {
+                        $extension = strtolower($uploadedFile->getClientOriginalExtension());
+                        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                        $fileSize = $uploadedFile->getSize(); // in bytes
+
+                        if (! in_array($extension, $allowedExtensions, true) || $fileSize > 2048 * 1024) {
+                            $errors[] = "Foto {$label} harus berformat JPG, PNG, atau WebP dengan ukuran maksimal 2 MB.";
+                        } else {
+                            try {
+                                $uploadDir = public_path('uploads/reservations');
+                                FileUploadHelper::ensureDirectoryWritable($uploadDir, 'folder upload Reservasi');
+
+                                $safeName = 'res_'.Str::slug($key, '_').'_'.time().'_'.Str::random(6).'.'.$extension;
+                                $uploadedFile->move($uploadDir, $safeName);
+                                $relativePath = 'uploads/reservations/'.$safeName;
+                                $fullUrl = url($relativePath);
+
+                                $formData[] = [
+                                    'key' => $key,
+                                    'label' => $label,
+                                    'type' => 'photo',
+                                    'value' => $safeName,
+                                    'path' => $relativePath,
+                                    'url' => $fullUrl,
+                                ];
+                            } catch (\Throwable $uploadEx) {
+                                $errors[] = "Gagal menyimpan foto {$label}: ".$uploadEx->getMessage();
+                            }
+                        }
+                    }
+                } else {
+                    $formData[] = [
+                        'key' => $key,
+                        'label' => $label,
+                        'type' => 'photo',
+                        'value' => null,
+                        'path' => null,
+                        'url' => null,
+                    ];
+                }
+            } else {
+                // Determine value from request, checking direct key, fields[key], and legacy aliases
+                $val = null;
+                if ($request->has($key)) {
+                    $val = $request->input($key);
+                } elseif ($request->has("fields.{$key}")) {
+                    $val = $request->input("fields.{$key}");
+                } elseif ($key === 'name' && $request->has('fullName')) {
+                    $val = $request->input('fullName');
+                } elseif ($key === 'guests' && $request->has('guestCount')) {
+                    $val = $request->input('guestCount');
+                }
+
+                if ($type === 'checkbox') {
+                    $selectedValues = is_array($val) ? $val : (filled($val) ? [$val] : []);
+                    if ($isRequired && empty($selectedValues)) {
+                        $errors[] = "Pilihan {$label} wajib dipilih minimal satu opsi.";
+                    }
+                    $formData[] = [
+                        'key' => $key,
+                        'label' => $label,
+                        'type' => 'checkbox',
+                        'value' => $selectedValues,
+                    ];
+                } else {
+                    $stringVal = is_string($val) ? trim($val) : (is_null($val) ? '' : (string) $val);
+
+                    if ($isRequired && $stringVal === '') {
+                        $errors[] = "{$label} wajib diisi.";
+                    } elseif ($stringVal !== '') {
+                        if ($type === 'number') {
+                            $cleanNum = preg_replace('/[^0-9]/', '', $stringVal);
+                            if ($cleanNum === '') {
+                                $errors[] = "{$label} harus berupa angka yang valid.";
+                            }
+                        } elseif ($type === 'tel') {
+                            $cleanPhone = preg_replace('/[^0-9]/', '', $stringVal);
+                            if (strlen($cleanPhone) < 8) {
+                                $errors[] = "{$label} tidak valid (minimal 8 digit).";
+                            }
+                        } elseif ($type === 'date') {
+                            try {
+                                Carbon::parse($stringVal);
+                            } catch (\Throwable $e) {
+                                $errors[] = "{$label} harus berupa format tanggal yang valid.";
+                            }
+                        }
+                    }
+
+                    $formData[] = [
+                        'key' => $key,
+                        'label' => $label,
+                        'type' => $type,
+                        'value' => $stringVal !== '' ? $stringVal : null,
+                    ];
+                }
+            }
+        }
+
+        // Preserve additional legacy event package inputs if submitted
+        if ($request->filled('serviceType')) {
+            $formData[] = [
+                'key' => 'serviceType',
+                'label' => 'Kategori Acara',
+                'type' => 'text',
+                'value' => $request->input('serviceType'),
+            ];
+        }
+        if ($request->filled('eventPackage')) {
+            $formData[] = [
+                'key' => 'eventPackage',
+                'label' => 'Paket Dekorasi',
+                'type' => 'text',
+                'value' => $request->input('eventPackage'),
+            ];
+        }
+        if ($request->filled('area')) {
+            $formData[] = [
+                'key' => 'area',
+                'label' => 'Pilihan Area',
+                'type' => 'text',
+                'value' => $request->input('area'),
+            ];
+        }
+
+        if (! empty($errors)) {
             if ($request->wantsJson() || $request->ajax() || $request->isJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validasi formulir belum terpenuhi.',
-                    'errors' => $validator->errors()->all(),
+                    'errors' => $errors,
                 ], 422);
             }
 
-            return back()->withErrors($validator)->withInput();
+            return back()->withErrors($errors)->withInput();
         }
 
-        $validated = $validator->validated();
-        $packageInfo = ! empty($validated['eventPackage']) ? $validated['eventPackage'] : null;
+        // Map core values for Reservation model
+        $customerName = 'Pelanggan';
+        $customerPhone = '-';
+        $reservationDate = date('Y-m-d');
+        $reservationTime = '15:00';
+        $guestCount = 2;
+        $notesSummary = '';
 
-        // 1. Save reservation to database
+        foreach ($formData as $item) {
+            $itemKey = $item['key'];
+            $itemVal = $item['value'];
+
+            if (in_array($itemKey, ['name', 'fullName', 'nama', 'nama_lengkap'], true) && filled($itemVal)) {
+                $customerName = (string) $itemVal;
+            } elseif (in_array($itemKey, ['phone', 'whatsapp', 'nomor_whatsapp', 'telepon'], true) && filled($itemVal)) {
+                $customerPhone = (string) $itemVal;
+            } elseif (in_array($itemKey, ['date', 'tanggal', 'tanggal_reservasi', 'tanggal_kedatangan'], true) && filled($itemVal)) {
+                $reservationDate = (string) $itemVal;
+            } elseif (in_array($itemKey, ['time', 'jam', 'waktu', 'jam_kedatangan'], true) && filled($itemVal)) {
+                $reservationTime = (string) $itemVal;
+            } elseif (in_array($itemKey, ['guests', 'guestCount', 'jumlah_tamu', 'tamu'], true) && filled($itemVal)) {
+                $cleanG = (int) preg_replace('/[^0-9]/', '', (string) $itemVal);
+                $guestCount = $cleanG > 0 ? $cleanG : 2;
+            } elseif (in_array($itemKey, ['notes', 'catatan', 'catatan_tambahan', 'catatan_khusus'], true) && filled($itemVal)) {
+                $notesSummary = (string) $itemVal;
+            }
+        }
+
+        // Save to database
         try {
-            $guestInt = (int) preg_replace('/[^0-9]/', '', $validated['guestCount']);
-            $notesSummary = "Acara: {$validated['serviceType']}";
-            if ($packageInfo && ! str_contains($validated['serviceType'], $packageInfo)) {
-                $notesSummary .= " | Paket: {$packageInfo}";
-            }
-            $notesSummary .= " | Area: {$validated['area']}";
-            if (! empty($validated['notes'])) {
-                $notesSummary .= " | Catatan: {$validated['notes']}";
-            }
-
-            Reservation::create([
-                'name' => $validated['fullName'],
-                'phone' => $validated['phone'],
-                'date' => $validated['date'],
-                'time' => $validated['time'],
-                'guests' => $guestInt > 0 ? $guestInt : 2,
-                'notes' => trim($notesSummary),
+            $createdReservation = Reservation::create([
+                'name' => $customerName,
+                'phone' => $customerPhone,
+                'date' => $reservationDate,
+                'time' => $reservationTime,
+                'guests' => $guestCount,
+                'notes' => $notesSummary ?: null,
+                'form_data' => $formData,
                 'status' => 'pending',
             ]);
         } catch (\Throwable $e) {
             Log::warning('Gagal menyimpan reservasi ke DB: '.$e->getMessage());
         }
 
-        // 2. Format Indonesian date
-        $months = [
-            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
-            7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
-        ];
-        $carbonDate = Carbon::parse($validated['date']);
-        $formattedDate = $carbonDate->format('d').' '.($months[(int) $carbonDate->format('m')] ?? $carbonDate->format('F')).' '.$carbonDate->format('Y');
+        // Retrieve & normalize WhatsApp target number
+        $destinationNumber = Setting::get('reservation_whatsapp')
+            ?: Setting::get('cafe_whatsapp', config('nucomu.contact.whatsapp_number', '6281234567890'));
 
-        $destinationNumber = config('nucomu.contact.whatsapp_number', '6281234567890');
+        $cleanWa = preg_replace('/[^0-9]/', '', (string) $destinationNumber);
+        if (str_starts_with($cleanWa, '08')) {
+            $cleanWa = '628'.substr($cleanWa, 2);
+        } elseif (str_starts_with($cleanWa, '8')) {
+            $cleanWa = '628'.substr($cleanWa, 1);
+        }
+        if (empty($cleanWa)) {
+            $cleanWa = '6281234567890';
+        }
 
-        $formattedMessage = "Halo Nucomu Cafe, saya ingin mengajukan reservasi:\n\n".
-            '• Nama: '.$validated['fullName']."\n".
-            '• WhatsApp: '.$validated['phone']."\n".
-            '• Tanggal: '.$formattedDate."\n".
-            '• Waktu: '.$validated['time']." WIB\n".
-            '• Jumlah Tamu: '.$validated['guestCount']."\n".
-            '• Kategori Acara: '.$validated['serviceType']."\n".
-            ($packageInfo ? '• Paket Dekorasi: '.$packageInfo."\n" : '').
-            '• Area: '.$validated['area']."\n".
-            '• Catatan Khusus: '.(! empty($validated['notes']) ? $validated['notes'] : '-')."\n\n".
-            'Mohon informasi ketersediaan jadwal dan tindak lanjutnya. Terima kasih.';
+        // Format WhatsApp Message
+        $waLines = ['*RESERVASI BARU — NUCOMU CAFE*', ''];
 
-        $whatsappUrl = 'https://wa.me/'.preg_replace('/[^0-9]/', '', $destinationNumber).'?text='.rawurlencode($formattedMessage);
+        foreach ($formData as $item) {
+            $label = $item['label'];
+            $val = $item['value'];
+            $type = $item['type'];
+
+            if ($type === 'photo') {
+                if (! empty($item['url'])) {
+                    $waLines[] = "• *{$label} (Link Foto):* {$item['url']}";
+                } else {
+                    $waLines[] = "• *{$label}:* (Tidak melampirkan foto)";
+                }
+            } elseif ($type === 'date' && filled($val)) {
+                try {
+                    $carbonDate = Carbon::parse($val);
+                    $formattedDate = $carbonDate->format('d').' '.($months[(int) $carbonDate->format('m')] ?? $carbonDate->format('F')).' '.$carbonDate->format('Y');
+                    $waLines[] = "• *{$label}:* {$formattedDate}";
+                } catch (\Throwable $e) {
+                    $waLines[] = "• *{$label}:* {$val}";
+                }
+            } elseif ($type === 'time' && filled($val)) {
+                $waLines[] = "• *{$label}:* {$val} WIB";
+            } elseif ($type === 'checkbox') {
+                $checkList = is_array($val) ? implode(', ', $val) : (string) $val;
+                $waLines[] = "• *{$label}:* ".($checkList !== '' ? $checkList : '-');
+            } else {
+                $display = is_array($val) ? implode(', ', $val) : (string) $val;
+                $waLines[] = "• *{$label}:* ".($display !== '' ? $display : '-');
+            }
+        }
+
+        $waLines[] = '';
+        $waLines[] = 'Mohon informasi ketersediaan jadwal meja kami. Terima kasih!';
+
+        $fullWaMessage = implode("\n", $waLines);
+        $whatsappUrl = 'https://wa.me/'.$cleanWa.'?text='.rawurlencode($fullWaMessage);
 
         if ($request->wantsJson() || $request->ajax() || $request->isJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Validasi dan penyimpanan berhasil. Mengarahkan ke WhatsApp...',
+                'message' => 'Reservasi berhasil disimpan. Mengarahkan ke WhatsApp...',
                 'whatsapp_url' => $whatsappUrl,
-                'data' => $validated,
+                'data' => $formData,
             ]);
         }
 

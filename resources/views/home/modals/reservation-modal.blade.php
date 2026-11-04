@@ -45,88 +45,116 @@
             </div>
 
             <!-- Reservation Form -->
-            <form id="reservation-form" novalidate onsubmit="return handleReservationSubmit(event)" class="space-y-4">
-                <!-- 1. Nama Pemesan & 2. Nomor WhatsApp (2 Kolom) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                    <div>
-                        <label for="res-name" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                            Nama Pemesan <span class="text-[#1C1C1C]">*</span>
-                        </label>
-                        <input type="text" 
-                               id="res-name" 
-                               name="fullName" 
-                               required 
-                               placeholder="Contoh: Raditya Danendra" 
-                               class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
-                    </div>
-                    <div>
-                        <label for="res-phone" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                            Nomor WhatsApp Aktif <span class="text-[#1C1C1C]">*</span>
-                        </label>
-                        <input type="tel" 
-                               id="res-phone" 
-                               name="phone" 
-                               required 
-                               placeholder="081234567890" 
-                               class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
-                    </div>
-                </div>
+            <form id="reservation-form" enctype="multipart/form-data" novalidate onsubmit="return handleReservationSubmit(event)" class="space-y-4">
+                @php
+                    $modalFields = $reservationFields ?? $fields ?? \App\Models\ReservationField::active()->get();
+                @endphp
 
-                <!-- 3. Tanggal Acara & 4. Waktu Kedatangan (2 Kolom) -->
+                <!-- Dynamic Form Builder Fields -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                    <div>
-                        <label for="res-date" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                            Tanggal Acara <span class="text-[#1C1C1C]">*</span>
-                        </label>
-                        <input type="date" 
-                               id="res-date" 
-                               name="date" 
-                               required 
-                               class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
-                    </div>
-                    <div>
-                        <label for="res-time" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                            Waktu Kedatangan <span class="text-[#1C1C1C]">*</span>
-                        </label>
-                        <input type="time" 
-                               id="res-time" 
-                               name="time" 
-                               required 
-                               value="15:00"
-                               class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
-                    </div>
-                </div>
-
-                <!-- 5. Jumlah Tamu & 6. Pilihan Area (2 Kolom - Lebar Lega & Tidak Terpotong) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                    <div>
-                        <label for="res-guests" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                            Jumlah Tamu <span class="text-[#1C1C1C]">*</span>
-                        </label>
-                        <select id="res-guests" 
-                                name="guestCount" 
-                                required 
-                                class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
-                            <option value="1 - 2 Orang">1 – 2 Orang (Meja Intim)</option>
-                            <option value="3 - 5 Orang" selected>3 – 5 Orang (Meja Reguler)</option>
-                            <option value="6 - 10 Orang">6 – 10 Orang (Meja Komunal)</option>
-                            <option value="10+ Orang">10+ Orang (Group Gathering)</option>
-                            <option value="Acara Privat (Seluruh Ruang)">Acara Privat (Seluruh Ruang)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="res-area" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                            Pilihan Area <span class="text-[#1C1C1C]">*</span>
-                        </label>
-                        <select id="res-area" 
-                                name="area" 
-                                required 
-                                class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
-                            <option value="Indoor (AC & Working Space)">Indoor (AC &amp; Working Space)</option>
-                            <option value="Outdoor (Smoking Area & Garden)">Outdoor (Smoking Area &amp; Garden)</option>
-                            <option value="Fleksibel (Sesuai Ketersediaan)">Fleksibel (Sesuai Ketersediaan)</option>
-                        </select>
-                    </div>
+                    @forelse($modalFields as $field)
+                        @if($field->type === 'photo')
+                            <div class="col-span-full">
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                </label>
+                                <div class="p-3.5 bg-white border border-[#E5E5E5] rounded-xl space-y-2">
+                                    <input type="file" 
+                                           id="modal-field-{{ $field->field_key }}" 
+                                           name="{{ $field->field_key }}" 
+                                           data-label="{{ $field->label }}"
+                                           accept=".jpg,.jpeg,.png,.webp"
+                                           {{ $field->is_required ? 'required' : '' }}
+                                           class="block w-full text-xs text-[#1C1C1C] file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#242424] file:text-white hover:file:bg-black cursor-pointer">
+                                    <p class="text-[10px] text-[#666666]">
+                                        <span class="font-semibold text-[#1C1C1C]">Panduan Ukuran:</span> Format JPG, PNG, atau WebP (Maksimal 2 MB).
+                                    </p>
+                                    <p class="text-[10px] text-[#555555] bg-[#F5F5F5] border border-[#E5E5E5] rounded-lg p-2 leading-relaxed">
+                                        💡 <strong>Catatan:</strong> Foto akan tersimpan di server kami &amp; link foto disertakan pada WhatsApp. Anda juga dapat melampirkan foto langsung di chat WhatsApp saat percakapan terbuka.
+                                    </p>
+                                </div>
+                            </div>
+                        @elseif($field->type === 'checkbox')
+                            <div class="col-span-full">
+                                <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                </label>
+                                @if(!empty($field->options) && is_array($field->options))
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 bg-white border border-[#E5E5E5] rounded-xl">
+                                        @foreach($field->options as $optVal)
+                                            <label class="flex items-center gap-2 p-2 bg-[#FAFAFA] rounded-lg border border-[#EAEAEA] hover:border-[#CCCCCC] cursor-pointer text-xs text-[#1C1C1C]">
+                                                <input type="checkbox" 
+                                                       name="{{ $field->field_key }}[]" 
+                                                       value="{{ $optVal }}" 
+                                                       data-label="{{ $field->label }}"
+                                                       {{ $field->is_required ? 'required' : '' }}
+                                                       class="w-4 h-4 rounded text-[#242424] border-stone-300 focus:ring-[#242424]">
+                                                <span>{{ $optVal }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        @elseif($field->type === 'textarea')
+                            <div class="col-span-full">
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                </label>
+                                <textarea id="modal-field-{{ $field->field_key }}" 
+                                          name="{{ $field->field_key }}" 
+                                          data-label="{{ $field->label }}"
+                                          rows="2"
+                                          placeholder="{{ $field->placeholder ?: 'Tuliskan ' . strtolower($field->label) . '...' }}" 
+                                          {{ $field->is_required ? 'required' : '' }}
+                                          class="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors"></textarea>
+                            </div>
+                        @elseif($field->type === 'date')
+                            <div>
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                </label>
+                                <input type="date" 
+                                       id="modal-field-{{ $field->field_key }}" 
+                                       name="{{ $field->field_key }}" 
+                                       data-label="{{ $field->label }}"
+                                       min="{{ date('Y-m-d') }}"
+                                       value="{{ date('Y-m-d') }}"
+                                       {{ $field->is_required ? 'required' : '' }}
+                                       class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                            </div>
+                        @elseif($field->type === 'time')
+                            <div>
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                </label>
+                                <input type="time" 
+                                       id="modal-field-{{ $field->field_key }}" 
+                                       name="{{ $field->field_key }}" 
+                                       data-label="{{ $field->label }}"
+                                       value="15:00"
+                                       {{ $field->is_required ? 'required' : '' }}
+                                       class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                            </div>
+                        @else
+                            {{-- text, tel, number --}}
+                            <div>
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                </label>
+                                <input type="{{ $field->type === 'number' ? 'number' : ($field->type === 'tel' ? 'tel' : 'text') }}" 
+                                       id="modal-field-{{ $field->field_key }}" 
+                                       name="{{ $field->field_key }}" 
+                                       data-label="{{ $field->label }}"
+                                       placeholder="{{ $field->placeholder ?: ($field->type === 'number' ? 'Contoh: 4' : ($field->type === 'tel' ? '08xxxxxxxxxx' : 'Masukkan ' . strtolower($field->label))) }}" 
+                                       {{ $field->is_required ? 'required' : '' }}
+                                       class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                            </div>
+                        @endif
+                    @empty
+                        <div class="col-span-full text-center py-4 text-xs text-[#8A8A8A]">
+                            Belum ada kolom formulir yang diaktifkan oleh admin.
+                        </div>
+                    @endforelse
                 </div>
 
                 <!-- 7. SECTION PAKET ACARA: BRIDAL & BIRTHDAY -->
@@ -372,17 +400,19 @@
                     </div>
                 </div>
 
-                <!-- 8. Catatan Khusus (1 Kolom Penuh) -->
-                <div>
-                    <label for="res-notes" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                        Catatan Khusus / Tulisan Lettering (Opsional)
-                    </label>
-                    <input type="text"
-                           id="res-notes" 
-                           name="notes" 
-                           placeholder="Contoh: Tulisan lettering 'Happy Bridal Rara', meja dekat jendela..." 
-                           class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
-                </div>
+                @if($modalFields->where('field_key', 'notes')->isEmpty())
+                    <!-- Catatan Khusus Tambahan (Jika belum ada di form builder) -->
+                    <div>
+                        <label for="res-notes" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                            Catatan Khusus / Tulisan Lettering (Opsional)
+                        </label>
+                        <input type="text"
+                               id="res-notes" 
+                               name="notes" 
+                               placeholder="Contoh: Tulisan lettering 'Happy Bridal Rara', meja dekat jendela..." 
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                    </div>
+                @endif
             </form>
         </div>
 

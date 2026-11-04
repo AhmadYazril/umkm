@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Models\Testimonial;
 use App\Models\User;
 use App\Models\ZendoDelivery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -120,6 +121,18 @@ class NucomuFeatureTest extends TestCase
             'source' => 'website',
             'is_active' => true,
         ]);
+
+        // In Modul 6, reviews must be pinned by admin to appear on the web
+        Testimonial::where('name', 'Rara Pelanggan Web')->update(['is_pinned' => true]);
+        foreach (['Dya slma', 'Febry Hassan', 'Karina Wulan Cahyani', 'Muhammad Kaisi', 'Tani Kopi', 'Aulia Rahma'] as $pinnedName) {
+            Testimonial::create([
+                'name' => $pinnedName,
+                'content' => 'Kopi dan suasana sangat mantap.',
+                'rating' => 5,
+                'is_pinned' => true,
+                'is_active' => true,
+            ]);
+        }
 
         $response = $this->get('/');
         $response->assertStatus(200);

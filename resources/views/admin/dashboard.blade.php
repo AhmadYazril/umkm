@@ -19,15 +19,15 @@
             </p>
         </div>
         <div class="flex flex-wrap items-center gap-2.5">
-            <button type="button" onclick="toggleAdminMessagePopup()" class="px-3.5 py-2.5 rounded-xl bg-ink-black hover:bg-charcoal text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-2 btn-press" title="Buka Kotak Pesan">
+            <button type="button" onclick="toggleAdminNotificationDropdown(event)" class="px-3.5 py-2.5 rounded-xl bg-ink-black hover:bg-charcoal text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-2 btn-press" title="Buka Kabar &amp; Pesan Kafe">
                 <div class="relative flex items-center justify-center">
-                    <i class="fa-regular fa-comment-dots text-xs"></i>
-                    <span id="dashboardMsgPing" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping absolute -top-1 -right-1 {{ ($pendingNotificationCount ?? 3) > 0 ? '' : 'hidden' }}"></span>
+                    <i class="fa-regular fa-bell text-xs"></i>
+                    <span id="dashboardMsgPing" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping absolute -top-1 -right-1 {{ ($pendingNotificationCount ?? 0) > 0 ? '' : 'hidden' }}"></span>
                     <span class="w-2 h-2 rounded-full bg-emerald-400 absolute -top-1 -right-1"></span>
                 </div>
-                <span>Kotak Pesan</span>
-                <span id="dashboardMsgBadge" class="px-1.5 py-0.5 rounded-full bg-white text-ink-black text-[9.5px] font-mono font-bold leading-none {{ ($pendingNotificationCount ?? 3) > 0 ? '' : 'hidden' }}">
-                    {{ $pendingNotificationCount ?? 3 }}
+                <span>Kabar &amp; Pesan</span>
+                <span id="dashboardMsgBadge" class="px-1.5 py-0.5 rounded-full bg-white text-ink-black text-[9.5px] font-mono font-bold leading-none {{ ($pendingNotificationCount ?? 0) > 0 ? '' : 'hidden' }}">
+                    {{ $pendingNotificationCount ?? 0 }}
                 </span>
             </button>
             <a href="{{ route('admin.orders.scan') }}" class="px-4 py-2.5 rounded-xl bg-pure-white hover:bg-warm-stone text-ink-black border border-hairline font-bold text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-2 btn-press">

@@ -1,5 +1,16 @@
 <!-- GLOBAL FOOTER -->
 @php
+    $contact = $contact ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::getContactSettings() : []);
+    $footerAddress = $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221');
+    $footerWaClean = $contact['whatsapp_clean'] ?? config('nucomu.contact.whatsapp_number', '6281234567890');
+    $footerWaDisplay = $contact['whatsapp_display'] ?? config('nucomu.contact.whatsapp_display', '+62 812-3456-7890');
+    $footerInstagram = $contact['instagram'] ?? null;
+    $footerTiktok = $contact['tiktok'] ?? null;
+    $footerGrabfood = $contact['grabfood_url'] ?? null;
+    $footerMapsUrl = $contact['maps_url'] ?? config('nucomu.contact.google_maps_url', 'https://maps.google.com/?q=Nucomu+Cafe+Tulungagung');
+    $footerEmail = $contact['email'] ?? null;
+    $footerHours = $contact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB');
+
     $nowWib = \Carbon\Carbon::now('Asia/Jakarta');
     $dayOfWeek = (int) $nowWib->dayOfWeek; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
     $currentMinutes = (int) ($nowWib->hour * 60 + $nowWib->minute);
@@ -180,96 +191,90 @@
                 </h4>
                 <div class="w-7 h-[2px] bg-white mt-2 mb-5"></div>
 
-                <!-- Social Media Icon Circles with Magnetic Pull & Smooth Invert Color -->
+                <!-- Dynamic Social Media Icon Circles (Only shown if filled by admin) -->
                 <div class="flex items-center gap-2.5 mb-5 flex-wrap">
-                    <!-- Instagram -->
-                    <a href="{{ config('nucomu.contact.instagram_url', 'https://www.instagram.com/nucomu.cafe') }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="footer-magnet-btn w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-[#111113] border border-white/10 hover:border-white transition-colors duration-300 flex items-center justify-center shadow-sm group relative"
-                       aria-label="Instagram Nucomu Cafe">
-                        <svg class="w-4 h-4 fill-current group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
-                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                        </svg>
-                    </a>
-
-                    <!-- TikTok -->
-                    <a href="{{ config('nucomu.contact.tiktok_url', 'https://www.tiktok.com/@nucomu.cafe') }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="footer-magnet-btn w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-[#111113] border border-white/10 hover:border-white transition-colors duration-300 flex items-center justify-center shadow-sm group relative"
-                       aria-label="TikTok Nucomu Cafe">
-                        <svg class="w-3.5 h-3.5 fill-current group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
-                            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298 0 .591.044.87.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.46V11.2a8.27 8.27 0 0 0 5.77 2.27V10.1a4.84 4.84 0 0 1-3.77-3.41h3.77z"/>
-                        </svg>
-                    </a>
-
-                    <!-- Facebook -->
-                    <a href="https://facebook.com/nucomucafe" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="footer-magnet-btn w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-[#111113] border border-white/10 hover:border-white transition-colors duration-300 flex items-center justify-center shadow-sm group relative"
-                       aria-label="Facebook Nucomu Cafe">
-                        <svg class="w-3.5 h-3.5 fill-current group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
-                            <path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.704 0-1.428.18-1.785.541-.357.362-.536 1.052-.536 2.072v1.367h4.721l-.571 3.667h-4.15v7.98H9.101z"/>
-                        </svg>
-                    </a>
-
-                    <!-- YouTube -->
-                    <a href="https://youtube.com/@nucomucafe" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="footer-magnet-btn w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-[#111113] border border-white/10 hover:border-white transition-colors duration-300 flex items-center justify-center shadow-sm group relative"
-                       aria-label="YouTube Nucomu Cafe">
-                        <svg class="w-4 h-4 fill-current group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
-                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                    </a>
-
-                    <!-- X (Twitter) -->
-                    <a href="https://x.com/nucomucafe" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="footer-magnet-btn w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-[#111113] border border-white/10 hover:border-white transition-colors duration-300 flex items-center justify-center shadow-sm group relative"
-                       aria-label="X (Twitter) Nucomu Cafe">
-                        <svg class="w-3.5 h-3.5 fill-current group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
-                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg>
-                    </a>
-                </div>
-
-                <!-- WhatsApp Contact Info with Micro-Bounce & White Text Highlight -->
-                <div class="footer-contact-row group flex items-center gap-2.5 text-xs mb-3 text-zinc-300 cursor-pointer">
-                    <div class="footer-contact-icon shrink-0 text-zinc-300 group-hover:text-white transition-colors duration-200">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
-                        </svg>
-                    </div>
-                    <span class="text-zinc-300 group-hover:text-white transition-colors duration-200">
-                        WhatsApp: 
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $contact['whatsapp_number'] ?? config('nucomu.contact.whatsapp_number', '6285934960910')) }}" 
+                    @if(!empty($footerInstagram))
+                        <a href="{{ $footerInstagram }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="font-bold text-white group-hover:text-white group-hover:underline transition-colors ml-1">
-                            {{ $contact['whatsapp_display'] ?? config('nucomu.contact.whatsapp_display', '+62 859-3496-0910') }}
+                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           aria-label="Instagram Nucomu Cafe"
+                           title="Instagram Nucomu Cafe">
+                            <i class="fa-brands fa-instagram text-base group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    @endif
+
+                    @if(!empty($footerTiktok))
+                        <a href="{{ $footerTiktok }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           aria-label="TikTok Nucomu Cafe"
+                           title="TikTok Nucomu Cafe">
+                            <i class="fa-brands fa-tiktok text-sm group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    @endif
+
+                    @if(!empty($footerGrabfood))
+                        <a href="{{ $footerGrabfood }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="w-9 h-9 rounded-full bg-[#00B14F]/90 hover:bg-[#00B14F] text-white border border-[#00B14F]/40 hover:border-[#00B14F] transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           aria-label="GrabFood Nucomu Cafe"
+                           title="Kunjungi GrabFood Nucomu Cafe">
+                            <i class="fa-solid fa-bag-shopping text-sm group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    @endif
+
+                    @if(!empty($footerEmail))
+                        <a href="mailto:{{ $footerEmail }}" 
+                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           aria-label="Email Nucomu Cafe"
+                           title="{{ $footerEmail }}">
+                            <i class="fa-solid fa-envelope text-xs group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    @endif
+
+                    @if(!empty($footerMapsUrl))
+                        <a href="{{ $footerMapsUrl }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           aria-label="Lokasi Google Maps"
+                           title="Buka Google Maps">
+                            <i class="fa-solid fa-location-dot text-sm group-hover:scale-110 transition-transform"></i>
+                        </a>
+                    @endif
+                </div>
+
+                <!-- WhatsApp Contact Info -->
+                <div class="flex items-center gap-2.5 text-xs mb-3 text-zinc-300">
+                    <i class="fa-brands fa-whatsapp text-emerald-500 text-base shrink-0"></i>
+                    <span>
+                        WhatsApp: 
+                        <a href="https://wa.me/{{ $footerWaClean }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="font-bold text-white hover:underline transition-colors ml-1">
+                            {{ $footerWaDisplay }}
                         </a>
                     </span>
                 </div>
 
-                <!-- Address Location Info with Micro-Bounce & White Text Highlight -->
-                <div class="footer-contact-row group flex items-start gap-2.5 text-xs text-zinc-400 cursor-pointer">
-                    <div class="footer-contact-icon shrink-0 mt-0.5 text-zinc-400 group-hover:text-white transition-colors duration-200">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                            <circle cx="12" cy="10" r="3"/>
-                        </svg>
-                    </div>
-                    <a href="{{ $contact['google_maps_url'] ?? $contact['maps_url'] ?? config('nucomu.contact.google_maps_url', 'https://maps.google.com') }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="text-zinc-400 group-hover:text-white transition-colors duration-200 leading-relaxed font-normal group-hover:font-medium">
-                        {{ $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Manggisan, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221') }}
-                    </a>
+                <!-- Address Location Info -->
+                <div class="flex items-start gap-2.5 text-xs text-zinc-400">
+                    <i class="fa-solid fa-location-dot text-zinc-400 shrink-0 mt-0.5"></i>
+                    @if(!empty($footerMapsUrl))
+                        <a href="{{ $footerMapsUrl }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="hover:text-zinc-200 transition-colors leading-relaxed">
+                            {{ $footerAddress }}
+                        </a>
+                    @else
+                        <span class="leading-relaxed">{{ $footerAddress }}</span>
+                    @endif
+                </div>
                 </div>
             </div>
 

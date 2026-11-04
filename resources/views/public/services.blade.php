@@ -4,8 +4,9 @@
 @section('content')
 @php
     $services = config('nucomu.services');
-    $wa = config('nucomu.contact.whatsapp_number');
-    $hours = config('nucomu.contact.hours');
+    $contact = \App\Http\Controllers\NucomuController::getContactSettings();
+    $wa = $contact['whatsapp_clean'] ?? config('nucomu.contact.whatsapp_number', '6281234567890');
+    $hours = $contact['hours'] ?? config('nucomu.contact.hours');
     $steps = [
         ['Pilih layanan', 'Tentukan jenis acara atau area yang kamu butuhkan.'],
         ['Hubungi kami', 'Kirim tanggal, jumlah tamu, dan kebutuhanmu lewat WhatsApp.'],

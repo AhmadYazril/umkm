@@ -353,28 +353,30 @@ class KasirController extends Controller
 
             if ($menuModel) {
                 $idKey = (string) $menuModel->id;
-                // In binary stock model ("gausah ada jumlahnya jadi kalo ada gaada pencet habis gitu"),
-                // placing orders does NOT automatically deplete stock into "Habis".
-                // Items stay available until the cashier or manager explicitly presses "Habis".
-                $isAvailable = (bool) $menuModel->is_available;
-                $stockVal = $isAvailable ? 25 : 0;
+                $currentStock = $menuModel->stock !== null
+                    ? (int) $menuModel->stock
+                    : (isset($stockMap[$idKey]) ? (int) $stockMap[$idKey] : ($menuModel->is_available ? 25 : 0));
 
-                $stockMap[$idKey] = $stockVal;
-                $updatedStocks[$idKey] = $stockVal;
+                $newStock = max(0, $currentStock - $qty);
+                $isAvailable = $newStock > 0;
+
+                $stockMap[$idKey] = $newStock;
+                $updatedStocks[$idKey] = $newStock;
 
                 try {
                     $menuModel->update([
-                        'stock' => $stockVal,
+                        'stock' => $newStock,
                         'is_available' => $isAvailable,
                     ]);
                 } catch (\Throwable $e) {
                 }
             } elseif ($midRaw !== null && (string) $midRaw !== '') {
                 $mid = (string) $midRaw;
-                $isAvailable = isset($stockMap[$mid]) ? ((int) $stockMap[$mid] > 0) : true;
-                $stockVal = $isAvailable ? 25 : 0;
-                $stockMap[$mid] = $stockVal;
-                $updatedStocks[$mid] = $stockVal;
+                $currentStock = isset($stockMap[$mid]) ? (int) $stockMap[$mid] : 25;
+                $newStock = max(0, $currentStock - $qty);
+
+                $stockMap[$mid] = $newStock;
+                $updatedStocks[$mid] = $newStock;
             }
         }
 
@@ -651,19 +653,23 @@ class KasirController extends Controller
             ? (bool) $menuModel->is_available
             : ((int) ($stockMap[$menuId] ?? 25) > 0);
 
-        if (! empty($validated['toggle'])) {
+        if (array_key_exists('stock', $validated) && $validated['stock'] !== null) {
+            $newStock = max(0, (int) $validated['stock']);
+            $isAvailable = $newStock > 0;
+        } elseif (! empty($validated['toggle'])) {
             $isAvailable = ! $currentAvailable;
+            $newStock = $isAvailable ? 25 : 0;
         } elseif (array_key_exists('is_available', $validated) && $validated['is_available'] !== null) {
             $isAvailable = (bool) $validated['is_available'];
-        } elseif (array_key_exists('stock', $validated) && $validated['stock'] !== null) {
-            $isAvailable = (int) $validated['stock'] > 0;
+            $newStock = $isAvailable ? 25 : 0;
         } elseif (array_key_exists('delta', $validated) && $validated['delta'] !== null) {
             $isAvailable = ($currentAvailable ? 25 : 0) + (int) $validated['delta'] > 0;
+            $newStock = $isAvailable ? 25 : 0;
         } else {
             $isAvailable = $currentAvailable;
+            $newStock = $isAvailable ? 25 : 0;
         }
 
-        $newStock = $isAvailable ? 25 : 0;
         $stockMap[$menuId] = $newStock;
         $this->saveStockMap($stockMap);
 
@@ -702,7 +708,7 @@ class KasirController extends Controller
                 'id' => $item['id'],
                 'name' => $item['name'],
                 'price' => $item['price'],
-                'stock' => $isAvail ? 25 : 0,
+                'stock' => (int) $item['stock'],
                 'is_available' => $isAvail,
             ];
         }

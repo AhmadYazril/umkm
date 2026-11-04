@@ -17,6 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'avatar',
     ];
 
     protected $hidden = [
@@ -53,5 +54,14 @@ class User extends Authenticatable
     public function getRememberTokenName(): string
     {
         return '';
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar && file_exists(public_path('uploads/avatars/'.$this->avatar))) {
+            return asset('uploads/avatars/'.$this->avatar);
+        }
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&background=191919&color=ffffff&bold=true';
     }
 }

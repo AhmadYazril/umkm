@@ -1,4 +1,4 @@
-<!-- SECTION 1: HOME / HERO (4 ANIMATED MENU SLIDES WITH DYNAMIC WARM BACKGROUNDS) -->
+<!-- SECTION 1: HOME / HERO (4 ANIMATED MENU SLIDES WITH DYNAMIC WARM BACKGROUNDS & PROMOTIONAL BANNERS) -->
 <section id="home" 
          class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero"
          style="background-color: #EADBC8; transition: background-color 0.8s ease;">
@@ -8,293 +8,258 @@
          style="background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 60%, transparent 100%);">
     </div>
 
-    <!-- =========================================================================
-         SLIDE 0: TIRAMISU (#EADBC8 - Krem Kecokelatan)
-         ========================================================================= -->
-    <div class="hero-slide-item absolute inset-0 w-full h-full flex items-center justify-center active z-10"
-         data-slide-index="0"
-         data-bg-color="#EADBC8">
-        
-        <div class="relative z-20 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-14 w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                
-                <!-- Text Column (Left) -->
-                <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
-                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#3C281E] mb-1.5 leading-tight">
-                        Signature Artisanal Dessert
-                    </p>
+    @if(isset($activeBanners) && $activeBanners->count() > 0)
+        <!-- =========================================================================
+             1. DESKTOP ONLY: PROMOTIONAL BANNERS (SCREEN WIDTH >= 768px)
+             Di HP banner TIDAK ditampilkan dan media (gambar/video) TIDAK diunduh.
+             ========================================================================= -->
+        <div class="hidden md:block w-full h-full absolute inset-0" id="desktop-hero-banners-wrapper">
+            @foreach($activeBanners as $banner)
+                <div class="hero-slide-item hero-banner-slide absolute inset-0 w-full h-full flex items-center justify-center {{ $loop->first ? 'active z-10' : 'opacity-0 pointer-events-none z-0' }}"
+                     data-slide-index="{{ $loop->index }}"
+                     data-layout-mode="{{ $banner->layout_mode ?: 'poster' }}"
+                     data-bg-color="#FAF8F5">
+                    
+                    @if(($banner->layout_mode ?: 'poster') === 'poster')
+                        <!-- -----------------------------------------------------------------
+                             MODE 1: POSTER (DEFAULT) - Full Edge-to-Edge Desktop
+                             Seluruh poster menjadi link jika button_link diisi
+                             ----------------------------------------------------------------- -->
+                        @if(!empty($banner->button_link))
+                            <a href="{{ $banner->button_link }}" class="group/poster relative w-full h-full flex items-center justify-center overflow-hidden block cursor-pointer" title="{{ $banner->title }}">
+                        @else
+                            <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
+                        @endif
+                            @if($banner->media_type === 'video')
+                                <video class="w-full h-full object-cover desktop-banner-video"
+                                       preload="none" muted loop playsinline
+                                       data-desktop-src="{{ $banner->media_url }}">
+                                    <source data-desktop-src="{{ $banner->media_url }}" type="video/mp4">
+                                </video>
+                            @else
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 800'%3E%3C/svg%3E"
+                                     data-desktop-src="{{ $banner->media_url }}"
+                                     alt="{{ $banner->title }}"
+                                     class="w-full h-full object-cover desktop-banner-img transition-transform duration-700 ease-out group-hover/poster:scale-[1.015]">
+                            @endif
 
-                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight">
-                        Classic Italian<br>
-                        Tiramisu Nucomu
-                    </h1>
+                        @if(!empty($banner->button_link))
+                            </a>
+                        @else
+                            </div>
+                        @endif
 
-                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-[#54392B]/15 shadow-2xs">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
-                            Nucomu Cafe &bull; Tulungagung
-                        </span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                    </div>
+                    @elseif($banner->layout_mode === 'overlay')
+                        <!-- -----------------------------------------------------------------
+                             MODE 2: OVERLAY - Background Image/Video with Text on Top
+                             ----------------------------------------------------------------- -->
+                        <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
+                            <!-- Background Media -->
+                            <div class="absolute inset-0 z-0">
+                                @if($banner->media_type === 'video')
+                                    <video class="w-full h-full object-cover desktop-banner-video"
+                                           preload="none" muted loop playsinline
+                                           data-desktop-src="{{ $banner->media_url }}">
+                                        <source data-desktop-src="{{ $banner->media_url }}" type="video/mp4">
+                                    </video>
+                                @else
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1920 800'%3E%3C/svg%3E"
+                                         data-desktop-src="{{ $banner->media_url }}"
+                                         alt="{{ $banner->title }}"
+                                         class="w-full h-full object-cover desktop-banner-img">
+                                @endif
+                                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/35 backdrop-blur-[0.5px]"></div>
+                            </div>
 
-                    <p class="font-body text-xs sm:text-sm text-[#4A3B32] max-w-lg leading-relaxed mb-6 font-normal">
-                        Lapisan ladyfingers berpadu espresso Sendang Tulungagung, krim mascarpone lembut, dan taburan cocoa powder murni pilihan untuk momen santai yang memikat rasa.
-                    </p>
+                            <!-- Text Content on Top -->
+                            <div class="relative z-20 max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 py-12 lg:py-16 w-full text-left hero-text-content">
+                                @if($banner->subtitle)
+                                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#F6DFD2] mb-1.5 leading-tight">
+                                        {{ $banner->subtitle }}
+                                    </p>
+                                @endif
 
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 32.000</span>
-                        <button type="button" onclick="addToCart('tiramisu-nucomu', 'Classic Tiramisu', 32000, null, 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?auto=format&fit=crop&q=80&w=800')" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
-                            PESAN SEKARANG
-                        </button>
-                        <a href="#menu" 
-                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
-                            DAFTAR MENU
-                        </a>
-                    </div>
-                </div>
+                                <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] mb-3 tracking-tight drop-shadow-sm max-w-2xl" style="font-variant-numeric: lining-nums;">
+                                    {{ $banner->title }}
+                                </h1>
 
-                <!-- Video Column (Right) -->
-                <div class="hero-video-container lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2">
-                    <div class="relative w-full max-w-xs sm:max-w-sm lg:max-w-md aspect-square overflow-hidden bg-transparent group">
-                        <video class="hero-slide-video w-full h-full object-contain rounded-[20px]"
-                               autoplay muted loop playsinline preload="metadata"
-                               poster="{{ asset('images/reviews/dya-3.jpg') }}">
-                            <source src="{{ asset('videos/tiramisu.mp4') }}" type="video/mp4">
-                        </video>
-                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                            <span>Menu 01 &bull; Tiramisu</span>
+                                <div class="inline-flex items-center space-x-2 mb-3 bg-white/15 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/25 shadow-2xs">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                    <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-white">
+                                        Nucomu Promo • Tulungagung
+                                    </span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                </div>
+
+                                @if($banner->description)
+                                    <p class="font-body text-xs sm:text-sm text-stone-200 max-w-lg leading-relaxed mb-6 font-normal drop-shadow-xs">
+                                        {{ $banner->description }}
+                                    </p>
+                                @endif
+
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <a href="{{ $banner->button_link ?: '#menu' }}" 
+                                       class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
+                                        {{ $banner->button_text ?: 'PESAN SEKARANG' }}
+                                    </a>
+                                    <a href="#menu" 
+                                       class="inline-flex items-center justify-center bg-white/20 hover:bg-white text-white hover:text-[#54392B] border border-white/40 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
+                                        DAFTAR MENU
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-            </div>
-        </div>
-    </div>
+                    @else
+                        <!-- -----------------------------------------------------------------
+                             MODE 3: TERBAGI (SPLIT) - Left Text + Right Media Card
+                             Kompatibilitas penuh dengan desain asli (Banner 1)
+                             ----------------------------------------------------------------- -->
+                        <div class="relative z-20 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-14 w-full">
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                                
+                                <!-- Text Column (Left) -->
+                                <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
+                                    @if($banner->subtitle)
+                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#3C281E] mb-1.5 leading-tight">
+                                            {{ $banner->subtitle }}
+                                        </p>
+                                    @endif
 
+                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight" style="font-variant-numeric: lining-nums;">
+                                        {{ $banner->title }}
+                                    </h1>
 
-    <!-- =========================================================================
-         SLIDE 1: CHEESECAKE (#F6DFD2 - Peach Lembut)
-         ========================================================================= -->
-    <div class="hero-slide-item absolute inset-0 w-full h-full flex items-center justify-center opacity-0 pointer-events-none z-0"
-         data-slide-index="1"
-         data-bg-color="#F6DFD2">
-        
-        <div class="relative z-20 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-14 w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                
-                <!-- Text Column (Left) -->
-                <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
-                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#3C281E] mb-1.5 leading-tight">
-                        Best Seller Artisanal Dairy
-                    </p>
+                                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-[#54392B]/15 shadow-2xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
+                                            Nucomu Promo • Tulungagung
+                                        </span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                    </div>
 
-                    <h2 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight">
-                        Basque Burnt<br>
-                        Cheesecake
-                    </h2>
+                                    @if($banner->description)
+                                        <p class="font-body text-xs sm:text-sm text-[#4A3B32] max-w-lg leading-relaxed mb-6 font-normal">
+                                            {{ $banner->description }}
+                                        </p>
+                                    @endif
 
-                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-[#54392B]/15 shadow-2xs">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
-                            Fresh Baked Daily &bull; Nucomu
-                        </span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                    </div>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <a href="{{ $banner->button_link ?: '#menu' }}" 
+                                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
+                                            {{ $banner->button_text ?: 'PESAN SEKARANG' }}
+                                        </a>
+                                        <a href="#menu" 
+                                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                                            DAFTAR MENU
+                                        </a>
+                                    </div>
+                                </div>
 
-                    <p class="font-body text-xs sm:text-sm text-[#4A3B32] max-w-lg leading-relaxed mb-6 font-normal">
-                        Creamy baked basque cheesecake dengan burnt caramelized top yang gurih harum dan filling vanilla beans lumer di lidah, favorit sepanjang masa di Nucomu Cafe.
-                    </p>
+                                <!-- Media Column (Right) -->
+                                <div class="hero-video-container lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2">
+                                    <div class="relative w-full max-w-xs sm:max-w-sm lg:max-w-md aspect-square overflow-hidden bg-transparent group rounded-[24px] shadow-card">
+                                        @if($banner->media_type === 'video')
+                                            <video class="hero-slide-video w-full h-full object-cover rounded-[24px] desktop-banner-video"
+                                                   preload="none" muted loop playsinline
+                                                   data-desktop-src="{{ $banner->media_url }}">
+                                                <source data-desktop-src="{{ $banner->media_url }}" type="video/mp4">
+                                            </video>
+                                        @else
+                                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3C/svg%3E"
+                                                 data-desktop-src="{{ $banner->media_url }}"
+                                                 alt="{{ $banner->title }}"
+                                                 class="w-full h-full object-cover rounded-[24px] desktop-banner-img">
+                                        @endif
+                                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                            <span>{{ $banner->subtitle ?: 'Special Banner' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 36.000</span>
-                        <button type="button" onclick="addToCart('basque-burnt-cheesecake', 'Basque Burnt Cheesecake', 36000, null, 'https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW')" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
-                            PESAN SEKARANG
-                        </button>
-                        <a href="#menu" 
-                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
-                            DAFTAR MENU
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Video Column (Right) -->
-                <div class="hero-video-container lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2">
-                    <div class="relative w-full max-w-xs sm:max-w-sm lg:max-w-md aspect-square overflow-hidden bg-transparent group">
-                        <video class="hero-slide-video w-full h-full object-contain rounded-[20px]"
-                               autoplay muted loop playsinline preload="metadata"
-                               poster="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW">
-                            <source src="{{ asset('videos/chescake.mp4') }}" type="video/mp4">
-                        </video>
-                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                            <span>Menu 02 &bull; Cheesecake</span>
+                            </div>
                         </div>
-                    </div>
+                    @endif
+
                 </div>
-
-            </div>
+            @endforeach
         </div>
-    </div>
 
+        <!-- =========================================================================
+             2. MOBILE ONLY (SCREEN WIDTH < 768px): HERO BAWAAN WEB
+             Di HP banner tidak ditampilkan sama sekali dan tidak mengunduh berkas banner.
+             ========================================================================= -->
+        <div class="block md:hidden w-full h-full absolute inset-0" id="mobile-hero-fallback-wrapper">
+            @include('home.sections.hero-default-slides')
+        </div>
+
+    @else
+        <!-- =========================================================================
+             TIDAK ADA BANNER AKTIF: TAMPILKAN HERO BAWAAN KAFE (SEMUA LAYAR)
+             ========================================================================= -->
+        <div class="w-full h-full absolute inset-0" id="default-hero-slides-wrapper">
+            @include('home.sections.hero-default-slides')
+        </div>
+    @endif
 
     <!-- =========================================================================
-         SLIDE 2: SPAGHETTI (#F1D2B8 - Terakota Muda)
+         CAROUSEL CONTROLS: ARROWS & DOTS
          ========================================================================= -->
-    <div class="hero-slide-item absolute inset-0 w-full h-full flex items-center justify-center opacity-0 pointer-events-none z-0"
-         data-slide-index="2"
-         data-bg-color="#F1D2B8">
-        
-        <div class="relative z-20 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-14 w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                
-                <!-- Text Column (Left) -->
-                <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
-                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#3C281E] mb-1.5 leading-tight">
-                        Hearty Italian Comfort Meal
-                    </p>
+    @if(isset($activeBanners) && $activeBanners->count() > 0)
+        <!-- Desktop Nav Arrows (Hanya jika banner aktif > 1) -->
+        @if($activeBanners->count() > 1)
+            <button type="button" 
+                    onclick="prevHeroSlide()" 
+                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    aria-label="Slide Sebelumnya">
+                <span class="material-symbols-outlined text-xl">chevron_left</span>
+            </button>
+            <button type="button" 
+                    onclick="nextHeroSlide()" 
+                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    aria-label="Slide Berikutnya">
+                <span class="material-symbols-outlined text-xl">chevron_right</span>
+            </button>
+        @endif
 
-                    <h2 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight">
-                        Spaghetti Aglio<br>
-                        Olio Con Peperoncino
-                    </h2>
-
-                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-[#54392B]/15 shadow-2xs">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
-                            Chef's Pick &bull; Nucomu Kitchen
-                        </span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                    </div>
-
-                    <p class="font-body text-xs sm:text-sm text-[#4A3B32] max-w-lg leading-relaxed mb-6 font-normal">
-                        Pasta spaghetti al dente berpadu tumisan bawang putih aromatik, cabai kering harum, minyak zaitun extra virgin, dan taburan peterseli segar untuk santap siang atau malam yang lezat.
-                    </p>
-
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 34.000</span>
-                        <button type="button" onclick="addToCart('spaghetti-aglio-olio', 'Spaghetti Aglio Olio', 34000, null, 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800')" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
-                            PESAN SEKARANG
-                        </button>
-                        <a href="#menu" 
-                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
-                            DAFTAR MENU
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Video Column (Right) -->
-                <div class="hero-video-container lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2">
-                    <div class="relative w-full max-w-xs sm:max-w-sm lg:max-w-md aspect-square overflow-hidden bg-transparent group">
-                        <video class="hero-slide-video w-full h-full object-contain rounded-[20px]"
-                               autoplay muted loop playsinline preload="metadata"
-                               poster="https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80&w=800">
-                            <source src="{{ asset('videos/spagheti.mp4') }}" type="video/mp4">
-                        </video>
-                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                            <span>Menu 03 &bull; Spaghetti</span>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- Desktop Indicator Dots -->
+        @if($activeBanners->count() > 1)
+            <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="desktop-hero-dots">
+                @foreach($activeBanners as $b)
+                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#E06D24]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
+                @endforeach
             </div>
+        @endif
+
+        <!-- Mobile Indicator Dots (4 Slide Hero Bawaan) -->
+        <div class="flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="mobile-hero-dots">
+            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1"></button>
+            <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
+            <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
+            <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4"></button>
         </div>
-    </div>
+    @else
+        <!-- Navigation for Default 4 Slides (Desktop & Mobile) -->
+        <button type="button" 
+                onclick="prevHeroSlide()" 
+                class="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                aria-label="Slide Sebelumnya">
+            <span class="material-symbols-outlined text-xl">chevron_left</span>
+        </button>
+        <button type="button" 
+                onclick="nextHeroSlide()" 
+                class="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                aria-label="Slide Berikutnya">
+            <span class="material-symbols-outlined text-xl">chevron_right</span>
+        </button>
 
-
-    <!-- =========================================================================
-         SLIDE 3: KOPI SUSU (#D9DECF - Sage / Abu Kehijauan)
-         ========================================================================= -->
-    <div class="hero-slide-item absolute inset-0 w-full h-full flex items-center justify-center opacity-0 pointer-events-none z-0"
-         data-slide-index="3"
-         data-bg-color="#D9DECF">
-        
-        <div class="relative z-20 max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 sm:py-12 lg:py-14 w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                
-                <!-- Text Column (Left) -->
-                <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
-                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#3C281E] mb-1.5 leading-tight">
-                        Authentic Local Specialty Coffee
-                    </p>
-
-                    <h2 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight">
-                        Es Kopi Susu<br>
-                        Gula Aren Nucomu
-                    </h2>
-
-                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-[#54392B]/15 shadow-2xs">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
-                            Single Origin Sendang &bull; Organic Aren
-                        </span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                    </div>
-
-                    <p class="font-body text-xs sm:text-sm text-[#4A3B32] max-w-lg leading-relaxed mb-6 font-normal">
-                        Racikan espresso murni dari biji kopi arabika lereng Gunung Wilis Sendang Tulungagung, berpadu susu segar gurih dingin dan sirup gula aren organik yang memanjakan hari Anda.
-                    </p>
-
-                    <div class="flex flex-wrap items-center gap-3">
-                        <span class="font-editorial text-2xl sm:text-3xl font-bold text-[#2A1D17] mr-1">Rp 22.000</span>
-                        <button type="button" onclick="addToCart('nucomu-kopi-susu', 'Kopi Susu Nucomu', 22000, null, 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=800')" 
-                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
-                            PESAN SEKARANG
-                        </button>
-                        <a href="#menu" 
-                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
-                            DAFTAR MENU
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Video Column (Right) -->
-                <div class="hero-video-container lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2">
-                    <div class="relative w-full max-w-xs sm:max-w-sm lg:max-w-md aspect-square overflow-hidden bg-transparent group">
-                        <video class="hero-slide-video w-full h-full object-contain rounded-[20px]"
-                               autoplay muted loop playsinline preload="metadata"
-                               poster="https://lh3.googleusercontent.com/aida-public/AB6AXuCPqLrA-TY5mFKhRtn4JKGIrRcBH3BdS1fNJjmW2YLU-LfY2vZYIA_IREh3dxqIRd_3_6MPxGC-J7zRVl8pKRzlzudFwVSwuU9vphdP0N_CE1PyBfm3Du_d5hJkNoLQixpClSDb4DslruxOf4KXQRbVYsb7BsgAoHgevN1ubGxFM6t1k9fceENXwk2soL3QsW9DfXM101g70CDkDFHiMpgGjdyd2NpQBTUZONVX29AZoUp8LvPw3fbk">
-                            <source src="{{ asset('videos/kopsu.mp4') }}" type="video/mp4">
-                        </video>
-                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                            <span>Menu 04 &bull; Kopi Susu</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="default-hero-dots">
+            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1"></button>
+            <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
+            <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
+            <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4"></button>
         </div>
-    </div>
-
-
-    <!-- =========================================================================
-         CAROUSEL NAVIGATION CONTROLS (ARROWS & 4 BOTTOM DOTS)
-         ========================================================================= -->
-    <!-- Left & Right Carousel Arrows (Desktop Floating) -->
-    <button type="button" 
-            onclick="prevHeroSlide()" 
-            class="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
-            aria-label="Slide Sebelumnya">
-        <span class="material-symbols-outlined text-xl">chevron_left</span>
-    </button>
-    <button type="button" 
-            onclick="nextHeroSlide()" 
-            class="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
-            aria-label="Slide Berikutnya">
-        <span class="material-symbols-outlined text-xl">chevron_right</span>
-    </button>
-
-    <!-- Slide Indicator Dots (4 Dots) -->
-    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5">
-        <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1: Tiramisu"></button>
-        <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2: Cheesecake"></button>
-        <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3: Spaghetti"></button>
-        <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4: Kopi Susu"></button>
-    </div>
+    @endif
 
 </section>

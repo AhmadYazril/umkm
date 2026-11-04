@@ -48,11 +48,92 @@ let heroTimerId = null;
 let heroIsPaused = false;
 let heroIsVisibleOnScreen = true;
 
+function getActiveHeroSlides() {
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    const desktopWrapper = document.getElementById('desktop-hero-banners-wrapper');
+    const mobileWrapper = document.getElementById('mobile-hero-fallback-wrapper');
+
+    if (desktopWrapper && isDesktop) {
+        return desktopWrapper.querySelectorAll('.hero-slide-item');
+    }
+    if (mobileWrapper && !isDesktop) {
+        return mobileWrapper.querySelectorAll('.hero-slide-item');
+    }
+
+    const defaultWrapper = document.getElementById('default-hero-slides-wrapper');
+    if (defaultWrapper) {
+        return defaultWrapper.querySelectorAll('.hero-slide-item');
+    }
+
+    return document.querySelectorAll('.hero-slide-item');
+}
+
+function getActiveHeroDots() {
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    const desktopDots = document.getElementById('desktop-hero-dots');
+    const mobileDots = document.getElementById('mobile-hero-dots');
+
+    if (desktopDots && isDesktop) {
+        return desktopDots.querySelectorAll('.hero-dot-btn');
+    }
+    if (mobileDots && !isDesktop) {
+        return mobileDots.querySelectorAll('.hero-dot-btn');
+    }
+
+    const defaultDots = document.getElementById('default-hero-dots');
+    if (defaultDots) {
+        return defaultDots.querySelectorAll('.hero-dot-btn');
+    }
+
+    return document.querySelectorAll('.hero-dot-btn');
+}
+
+function loadDesktopBannerMedia() {
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    if (!isDesktop) return;
+
+    const desktopWrapper = document.getElementById('desktop-hero-banners-wrapper');
+    if (!desktopWrapper) return;
+
+    // Load images only on desktop
+    desktopWrapper.querySelectorAll('img[data-desktop-src]').forEach(img => {
+        const src = img.getAttribute('data-desktop-src');
+        if (src && img.src !== src) {
+            img.src = src;
+        }
+    });
+
+    // Load and play videos only on desktop
+    desktopWrapper.querySelectorAll('video[data-desktop-src]').forEach(video => {
+        const src = video.getAttribute('data-desktop-src');
+        const source = video.querySelector('source');
+        if (source && src && source.src !== src) {
+            source.src = src;
+            video.load();
+        }
+    });
+}
+
 function initHeroSlider() {
     const heroSection = document.getElementById('home');
     if (!heroSection) return;
 
-    const slides = heroSection.querySelectorAll('.hero-slide-item');
+    // Load desktop banner media if screen width >= 768px
+    loadDesktopBannerMedia();
+
+    // Listen for screen resize across mobile/desktop breakpoint
+    const mql = window.matchMedia('(min-width: 768px)');
+    if (mql && mql.addEventListener) {
+        mql.addEventListener('change', (e) => {
+            heroCurrentIndex = 0;
+            if (e.matches) {
+                loadDesktopBannerMedia();
+            }
+            renderHeroSlide(heroCurrentIndex);
+        });
+    }
+
+    const slides = getActiveHeroSlides();
     if (!slides.length) return;
 
     // Check prefers-reduced-motion
@@ -81,7 +162,8 @@ function initHeroSlider() {
 
     // Pause when browser tab is not active / hidden
     document.addEventListener('visibilitychange', () => {
-        const activeVideo = slides[heroCurrentIndex]?.querySelector('video');
+        const currentSlides = getActiveHeroSlides();
+        const activeVideo = currentSlides[heroCurrentIndex]?.querySelector('video');
         if (document.hidden) {
             clearHeroAutoSlide();
             if (activeVideo && !activeVideo.paused) {
@@ -102,7 +184,8 @@ function initHeroSlider() {
         const heroObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 heroIsVisibleOnScreen = entry.isIntersecting;
-                const activeVideo = slides[heroCurrentIndex]?.querySelector('video');
+                const currentSlides = getActiveHeroSlides();
+                const activeVideo = currentSlides[heroCurrentIndex]?.querySelector('video');
                 if (entry.isIntersecting) {
                     if (activeVideo && activeVideo.paused) {
                         activeVideo.play().catch(() => {});
@@ -163,7 +246,7 @@ function clearHeroAutoSlide() {
 }
 
 window.nextHeroSlide = function() {
-    const slides = document.querySelectorAll('.hero-slide-item');
+    const slides = getActiveHeroSlides();
     if (slides.length <= 1) return;
     heroCurrentIndex = (heroCurrentIndex + 1) % slides.length;
     renderHeroSlide(heroCurrentIndex);
@@ -171,7 +254,7 @@ window.nextHeroSlide = function() {
 };
 
 window.prevHeroSlide = function() {
-    const slides = document.querySelectorAll('.hero-slide-item');
+    const slides = getActiveHeroSlides();
     if (slides.length <= 1) return;
     heroCurrentIndex = (heroCurrentIndex - 1 + slides.length) % slides.length;
     renderHeroSlide(heroCurrentIndex);
@@ -179,7 +262,7 @@ window.prevHeroSlide = function() {
 };
 
 window.goToHeroSlide = function(index) {
-    const slides = document.querySelectorAll('.hero-slide-item');
+    const slides = getActiveHeroSlides();
     if (index < 0 || index >= slides.length || index === heroCurrentIndex) return;
     heroCurrentIndex = index;
     renderHeroSlide(heroCurrentIndex);
@@ -195,9 +278,14 @@ function resetHeroTimerIfActive() {
 
 function renderHeroSlide(index) {
     const heroSection = document.getElementById('home');
-    const slides = document.querySelectorAll('.hero-slide-item');
-    const dots = document.querySelectorAll('.hero-dot-btn');
+    const slides = getActiveHeroSlides();
+    const dots = getActiveHeroDots();
     if (!slides.length) return;
+
+    if (index >= slides.length) {
+        index = 0;
+        heroCurrentIndex = 0;
+    }
 
     // 1. Dynamic Smooth Background Transition
     if (heroSection) {
@@ -255,7 +343,7 @@ function renderHeroSlide(index) {
         }
     });
 
-    // 3. Update 4 Indicator Dots
+    // 3. Update Indicator Dots
     dots.forEach((dot, idx) => {
         if (idx === index) {
             dot.className = 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300';
@@ -692,7 +780,8 @@ function initFacilitiesGallery() {
     const cardBCounter = document.getElementById('facility-card-b-counter');
     const cardBDots = document.getElementById('facility-card-b-dots');
 
-    let currentCategory = 'indoor';
+    const initialKeys = Object.keys(data);
+    let currentCategory = initialKeys.length > 0 ? initialKeys[0] : 'indoor';
     let currentPhotoIndex = 0;
     let autoplayTimer = null;
     let isPaused = false;
@@ -973,20 +1062,26 @@ function initFacilitiesGallery() {
         });
     });
 
-    // 6. Wire Category Arrow Buttons (Berpindah Kategori Indoor <-> Outdoor)
+    // 6. Wire Category Arrow Buttons (Berpindah Kategori Sesuai Daftar Slide Admin)
     if (arrowPrev) {
         arrowPrev.addEventListener('click', (e) => {
             e.preventDefault();
-            const nextCat = currentCategory === 'indoor' ? 'outdoor' : 'indoor';
-            switchCategory(nextCat);
+            const catKeys = Object.keys(data);
+            if (catKeys.length === 0) return;
+            const currIdx = catKeys.indexOf(currentCategory);
+            const prevIdx = (currIdx - 1 + catKeys.length) % catKeys.length;
+            switchCategory(catKeys[prevIdx]);
         });
     }
 
     if (arrowNext) {
         arrowNext.addEventListener('click', (e) => {
             e.preventDefault();
-            const nextCat = currentCategory === 'indoor' ? 'outdoor' : 'indoor';
-            switchCategory(nextCat);
+            const catKeys = Object.keys(data);
+            if (catKeys.length === 0) return;
+            const currIdx = catKeys.indexOf(currentCategory);
+            const nextIdx = (currIdx + 1) % catKeys.length;
+            switchCategory(catKeys[nextIdx]);
         });
     }
 
@@ -2266,92 +2361,55 @@ window.closeReservationModal = function() {
 window.handleReservationSubmit = function(e) {
     e.preventDefault();
 
-    const fullName = document.getElementById('res-name').value.trim();
-    const phone = document.getElementById('res-phone').value.trim();
-    const date = document.getElementById('res-date').value;
-    const time = document.getElementById('res-time').value;
-    const guestCount = document.getElementById('res-guests').value;
-    const serviceType = document.getElementById('res-service-type').value;
-    const eventSection = document.getElementById('res-event-section')?.value || '';
-    const eventPackage = document.getElementById('res-event-package')?.value || '';
-    const area = document.getElementById('res-area').value;
-    const notes = document.getElementById('res-notes').value.trim();
+    const form = document.getElementById('reservation-form');
+    if (!form) return false;
+
+    const errorContainer = document.getElementById('res-error-box');
+    const successToast = document.getElementById('res-success-toast');
+    const submitBtn = document.getElementById('res-submit-btn');
 
     // Reset previous error outlines
-    ['res-name', 'res-phone', 'res-date', 'res-time', 'res-guests', 'res-area'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('res-field-error');
-    });
+    form.querySelectorAll('.res-field-error').forEach(el => el.classList.remove('res-field-error'));
+    if (errorContainer) {
+        errorContainer.innerHTML = '';
+        errorContainer.classList.add('hidden');
+    }
 
-    // Validation checks
     let errors = [];
     let firstInvalidEl = null;
 
-    if (!fullName || fullName.length < 2) {
-        errors.push("Nama pemesan wajib diisi dengan benar.");
-        const el = document.getElementById('res-name');
-        if (el) {
-            el.classList.add('res-field-error');
-            if (!firstInvalidEl) firstInvalidEl = el;
+    // Check required fields
+    const requiredInputs = form.querySelectorAll('[required]');
+    requiredInputs.forEach(input => {
+        const label = input.getAttribute('data-label') || input.name || 'Kolom';
+        if (input.type === 'file') {
+            if (!input.files || input.files.length === 0) {
+                errors.push(`Foto ${label} wajib diunggah.`);
+                input.classList.add('res-field-error');
+                if (!firstInvalidEl) firstInvalidEl = input;
+            }
+        } else if (input.type === 'checkbox') {
+            const name = input.name;
+            const anyChecked = form.querySelectorAll(`input[name="${name}"]:checked`).length > 0;
+            if (!anyChecked && !errors.includes(`Pilihan ${label} wajib dipilih.`)) {
+                errors.push(`Pilihan ${label} wajib dipilih.`);
+                input.classList.add('res-field-error');
+                if (!firstInvalidEl) firstInvalidEl = input;
+            }
+        } else if (!input.value || !input.value.trim()) {
+            errors.push(`${label} wajib diisi.`);
+            input.classList.add('res-field-error');
+            if (!firstInvalidEl) firstInvalidEl = input;
+        } else if (input.type === 'tel' || input.name === 'phone' || input.name === 'whatsapp') {
+            const clean = input.value.replace(/[^0-9]/g, '');
+            if (clean.length < 8) {
+                errors.push(`${label} tidak valid (minimal 8 digit).`);
+                input.classList.add('res-field-error');
+                if (!firstInvalidEl) firstInvalidEl = input;
+            }
         }
-    }
+    });
 
-    const cleanPhone = phone.replace(/[^0-9]/g, '');
-    if (!cleanPhone || cleanPhone.length < 9) {
-        errors.push("Nomor WhatsApp tidak valid (minimal 9 digit).");
-        const el = document.getElementById('res-phone');
-        if (el) {
-            el.classList.add('res-field-error');
-            if (!firstInvalidEl) firstInvalidEl = el;
-        }
-    }
-
-    if (!date) {
-        errors.push("Tanggal acara wajib ditentukan.");
-        const el = document.getElementById('res-date');
-        if (el) {
-            el.classList.add('res-field-error');
-            if (!firstInvalidEl) firstInvalidEl = el;
-        }
-    }
-
-    if (!time) {
-        errors.push("Waktu acara wajib dipilih.");
-        const el = document.getElementById('res-time');
-        if (el) {
-            el.classList.add('res-field-error');
-            if (!firstInvalidEl) firstInvalidEl = el;
-        }
-    }
-
-    if (!guestCount) {
-        errors.push("Jumlah tamu wajib dipilih.");
-        const el = document.getElementById('res-guests');
-        if (el) {
-            el.classList.add('res-field-error');
-            if (!firstInvalidEl) firstInvalidEl = el;
-        }
-    }
-
-    if (!serviceType) {
-        errors.push("Paket acara wajib dipilih.");
-        const promptEl = document.getElementById('res-empty-category-prompt');
-        if (promptEl) {
-            promptEl.classList.add('res-field-error');
-            if (!firstInvalidEl) firstInvalidEl = promptEl;
-        }
-    }
-
-    if (!area) {
-        errors.push("Pilihan area wajib ditentukan.");
-        const el = document.getElementById('res-area');
-        if (el) {
-            el.classList.add('res-field-error');
-            if (!firstInvalidEl) firstInvalidEl = el;
-        }
-    }
-
-    const errorContainer = document.getElementById('res-error-box');
     if (errors.length > 0) {
         if (errorContainer) {
             errorContainer.innerHTML = errors.map(err => `<div>• ${err}</div>`).join('');
@@ -2366,66 +2424,61 @@ window.handleReservationSubmit = function(e) {
         return false;
     }
 
-    if (errorContainer) {
-        errorContainer.classList.add('hidden');
-    }
+    // Prepare FormData
+    const formData = new FormData(form);
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    // Format Indonesian WhatsApp message
-    const waNumber = window.NUCOMU_WA_NUMBER || '6285934960910';
-    let message = `*RESERVASI KUNJUNGAN NUCOMU CAFE*\n\n`;
-    message += `• *Nama Pemesan:* ${fullName}\n`;
-    message += `• *WhatsApp:* ${phone}\n`;
-    message += `• *Tanggal:* ${formatDisplayDate(date)}\n`;
-    message += `• *Waktu:* ${time} WIB\n`;
-    message += `• *Jumlah Tamu:* ${guestCount}\n`;
-    message += `• *Kategori Acara:* ${eventSection || serviceType}\n`;
-    if (eventPackage) {
-        message += `• *Paket Dekorasi:* ${eventPackage}\n`;
-    }
-    message += `• *Pilihan Area:* ${area}\n`;
-    message += `• *Catatan Khusus:* ${notes || '-'}\n\n`;
-    message += `Mohon konfirmasi ketersediaan jadwal meja kami. Terima kasih!`;
-
-    const encodedMsg = encodeURIComponent(message);
-    const waUrl = `https://wa.me/${waNumber.replace(/[^0-9]/g, '')}?text=${encodedMsg}`;
-    window.__lastGeneratedWaMessage = message;
-    window.__lastGeneratedWaUrl = waUrl;
-
-    // Show confirmation & redirect to WhatsApp
-    const successToast = document.getElementById('res-success-toast');
     if (successToast) {
         successToast.classList.remove('hidden');
     }
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-70');
+    }
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
     fetch('/reservasi', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-CSRF-TOKEN': csrfToken || ''
         },
-        body: JSON.stringify({
-            fullName,
-            phone,
-            date,
-            time,
-            guestCount,
-            serviceType,
-            eventSection,
-            eventPackage,
-            area,
-            notes
-        })
-    }).then(res => res.json()).then(data => {
-        const finalUrl = data.whatsapp_url || waUrl;
+        body: formData
+    }).then(res => {
+        return res.json().then(data => ({ status: res.status, ok: res.ok, data }));
+    }).then(({ ok, data }) => {
+        if (!ok || !data.success) {
+            const serverErrors = data.errors || [data.message || 'Gagal memproses reservasi. Silakan periksa formulir.'];
+            if (errorContainer) {
+                errorContainer.innerHTML = serverErrors.map(err => `<div>• ${err}</div>`).join('');
+                errorContainer.classList.remove('hidden');
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                alert(serverErrors.join("\n"));
+            }
+            if (successToast) successToast.classList.add('hidden');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-70');
+            }
+            return;
+        }
+
+        const finalUrl = data.whatsapp_url;
         window.open(finalUrl, '_blank');
-        window.closeReservationModal();
+        if (typeof window.closeReservationModal === 'function') {
+            window.closeReservationModal();
+        }
         if (successToast) successToast.classList.add('hidden');
-    }).catch(() => {
-        window.open(waUrl, '_blank');
-        window.closeReservationModal();
-        if (successToast) successToast.classList.add('hidden');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-70');
+        }
+    }).catch(err => {
+        console.error('Reservation submission error:', err);
+        // Fallback standard submit
+        form.method = 'POST';
+        form.action = '/reservasi';
+        form.submit();
     });
 
     return false;

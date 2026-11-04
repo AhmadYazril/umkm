@@ -1,4 +1,13 @@
 <!-- SECTION 8: CONTACT & LOCATION (MODERN MONOCHROME EDITORIAL EXACT MATCH) -->
+@php
+    $contact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
+    $mapsEmbedSrc = !empty($contact['maps_embed']) 
+        ? $contact['maps_embed'] 
+        : 'https://maps.google.com/maps?q=' . urlencode($contact['address'] ?? 'Nucomu Cafe Plosokandang Kedungwaru Tulungagung') . '&t=&z=16&ie=UTF8&iwloc=&output=embed';
+    $mapsDirectUrl = !empty($contact['maps_url']) 
+        ? $contact['maps_url'] 
+        : config('nucomu.contact.google_maps_url', 'https://maps.google.com/?q=Nucomu+Cafe+Tulungagung');
+@endphp
 <section id="contact" class="py-16 sm:py-20 lg:py-24 bg-[#FAFAFA] border-b border-[#E5E5E5] overflow-hidden">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
@@ -165,8 +174,8 @@
 
                 <!-- Action Buttons (Bottom Left) -->
                 <div class="flex items-center gap-3.5 flex-wrap">
-                    <!-- Button 1: Buka Rute Google Maps (With Sliding Arrow & Glint Shimmer) -->
-                    <a href="{{ $contact['google_maps_url'] ?? $contact['maps_url'] ?? config('nucomu.contact.google_maps_url') }}" 
+                    <!-- Button 1: Buka Rute Google Maps -->
+                    <a href="{{ $mapsDirectUrl }}" 
                        target="_blank" 
                        rel="noopener noreferrer" 
                        id="btn-maps-cta"
@@ -218,10 +227,9 @@
                         
                         <!-- Inner Container with Border Radius & Overflow Hidden (Ensures borders stay pristine during smooth zoom) -->
                         <div class="w-full h-full relative rounded-[18px] sm:rounded-[22px] overflow-hidden bg-[#F0F0F0]">
-                            
                             <!-- Zoomable Map Target (Smooth Zoom-in on Hover, Zoom-out on Leave) -->
                             <div id="contact-map-zoom-target" class="w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-center will-change-transform">
-                                <iframe src="https://maps.google.com/maps?q={{ config('nucomu.contact.cafe_lat', -8.0765099) }},{{ config('nucomu.contact.cafe_lng', 111.918712) }}&hl=id&z=17&t=m&output=embed" 
+                                <iframe src="{{ $mapsEmbedSrc }}" 
                                         width="100%" 
                                         height="100%" 
                                         style="border:0;" 
@@ -232,7 +240,6 @@
                                         class="w-full h-full object-cover">
                                 </iframe>
                             </div>
-
                         </div>
 
                     </div>
@@ -265,7 +272,7 @@
                             <span class="text-amber-500">★</span>
                             <span>(74 ulasan)</span>
                         </div>
-                        <a href="{{ $contact['google_maps_url'] ?? $contact['maps_url'] ?? config('nucomu.contact.google_maps_url') }}" 
+                        <a href="{{ $mapsDirectUrl }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
                            class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#1C1C1C] hover:text-[#555555] transition-colors mt-1 font-body group">
@@ -275,7 +282,7 @@
                     </div>
 
                     <!-- Floating Badge 4 (Bottom-Right: Circular Pin Button) -->
-                    <a href="{{ $contact['google_maps_url'] ?? $contact['maps_url'] ?? config('nucomu.contact.google_maps_url') }}" 
+                    <a href="{{ $mapsDirectUrl }}" 
                        target="_blank" 
                        rel="noopener noreferrer" 
                        aria-label="Buka Nucomu Cafe di Google Maps" 

@@ -267,6 +267,30 @@
                 </div>
             @endif
 
+            {{-- Validation or upload error --}}
+            @if($errors->any() || session('error'))
+                <div class="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs space-y-1">
+                    <div class="font-bold flex items-center gap-1.5 text-rose-700">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>{{ session('error') ? 'Terjadi kesalahan unggah:' : 'Terdapat kesalahan formulir:' }}</span>
+                    </div>
+                    @if(session('error'))
+                        <p class="leading-relaxed">{{ session('error') }}</p>
+                    @endif
+                    @if($errors->any())
+                        <ul class="list-disc list-inside space-y-0.5 pl-2 text-[11px]">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endif
+
+            @php
+                $reviewLimits = \App\Support\FileUploadHelper::getEffectiveLimit(5 * 1024 * 1024, 'foto ulasan');
+            @endphp
+
             <form action="{{ route('nucomu.review.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
                 @csrf
                 <div>
@@ -308,8 +332,19 @@
                     <label class="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#F5F5F5] border border-dashed border-[#CCCCCC] hover:border-[#1C1C1C] text-xs text-[#666666] cursor-pointer transition-colors">
                         <i class="fa-solid fa-camera text-[#1C1C1C]"></i>
                         <span id="nucomuReviewImageLabel">Pilih foto dari perangkat Anda...</span>
-                        <input type="file" name="review_image" accept="image/*" class="hidden" onchange="if(this.files && this.files[0]) document.getElementById('nucomuReviewImageLabel').innerText = this.files[0].name;">
+                        <input type="file" name="review_image" id="reviewImageInput" accept=".jpg,.jpeg,.png,.webp"
+                               data-max-bytes="{{ $reviewLimits['effective_bytes'] ?? $reviewLimits['limit_bytes'] ?? 5242880 }}"
+                               data-allowed-ext="jpg,jpeg,png,webp"
+                               data-feedback-target="#reviewImageFeedback"
+                               class="hidden" onchange="if(this.files && this.files[0]) document.getElementById('nucomuReviewImageLabel').innerText = this.files[0].name;">
                     </label>
+                    <div id="reviewImageFeedback" class="mt-1 text-left"></div>
+                    <p class="text-[10.5px] text-[#888888] mt-1">Format: JPG, PNG, WebP &bull; Maksimal {{ $reviewLimits['formatted'] ?? $reviewLimits['limit_formatted'] ?? '5 MB' }}.</p>
+                    @if(!empty($reviewLimits['is_throttled'] ?? $reviewLimits['is_limited_by_server']))
+                        <p class="text-[10px] text-amber-800 font-medium mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Batas server PHP saat ini ({{ $reviewLimits['server_limit_formatted'] ?? '2 MB' }}) lebih kecil dari batas aplikasi (5 MB).
+                        </p>
+                    @endif
                 </div>
 
                 <button type="submit" class="w-full py-3.5 rounded-full bg-[#1C1C1C] hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95">
@@ -446,8 +481,8 @@
             startReviewLoop();
             setRating(5);
 
-            // Auto-open modal if review_success flash was set
-            @if(session('review_success'))
+            // Auto-open modal if review_success flash or errors were set
+            @if(session('review_success') || $errors->any() || session('error'))
                 openReviewModal();
             @endif
         };

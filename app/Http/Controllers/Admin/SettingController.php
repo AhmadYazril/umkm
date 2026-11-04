@@ -13,6 +13,7 @@ use App\Models\Reservation;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Models\ZendoDelivery;
+use App\Support\FileUploadHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -437,6 +438,10 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
+            'cafe_name' => 'nullable|string|max:100',
+            'cafe_tagline' => 'nullable|string|max:200',
+            'cafe_logo' => 'nullable|image|mimes:png,jpg,jpeg,webp,svg|max:2048',
+            'cafe_favicon' => 'nullable|mimes:ico,png,webp,jpg,jpeg,svg|max:1024',
             'transaction_mode' => 'nullable|in:kasir,zendo,both',
             'hide_live_tracking' => 'nullable|in:0,1',
             'zendo_courier_pin' => ['nullable', 'regex:/^[0-9]+$/', 'min:4', 'max:12'],
@@ -457,7 +462,38 @@ class SettingController extends Controller
             'zendo_tier_5_6' => 'nullable|integer|min:0',
             'zendo_tier_6_7' => 'nullable|integer|min:0',
             'zendo_extra_per_km' => 'nullable|integer|min:0',
+        ], [
+            'cafe_logo.uploaded' => 'File logo resmi kafe gagal diunggah ke server.',
+            'cafe_logo.image' => 'Berkas logo harus berupa gambar valid.',
+            'cafe_logo.max' => 'Ukuran logo maksimal 2 MB (2048 KB).',
+            'cafe_favicon.uploaded' => 'File favicon kafe gagal diunggah ke server.',
+            'cafe_favicon.max' => 'Ukuran favicon maksimal 1 MB (1024 KB).',
         ]);
+
+        try {
+            $brandingDir = public_path('uploads/branding');
+            if ($request->hasFile('cafe_logo') || $request->hasFile('cafe_favicon')) {
+                FileUploadHelper::ensureDirectoryWritable($brandingDir, 'folder upload Branding');
+            }
+
+            // Upload logo if provided
+            if ($request->hasFile('cafe_logo')) {
+                $logoFile = $request->file('cafe_logo');
+                $logoName = 'logo_'.time().'.'.$logoFile->getClientOriginalExtension();
+                $logoFile->move($brandingDir, $logoName);
+                Setting::set('cafe_logo', $logoName);
+            }
+
+            // Upload favicon if provided
+            if ($request->hasFile('cafe_favicon')) {
+                $favFile = $request->file('cafe_favicon');
+                $favName = 'favicon_'.time().'.'.$favFile->getClientOriginalExtension();
+                $favFile->move($brandingDir, $favName);
+                Setting::set('cafe_favicon', $favName);
+            }
+        } catch (\Throwable $e) {
+            return back()->withInput()->with('error', 'Gagal mengunggah berkas branding: '.$e->getMessage());
+        }
 
         $keys = [
             'store_name', 'phone', 'address', 'instagram', 'tagline',

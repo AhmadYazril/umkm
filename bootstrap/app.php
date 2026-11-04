@@ -7,6 +7,7 @@ use App\Http\Middleware\KasirMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
 
@@ -35,6 +36,27 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (PostTooLargeException $e, Request $request) {
+            $postMax = ini_get('post_max_size') ?: '8M';
+            $message = "Total ukuran berkas yang dikirim melebihi batas server PHP (post_max_size: {$postMax}). Perkecil ukuran file atau hubungi pengelola server untuk menaikkan nilai post_max_size di php.ini.";
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 413);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except('_token'))
+                ->withErrors([
+                    'media_file' => $message,
+                    'image' => $message,
+                    'avatar' => $message,
+                    'cafe_logo' => $message,
+                    'photo_files' => $message,
+                    'file' => $message,
+                ])
+                ->with('error', $message);
+        });
 
         $exceptions->render(function (TokenMismatchException $e, Request $request) {
             if ($request->expectsJson()) {

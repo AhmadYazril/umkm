@@ -1,338 +1,306 @@
 @extends('layouts.admin')
-@section('title', 'Katalog Sajian Kafe — Nucomu Cafe')
+@section('title', 'Menu — Nucomu Cafe')
 
 @section('content')
-@php
-    $totalCount = $menus->total();
-    $availableCount = \App\Models\Menu::where('is_available', true)->count();
-    $unavailableCount = \App\Models\Menu::where('is_available', false)->count();
-    $bestSellerCount = \App\Models\Menu::where('is_best_seller', true)->count();
-@endphp
-
-<div class="space-y-8 max-w-7xl mx-auto">
+<div class="space-y-6 max-w-7xl mx-auto pb-12">
     
-    {{-- Header Section & Summary Metrics --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-hairline anim-fade-up">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warm-stone border border-hairline text-[11px] font-semibold text-charcoal mb-2">
-                <i class="fa-solid fa-mug-hot text-[10px]"></i>
-                <span>Katalog Sajian Kafe &bull; Nucomu Workspace</span>
+    {{-- 1. Header Halaman Standar (x-page-header dengan Judul Tenang, Tombol ? Petunjuk, Kelola Kategori & + Tambah Menu) --}}
+    <x-page-header title="Menu">
+        <x-slot name="actions">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+                {{-- Tombol Petunjuk --}}
+                <button type="button"
+                        class="admin-help-link btn-press"
+                        id="menu-help-trigger"
+                        aria-expanded="false"
+                        aria-controls="menu-help-panel-content"
+                        onclick="toggleHelpPanel('menu-help-panel')">
+                    <i class="fa-regular fa-circle-question text-[13px]" aria-hidden="true"></i>
+                    <span class="toggle-label" data-open="? Petunjuk" data-close="Tutup petunjuk">? Petunjuk</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] toggle-chevron" aria-hidden="true"></i>
+                </button>
+
+                {{-- Tombol Kelola Kategori (Membuka Laci Kelola Kategori) --}}
+                <button type="button"
+                        onclick="openCategoryDrawer()"
+                        class="min-h-[36px] px-3.5 py-2 rounded-xl text-[13px] font-semibold border transition flex items-center gap-2 shadow-xs cursor-pointer btn-press bg-white hover:bg-[#F0F4F1]"
+                        style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
+                        title="Atur kelompok sajian dan urutan kategori">
+                    <i class="fa-solid fa-tags text-xs" style="color: var(--admin-btn-primary-bg, #2F6B4F);" aria-hidden="true"></i>
+                    <span>Kelola Kategori</span>
+                </button>
+
+                {{-- Tombol Tambah Menu (Hijau Solid, Teks Putih, Kontras >= 4.5:1) --}}
+                <a href="{{ route('admin.menus.create') }}"
+                   class="min-h-[36px] px-4 py-2 rounded-xl text-[13.5px] font-semibold transition flex items-center gap-2 shadow-sm cursor-pointer btn-press"
+                   style="background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF;"
+                   title="Tambah sajian menu baru ke katalog">
+                    <i class="fa-solid fa-plus text-xs" aria-hidden="true"></i>
+                    <span>Tambah Menu</span>
+                </a>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-ink-black tracking-tight font-sans">
-                Katalog Menu &amp; Varian
-            </h1>
-            <p class="text-xs text-muted-text mt-1">
-                Atur kopi, artisanal dessert, minuman non-kopi, dan makanan ringan yang dapat dipesan pelanggan.
-            </p>
-        </div>
+        </x-slot>
 
-        <div class="flex flex-wrap items-center gap-2.5">
-            {{-- Quick Add Toggle Button --}}
-            <button type="button" onclick="toggleMenuDrawer()" id="btnToggleMenuDrawer"
-                    class="px-4 py-2.5 rounded-xl bg-ink-black hover:bg-charcoal text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-2 btn-press">
-                <i class="fa-solid fa-plus text-xs" id="iconToggleMenu"></i>
-                <span id="textToggleMenu">Tambah Menu Cepat</span>
-            </button>
+        {{-- Panel Petunjuk Penggunaan (x-help-panel) --}}
+        <x-slot name="help">
+            <x-help-panel id="menu-help-panel" :trigger="false">
+                <div class="space-y-4">
+                    {{-- Judul Panel Petunjuk --}}
+                    <div>
+                        <h3 class="text-[15px] font-bold tracking-tight" style="color: var(--admin-text-main, #1B1F1D); font-family: var(--font-heading);">
+                            Panduan Mengelola Menu &amp; Kategori
+                        </h3>
+                        <p class="text-[12.5px] mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
+                            Kelola sajian makanan, minuman kopi &amp; non-kopi, serta kategori yang tampil di website pelanggan Nucomu Cafe.
+                        </p>
+                    </div>
 
-            @if(\App\Models\Menu::where('is_sample', true)->exists())
-                <form action="{{ route('admin.menus.deleteSample') }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus semua menu contoh bawaan?')">
-                    @csrf
-                    <button type="submit" class="bg-pure-white hover:bg-rose-50 text-rose-700 hover:text-rose-800 border border-hairline font-bold text-xs px-3.5 py-2.5 rounded-xl transition flex items-center space-x-2 shadow-xs btn-press" title="Hapus menu contoh bawaan">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                        <span>Hapus Contoh</span>
-                    </button>
-                </form>
+                    {{-- 4 Langkah Singkat Menambah Menu --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+                        <div class="p-3 rounded-xl border bg-white space-y-1.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center"
+                                  style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">1</span>
+                            <div class="font-bold text-[13px]" style="color: var(--admin-text-main, #1B1F1D);">Nama &amp; Kategori</div>
+                            <p class="text-[12px] leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Tulis nama menu yang menarik dan pilih kategori sajian yang sesuai.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl border bg-white space-y-1.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center"
+                                  style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">2</span>
+                            <div class="font-bold text-[13px]" style="color: var(--admin-text-main, #1B1F1D);">Harga &amp; Penjelasan</div>
+                            <p class="text-[12px] leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Ketik angka harga dalam rupiah tanpa titik. Tulis 1&ndash;2 kalimat deskripsi rasa.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl border bg-white space-y-1.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center"
+                                  style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">3</span>
+                            <div class="font-bold text-[13px]" style="color: var(--admin-text-main, #1B1F1D);">Foto Sajian 1:1</div>
+                            <p class="text-[12px] leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Unggah foto kotak (rasio 1:1, disarankan 800 &times; 800 px) agar tampak proporsional.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl border bg-white space-y-1.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center"
+                                  style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">4</span>
+                            <div class="font-bold text-[13px]" style="color: var(--admin-text-main, #1B1F1D);">Menu Andalan</div>
+                            <p class="text-[12px] leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Beri bintang untuk menandai sajian sebagai menu andalan beranda website.
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Arti Tiap Bagian & Di Mana Tampil di Website --}}
+                    <div class="p-3.5 rounded-xl border text-[12.5px] leading-relaxed space-y-2"
+                         style="background-color: var(--admin-bg-sidebar-hover, #F0F4F1); border-color: var(--admin-border-card, #E6E8E4);">
+                        <div class="font-semibold flex items-center gap-2" style="color: var(--admin-text-main, #1B1F1D);">
+                            <i class="fa-solid fa-circle-nodes text-xs" style="color: var(--admin-btn-primary-bg, #2F6B4F);" aria-hidden="true"></i>
+                            <span>Arti Fitur &amp; Letaknya di Website</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div>
+                                <span class="font-semibold block" style="color: var(--admin-text-main, #1B1F1D);">Kategori Sajian:</span>
+                                <span style="color: var(--admin-text-sub, #555D58);">Mengelompokkan menu di tab katalog website agar pelanggan mudah memilih sajian.</span>
+                            </div>
+                            <div>
+                                <span class="font-semibold block" style="color: var(--admin-text-main, #1B1F1D);">Menu Andalan (★):</span>
+                                <span style="color: var(--admin-text-sub, #555D58);">Diprioritaskan masuk ke 8 sajian pilihan yang dipajang di halaman utama (homepage) website.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Spesifikasi & Batas Ukuran Foto --}}
+                    <div class="p-3.5 rounded-xl border text-[12.5px] leading-relaxed space-y-2"
+                         style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); border-color: var(--admin-border-card, #E6E8E4);">
+                        <div class="font-semibold flex items-center gap-2" style="color: var(--admin-text-main, #1B1F1D);">
+                            <i class="fa-solid fa-camera text-xs" style="color: var(--admin-btn-primary-bg, #2F6B4F);" aria-hidden="true"></i>
+                            <span>Panduan Format &amp; Ukuran Foto Menu</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[12px]">
+                            <div>
+                                <span class="font-semibold block" style="color: var(--admin-text-main, #1B1F1D);">Rasio Foto:</span>
+                                <span style="color: var(--admin-text-sub, #555D58);">1:1 (disarankan <strong>800 &times; 800 px</strong>) agar sajian tampil proporsional.</span>
+                            </div>
+                            <div>
+                                <span class="font-semibold block" style="color: var(--admin-text-main, #1B1F1D);">Format File:</span>
+                                <span style="color: var(--admin-text-sub, #555D58);">JPG, JPEG, PNG, atau WebP.</span>
+                            </div>
+                            <div>
+                                <span class="font-semibold block" style="color: var(--admin-text-main, #1B1F1D);">Batas Ukuran Server:</span>
+                                <span style="color: var(--admin-text-sub, #555D58);">Maksimal <strong>{{ $menuPhotoLimits['formatted'] ?? '1 MB' }}</strong> per foto.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Tips Singkat --}}
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[12px] pt-1"
+                         style="color: var(--admin-text-sub, #555D58);">
+                        <p class="m-0">
+                            <strong>Tips Praktis:</strong> Gunakan tombol <span class="font-semibold text-emerald-800">"Kelola Kategori"</span> untuk menambah kategori baru atau mengatur urutan tampil kategori di website.
+                        </p>
+                    </div>
+                </div>
+            </x-help-panel>
+        </x-slot>
+    </x-page-header>
+
+    {{-- Ringkasan Metrik Tenang (Satu Baris Teks Bersih) --}}
+    <div class="flex flex-wrap items-center justify-between gap-2 text-[13px] px-1 -mt-2" style="color: var(--admin-text-sub, #555D58);">
+        <div class="flex items-center gap-2">
+            <span class="font-semibold" style="color: var(--admin-text-main, #1B1F1D);">{{ $totalCount }} menu terdaftar</span>
+            @if($trashedCount > 0)
+                <span aria-hidden="true">&middot;</span>
+                <span class="text-rose-700 font-medium">{{ $trashedCount }} terarsip</span>
             @endif
-
+        </div>
+        <div class="flex items-center gap-3 text-xs">
             <a href="{{ route('kasir.index') }}" target="_blank"
-               class="px-3.5 py-2.5 rounded-xl bg-pure-white hover:bg-warm-stone border border-hairline text-xs font-bold text-ink-black transition shadow-xs flex items-center gap-2 btn-press"
+               class="inline-flex items-center gap-1.5 font-semibold text-stone-700 hover:text-stone-900 transition"
                title="Buka POS Kasir (/kasir)">
-                <i class="fa-solid fa-cash-register text-xs"></i>
+                <i class="fa-solid fa-cash-register text-xs" aria-hidden="true"></i>
                 <span>POS Kasir</span>
             </a>
-
-            <a href="{{ route('home') }}#all-menu-section" target="_blank"
-               class="px-3.5 py-2.5 rounded-xl bg-pure-white hover:bg-warm-stone border border-hairline text-xs font-bold text-ink-black transition shadow-xs flex items-center gap-2 btn-press"
-               title="Lihat Menu di Website Pelanggan">
-                <span>Web Customer</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            <span class="text-stone-300" aria-hidden="true">&middot;</span>
+            <a href="{{ route('home') }}#all-menu-section" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-1.5 font-semibold text-emerald-800 hover:text-emerald-900 transition">
+                <span>Lihat katalog di website</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]" aria-hidden="true"></i>
             </a>
         </div>
     </div>
 
-    {{-- 4 Metric Summary Chips (Warm Monochrome) --}}
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 reveal-on-scroll">
-        <div class="bg-pure-white rounded-2xl border border-hairline p-4 shadow-card flex items-center justify-between">
-            <div>
-                <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Total Menu</span>
-                <span class="text-xl sm:text-2xl font-mono font-extrabold text-ink-black">{{ $totalCount }}</span>
-            </div>
-            <div class="w-9 h-9 rounded-xl bg-warm-stone border border-hairline flex items-center justify-center text-ink-black">
-                <i class="fa-solid fa-utensils text-xs"></i>
-            </div>
-        </div>
-
-        <div class="bg-pure-white rounded-2xl border border-hairline p-4 shadow-card flex items-center justify-between">
-            <div>
-                <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Tersedia</span>
-                <span class="text-xl sm:text-2xl font-mono font-extrabold text-emerald-700">{{ $availableCount }}</span>
-            </div>
-            <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-800">
-                <i class="fa-solid fa-circle-check text-xs"></i>
-            </div>
-        </div>
-
-        <div class="bg-pure-white rounded-2xl border border-hairline p-4 shadow-card flex items-center justify-between">
-            <div>
-                <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Habis (Sold Out)</span>
-                <span class="text-xl sm:text-2xl font-mono font-extrabold text-rose-700">{{ $unavailableCount }}</span>
-            </div>
-            <div class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-800">
-                <i class="fa-solid fa-ban text-xs"></i>
-            </div>
-        </div>
-
-        <div class="bg-pure-white rounded-2xl border border-hairline p-4 shadow-card flex items-center justify-between">
-            <div>
-                <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Best Seller</span>
-                <span class="text-xl sm:text-2xl font-mono font-extrabold text-amber-800">{{ $bestSellerCount }}</span>
-            </div>
-            <div class="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-800">
-                <i class="fa-solid fa-star text-xs"></i>
-            </div>
-        </div>
-    </div>
-
-    {{-- =========================================================================
-         COLLAPSIBLE QUICK ADD MENU STUDIO (Tambah Menu Cepat Tanpa Pindah Halaman)
-         ========================================================================= --}}
-    <div id="quickMenuDrawer" class="hidden bg-pure-white border border-hairline rounded-3xl p-6 sm:p-8 shadow-card reveal-on-scroll anim-fade-up">
-        <div class="flex items-center justify-between pb-4 border-b border-hairline mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-warm-stone border border-hairline flex items-center justify-center text-ink-black">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                </div>
+    {{-- Alert Notifikasi Sukses / Gagal --}}
+    @if(session('success'))
+        <div class="p-3.5 sm:p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[13px] leading-relaxed anim-fade-up"
+             style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); border-color: #C3DCD0; color: #164E33;">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-600 shrink-0 text-base" aria-hidden="true"></i>
                 <div>
-                    <h2 class="text-sm font-bold text-ink-black">Tambah Menu Baru Cepat</h2>
-                    <p class="text-[11px] text-muted-text">Tambahkan racikan menu langsung ke katalog web tanpa meninggalkan halaman.</p>
+                    <span class="font-bold">Berhasil.</span>
+                    <span class="opacity-90 ml-1">{{ session('success') }}</span>
                 </div>
             </div>
-            <button type="button" onclick="toggleMenuDrawer()" class="p-2 text-muted-text hover:text-ink-black rounded-lg transition">
-                <i class="fa-solid fa-xmark text-sm"></i>
-            </button>
         </div>
+    @endif
 
-        <form action="{{ route('admin.menus.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-            @csrf
-
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
-                {{-- Left: Image Upload Dropzone (4 Cols) --}}
-                <div class="lg:col-span-4">
-                    <label class="block text-xs font-bold text-charcoal mb-2">
-                        Foto Sajian Menu
-                    </label>
-
-                    <div onclick="document.getElementById('quickMenuImageInput').click()"
-                         class="relative w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-hairline hover:border-ink-black bg-warm-ivory flex flex-col items-center justify-center p-4 text-center cursor-pointer transition-all group overflow-hidden">
-                        
-                        <input type="file" name="image" id="quickMenuImageInput" accept="image/*" class="hidden" onchange="previewQuickMenuImage(event)">
-
-                        <div id="quickMenuPlaceholder" class="space-y-2 pointer-events-none group-hover:scale-105 transition-transform">
-                            <div class="w-10 h-10 rounded-xl bg-white border border-hairline text-ink-black flex items-center justify-center mx-auto shadow-2xs">
-                                <i class="fa-solid fa-camera text-sm"></i>
-                            </div>
-                            <span class="text-xs font-bold text-ink-black block">Pilih Foto Menu</span>
-                            <span class="text-[10px] text-muted-text block">JPG, PNG, WebP (Maks. 2MB)</span>
-                        </div>
-
-                        <img id="quickMenuPreviewImg" src="" alt="Preview Menu" class="hidden absolute inset-0 w-full h-full object-cover">
-                        <div id="quickMenuPreviewOverlay" class="hidden absolute inset-0 bg-ink-black/40 backdrop-blur-xs flex items-center justify-center text-white text-xs font-bold gap-1.5">
-                            <i class="fa-solid fa-arrows-rotate"></i>
-                            <span>Ganti Foto</span>
-                        </div>
-                    </div>
+    @if(session('error'))
+        <div class="p-3.5 sm:p-4 rounded-xl border flex items-center justify-between gap-3 text-[13px] leading-relaxed anim-fade-up"
+             style="background-color: #FDF2F2; border-color: #F8B4B4; color: #9B1C1C;">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-triangle-exclamation text-rose-600 shrink-0 text-base" aria-hidden="true"></i>
+                <div>
+                    <span class="font-bold">Perhatian:</span>
+                    <span class="opacity-90 ml-1">{{ session('error') }}</span>
                 </div>
-
-                {{-- Right: Essential Fields & Price Presets (8 Cols) --}}
-                <div class="lg:col-span-8 space-y-4">
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <label for="quick_name" class="block text-xs font-bold text-charcoal mb-1.5">
-                                Nama Menu <span class="text-rose-600">*</span>
-                            </label>
-                            <input type="text" name="name" id="quick_name" required placeholder="Contoh: Iced Palm Sugar Latte"
-                                   class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2.5 text-xs text-ink-black font-semibold focus:outline-none focus:border-ink-black focus:bg-white transition">
-                        </div>
-
-                        <div>
-                            <label for="quick_category_id" class="block text-xs font-bold text-charcoal mb-1.5">
-                                Kategori <span class="text-rose-600">*</span>
-                            </label>
-                            <select name="category_id" id="quick_category_id" required
-                                    class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2.5 text-xs text-ink-black font-semibold focus:outline-none focus:border-ink-black focus:bg-white transition">
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- Harga & Preset Cepat --}}
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label for="quick_price" class="text-xs font-bold text-charcoal">
-                                Harga Menu (Rupiah) <span class="text-rose-600">*</span>
-                            </label>
-                            <span class="text-[10px] text-muted-text">Pilihan harga cepat:</span>
-                        </div>
-                        <div class="relative">
-                            <span class="absolute left-3.5 top-2.5 text-xs font-mono font-bold text-muted-text">Rp</span>
-                            <input type="number" name="price" id="quick_price" required min="0" step="500" placeholder="25000"
-                                   class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2.5 pl-10 text-xs text-ink-black font-mono font-bold focus:outline-none focus:border-ink-black focus:bg-white transition">
-                        </div>
-                        
-                        {{-- Price preset buttons --}}
-                        <div class="flex flex-wrap items-center gap-1.5 mt-2">
-                            <button type="button" onclick="setQuickPrice(15000)" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
-                                15.000
-                            </button>
-                            <button type="button" onclick="setQuickPrice(20000)" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
-                                20.000
-                            </button>
-                            <button type="button" onclick="setQuickPrice(25000)" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
-                                25.000
-                            </button>
-                            <button type="button" onclick="setQuickPrice(28000)" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
-                                28.000
-                            </button>
-                            <button type="button" onclick="setQuickPrice(32000)" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
-                                32.000
-                            </button>
-                            <button type="button" onclick="setQuickPrice(38000)" class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-warm-stone/80 hover:bg-ink-black hover:text-white text-charcoal border border-hairline transition">
-                                38.000
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Deskripsi Singkat & Stok Awal --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="sm:col-span-2">
-                            <label for="quick_description" class="block text-xs font-bold text-charcoal mb-1.5">
-                                Deskripsi Singkat / Catatan Rasa
-                            </label>
-                            <input type="text" name="description" id="quick_description" placeholder="Espresso house blend dengan susu segar dan gula aren alami..."
-                                   class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2 text-xs text-ink-black focus:outline-none focus:border-ink-black focus:bg-white transition">
-                        </div>
-                        <div>
-                            <label for="quick_stock" class="block text-xs font-bold text-charcoal mb-1.5">
-                                Stok Awal (Porsi)
-                            </label>
-                            <input type="number" name="stock" id="quick_stock" value="25" min="0" max="9999" required
-                                   class="w-full bg-warm-ivory border border-hairline rounded-xl px-4 py-2 text-xs font-mono font-bold text-ink-black focus:outline-none focus:border-ink-black focus:bg-white transition">
-                        </div>
-                    </div>
-
-                    {{-- Checkboxes Status --}}
-                    <div class="flex flex-wrap items-center gap-3 pt-2 text-xs font-bold">
-                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-xl bg-warm-ivory border border-hairline hover:bg-warm-stone/50 transition">
-                            <input type="checkbox" name="is_available" value="1" checked class="w-4 h-4 text-ink-black bg-white border-hairline rounded">
-                            <span class="text-ink-black">Langsung Tersedia</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-xl bg-warm-ivory border border-hairline hover:bg-warm-stone/50 transition">
-                            <input type="checkbox" name="is_best_seller" value="1" class="w-4 h-4 text-ink-black bg-white border-hairline rounded">
-                            <span class="text-charcoal">Tandai Best Seller</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer p-2 rounded-xl bg-warm-ivory border border-hairline hover:bg-warm-stone/50 transition">
-                            <input type="checkbox" name="is_featured" value="1" class="w-4 h-4 text-ink-black bg-white border-hairline rounded">
-                            <span class="text-charcoal">Tandai Unggulan</span>
-                        </label>
-                    </div>
-
-                    <div class="pt-3 border-t border-hairline flex items-center justify-end gap-3">
-                        <button type="button" onclick="toggleMenuDrawer()" class="px-4 py-2 rounded-xl border border-hairline text-xs font-bold text-charcoal hover:bg-warm-stone transition btn-press">
-                            Batal
-                        </button>
-                        <button type="submit" class="px-6 py-2 rounded-xl bg-ink-black hover:bg-charcoal text-white font-bold text-xs uppercase tracking-wider transition shadow-xs btn-press">
-                            Simpan ke Menu
-                        </button>
-                    </div>
-
-                </div>
-
             </div>
-        </form>
-    </div>
+            </div>
+        </div>
+    @endif
 
-    {{-- =========================================================================
-         FLEXIBLE FILTER & VIEW MODE TOOLBAR (Kategori, Live Search & View Switcher)
-         ========================================================================= --}}
-    <div class="bg-pure-white border border-hairline rounded-2xl p-4 shadow-card space-y-3 reveal-on-scroll">
+    {{-- TOOLBAR FILTER & TAMPILAN (Chip Kategori, Segmented Status, Live Search & View Switcher) --}}
+    <div class="bg-white rounded-2xl border p-4 shadow-sm space-y-3.5" style="border-color: var(--admin-border-card, #E6E8E4);">
         
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-            
-            {{-- Category Filter Pills --}}
-            <div class="flex items-center gap-1.5 overflow-x-auto text-xs font-bold pb-1 select-none">
-                <a href="{{ route('admin.menus.index') }}" 
-                   class="px-3.5 py-1.5 rounded-xl transition-all shrink-0 {{ !request('category') ? 'bg-ink-black text-white shadow-xs' : 'bg-warm-stone/70 text-charcoal hover:bg-warm-stone border border-hairline' }}">
+        {{-- Baris 1: Chip Kategori --}}
+        <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs font-medium no-scrollbar w-full">
+                {{-- Chip Semua --}}
+                <a href="{{ route('admin.menus.index', array_filter(['status' => $status !== 'all' ? $status : null, 'search' => $search, 'sort' => $sortBy !== 'default' ? $sortBy : null, 'per_page' => $perPage !== 12 ? $perPage : null])) }}"
+                   class="px-3.5 py-1.5 rounded-xl transition-all shrink-0 cursor-pointer font-semibold text-[12.5px] border"
+                   style="{{ empty($categoryId) ? 'background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF; border-color: var(--admin-btn-primary-bg, #2F6B4F);' : 'background-color: #FFFFFF; color: var(--admin-text-main, #1B1F1D); border-color: var(--admin-border-card, #E6E8E4);' }}">
                     Semua ({{ $totalCount }})
                 </a>
+
+                {{-- Chip Tiap Kategori --}}
                 @foreach($categories as $cat)
-                    <a href="{{ route('admin.menus.index', ['category' => $cat->id, 'status' => request('status')]) }}" 
-                       class="px-3.5 py-1.5 rounded-xl transition-all shrink-0 {{ request('category') == $cat->id ? 'bg-ink-black text-white shadow-xs' : 'bg-warm-stone/70 text-charcoal hover:bg-warm-stone border border-hairline' }}">
-                        {{ $cat->name }}
+                    <a href="{{ route('admin.menus.index', array_filter(['category' => $cat->id, 'status' => $status !== 'all' ? $status : null, 'search' => $search, 'sort' => $sortBy !== 'default' ? $sortBy : null, 'per_page' => $perPage !== 12 ? $perPage : null])) }}"
+                       class="px-3.5 py-1.5 rounded-xl transition-all shrink-0 cursor-pointer font-semibold text-[12.5px] border"
+                       style="{{ $categoryId == $cat->id ? 'background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF; border-color: var(--admin-btn-primary-bg, #2F6B4F);' : 'background-color: #FFFFFF; color: var(--admin-text-main, #1B1F1D); border-color: var(--admin-border-card, #E6E8E4);' }}">
+                        {{ $cat->name }} ({{ $cat->menus_count ?? 0 }})
                     </a>
                 @endforeach
-            </div>
 
-            {{-- Right: View Switcher (Grid vs Table) --}}
-            <div class="flex items-center gap-2 self-start lg:self-auto">
-                <div class="flex items-center gap-1 bg-warm-stone/70 p-1 rounded-xl border border-hairline text-xs font-bold">
-                    <button type="button" onclick="switchMenuView('grid')" id="btnViewMenuGrid" 
-                            class="px-3 py-1.5 rounded-lg bg-pure-white text-ink-black shadow-xs transition flex items-center gap-1.5"
-                            title="Tampilan Kartu Visual">
-                        <i class="fa-solid fa-grip text-xs"></i>
-                        <span>Grid Visual</span>
-                    </button>
-                    <button type="button" onclick="switchMenuView('table')" id="btnViewMenuTable" 
-                            class="px-3 py-1.5 rounded-lg text-muted-text hover:text-ink-black transition flex items-center gap-1.5"
-                            title="Tampilan Tabel Rinci">
-                        <i class="fa-solid fa-list text-xs"></i>
-                        <span>Tabel</span>
-                    </button>
-                </div>
+                {{-- Chip Tambah/Kelola Kategori Cepat --}}
+                <button type="button"
+                        onclick="openCategoryDrawer()"
+                        class="px-3 py-1.5 rounded-xl transition-all shrink-0 text-xs font-semibold flex items-center gap-1.5 border border-dashed hover:bg-[#F0F4F1] cursor-pointer"
+                        style="border-color: var(--admin-btn-primary-bg, #2F6B4F); color: var(--admin-btn-primary-bg, #2F6B4F);"
+                        title="Tambah atau kelola kategori">
+                    <i class="fa-solid fa-plus text-[10px]" aria-hidden="true"></i>
+                    <span>Kategori</span>
+                </button>
             </div>
-
         </div>
 
-        {{-- Second Row: Status Filter Chips & Live Search --}}
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-hairline text-xs">
+        {{-- Baris 2: Segmented Status, Live Search & View Switcher --}}
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3 border-t" style="border-color: var(--admin-border-card, #E6E8E4);">
             
-            {{-- Quick Status Filter Chips --}}
-            <div class="flex flex-wrap items-center gap-1.5">
-                <span class="text-[10px] uppercase font-bold text-muted-text font-mono mr-1">Status:</span>
-                <a href="{{ route('admin.menus.index', ['category' => request('category')]) }}" 
-                   class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition {{ !request('status') ? 'bg-ink-black text-white' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
+            {{-- Filter Status (Segmented Control: Semua & Terarsip) --}}
+            <div class="inline-flex items-center p-1 rounded-xl border bg-[#F7F8F6] text-xs font-semibold self-start"
+                 style="border-color: var(--admin-border-card, #E6E8E4);">
+                <a href="{{ route('admin.menus.index', array_filter(['category' => $categoryId, 'search' => $search, 'sort' => $sortBy !== 'default' ? $sortBy : null, 'per_page' => $perPage !== 12 ? $perPage : null])) }}"
+                   class="px-3 py-1 rounded-lg transition-all text-[12px] {{ $status === 'all' || empty($status) ? 'bg-white shadow-xs font-bold' : 'hover:text-black' }}"
+                   style="color: {{ $status === 'all' || empty($status) ? 'var(--admin-text-main, #1B1F1D)' : 'var(--admin-text-sub, #555D58)' }};">
                     Semua
                 </a>
-                <a href="{{ route('admin.menus.index', ['category' => request('category'), 'status' => 'available']) }}" 
-                   class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition {{ request('status') === 'available' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
-                    ● Tersedia
-                </a>
-                <a href="{{ route('admin.menus.index', ['category' => request('category'), 'status' => 'unavailable']) }}" 
-                   class="px-2.5 py-1 rounded-lg text-[11px] font-bold transition {{ request('status') === 'unavailable' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
-                    ○ Habis
+                <a href="{{ route('admin.menus.index', array_filter(['category' => $categoryId, 'status' => 'trashed', 'search' => $search, 'sort' => $sortBy !== 'default' ? $sortBy : null, 'per_page' => $perPage !== 12 ? $perPage : null])) }}"
+                   class="px-3 py-1 rounded-lg transition-all text-[12px] {{ $status === 'trashed' ? 'bg-white shadow-xs font-bold text-stone-900' : 'hover:text-black' }}"
+                   style="color: {{ $status === 'trashed' ? '#1B1F1D' : 'var(--admin-text-sub, #555D58)' }};">
+                    <i class="fa-solid fa-box-archive text-[10px] mr-1" aria-hidden="true"></i>
+                    Terarsip ({{ $trashedCount }})
                 </a>
             </div>
 
-            {{-- Live Search Input --}}
-            <div class="relative w-full sm:w-64">
-                <input type="text" id="menuLiveSearch" placeholder="Cari nama menu..."
-                       oninput="filterMenuItemsClient(this.value)"
-                       value="{{ request('search') }}"
-                       class="w-full bg-warm-ivory border border-hairline rounded-xl px-3.5 py-1.5 pl-9 text-xs text-ink-black placeholder-muted-text focus:outline-none focus:border-ink-black focus:bg-white transition">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-muted-text text-xs"></i>
+            {{-- Sisi Kanan: Live Search & Switcher Kartu | Daftar --}}
+            <div class="flex items-center gap-2.5 w-full md:w-auto">
+                {{-- Form Pencarian --}}
+                <form method="GET" action="{{ route('admin.menus.index') }}" class="relative w-full sm:w-64">
+                    @if(!empty($categoryId)) <input type="hidden" name="category" value="{{ $categoryId }}"> @endif
+                    @if($status !== 'all') <input type="hidden" name="status" value="{{ $status }}"> @endif
+                    @if($sortBy !== 'default') <input type="hidden" name="sort" value="{{ $sortBy }}"> @endif
+                    @if($perPage !== 12) <input type="hidden" name="per_page" value="{{ $perPage }}"> @endif
+
+                    <input type="text"
+                           name="search"
+                           id="menuLiveSearch"
+                           value="{{ $search }}"
+                           placeholder="Cari nama menu..."
+                           oninput="filterMenuItemsClient(this.value)"
+                           class="w-full bg-[#F7F8F6] border rounded-xl px-3.5 py-1.5 pl-9 text-xs transition focus:outline-none focus:bg-white"
+                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs pointer-events-none"
+                       style="color: var(--admin-text-sub, #555D58);" aria-hidden="true"></i>
+
+                    @if(!empty($search))
+                        <a href="{{ route('admin.menus.index', array_filter(['category' => $categoryId, 'status' => $status !== 'all' ? $status : null, 'sort' => $sortBy !== 'default' ? $sortBy : null, 'per_page' => $perPage !== 12 ? $perPage : null])) }}"
+                           class="absolute right-2.5 top-2 text-xs text-gray-400 hover:text-gray-700" title="Hapus pencarian">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </a>
+                    @endif
+                </form>
+
+                {{-- View Switcher: Kartu | Daftar --}}
+                <div class="flex items-center p-1 rounded-xl border bg-[#F7F8F6] text-xs font-semibold shrink-0"
+                     style="border-color: var(--admin-border-card, #E6E8E4);">
+                    <button type="button"
+                            onclick="switchMenuView('card')"
+                            id="btnViewCard"
+                            class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer bg-white shadow-xs font-bold"
+                            style="color: var(--admin-text-main, #1B1F1D);"
+                            title="Tampilan Kartu">
+                        <i class="fa-solid fa-grip text-xs" aria-hidden="true"></i>
+                        <span>Kartu</span>
+                    </button>
+                    <button type="button"
+                            onclick="switchMenuView('list')"
+                            id="btnViewList"
+                            class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer"
+                            style="color: var(--admin-text-sub, #555D58);"
+                            title="Tampilan Daftar (Tabel)">
+                        <i class="fa-solid fa-list text-xs" aria-hidden="true"></i>
+                        <span>Daftar</span>
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -340,262 +308,291 @@
     </div>
 
     {{-- =========================================================================
-         VIEW 1: GRID VISUAL (Koleksi Kartu Produk Nucomu yang Bersih & Fotogenik)
+         TAMPILAN 1: KARTU (CARD GRID VISUAL DENGAN FOTO 1:1 KOTAK & STATUS CEPAT)
          ========================================================================= --}}
-    <div id="menuGridView" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 reveal-on-scroll">
+    <div id="menuCardContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 anim-fade-up">
         @forelse($menus as $menu)
             @php
-                $menuImageUrl = null;
-                if ($menu->image && file_exists(public_path('storage/' . $menu->image))) {
-                    $menuImageUrl = asset('storage/' . $menu->image);
-                } elseif ($menu->image && (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://'))) {
-                    $menuImageUrl = $menu->image;
-                }
+                $hasImage = !empty($menu->image);
+                $imageUrl = $menu->image_url;
+                $isOrdered = ($menu->order_items_count ?? 0) > 0;
             @endphp
-
-            <div class="menu-item-card group bg-pure-white border border-hairline rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 flex flex-col justify-between hover:border-ink-black transition-all duration-300 shadow-card card-lift"
+            <div class="menu-card-item bg-white border rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                 style="border-color: var(--admin-border-card, #E6E8E4);"
+                 data-menu-id="{{ $menu->id }}"
                  data-menu-name="{{ strtolower($menu->name) }}"
-                 data-menu-category="{{ strtolower($menu->category->name ?? '') }}">
-                
+                 data-menu-category="{{ strtolower($menu->category->name ?? '') }}"
+                 data-menu-price="{{ $menu->price }}">
+
                 <div>
-                    {{-- 4:3 Editorial Focus Image Frame --}}
-                    <div class="relative overflow-hidden aspect-[4/3] rounded-xl sm:rounded-2xl mb-3 bg-warm-stone border border-hairline">
-                        @if($menuImageUrl)
-                            <img src="{{ $menuImageUrl }}" alt="{{ $menu->name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    {{-- Kotak Foto 1:1 --}}
+                    <div class="relative aspect-square w-full bg-[#F7F8F6] border-b overflow-hidden group"
+                         style="border-color: var(--admin-border-card, #E6E8E4);">
+                        
+                        @if($hasImage)
+                            <img src="{{ $imageUrl }}"
+                                 alt="{{ $menu->name }}"
+                                 loading="lazy"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         @else
-                            <div class="w-full h-full flex items-center justify-center text-muted-text text-xs">
-                                <i class="fa-solid fa-mug-hot text-xl"></i>
+                            <div class="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+                                <div class="w-12 h-12 rounded-xl border flex items-center justify-center mb-2 bg-white"
+                                     style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-sub, #555D58);">
+                                    <i class="fa-solid fa-camera text-base opacity-40" aria-hidden="true"></i>
+                                </div>
+                                <span class="text-xs font-medium" style="color: var(--admin-text-sub, #555D58);">Belum ada foto</span>
+                                <a href="{{ route('admin.menus.edit', $menu->id) }}"
+                                   class="mt-2 text-[11px] font-semibold text-emerald-800 hover:underline inline-flex items-center gap-1">
+                                    <i class="fa-solid fa-plus text-[9px]" aria-hidden="true"></i>
+                                    <span>Tambah foto</span>
+                                </a>
                             </div>
                         @endif
 
-                        {{-- Category Pill --}}
-                        <span class="absolute top-2 left-2 bg-ink-black/80 backdrop-blur-xs text-white px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-md font-mono border border-white/10">
-                            {{ $menu->category->name ?? 'Menu' }}
-                        </span>
-
-                        {{-- Badges at Top Right --}}
-                        <div class="absolute top-2 right-2 flex flex-col items-end gap-1">
-                            @if($menu->is_best_seller)
-                                <span class="bg-amber-400 text-stone-950 font-bold px-2 py-0.5 text-[9px] uppercase tracking-wider rounded-md shadow-xs flex items-center gap-1">
-                                    <i class="fa-solid fa-fire text-[8px]"></i> Best
-                                </span>
-                            @endif
-                            @if($menu->is_sample)
-                                <span class="bg-white/90 text-charcoal border border-hairline font-bold px-1.5 py-0.2 text-[8px] uppercase rounded">
-                                    Contoh
+                        {{-- Chip Kategori di Kiri Atas Foto --}}
+                        <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                            <span class="px-2.5 py-1 rounded-lg text-[10.5px] font-bold bg-white/95 backdrop-blur-xs border shadow-2xs"
+                                  style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                                {{ $menu->category->name ?? 'Menu' }}
+                            </span>
+                            @if($menu->trashed())
+                                <span class="px-2 py-0.5 rounded-lg text-[10.5px] font-bold bg-stone-900 text-white shadow-2xs flex items-center gap-1">
+                                    <i class="fa-solid fa-box-archive text-[9px]" aria-hidden="true"></i>
+                                    <span>Terarsip</span>
                                 </span>
                             @endif
                         </div>
 
-                        {{-- Quick Availability Floating Pill & Live Stock Badge --}}
-                        @php
-                            $menuStockVal = $menu->stock !== null ? (int) $menu->stock : ($menu->is_available ? 25 : 0);
-                            if (!$menu->is_available) {
-                                $menuStockVal = 0;
-                            }
-                        @endphp
-                        <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-1.5">
-                            <form action="{{ route('admin.menus.toggleAvailable', $menu->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" 
-                                        id="adminGridStatusBtn-{{ $menu->id }}"
-                                        class="px-2.5 py-1 rounded-full text-[10px] font-bold shadow-xs transition btn-press flex items-center gap-1.5 {{ $menu->is_available && $menuStockVal > 0 ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-rose-600 hover:bg-rose-700 text-white' }}"
-                                        title="Klik untuk mengubah ketersediaan">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-                                    <span id="adminGridStatusText-{{ $menu->id }}">{{ $menu->is_available && $menuStockVal > 0 ? 'Tersedia' : 'Habis' }}</span>
-                                </button>
-                            </form>
-
-                            <span id="adminGridStockPill-{{ $menu->id }}"
-                                  class="px-2 py-0.5 rounded-full text-[9.5px] font-mono font-bold shadow-xs border backdrop-blur-xs {{ $menuStockVal > 5 ? 'bg-white/95 text-ink-black border-hairline' : ($menuStockVal > 0 ? 'bg-amber-50/95 text-amber-800 border-amber-300' : 'bg-rose-600 text-white border-rose-700') }}">
-                                Stok: {{ $menuStockVal }}
-                            </span>
+                        {{-- Badges di Kanan Atas Foto: Bintang Andalan --}}
+                        <div class="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+                            {{-- Tombol Bintang Andalan Cepat --}}
+                            <button type="button"
+                                    onclick="toggleFeaturedAjax({{ $menu->id }}, this)"
+                                    class="w-7 h-7 rounded-lg bg-white/95 backdrop-blur-xs border flex items-center justify-center transition shadow-2xs hover:scale-105 cursor-pointer btn-press"
+                                    style="border-color: var(--admin-border-card, #E6E8E4);"
+                                    title="{{ $menu->is_featured || $menu->is_best_seller ? 'Menu andalan (klik untuk lepas)' : 'Tandai sebagai menu andalan beranda' }}">
+                                <i class="fa-solid fa-star text-xs star-icon {{ $menu->is_featured || $menu->is_best_seller ? 'text-amber-500' : 'text-gray-300' }}" aria-hidden="true"></i>
+                            </button>
+                        </div>
                         </div>
                     </div>
 
-                    {{-- Title & Short Info --}}
-                    <div class="space-y-1">
-                        <div class="flex items-start justify-between gap-1">
-                            <h3 class="font-sans font-bold text-xs sm:text-sm text-ink-black leading-snug group-hover:underline underline-offset-2 line-clamp-1">
+                    {{-- Informasi Menu (Nama, Harga, Penjelasan) --}}
+                    <div class="p-3.5 sm:p-4 space-y-1.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <h3 class="font-bold text-[14px] leading-snug line-clamp-1" style="color: var(--admin-text-main, #1B1F1D);">
                                 {{ $menu->name }}
                             </h3>
                         </div>
-                        <p class="text-[11px] text-muted-text line-clamp-1 leading-relaxed">
-                            {{ $menu->description ?: 'Pilihan racikan Nucomu Cafe' }}
+
+                        {{-- Harga: Plus Jakarta Sans Bold, tabular-nums --}}
+                        <div class="text-[15px] font-bold tracking-tight tabular-nums" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
+                            Rp {{ number_format($menu->price, 0, ',', '.') }}
+                        </div>
+
+                        {{-- Deskripsi Singkat 1 Baris --}}
+                        <p class="text-[12px] leading-relaxed line-clamp-1 m-0" style="color: var(--admin-text-sub, #555D58);">
+                            {{ $menu->description ?: 'Pilihan racikan istimewa Nucomu Cafe' }}
                         </p>
                     </div>
                 </div>
 
-                {{-- Inline Stock Control & Action Bar --}}
-                <div class="pt-3 border-t border-hairline space-y-2.5 mt-3">
-                    <div class="flex items-center justify-between bg-warm-ivory border border-hairline rounded-xl px-2.5 py-1.5">
-                        <span class="text-[10px] font-mono font-bold text-muted-text uppercase">Stok Kasir</span>
-                        <div class="flex items-center gap-1">
-                            <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: -1 })"
-                                    class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
-                                -
+                {{-- Bagian Bawah Kartu: Tombol Aksi Teks --}}
+                <div class="px-3.5 sm:px-4 py-2.5 border-t bg-[#FAFBF9] flex items-center justify-end gap-1.5"
+                     style="border-color: var(--admin-border-card, #E6E8E4);">
+                    @if($menu->trashed())
+                        <form action="{{ route('admin.menus.restore', $menu->id) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit"
+                                    class="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition shadow-2xs btn-press inline-flex items-center gap-1.5"
+                                    title="Pulihkan menu ke katalog">
+                                <i class="fa-solid fa-rotate-left text-[11px]" aria-hidden="true"></i>
+                                <span>Pulihkan</span>
                             </button>
-                            <input type="number" id="adminGridStockInput-{{ $menu->id }}" value="{{ $menuStockVal }}" min="0" max="9999"
-                                   onchange="adjustAdminMenuStock({{ $menu->id }}, { stock: parseInt(this.value || '0', 10) })"
-                                   class="w-11 text-center bg-white border border-hairline rounded-lg py-0.5 text-[11px] font-mono font-bold text-ink-black focus:outline-none focus:border-ink-black">
-                            <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: 1 })"
-                                    class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
-                                +
-                            </button>
-                        </div>
-                    </div>
+                        </form>
+                    @else
+                        <a href="{{ route('admin.menus.edit', $menu->id) }}"
+                           class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition shadow-2xs btn-press"
+                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
+                           title="Edit rincian menu">
+                            Edit
+                        </a>
 
-                    <div class="flex items-center justify-between">
-                        <span class="font-mono font-bold text-xs sm:text-sm text-ink-black">
-                            Rp {{ number_format($menu->price, 0, ',', '.') }}
-                        </span>
-
-                        <div class="flex items-center gap-1">
-                            <a href="{{ route('admin.menus.edit', $menu->id) }}" 
-                               class="w-7 h-7 rounded-lg bg-warm-stone hover:bg-ink-black hover:text-white text-ink-black flex items-center justify-center text-xs transition btn-press" 
-                               title="Edit Menu">
-                                <i class="fa-solid fa-pen-to-square text-[10px]"></i>
-                            </a>
-
-                            <form action="{{ route('admin.menus.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Hapus menu {{ $menu->name }}?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        class="w-7 h-7 rounded-lg bg-warm-stone hover:bg-rose-50 text-muted-text hover:text-rose-700 flex items-center justify-center text-xs transition btn-press" 
-                                        title="Hapus Menu">
-                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+                        <button type="button"
+                                onclick="confirmDeleteMenu({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->order_items_count ?? 0 }})"
+                                class="px-2 py-1 rounded-lg text-xs font-semibold hover:bg-rose-50 text-rose-700 transition cursor-pointer btn-press"
+                                title="Hapus menu">
+                            Hapus
+                        </button>
+                    @endif
                 </div>
 
             </div>
         @empty
-            <div class="col-span-full py-16 text-center bg-pure-white border border-hairline rounded-3xl p-8 text-muted-text text-xs">
-                <div class="w-14 h-14 rounded-2xl bg-warm-stone border border-hairline flex items-center justify-center mx-auto mb-3 text-ink-black text-xl shadow-2xs">
-                    <i class="fa-solid fa-utensils"></i>
+            <div class="col-span-full py-16 text-center bg-white border rounded-3xl p-8"
+                 style="border-color: var(--admin-border-card, #E6E8E4);">
+                <div class="w-14 h-14 rounded-2xl border flex items-center justify-center mx-auto mb-3.5 bg-[#F7F8F6]"
+                     style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-sub, #555D58);">
+                    <i class="fa-solid fa-utensils text-xl" aria-hidden="true"></i>
                 </div>
-                <h3 class="text-sm font-bold text-ink-black">Belum Ada Menu</h3>
-                <p class="text-xs text-muted-text max-w-md mx-auto mt-1">
-                    Katalog menu kafe Anda masih kosong atau tidak ada menu yang cocok dengan pencarian.
+                <h3 class="text-[15px] font-bold" style="color: var(--admin-text-main, #1B1F1D);">
+                    Tidak Ada Menu yang Ditemukan
+                </h3>
+                <p class="text-[12.5px] max-w-md mx-auto mt-1 m-0" style="color: var(--admin-text-sub, #555D58);">
+                    @if(!empty($search) || !empty($categoryId) || $status !== 'all')
+                        Tidak ada sajian yang sesuai dengan filter atau kata kunci pencarian Anda.
+                    @else
+                        Katalog sajian kafe Anda masih kosong. Mulai tambahkan racikan menu pertama Anda!
+                    @endif
                 </p>
-                <button type="button" onclick="toggleMenuDrawer()" class="mt-4 px-5 py-2.5 rounded-xl bg-ink-black text-white font-bold text-xs uppercase tracking-wider shadow-xs hover:bg-charcoal transition btn-press inline-flex items-center gap-2">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span>Tambah Menu Baru</span>
-                </button>
+                <div class="mt-4 flex items-center justify-center gap-2.5">
+                    @if(!empty($search) || !empty($categoryId) || $status !== 'all')
+                        <a href="{{ route('admin.menus.index') }}"
+                           class="px-4 py-2 rounded-xl text-xs font-semibold border bg-white hover:bg-gray-50 transition"
+                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                            Reset Semua Filter
+                        </a>
+                    @endif
+                    <a href="{{ route('admin.menus.create') }}"
+                       class="px-4 py-2 rounded-xl text-xs font-semibold text-white shadow-xs transition btn-press"
+                       style="background-color: var(--admin-btn-primary-bg, #2F6B4F);">
+                        <i class="fa-solid fa-plus text-[10px] mr-1.5" aria-hidden="true"></i>
+                        <span>Tambah Menu Baru</span>
+                    </a>
+                </div>
             </div>
         @endforelse
     </div>
 
     {{-- =========================================================================
-         VIEW 2: TABEL RINGKAS (Untuk Audit & Administrasi Cepat)
+         TAMPILAN 2: DAFTAR (TABEL TERSTRUKTUR DENGAN SORTABLE COLUMN & RESPONSIF)
          ========================================================================= --}}
-    <div id="menuTableView" class="hidden bg-pure-white border border-hairline rounded-2xl sm:rounded-3xl overflow-hidden shadow-card">
+    <div id="menuListContainer" class="hidden bg-white border rounded-2xl overflow-hidden shadow-xs anim-fade-up"
+         style="border-color: var(--admin-border-card, #E6E8E4);">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-charcoal">
-                <thead class="bg-warm-stone/50 text-muted-text uppercase text-[10px] font-mono tracking-widest border-b border-hairline">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-[#F7F8F6] uppercase text-[10.5px] font-semibold tracking-wider border-b"
+                       style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-sub, #555D58);">
                     <tr>
-                        <th class="px-6 py-4">Menu</th>
-                        <th class="px-6 py-4">Kategori</th>
-                        <th class="px-6 py-4">Harga</th>
-                        <th class="px-6 py-4">Stok (Kasir &amp; DB)</th>
-                        <th class="px-6 py-4">Ketersediaan</th>
-                        <th class="px-6 py-4 text-right">Aksi</th>
+                        <th class="px-5 py-3.5">Menu</th>
+                        <th class="px-4 py-3.5">Kategori</th>
+                        <th class="px-4 py-3.5">
+                            <div class="flex items-center gap-1.5">
+                                <span>Harga</span>
+                                <div class="flex flex-col text-[8px] leading-tight">
+                                    <a href="{{ route('admin.menus.index', array_merge(request()->query(), ['sort' => 'price_asc'])) }}"
+                                       class="hover:text-black {{ $sortBy === 'price_asc' ? 'text-emerald-700 font-bold' : '' }}" title="Harga Termurah">▲</a>
+                                    <a href="{{ route('admin.menus.index', array_merge(request()->query(), ['sort' => 'price_desc'])) }}"
+                                       class="hover:text-black {{ $sortBy === 'price_desc' ? 'text-emerald-700 font-bold' : '' }}" title="Harga Termahal">▼</a>
+                                </div>
+                            </div>
+                        </th>
+                        <th class="px-4 py-3.5 text-center">Andalan</th>
+                        <th class="px-5 py-3.5 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-hairline">
+                <tbody class="divide-y" style="border-color: var(--admin-border-card, #E6E8E4);">
                     @forelse($menus as $menu)
                         @php
-                            $tableImg = null;
-                            if ($menu->image && file_exists(public_path('storage/' . $menu->image))) {
-                                $tableImg = asset('storage/' . $menu->image);
-                            } elseif ($menu->image && (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://'))) {
-                                $tableImg = $menu->image;
-                            }
-                            $rowStock = $menu->stock !== null ? (int) $menu->stock : ($menu->is_available ? 25 : 0);
-                            if (!$menu->is_available) {
-                                $rowStock = 0;
-                            }
+                            $hasImage = !empty($menu->image);
+                            $imageUrl = $menu->image_url;
                         @endphp
-                        <tr class="hover:bg-warm-stone/30 transition-colors menu-table-row" data-menu-name="{{ strtolower($menu->name) }}">
-                            <td class="px-6 py-3.5">
-                                <div class="flex items-center space-x-3.5">
-                                    <div class="w-10 h-10 rounded-xl bg-warm-stone border border-hairline overflow-hidden shrink-0 shadow-2xs">
-                                        @if($tableImg)
-                                            <img src="{{ $tableImg }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
+                        <tr class="menu-list-row hover:bg-[#FAFBF9] transition"
+                            data-menu-name="{{ strtolower($menu->name) }}"
+                            data-menu-category="{{ strtolower($menu->category->name ?? '') }}">
+                            
+                            {{-- Kolom Foto & Nama --}}
+                            <td class="px-5 py-3.5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-xl border bg-[#F7F8F6] overflow-hidden shrink-0"
+                                         style="border-color: var(--admin-border-card, #E6E8E4);">
+                                        @if($hasImage)
+                                            <img src="{{ $imageUrl }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-muted-text">
-                                                <i class="fa-solid fa-mug-hot text-xs"></i>
+                                            <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                                <i class="fa-solid fa-utensils text-xs" aria-hidden="true"></i>
                                             </div>
                                         @endif
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="font-bold text-ink-black text-xs block truncate">{{ $menu->name }}</span>
-                                            @if($menu->is_best_seller)
-                                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200 font-bold">★ Best</span>
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ route('admin.menus.edit', $menu->id) }}"
+                                               class="font-bold text-[13.5px] hover:underline truncate"
+                                               style="color: var(--admin-text-main, #1B1F1D);">
+                                                {{ $menu->name }}
+                                            </a>
+                                            @if($menu->trashed())
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-stone-900 text-white shrink-0">
+                                                    Terarsip
+                                                </span>
                                             @endif
                                         </div>
-                                        <p class="text-[10px] text-muted-text truncate max-w-xs">{{ $menu->description ?: 'Nucomu Cafe' }}</p>
+                                        <p class="text-[11.5px] truncate max-w-xs m-0 mt-0.5" style="color: var(--admin-text-sub, #555D58);">
+                                            {{ $menu->description ?: 'Nucomu Cafe' }}
+                                        </p>
                                     </div>
                                 </div>
                             </td>
 
-                            <td class="px-6 py-3.5">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-warm-stone text-charcoal border border-hairline uppercase font-mono">
+                            {{-- Kategori --}}
+                            <td class="px-4 py-3.5">
+                                <span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border bg-white"
+                                      style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
                                     {{ $menu->category->name ?? 'Menu' }}
                                 </span>
                             </td>
 
-                            <td class="px-6 py-3.5 font-mono font-bold text-ink-black text-xs">
+                            {{-- Harga --}}
+                            <td class="px-4 py-3.5 font-bold tabular-nums text-[13.5px]" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
                                 Rp {{ number_format($menu->price, 0, ',', '.') }}
                             </td>
 
-                            <td class="px-6 py-3.5">
-                                <div class="inline-flex items-center gap-1 bg-warm-ivory border border-hairline rounded-xl p-1">
-                                    <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: -1 })"
-                                            class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
-                                        -
-                                    </button>
-                                    <input type="number" id="adminTableStockInput-{{ $menu->id }}" value="{{ $rowStock }}" min="0" max="9999"
-                                           onchange="adjustAdminMenuStock({{ $menu->id }}, { stock: parseInt(this.value || '0', 10) })"
-                                           class="w-12 text-center bg-white border border-hairline rounded-lg py-0.5 text-[11px] font-mono font-bold text-ink-black focus:outline-none focus:border-ink-black">
-                                    <button type="button" onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: 1 })"
-                                            class="w-6 h-6 rounded-lg bg-white hover:bg-ink-black hover:text-white border border-hairline text-ink-black font-bold text-xs flex items-center justify-center transition">
-                                        +
-                                    </button>
-                                </div>
+                            {{-- Menu Andalan (Bintang) --}}
+                            <td class="px-4 py-3.5 text-center">
+                                <button type="button"
+                                        onclick="toggleFeaturedAjax({{ $menu->id }}, this)"
+                                        class="w-7 h-7 rounded-lg border inline-flex items-center justify-center transition hover:bg-amber-50 cursor-pointer btn-press"
+                                        style="border-color: var(--admin-border-card, #E6E8E4);"
+                                        title="{{ $menu->is_featured || $menu->is_best_seller ? 'Menu andalan' : 'Bukan andalan' }}">
+                                    <i class="fa-solid fa-star text-xs star-icon {{ $menu->is_featured || $menu->is_best_seller ? 'text-amber-500' : 'text-gray-300' }}" aria-hidden="true"></i>
+                                </button>
                             </td>
 
-                            <td class="px-6 py-3.5">
-                                <form action="{{ route('admin.menus.toggleAvailable', $menu->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" id="adminTableStatusBtn-{{ $menu->id }}" class="px-2.5 py-1 rounded-full text-[10px] font-bold border transition btn-press {{ $menu->is_available && $rowStock > 0 ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' }}">
-                                        {{ $menu->is_available && $rowStock > 0 ? '● Tersedia' : '○ Habis' }}
-                                    </button>
-                                </form>
-                            </td>
-
-                            <td class="px-6 py-3.5 text-right">
+                            {{-- Tombol Aksi --}}
+                            <td class="px-5 py-3.5 text-right">
                                 <div class="inline-flex items-center gap-1.5">
-                                    <a href="{{ route('admin.menus.edit', $menu->id) }}" class="p-1.5 rounded-lg bg-warm-stone hover:bg-ink-black hover:text-white text-ink-black transition btn-press" title="Edit Menu">
-                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
-                                    </a>
-                                    <form action="{{ route('admin.menus.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Hapus menu {{ $menu->name }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg bg-warm-stone hover:bg-rose-50 text-muted-text hover:text-rose-700 transition btn-press" title="Hapus Menu">
-                                            <i class="fa-solid fa-trash-can text-xs"></i>
+                                    @if($menu->trashed())
+                                        <form action="{{ route('admin.menus.restore', $menu->id) }}" method="POST" class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition shadow-2xs btn-press inline-flex items-center gap-1"
+                                                    title="Pulihkan menu ke katalog">
+                                                <i class="fa-solid fa-rotate-left text-[11px]" aria-hidden="true"></i>
+                                                <span>Pulihkan</span>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('admin.menus.edit', $menu->id) }}"
+                                           class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition shadow-2xs btn-press"
+                                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
+                                           title="Edit sajian">
+                                            Edit
+                                        </a>
+                                        <button type="button"
+                                                onclick="confirmDeleteMenu({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->order_items_count ?? 0 }})"
+                                                class="px-2 py-1 rounded-lg text-xs font-semibold hover:bg-rose-50 text-rose-700 transition cursor-pointer btn-press"
+                                                title="Hapus sajian">
+                                            Hapus
                                         </button>
-                                    </form>
+                                    @endif
                                 </div>
                             </td>
+
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-muted-text">
-                                Belum ada menu yang terdaftar.
+                            <td colspan="5" class="px-6 py-12 text-center" style="color: var(--admin-text-sub, #555D58);">
+                                Tidak ada menu yang terdaftar.
                             </td>
                         </tr>
                     @endforelse
@@ -604,101 +601,426 @@
         </div>
     </div>
 
-    {{-- Pagination Bar --}}
-    @if($menus->hasPages())
-        <div class="p-4 bg-pure-white border border-hairline rounded-2xl shadow-card flex items-center justify-center">
-            {{ $menus->links() }}
+    {{-- =========================================================================
+         PAGINATION BAHASA INDONESIA & PEMILIH JUMLAH PER HALAMAN
+         ========================================================================= --}}
+    @if($menus->total() > 0)
+        <div class="p-4 bg-white border rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs shadow-xs"
+             style="border-color: var(--admin-border-card, #E6E8E4);">
+            
+            {{-- Info Halaman Bahasa Indonesia --}}
+            <div class="text-[12.5px] font-medium" style="color: var(--admin-text-sub, #555D58);">
+                Menampilkan <span class="font-bold" style="color: var(--admin-text-main, #1B1F1D);">{{ $menus->firstItem() ?? 0 }}</span>
+                sampai <span class="font-bold" style="color: var(--admin-text-main, #1B1F1D);">{{ $menus->lastItem() ?? 0 }}</span>
+                dari <span class="font-bold" style="color: var(--admin-text-main, #1B1F1D);">{{ $menus->total() }}</span> menu
+            </div>
+
+            {{-- Pemilih Per Halaman & Tombol Navigasi --}}
+            <div class="flex items-center gap-3">
+                {{-- Opsi Per Halaman --}}
+                <div class="flex items-center gap-1.5 text-xs">
+                    <span style="color: var(--admin-text-sub, #555D58);">Tampilkan:</span>
+                    @foreach([12, 24, 48] as $size)
+                        <a href="{{ route('admin.menus.index', array_merge(request()->query(), ['per_page' => $size, 'page' => 1])) }}"
+                           class="px-2 py-1 rounded-lg font-semibold border transition text-[11.5px] {{ $perPage == $size ? 'bg-[#2F6B4F] text-white border-[#2F6B4F]' : 'bg-white hover:bg-gray-100 text-[#1B1F1D]' }}"
+                           style="{{ $perPage != $size ? 'border-color: var(--admin-border-card, #E6E8E4);' : '' }}">
+                            {{ $size }}
+                        </a>
+                    @endforeach
+                </div>
+
+                {{-- Tombol Previous & Next --}}
+                <div class="flex items-center gap-1">
+                    @if($menus->onFirstPage())
+                        <span class="px-2.5 py-1 rounded-lg border bg-gray-50 text-gray-300 text-xs cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </span>
+                    @else
+                        <a href="{{ $menus->previousPageUrl() }}"
+                           class="px-2.5 py-1 rounded-lg border bg-white hover:bg-[#F0F4F1] text-xs font-semibold transition"
+                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </a>
+                    @endif
+
+                    <span class="px-2 text-xs font-bold" style="color: var(--admin-text-main, #1B1F1D);">
+                        {{ $menus->currentPage() }} / {{ $menus->lastPage() }}
+                    </span>
+
+                    @if($menus->hasMorePages())
+                        <a href="{{ $menus->nextPageUrl() }}"
+                           class="px-2.5 py-1 rounded-lg border bg-white hover:bg-[#F0F4F1] text-xs font-semibold transition"
+                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </a>
+                    @else
+                        <span class="px-2.5 py-1 rounded-lg border bg-gray-50 text-gray-300 text-xs cursor-not-allowed">
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </span>
+                    @endif
+                </div>
+            </div>
+
         </div>
     @endif
 
 </div>
 
+{{-- =========================================================================
+     MODAL DIALOG PENGAMAN HAPUS MENU (Aman dari Masalah Foreign Key Riwayat Pesanan)
+     ========================================================================= --}}
+<div id="modalDeleteMenu" class="hidden fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border shadow-2xl w-full max-w-md p-6 sm:p-7 space-y-4 anim-fade-up"
+         style="border-color: var(--admin-border-card, #E6E8E4);">
+        
+        <div class="flex items-start gap-3">
+            <div id="deleteModalIcon" class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-rose-50 text-rose-600">
+                <i class="fa-solid fa-trash-can text-sm" aria-hidden="true"></i>
+            </div>
+            <div>
+                <h3 id="deleteModalTitle" class="text-[15px] font-bold leading-snug" style="color: var(--admin-text-main, #1B1F1D);">
+                    Hapus Menu
+                </h3>
+                <p id="deleteModalDesc" class="text-[12.5px] leading-relaxed mt-1" style="color: var(--admin-text-sub, #555D58);">
+                    Konfirmasi tindakan untuk menu ini.
+                </p>
+            </div>
+        </div>
+
+        {{-- Opsi Aksi Hapus / Arsipkan / Tandai Habis --}}
+        <div id="deleteModalActions" class="pt-2 flex flex-col gap-2">
+            {{-- Tombol-tombol diinjeksi via JavaScript sesuai apakah menu punya pesanan --}}
+        </div>
+
+        <div class="pt-2 border-t flex justify-end" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <button type="button"
+                    onclick="closeDeleteMenuModal()"
+                    class="px-4 py-2 rounded-xl text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition"
+                    style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                Batal
+            </button>
+        </div>
+
+    </div>
+</div>
+
+{{-- Form Hapus Tersembunyi --}}
+<form id="formDeleteMenuHidden" method="POST" action="" class="hidden">
+    @csrf
+    @method('DELETE')
+    <input type="hidden" name="force" id="inputDeleteForce" value="0">
+    <input type="hidden" name="action" id="inputDeleteAction" value="">
+</form>
+
+{{-- =========================================================================
+     LACI (DRAWER) KELOLA KATEGORI MENU (Slide-in Drawer Sisi Kanan)
+     ========================================================================= --}}
+<div id="categoryDrawerOverlay"
+     class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity duration-300"
+     onclick="closeCategoryDrawer()">
+</div>
+
+<div id="categoryDrawer"
+     class="fixed top-0 right-0 z-50 h-full w-full max-w-lg bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+    
+    {{-- Header Drawer --}}
+    <div class="p-5 sm:p-6 border-b flex items-center justify-between" style="border-color: var(--admin-border-card, #E6E8E4);">
+        <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                 style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">
+                <i class="fa-solid fa-tags text-xs" aria-hidden="true"></i>
+            </div>
+            <div>
+                <h3 class="text-[15px] font-bold leading-snug" style="color: var(--admin-text-main, #1B1F1D); font-family: var(--font-heading);">
+                    Kelola Kategori Menu
+                </h3>
+                <p class="text-[11.5px] m-0" style="color: var(--admin-text-sub, #555D58);">
+                    Atur kelompok sajian dan urutan tab filter di katalog web.
+                </p>
+            </div>
+        </div>
+        <button type="button"
+                onclick="closeCategoryDrawer()"
+                class="w-8 h-8 rounded-xl flex items-center justify-center hover:bg-[#F0F4F1] transition text-[#555D58] hover:text-[#1B1F1D]">
+            <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    {{-- Body Drawer: Form Tambah & Daftar Kategori --}}
+    <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+        
+        {{-- 1. Form Tambah Kategori Cepat (Paling Atas, TANPA Double Plus) --}}
+        <div class="p-4 rounded-2xl border bg-[#F7F8F6] space-y-3" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <div class="font-bold text-xs flex items-center gap-1.5" style="color: var(--admin-text-main, #1B1F1D);">
+                <i class="fa-solid fa-plus text-[10px]" style="color: var(--admin-btn-primary-bg, #2F6B4F);" aria-hidden="true"></i>
+                <span>Tambah Kategori Baru</span>
+            </div>
+            <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-2.5">
+                @csrf
+                <div>
+                    <input type="text"
+                           name="name"
+                           required
+                           placeholder="Nama kategori (misal: Mocktail, Pastry, Artisan Tea)"
+                           class="w-full bg-white border rounded-xl px-3.5 py-2 text-xs font-medium transition focus:outline-none focus:border-[#2F6B4F]"
+                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                </div>
+                <div class="flex items-center justify-end">
+                    <button type="submit"
+                            class="px-4 py-2 rounded-xl text-xs font-semibold text-white transition shadow-xs cursor-pointer btn-press"
+                            style="background-color: var(--admin-btn-primary-bg, #2F6B4F);">
+                        <i class="fa-solid fa-plus text-[10px] mr-1" aria-hidden="true"></i>
+                        <span>Tambah Kategori</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {{-- 2. Daftar Kategori yang Ada --}}
+        <div class="space-y-2">
+            <div class="flex items-center justify-between text-xs font-bold px-1" style="color: var(--admin-text-sub, #555D58);">
+                <span>Daftar Kategori ({{ $categories->count() }})</span>
+                <span class="text-[11px] font-normal">Gunakan panah untuk ubah urutan</span>
+            </div>
+
+            <div id="categoryDrawerList" class="space-y-2">
+                @foreach($categories as $index => $cat)
+                    <div class="category-item-row p-3 rounded-xl border bg-white flex items-center justify-between gap-3 shadow-2xs hover:border-[#2F6B4F] transition"
+                         style="border-color: var(--admin-border-card, #E6E8E4);"
+                         data-cat-id="{{ $cat->id }}"
+                         data-cat-name="{{ $cat->name }}"
+                         data-cat-count="{{ $cat->menus_count ?? 0 }}">
+                        
+                        {{-- Kiri: Urutan & Nama Kategori --}}
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            {{-- Tombol Panah Atas & Bawah --}}
+                            <div class="flex flex-col gap-0.5 shrink-0">
+                                <button type="button"
+                                        onclick="moveCategoryOrder({{ $cat->id }}, 'up')"
+                                        class="w-5 h-4 rounded flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:text-black {{ $index === 0 ? 'opacity-30 cursor-not-allowed' : '' }}"
+                                        title="Pindah ke atas">
+                                    <i class="fa-solid fa-chevron-up text-[9px]" aria-hidden="true"></i>
+                                </button>
+                                <button type="button"
+                                        onclick="moveCategoryOrder({{ $cat->id }}, 'down')"
+                                        class="w-5 h-4 rounded flex items-center justify-center hover:bg-gray-100 text-gray-500 hover:text-black {{ $index === count($categories) - 1 ? 'opacity-30 cursor-not-allowed' : '' }}"
+                                        title="Pindah ke bawah">
+                                    <i class="fa-solid fa-chevron-down text-[9px]" aria-hidden="true"></i>
+                                </button>
+                            </div>
+
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-bold text-[13px] truncate" style="color: var(--admin-text-main, #1B1F1D);">
+                                        {{ $cat->name }}
+                                    </span>
+                                    @if(!$cat->is_active)
+                                        <span class="px-1.5 py-0.2 rounded text-[9.5px] font-semibold bg-gray-100 text-gray-600">
+                                            Disembunyikan
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="text-[11.5px] text-gray-500 flex items-center gap-1.5 mt-0.5">
+                                    <span>{{ $cat->menus_count ?? 0 }} menu</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Kanan: Aksi (Toggle Aktif, Edit Nama, Hapus) --}}
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            {{-- Toggle Aktif --}}
+                            <form action="{{ route('admin.categories.toggle', $cat->id) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit"
+                                        class="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-gray-50 text-gray-600 transition"
+                                        style="border-color: var(--admin-border-card, #E6E8E4);"
+                                        title="{{ $cat->is_active ? 'Tampil di website (klik untuk sembunyikan)' : 'Disembunyikan (klik untuk tampilkan)' }}">
+                                    <i class="fa-solid {{ $cat->is_active ? 'fa-eye text-emerald-700' : 'fa-eye-slash text-gray-400' }} text-xs" aria-hidden="true"></i>
+                                </button>
+                            </form>
+
+                            {{-- Edit Nama Modal / Inline --}}
+                            <button type="button"
+                                    onclick="editCategoryNameModal({{ $cat->id }}, '{{ addslashes($cat->name) }}')"
+                                    class="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-gray-50 text-gray-700 transition"
+                                    style="border-color: var(--admin-border-card, #E6E8E4);"
+                                    title="Ubah nama kategori">
+                                <i class="fa-solid fa-pen text-[10px]" aria-hidden="true"></i>
+                            </button>
+
+                            {{-- Hapus Kategori: Peringatan Jika Masih Memuat Menu --}}
+                            @if(($cat->menus_count ?? 0) > 0)
+                                <button type="button"
+                                        onclick="showCategoryCannotDeleteNotice('{{ addslashes($cat->name) }}', {{ $cat->menus_count }}, {{ $cat->id }})"
+                                        class="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-amber-50 text-amber-700 transition"
+                                        style="border-color: var(--admin-border-card, #E6E8E4);"
+                                        title="Kategori ini berisi menu (tidak dapat dihapus)">
+                                    <i class="fa-solid fa-lock text-[10px]" aria-hidden="true"></i>
+                                </button>
+                            @else
+                                <form action="{{ route('admin.categories.destroy', $cat->id) }}" method="POST"
+                                      onsubmit="return confirm('Hapus kategori {{ addslashes($cat->name) }}?')" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-rose-50 text-rose-700 transition"
+                                            style="border-color: var(--admin-border-card, #E6E8E4);"
+                                            title="Hapus kategori kosong">
+                                        <i class="fa-solid fa-trash-can text-[10px]" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+    </div>
+
+    {{-- Footer Drawer --}}
+    <div class="p-4 border-t bg-[#FAFBF9] flex items-center justify-between text-xs" style="border-color: var(--admin-border-card, #E6E8E4);">
+        <span style="color: var(--admin-text-sub, #555D58);">
+            Perubahan kategori otomatis langsung aktif di katalog website.
+        </span>
+        <button type="button"
+                onclick="closeCategoryDrawer()"
+                class="px-4 py-2 rounded-xl text-xs font-semibold border bg-white hover:bg-gray-50 transition"
+                style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+            Tutup
+        </button>
+    </div>
+
+</div>
+
+{{-- Modal Ubah Nama Kategori --}}
+<div id="modalEditCategory" class="hidden fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border shadow-2xl w-full max-w-sm p-6 space-y-4 anim-fade-up"
+         style="border-color: var(--admin-border-card, #E6E8E4);">
+        <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <h3 class="text-sm font-bold" style="color: var(--admin-text-main, #1B1F1D);">Ubah Nama Kategori</h3>
+            <button type="button" onclick="closeEditCategoryModal()" class="text-gray-400 hover:text-gray-700">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+        <form id="formEditCategory" method="POST" action="" class="space-y-4">
+            @csrf
+            @method('PUT')
+            <div>
+                <label for="edit_cat_name" class="block text-xs font-semibold mb-1" style="color: var(--admin-text-main, #1B1F1D);">
+                    Nama Kategori Baru
+                </label>
+                <input type="text"
+                       name="name"
+                       id="edit_cat_name"
+                       required
+                       class="w-full bg-[#F7F8F6] border rounded-xl px-3.5 py-2 text-xs font-semibold focus:outline-none focus:bg-white focus:border-[#2F6B4F]"
+                       style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2 border-t" style="border-color: var(--admin-border-card, #E6E8E4);">
+                <button type="button" onclick="closeEditCategoryModal()"
+                        class="px-3.5 py-1.5 rounded-xl text-xs font-semibold border bg-white hover:bg-gray-50 transition"
+                        style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                    Batal
+                </button>
+                <button type="submit"
+                        class="px-4 py-1.5 rounded-xl text-xs font-semibold text-white transition shadow-xs btn-press"
+                        style="background-color: var(--admin-btn-primary-bg, #2F6B4F);">
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Modal Dialog Penjelasan: Kategori Tidak Dapat Dihapus Karena Memuat Menu --}}
+<div id="modalCategoryCannotDelete" class="hidden fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border shadow-2xl w-full max-w-md p-6 space-y-4 anim-fade-up"
+         style="border-color: var(--admin-border-card, #E6E8E4);">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-amber-50 text-amber-700">
+                <i class="fa-solid fa-lock text-base" aria-hidden="true"></i>
+            </div>
+            <div>
+                <h3 class="text-[15px] font-bold" style="color: var(--admin-text-main, #1B1F1D);">
+                    Kategori Tidak Dapat Dihapus
+                </h3>
+                <p id="categoryCannotDeleteText" class="text-[12.5px] leading-relaxed mt-1" style="color: var(--admin-text-sub, #555D58);">
+                    Kategori ini masih berisi menu.
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-3 border-t flex items-center justify-between" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <a id="btnFilterCategoryMenus"
+               href="#"
+               class="text-xs font-bold text-emerald-800 hover:underline flex items-center gap-1.5">
+                <span>Lihat menu kategori ini</span>
+                <i class="fa-solid fa-arrow-right text-[10px]" aria-hidden="true"></i>
+            </a>
+            <button type="button"
+                    onclick="document.getElementById('modalCategoryCannotDelete').classList.add('hidden')"
+                    class="px-4 py-2 rounded-xl text-xs font-semibold border bg-white hover:bg-gray-50 transition"
+                    style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                Mengerti
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- =========================================================================
+     JAVASCRIPT INTERAKTIF (DRAWER, AJAX SWITCH, VIEW SWITCHER & MODAL SAFETY)
+     ========================================================================= --}}
 <script>
-    // 1. Toggle Quick Menu Add Drawer
-    function toggleMenuDrawer() {
-        const drawer = document.getElementById('quickMenuDrawer');
-        const icon = document.getElementById('iconToggleMenu');
-        const text = document.getElementById('textToggleMenu');
-        if (!drawer) return;
+    // 1. View Switcher: Kartu | Daftar (Persisted in localStorage)
+    function switchMenuView(viewMode) {
+        const cardContainer = document.getElementById('menuCardContainer');
+        const listContainer = document.getElementById('menuListContainer');
+        const btnCard = document.getElementById('btnViewCard');
+        const btnList = document.getElementById('btnViewList');
 
-        const isHidden = drawer.classList.contains('hidden');
-        if (isHidden) {
-            drawer.classList.remove('hidden');
-            if (icon) icon.className = 'fa-solid fa-xmark text-xs';
-            if (text) text.textContent = 'Tutup Formulir';
-            drawer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (viewMode === 'list') {
+            if (cardContainer) cardContainer.classList.add('hidden');
+            if (listContainer) listContainer.classList.remove('hidden');
+
+            btnList.classList.add('bg-white', 'shadow-xs', 'font-bold');
+            btnList.style.color = 'var(--admin-text-main, #1B1F1D)';
+            btnCard.classList.remove('bg-white', 'shadow-xs', 'font-bold');
+            btnCard.style.color = 'var(--admin-text-sub, #555D58)';
+
+            localStorage.setItem('nucomu_admin_menu_view', 'list');
         } else {
-            drawer.classList.add('hidden');
-            if (icon) icon.className = 'fa-solid fa-plus text-xs';
-            if (text) text.textContent = 'Tambah Menu Cepat';
+            if (cardContainer) cardContainer.classList.remove('hidden');
+            if (listContainer) listContainer.classList.add('hidden');
+
+            btnCard.classList.add('bg-white', 'shadow-xs', 'font-bold');
+            btnCard.style.color = 'var(--admin-text-main, #1B1F1D)';
+            btnList.classList.remove('bg-white', 'shadow-xs', 'font-bold');
+            btnList.style.color = 'var(--admin-text-sub, #555D58)';
+
+            localStorage.setItem('nucomu_admin_menu_view', 'card');
         }
     }
 
-    // 2. Instant Image Preview for Quick Add
-    function previewQuickMenuImage(e) {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const preview = document.getElementById('quickMenuPreviewImg');
-            const overlay = document.getElementById('quickMenuPreviewOverlay');
-            const placeholder = document.getElementById('quickMenuPlaceholder');
-
-            if (preview) {
-                preview.src = evt.target.result;
-                preview.classList.remove('hidden');
-            }
-            if (overlay) overlay.classList.remove('hidden');
-            if (placeholder) placeholder.classList.add('hidden');
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // 3. Quick Price Preset Setter
-    function setQuickPrice(amount) {
-        const input = document.getElementById('quick_price');
-        if (input) input.value = amount;
-    }
-
-    // 4. View Switcher: Grid vs Table
-    function switchMenuView(mode) {
-        const gridView = document.getElementById('menuGridView');
-        const tableView = document.getElementById('menuTableView');
-        const btnGrid = document.getElementById('btnViewMenuGrid');
-        const btnTable = document.getElementById('btnViewMenuTable');
-
-        if (mode === 'grid') {
-            if (gridView) gridView.classList.remove('hidden');
-            if (tableView) tableView.classList.add('hidden');
-
-            btnGrid.classList.add('bg-pure-white', 'text-ink-black', 'shadow-xs');
-            btnGrid.classList.remove('text-muted-text');
-            btnTable.classList.remove('bg-pure-white', 'text-ink-black', 'shadow-xs');
-            btnTable.classList.add('text-muted-text');
-            localStorage.setItem('nucomu_admin_menu_view', 'grid');
-        } else {
-            if (gridView) gridView.classList.add('hidden');
-            if (tableView) tableView.classList.remove('hidden');
-
-            btnTable.classList.add('bg-pure-white', 'text-ink-black', 'shadow-xs');
-            btnTable.classList.remove('text-muted-text');
-            btnGrid.classList.remove('bg-pure-white', 'text-ink-black', 'shadow-xs');
-            btnGrid.classList.add('text-muted-text');
-            localStorage.setItem('nucomu_admin_menu_view', 'table');
+    // Restore view preference
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedView = localStorage.getItem('nucomu_admin_menu_view');
+        if (savedView === 'list') {
+            switchMenuView('list');
         }
-    }
+    });
 
-    // 5. Client-Side Instant Live Search Filter
-    function filterMenuItemsClient(searchTerm) {
-        const query = searchTerm.toLowerCase().trim();
-        const cards = document.querySelectorAll('.menu-item-card');
-        const rows = document.querySelectorAll('.menu-table-row');
+    // 2. Client-side Filter Search
+    function filterMenuItemsClient(query) {
+        const term = query.toLowerCase().trim();
+        const cards = document.querySelectorAll('.menu-card-item');
+        const rows = document.querySelectorAll('.menu-list-row');
 
         cards.forEach(card => {
             const name = card.getAttribute('data-menu-name') || '';
             const cat = card.getAttribute('data-menu-category') || '';
-            if (!query || name.includes(query) || cat.includes(query)) {
+            if (!term || name.includes(term) || cat.includes(term)) {
                 card.style.display = 'flex';
             } else {
                 card.style.display = 'none';
@@ -707,7 +1029,8 @@
 
         rows.forEach(row => {
             const name = row.getAttribute('data-menu-name') || '';
-            if (!query || name.includes(query)) {
+            const cat = row.getAttribute('data-menu-category') || '';
+            if (!term || name.includes(term) || cat.includes(term)) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
@@ -767,12 +1090,201 @@
         }
     }
 
-    // Restore saved view preference
-    document.addEventListener('DOMContentLoaded', function() {
-        const savedView = localStorage.getItem('nucomu_admin_menu_view');
-        if (savedView === 'table') {
-            switchMenuView('table');
+    // 3. Quick AJAX Featured Toggle (Menu Andalan Beranda)
+    async function toggleFeaturedAjax(menuId, buttonEl) {
+        const icon = buttonEl.querySelector('.star-icon');
+        const isCurrentlyActive = icon && icon.classList.contains('text-amber-500');
+
+        if (icon) {
+            if (isCurrentlyActive) {
+                icon.classList.remove('text-amber-500');
+                icon.classList.add('text-gray-300');
+            } else {
+                icon.classList.add('text-amber-500');
+                icon.classList.remove('text-gray-300');
+            }
         }
-    });
+        }
+
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const res = await fetch(`/admin/menu/${menuId}/toggle-featured`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token
+                }
+            });
+            if (!res.ok) {
+                // Revert
+                if (icon) {
+                    if (isCurrentlyActive) {
+                        icon.classList.add('text-amber-500');
+                        icon.classList.remove('text-gray-300');
+                    } else {
+                        icon.classList.remove('text-amber-500');
+                        icon.classList.add('text-gray-300');
+                    }
+                }
+            }
+        } catch (e) {
+            if (icon) {
+                if (isCurrentlyActive) {
+                    icon.classList.add('text-amber-500');
+                    icon.classList.remove('text-gray-300');
+                } else {
+                    icon.classList.remove('text-amber-500');
+                    icon.classList.add('text-gray-300');
+                }
+            }
+        }
+    }
+
+    // 4. Delete Menu Safety Dialog
+    function confirmDeleteMenu(menuId, menuName, orderCount) {
+        const modal = document.getElementById('modalDeleteMenu');
+        const title = document.getElementById('deleteModalTitle');
+        const desc = document.getElementById('deleteModalDesc');
+        const actionsContainer = document.getElementById('deleteModalActions');
+        const formHidden = document.getElementById('formDeleteMenuHidden');
+        const inputForce = document.getElementById('inputDeleteForce');
+        const inputAction = document.getElementById('inputDeleteAction');
+
+        formHidden.action = `/admin/menu/${menuId}`;
+
+        if (orderCount > 0) {
+            title.textContent = 'Menu Memiliki Riwayat Pesanan';
+            desc.innerHTML = `Menu <strong>"${menuName}"</strong> sudah pernah dipesan pelanggan (<strong>${orderCount} transaksi</strong>). Agar riwayat transaksi pelanggan dan pembukuan kafe tetap rapi dan akurat, menu ini tidak dapat dihapus permanen. Menu dapat diarsipkan (disembunyikan dari katalog website):`;
+
+            actionsContainer.innerHTML = `
+                <button type="button" onclick="submitDeleteMenuAction('archive')"
+                        class="w-full px-4 py-2.5 rounded-xl text-xs font-semibold bg-[#2F6B4F] hover:bg-[#25553E] text-white transition flex items-center justify-center gap-2 cursor-pointer btn-press">
+                    <i class="fa-solid fa-box-archive text-xs"></i>
+                    <span>Sembunyikan dari Website (Arsipkan)</span>
+                </button>
+            `;
+        } else {
+            title.textContent = `Hapus Menu "${menuName}"?`;
+            desc.innerHTML = `Menu ini belum pernah dipesan oleh pelanggan. Anda dapat menghapusnya secara permanen dari sistem. Tindakan ini tidak dapat dibatalkan.`;
+
+            actionsContainer.innerHTML = `
+                <button type="button" onclick="submitDeleteMenuAction('force_delete')"
+                        class="w-full px-4 py-2.5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition flex items-center justify-center gap-2 cursor-pointer btn-press">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
+                    <span>Hapus Menu Permanen</span>
+                </button>
+            `;
+        }
+
+        modal.classList.remove('hidden');
+    }
+
+    function submitDeleteMenuAction(actionType) {
+        const formHidden = document.getElementById('formDeleteMenuHidden');
+        const inputForce = document.getElementById('inputDeleteForce');
+        const inputAction = document.getElementById('inputDeleteAction');
+
+        if (actionType === 'archive') {
+            inputForce.value = '0';
+            inputAction.value = 'archive';
+        } else if (actionType === 'force_delete') {
+            inputForce.value = '1';
+            inputAction.value = '';
+        }
+
+        formHidden.submit();
+    }
+
+    function closeDeleteMenuModal() {
+        document.getElementById('modalDeleteMenu').classList.add('hidden');
+    }
+
+    // 6. Category Drawer Controls
+    function openCategoryDrawer() {
+        const drawer = document.getElementById('categoryDrawer');
+        const overlay = document.getElementById('categoryDrawerOverlay');
+        if (overlay) overlay.classList.remove('hidden');
+        if (drawer) {
+            drawer.classList.remove('translate-x-full');
+        }
+    }
+
+    function closeCategoryDrawer() {
+        const drawer = document.getElementById('categoryDrawer');
+        const overlay = document.getElementById('categoryDrawerOverlay');
+        if (drawer) {
+            drawer.classList.add('translate-x-full');
+        }
+        if (overlay) overlay.classList.add('hidden');
+    }
+
+    // 8. Reorder Category via Arrow Buttons
+    async function moveCategoryOrder(categoryId, direction) {
+        const rows = Array.from(document.querySelectorAll('.category-item-row'));
+        const currentIndex = rows.findIndex(r => r.getAttribute('data-cat-id') == categoryId);
+        if (currentIndex === -1) return;
+
+        const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+        if (targetIndex < 0 || targetIndex >= rows.length) return;
+
+        // Swap in DOM
+        const currentEl = rows[currentIndex];
+        const targetEl = rows[targetIndex];
+        const list = document.getElementById('categoryDrawerList');
+
+        if (direction === 'up') {
+            list.insertBefore(currentEl, targetEl);
+        } else {
+            list.insertBefore(targetEl, currentEl);
+        }
+
+        // Collect new order IDs
+        const newOrder = Array.from(document.querySelectorAll('.category-item-row'))
+            .map(r => parseInt(r.getAttribute('data-cat-id')));
+
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            await fetch("{{ route('admin.categories.reorder') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({ order: newOrder })
+            });
+        } catch (e) {
+            console.error('Gagal menyimpan urutan:', e);
+        }
+    }
+
+    // 9. Edit Category Name Modal
+    function editCategoryNameModal(catId, catName) {
+        const modal = document.getElementById('modalEditCategory');
+        const input = document.getElementById('edit_cat_name');
+        const form = document.getElementById('formEditCategory');
+
+        form.action = `/admin/kategori/${catId}`;
+        input.value = catName;
+        modal.classList.remove('hidden');
+        input.focus();
+    }
+
+    function closeEditCategoryModal() {
+        document.getElementById('modalEditCategory').classList.add('hidden');
+    }
+
+    // 10. Cannot Delete Category Notice
+    function showCategoryCannotDeleteNotice(catName, menuCount, catId) {
+        const modal = document.getElementById('modalCategoryCannotDelete');
+        const text = document.getElementById('categoryCannotDeleteText');
+        const btnFilter = document.getElementById('btnFilterCategoryMenus');
+
+        text.innerHTML = `Kategori <strong>"${catName}"</strong> masih memuat <strong>${menuCount} menu</strong>. Demi keamanan katalog, silakan pindahkan atau hapus menu-menunya terlebih dahulu sebelum menghapus kategori ini.`;
+        btnFilter.href = `{{ route('admin.menus.index') }}?category=${catId}`;
+
+        modal.classList.remove('hidden');
+    }
 </script>
 @endsection

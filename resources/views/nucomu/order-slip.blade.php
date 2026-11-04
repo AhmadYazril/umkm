@@ -192,7 +192,13 @@
                         <span class="font-mono font-semibold">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex items-center justify-between text-xs text-emerald-400 pb-2 border-b border-white/10">
-                        <span>Ongkir Kurir Zendo @if(!empty($distanceKm))({{ number_format((float) $distanceKm, 1, ',', '.') }} km)@endif</span>
+                        <span>
+                            @if($order->kind === 'zendo_chat' || empty($distanceKm))
+                                Ongkir (perkiraan, final dikonfirmasi kurir)
+                            @else
+                                Ongkir Kurir Zendo ({{ number_format((float) $distanceKm, 1, ',', '.') }} km)
+                            @endif
+                        </span>
                         <span class="font-mono font-bold">Rp {{ number_format($deliveryFee, 0, ',', '.') }}</span>
                     </div>
                 @endif
