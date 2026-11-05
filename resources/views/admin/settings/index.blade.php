@@ -207,6 +207,41 @@
                         @enderror
                     </div>
 
+                    @php
+                        $isDashboardChartHidden = in_array((string) ($settings['hide_dashboard_chart'] ?? '0'), ['1', 'true', 'yes'], true)
+                            || in_array((string) ($settings['show_dashboard_chart'] ?? '1'), ['0', 'false', 'no'], true);
+                    @endphp
+
+                    {{-- Pengaturan Tampilan Grafik Keuangan di Dashboard --}}
+                    <div class="space-y-2.5 pt-3 border-t border-hairline/60">
+                        <label class="text-xs font-bold text-ink-black block">Tampilan Grafik Keuangan di Dashboard</label>
+                        <div class="p-4 rounded-xl bg-warm-canvas/60 border border-hairline flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-bold text-ink-black">Grafik Keuangan Penjualan</span>
+                                    <span id="badgeMainChartSetting" class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase {{ ! $isDashboardChartHidden ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-warm-stone text-muted-text border border-hairline' }}">
+                                        {{ ! $isDashboardChartHidden ? 'Ditampilkan' : 'Disembunyikan (Hide)' }}
+                                    </span>
+                                </div>
+                                <p class="text-[11px] text-muted-text leading-relaxed">
+                                    Jika disembunyikan (Hide), grafik keuangan penjualan hilang dari Dashboard dan proses kalkulasi/script grafik tidak dijalankan.
+                                </p>
+                            </div>
+                            <div class="shrink-0 flex items-center gap-2.5">
+                                <input type="hidden" name="hide_dashboard_chart" id="inputHideDashboardChart" value="{{ $isDashboardChartHidden ? '1' : '0' }}">
+                                <label class="relative inline-flex items-center cursor-pointer select-none">
+                                    <input type="checkbox"
+                                           id="toggleShowDashboardChartCheckbox"
+                                           class="sr-only peer"
+                                           {{ ! $isDashboardChartHidden ? 'checked' : '' }}
+                                           onchange="document.getElementById('inputHideDashboardChart').value = this.checked ? '0' : '1'; var b = document.getElementById('badgeMainChartSetting'); if (b) { b.textContent = this.checked ? 'Ditampilkan' : 'Disembunyikan (Hide)'; b.className = this.checked ? 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-emerald-50 text-emerald-800 border border-emerald-200' : 'px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-warm-stone text-muted-text border border-hairline'; }">
+                                    <div class="w-11 h-6 bg-neutral-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2F6B4F]"></div>
+                                    <span class="ml-2.5 text-xs font-bold text-ink-black">Tampilkan Grafik</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="pt-4 border-t border-hairline flex items-center justify-end">
                         <button type="submit"
                                 class="px-5 py-2.5 rounded-xl bg-ink-black hover:bg-charcoal text-white text-xs font-bold uppercase tracking-wider transition-all shadow-xs flex items-center gap-2 btn-press">
@@ -246,6 +281,46 @@
 
         {{-- Right Column: Shortcut Links to Dedicated Modules (5 Cols) --}}
         <div class="lg:col-span-5 space-y-5">
+
+            {{-- Quick Toggle Card: Grafik Keuangan Penjualan Dashboard --}}
+            <div class="bg-pure-white rounded-2xl border border-hairline p-5 shadow-xs space-y-4">
+                <div class="flex items-start justify-between gap-3 border-b border-hairline pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl {{ ! $isDashboardChartHidden ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-warm-stone text-muted-text border border-hairline' }} flex items-center justify-center shrink-0 text-sm">
+                            <i class="fa-solid {{ ! $isDashboardChartHidden ? 'fa-chart-line' : 'fa-eye-slash' }}"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-ink-black uppercase tracking-wider">
+                                Grafik Keuangan Dashboard
+                            </h3>
+                            <p class="text-[11px] text-muted-text mt-0.5">
+                                Status saat ini:
+                                <strong class="{{ ! $isDashboardChartHidden ? 'text-emerald-700' : 'text-rose-700' }}">
+                                    {{ ! $isDashboardChartHidden ? 'AKTIF (Ditampilkan)' : 'HIDE (Disembunyikan & Nonaktif)' }}
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[11.5px] text-muted-text leading-relaxed">
+                    @if($isDashboardChartHidden)
+                        Grafik keuangan penjualan sedang dalam posisi <strong>Hide</strong>. Grafik disembunyikan dari halaman Dashboard dan query maupun script grafik <strong>tidak berjalan</strong>.
+                    @else
+                        Grafik keuangan penjualan sedang <strong>Aktif</strong> di halaman Dashboard untuk memantau tren pendapatan harian, mingguan, dan bulanan.
+                    @endif
+                </p>
+
+                <form action="{{ route('admin.settings.toggleChart') }}" method="POST" class="flex items-center justify-between gap-3 pt-1">
+                    @csrf
+                    <input type="hidden" name="hide_dashboard_chart" value="{{ $isDashboardChartHidden ? '0' : '1' }}">
+                    <button type="submit"
+                            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-2xs flex items-center justify-center gap-2 btn-press cursor-pointer {{ $isDashboardChartHidden ? 'bg-[#2F6B4F] hover:bg-[#24563E] text-white' : 'bg-warm-stone hover:bg-rose-50 text-ink-black hover:text-rose-800 border border-hairline hover:border-rose-300' }}">
+                        <i class="fa-solid {{ $isDashboardChartHidden ? 'fa-eye' : 'fa-eye-slash' }}"></i>
+                        <span>{{ $isDashboardChartHidden ? 'Tampilkan Grafik di Dashboard' : 'Sembunyikan (Hide) Grafik Dashboard' }}</span>
+                    </button>
+                </form>
+            </div>
             
             <div class="bg-pure-white rounded-2xl border border-hairline p-5 shadow-xs space-y-4">
                 <div class="border-b border-hairline pb-3">

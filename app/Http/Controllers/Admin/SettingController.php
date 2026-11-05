@@ -417,6 +417,17 @@ class SettingController extends Controller
             }
         }
 
+        // Synchronize dashboard financial chart visibility settings (hide_dashboard_chart & show_dashboard_chart)
+        if ($request->has('hide_dashboard_chart')) {
+            $isHidden = in_array((string) $request->input('hide_dashboard_chart'), ['1', 'true', 'yes'], true);
+            Setting::set('hide_dashboard_chart', $isHidden ? '1' : '0');
+            Setting::set('show_dashboard_chart', $isHidden ? '0' : '1');
+        } elseif ($request->has('show_dashboard_chart')) {
+            $isShown = in_array((string) $request->input('show_dashboard_chart'), ['1', 'true', 'yes'], true);
+            Setting::set('show_dashboard_chart', $isShown ? '1' : '0');
+            Setting::set('hide_dashboard_chart', $isShown ? '0' : '1');
+        }
+
         return back()->with('success', 'Tarif jarak Zendo & pengaturan pengiriman berhasil disimpan.');
     }
 
@@ -444,6 +455,8 @@ class SettingController extends Controller
             'cafe_favicon' => 'nullable|mimes:ico,png,webp,jpg,jpeg,svg|max:1024',
             'transaction_mode' => 'nullable|in:kasir,zendo,both',
             'hide_live_tracking' => 'nullable|in:0,1',
+            'hide_dashboard_chart' => 'nullable|in:0,1',
+            'show_dashboard_chart' => 'nullable|in:0,1',
             'zendo_courier_pin' => ['nullable', 'regex:/^[0-9]+$/', 'min:4', 'max:12'],
             'zendo_whatsapp' => 'nullable|string|max:30',
             'zendo_courier_count' => 'nullable|integer|min:1|max:50',
@@ -518,6 +531,17 @@ class SettingController extends Controller
             }
         }
 
+        // Synchronize dashboard financial chart visibility settings (hide_dashboard_chart & show_dashboard_chart)
+        if ($request->has('hide_dashboard_chart')) {
+            $isHidden = in_array((string) $request->input('hide_dashboard_chart'), ['1', 'true', 'yes'], true);
+            Setting::set('hide_dashboard_chart', $isHidden ? '1' : '0');
+            Setting::set('show_dashboard_chart', $isHidden ? '0' : '1');
+        } elseif ($request->has('show_dashboard_chart')) {
+            $isShown = in_array((string) $request->input('show_dashboard_chart'), ['1', 'true', 'yes'], true);
+            Setting::set('show_dashboard_chart', $isShown ? '1' : '0');
+            Setting::set('hide_dashboard_chart', $isShown ? '0' : '1');
+        }
+
         // Save multi-courier Zendo configuration (count + list of couriers & WhatsApp numbers)
         if ($request->has('zendo_couriers') || $request->has('zendo_courier_count')) {
             $submittedCouriers = array_values((array) $request->input('zendo_couriers', []));
@@ -589,6 +613,36 @@ class SettingController extends Controller
         }
 
         return back()->with('success', 'Pengaturan berhasil disimpan.');
+    }
+
+    /**
+     * Toggle or update visibility of the Financial Sales Chart on Admin Dashboard.
+     */
+    public function toggleDashboardChart(Request $request)
+    {
+        $request->validate([
+            'hide_dashboard_chart' => 'nullable|in:0,1',
+            'show_dashboard_chart' => 'nullable|in:0,1',
+        ]);
+
+        if ($request->has('hide_dashboard_chart')) {
+            $isHidden = in_array((string) $request->input('hide_dashboard_chart'), ['1', 'true', 'yes'], true);
+        } elseif ($request->has('show_dashboard_chart')) {
+            $isHidden = ! in_array((string) $request->input('show_dashboard_chart'), ['1', 'true', 'yes'], true);
+        } else {
+            $currentHidden = in_array((string) Setting::get('hide_dashboard_chart', '0'), ['1', 'true', 'yes'], true)
+                || in_array((string) Setting::get('show_dashboard_chart', '1'), ['0', 'false', 'no'], true);
+            $isHidden = ! $currentHidden;
+        }
+
+        Setting::set('hide_dashboard_chart', $isHidden ? '1' : '0');
+        Setting::set('show_dashboard_chart', $isHidden ? '0' : '1');
+
+        $msg = $isHidden
+            ? 'Grafik keuangan penjualan di Dashboard berhasil disembunyikan (Hide) dan dinonaktifkan.'
+            : 'Grafik keuangan penjualan di Dashboard berhasil ditampilkan kembali dan diaktifkan.';
+
+        return back()->with('success', $msg);
     }
 
     /**

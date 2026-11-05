@@ -75,9 +75,9 @@
             <p class="text-muted-text text-xs mt-1">Point of Sale & Manajemen Pesanan Nucomu Cafe</p>
         </div>
 
-        @if(session('error'))
+        @if(session('session_expired') || session('error'))
             <div class="bg-amber-50 border border-amber-200 text-amber-900 p-3.5 rounded-2xl text-xs mb-6 font-semibold text-center">
-                {{ session('error') }}
+                {{ session('session_expired') ?? session('error') }}
             </div>
         @endif
 
@@ -190,6 +190,24 @@
             btn.classList.add('opacity-80', 'cursor-wait');
             btn.style.pointerEvents = 'none';
         }
+
+        // BFCache (back-forward navigation) reload to ensure fresh CSRF token
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+
+        // Auto-refresh stale tab if left in background for > 20 minutes
+        let pageLoadedAt = Date.now();
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                const idleMinutes = (Date.now() - pageLoadedAt) / (1000 * 60);
+                if (idleMinutes > 20) {
+                    window.location.reload();
+                }
+            }
+        });
     </script>
 </body>
 </html>

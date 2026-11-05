@@ -194,7 +194,6 @@
                     <span class="opacity-90 ml-1">{{ session('error') }}</span>
                 </div>
             </div>
-            </div>
         </div>
     @endif
 
@@ -316,6 +315,10 @@
                 $hasImage = !empty($menu->image);
                 $imageUrl = $menu->image_url;
                 $isOrdered = ($menu->order_items_count ?? 0) > 0;
+                $menuStockVal = $menu->stock !== null ? (int) $menu->stock : ($menu->is_available ? 25 : 0);
+                if (!$menu->is_available) {
+                    $menuStockVal = 0;
+                }
             @endphp
             <div class="menu-card-item bg-white border rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
                  style="border-color: var(--admin-border-card, #E6E8E4);"
@@ -374,33 +377,41 @@
                                 <i class="fa-solid fa-star text-xs star-icon {{ $menu->is_featured || $menu->is_best_seller ? 'text-amber-500' : 'text-gray-300' }}" aria-hidden="true"></i>
                             </button>
                         </div>
+
+                        {{-- Badge Stok di Kanan Bawah Foto --}}
+                        <div class="absolute bottom-2.5 right-2.5">
+                            <span id="adminGridStockPill-{{ $menu->id }}"
+                                  class="px-2.5 py-0.5 rounded-lg text-[10.5px] font-mono font-bold shadow-2xs border backdrop-blur-xs {{ $menuStockVal > 5 ? 'bg-white/95 text-[#1B1F1D] border-[#E6E8E4]' : ($menuStockVal > 0 ? 'bg-amber-50/95 text-amber-800 border-amber-300' : 'bg-rose-600 text-white border-rose-700') }}">
+                                Stok: {{ $menuStockVal }}
+                            </span>
                         </div>
                     </div>
 
                     {{-- Informasi Menu (Nama, Harga, Penjelasan) --}}
                     <div class="p-3.5 sm:p-4 space-y-1.5">
                         <div class="flex items-start justify-between gap-2">
-                            <h3 class="font-bold text-[14px] leading-snug line-clamp-1" style="color: var(--admin-text-main, #1B1F1D);">
+                            <h3 class="font-bold text-[14.5px] leading-snug line-clamp-1" style="color: var(--admin-text-main, #1B1F1D);" title="{{ $menu->name }}">
                                 {{ $menu->name }}
                             </h3>
                         </div>
 
                         {{-- Harga: Plus Jakarta Sans Bold, tabular-nums --}}
-                        <div class="text-[15px] font-bold tracking-tight tabular-nums" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
+                        <div class="text-[15.5px] font-extrabold tracking-tight tabular-nums" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
                             Rp {{ number_format($menu->price, 0, ',', '.') }}
                         </div>
 
-                        {{-- Deskripsi Singkat 1 Baris --}}
-                        <p class="text-[12px] leading-relaxed line-clamp-1 m-0" style="color: var(--admin-text-sub, #555D58);">
+                        {{-- Deskripsi Singkat 2 Baris --}}
+                        <p class="text-[12px] leading-relaxed line-clamp-2 min-h-[36px] m-0" style="color: var(--admin-text-sub, #555D58);">
                             {{ $menu->description ?: 'Pilihan racikan istimewa Nucomu Cafe' }}
                         </p>
                     </div>
                 </div>
 
-                {{-- Bagian Bawah Kartu: Tombol Aksi Teks --}}
-                <div class="px-3.5 sm:px-4 py-2.5 border-t bg-[#FAFBF9] flex items-center justify-end gap-1.5"
+                {{-- Bagian Bawah Kartu: Kontrol Stok Cepat & Tombol Aksi Teks --}}
+                <div class="px-3.5 sm:px-4 py-2.5 border-t bg-[#FAFBF9] flex items-center justify-between gap-2"
                      style="border-color: var(--admin-border-card, #E6E8E4);">
                     @if($menu->trashed())
+                        <span class="text-[11px] font-medium text-stone-500">Nonaktif di katalog</span>
                         <form action="{{ route('admin.menus.restore', $menu->id) }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
@@ -411,19 +422,48 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('admin.menus.edit', $menu->id) }}"
-                           class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition shadow-2xs btn-press"
-                           style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
-                           title="Edit rincian menu">
-                            Edit
-                        </a>
+                        {{-- Kontrol Stok Cepat (- / +) --}}
+                        <div class="inline-flex items-center gap-1 bg-white border rounded-lg p-0.5 shadow-2xs"
+                             style="border-color: var(--admin-border-card, #E6E8E4);"
+                             title="Atur stok porsi menu (otomatis sinkron dengan POS Kasir)">
+                            <button type="button"
+                                    onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: -1 })"
+                                    class="w-6 h-6 rounded-md hover:bg-[#F0F4F1] text-xs font-bold flex items-center justify-center transition cursor-pointer"
+                                    style="color: var(--admin-text-main, #1B1F1D);">
+                                &minus;
+                            </button>
+                            <input type="number"
+                                   id="adminGridStockInput-{{ $menu->id }}"
+                                   value="{{ $menuStockVal }}"
+                                   min="0"
+                                   max="9999"
+                                   onchange="adjustAdminMenuStock({{ $menu->id }}, { stock: parseInt(this.value || '0', 10) })"
+                                   class="w-9 text-center bg-transparent text-[11.5px] font-mono font-bold focus:outline-none tabular-nums"
+                                   style="color: var(--admin-text-main, #1B1F1D);"
+                                   aria-label="Stok {{ $menu->name }}">
+                            <button type="button"
+                                    onclick="adjustAdminMenuStock({{ $menu->id }}, { delta: 1 })"
+                                    class="w-6 h-6 rounded-md hover:bg-[#F0F4F1] text-xs font-bold flex items-center justify-center transition cursor-pointer"
+                                    style="color: var(--admin-text-main, #1B1F1D);">
+                                +
+                            </button>
+                        </div>
 
-                        <button type="button"
-                                onclick="confirmDeleteMenu({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->order_items_count ?? 0 }})"
-                                class="px-2 py-1 rounded-lg text-xs font-semibold hover:bg-rose-50 text-rose-700 transition cursor-pointer btn-press"
-                                title="Hapus menu">
-                            Hapus
-                        </button>
+                        <div class="flex items-center gap-1">
+                            <a href="{{ route('admin.menus.edit', $menu->id) }}"
+                               class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition shadow-2xs btn-press"
+                               style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
+                               title="Edit rincian menu">
+                                Edit
+                            </a>
+
+                            <button type="button"
+                                    onclick="confirmDeleteMenu({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->order_items_count ?? 0 }})"
+                                    class="px-2 py-1 rounded-lg text-xs font-semibold hover:bg-rose-50 text-rose-700 transition cursor-pointer btn-press"
+                                    title="Hapus menu">
+                                Hapus
+                            </button>
+                        </div>
                     @endif
                 </div>
 
@@ -1103,7 +1143,6 @@
                 icon.classList.add('text-amber-500');
                 icon.classList.remove('text-gray-300');
             }
-        }
         }
 
         try {

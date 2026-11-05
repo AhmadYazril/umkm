@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\KasirController;
 use App\Models\Order;
 use App\Models\Setting;
+use App\Support\TransactionReportPdfGenerator;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -390,6 +393,261 @@ class OrderController extends Controller
         $recentOrders = Order::with('items')->latest()->take(5)->get();
 
         return view('admin.orders.scan', compact('order', 'recentOrders'));
+    }
+
+    /**
+     * Export / Download Transaction Recap Report (PDF, Print View, or CSV)
+     * Supports Daily (per hari), Weekly (per minggu), and Monthly (per bulan).
+     */
+    public function exportRecap(Request $request)
+    {
+        $rawPeriod = strtolower(trim((string) $request->query('period', 'daily')));
+        $period = match ($rawPeriod) {
+            'weekly', 'mingguan', 'minggu', 'week' => 'weekly',
+            'monthly', 'bulanan', 'bulan', 'month' => 'monthly',
+            default => 'daily',
+        };
+
+        $format = strtolower(trim((string) $request->query('format', 'pdf')));
+        if (! in_array($format, ['pdf', 'print', 'csv'], true)) {
+            $format = 'pdf';
+        }
+
+        $today = Carbon::today();
+        $monthNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        if ($period === 'daily') {
+            $dateInput = trim((string) $request->query('date', $today->toDateString()));
+            try {
+                $targetDate = Carbon::parse($dateInput);
+            } catch (\Throwable $e) {
+                $targetDate = $today->copy();
+            }
+            $startDate = $targetDate->copy()->startOfDay();
+            $endDate = $targetDate->copy()->endOfDay();
+            $periodLabel = 'Harian (Per Hari)';
+            $dateRangeLabel = $targetDate->format('d').' '.($monthNames[(int) $targetDate->format('n')] ?? $targetDate->format('M')).' '.$targetDate->format('Y');
+            $fileSlug = 'harian-'.$targetDate->format('Y-m-d');
+        } elseif ($period === 'weekly') {
+            $weekInput = trim((string) ($request->query('week_date') ?: $request->query('week') ?: $request->query('date') ?: $today->toDateString()));
+            try {
+                if (preg_match('/^(\d{4})-W(\d{1,2})$/i', $weekInput, $matches)) {
+                    $refDate = Carbon::now()->setISODate((int) $matches[1], (int) $matches[2], 1);
+                } else {
+                    $refDate = Carbon::parse($weekInput);
+                }
+            } catch (\Throwable $e) {
+                $refDate = $today->copy();
+            }
+
+            if ($request->filled('start_date') && $request->filled('end_date')) {
+                try {
+                    $startDate = Carbon::parse((string) $request->query('start_date'))->startOfDay();
+                    $endDate = Carbon::parse((string) $request->query('end_date'))->endOfDay();
+                } catch (\Throwable $e) {
+                    $startDate = $refDate->copy()->startOfWeek(Carbon::MONDAY)->startOfDay();
+                    $endDate = $refDate->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay();
+                }
+            } else {
+                $startDate = $refDate->copy()->startOfWeek(Carbon::MONDAY)->startOfDay();
+                $endDate = $refDate->copy()->endOfWeek(Carbon::SUNDAY)->endOfDay();
+            }
+
+            $periodLabel = 'Mingguan (Per Minggu)';
+            $dateRangeLabel = $startDate->format('d/m/Y').' s/d '.$endDate->format('d/m/Y');
+            $fileSlug = 'mingguan-'.$startDate->format('Ymd').'-'.$endDate->format('Ymd');
+        } else {
+            $monthInput = trim((string) $request->query('month', $today->format('Y-m')));
+            try {
+                if (preg_match('/^(\d{4})-(\d{1,2})$/', $monthInput, $matches)) {
+                    $refMonth = Carbon::createFromDate((int) $matches[1], (int) $matches[2], 1);
+                } else {
+                    $refMonth = Carbon::parse($monthInput)->startOfMonth();
+                }
+            } catch (\Throwable $e) {
+                $refMonth = $today->copy()->startOfMonth();
+            }
+
+            $startDate = $refMonth->copy()->startOfMonth()->startOfDay();
+            $endDate = $refMonth->copy()->endOfMonth()->endOfDay();
+            $periodLabel = 'Bulanan (Per Bulan)';
+            $dateRangeLabel = ($monthNames[(int) $startDate->format('n')] ?? $startDate->format('F')).' '.$startDate->format('Y');
+            $fileSlug = 'bulanan-'.$startDate->format('Y-m');
+        }
+
+        $query = Order::with(['table', 'items', 'zendoDelivery'])
+            ->whereBetween('created_at', [$startDate, $endDate]);
+
+        $filterParts = [];
+
+        if ($request->filled('status') && $request->query('status') !== 'all') {
+            $statusFilter = (string) $request->query('status');
+            $query->where('status', $statusFilter);
+            $filterParts[] = 'Status: '.ucfirst($statusFilter);
+        }
+
+        if ($request->filled('kind') && $request->query('kind') !== 'all') {
+            $kindFilter = (string) $request->query('kind');
+            $this->applyOrderKindFilter($query, $kindFilter);
+            $filterParts[] = 'Jenis: '.match ($kindFilter) {
+                'dine_in' => 'Di Cafe',
+                'zendo_tracking' => 'Antar Zendo',
+                'zendo_chat' => 'Chat Zendo',
+                default => $kindFilter,
+            };
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->get();
+
+        // Calculate Summary Metrics
+        $nonCancelled = $orders->where('status', '!=', 'cancelled');
+        $paidOrCompleted = $nonCancelled->filter(fn (Order $o) => $o->payment_status === 'paid' || $o->status === 'completed');
+
+        $summary = [
+            'total_orders' => $orders->count(),
+            'completed_orders' => $orders->where('status', 'completed')->count(),
+            'pending_orders' => $orders->whereIn('status', ['pending', 'processing', 'ready'])->count(),
+            'cancelled_orders' => $orders->where('status', 'cancelled')->count(),
+            'paid_or_completed_count' => $paidOrCompleted->count(),
+            'paid_revenue' => (int) $paidOrCompleted->sum('total'),
+            'gross_revenue' => (int) $nonCancelled->sum('total'),
+            'subtotal_menu' => (int) $nonCancelled->sum('subtotal'),
+            'delivery_fee_total' => (int) $nonCancelled->sum('delivery_fee'),
+            'cash_count' => $nonCancelled->filter(fn (Order $o) => strtolower((string) $o->payment_method) !== 'qris')->count(),
+            'qris_count' => $nonCancelled->filter(fn (Order $o) => strtolower((string) $o->payment_method) === 'qris')->count(),
+            'dine_in_count' => $nonCancelled->filter(fn (Order $o) => $o->kind === 'dine_in')->count(),
+            'zendo_tracking_count' => $nonCancelled->filter(fn (Order $o) => $o->kind === 'zendo_tracking')->count(),
+            'zendo_chat_count' => $nonCancelled->filter(fn (Order $o) => $o->kind === 'zendo_chat')->count(),
+        ];
+
+        // Build Daily Breakdown for Weekly & Monthly recaps
+        $dailyBreakdown = [];
+        if ($period !== 'daily') {
+            $groupedByDate = $orders->groupBy(fn (Order $o) => $o->created_at ? $o->created_at->format('Y-m-d') : 'unknown');
+            foreach ($groupedByDate as $dateKey => $dayOrders) {
+                $dayNonCancelled = $dayOrders->where('status', '!=', 'cancelled');
+                $dayPaid = $dayNonCancelled->filter(fn (Order $o) => $o->payment_status === 'paid' || $o->status === 'completed');
+                try {
+                    $dCarbon = Carbon::parse($dateKey);
+                    $dLabel = $dCarbon->format('d/m/Y');
+                } catch (\Throwable $e) {
+                    $dLabel = $dateKey;
+                }
+                $dailyBreakdown[] = [
+                    'date_key' => $dateKey,
+                    'date_label' => $dLabel,
+                    'orders_count' => $dayOrders->count(),
+                    'paid_count' => $dayPaid->count(),
+                    'paid_revenue' => (int) $dayPaid->sum('total'),
+                    'gross_revenue' => (int) $dayNonCancelled->sum('total'),
+                ];
+            }
+        }
+
+        $cafeName = Setting::get('cafe_name', config('nucomu.brand.name', 'Nucomu Cafe'));
+        $meta = [
+            'cafe_name' => $cafeName,
+            'period' => $period,
+            'period_label' => $periodLabel,
+            'date_range_label' => $dateRangeLabel,
+            'filter_label' => empty($filterParts) ? 'Semua Jenis & Status' : implode(', ', $filterParts),
+            'printed_at' => now()->format('d/m/Y H:i'),
+        ];
+
+        if ($format === 'print') {
+            return view('admin.orders.report-print', compact('meta', 'summary', 'orders', 'dailyBreakdown'));
+        }
+
+        if ($format === 'csv') {
+            $csvFilename = "rekap-transaksi-{$fileSlug}.csv";
+
+            return response()->streamDownload(function () use ($meta, $summary, $orders) {
+                $out = fopen('php://output', 'w');
+                // UTF-8 BOM for Excel compatibility
+                fwrite($out, "\xEF\xBB\xBF");
+                fputcsv($out, [$meta['cafe_name'].' - LAPORAN REKAP TRANSAKSI']);
+                fputcsv($out, ['Periode', $meta['period_label'], 'Rentang', $meta['date_range_label']]);
+                fputcsv($out, ['Total Pesanan', $summary['total_orders'], 'Omzet Lunas/Selesai (Rp)', $summary['paid_revenue'], 'Total Non-Batal (Rp)', $summary['gross_revenue']]);
+                fputcsv($out, []);
+                fputcsv($out, ['No', 'Kode Pesanan', 'Tanggal & Waktu', 'Nama Pelanggan', 'No. WhatsApp', 'Jenis Layanan', 'Metode Bayar', 'Status Bayar', 'Status Pesanan', 'Subtotal Menu (Rp)', 'Ongkir (Rp)', 'Total Akhir (Rp)']);
+
+                foreach ($orders->values() as $idx => $order) {
+                    fputcsv($out, [
+                        $idx + 1,
+                        $order->code,
+                        $order->created_at ? $order->created_at->format('Y-m-d H:i:s') : '-',
+                        $order->customer_name,
+                        $order->customer_phone ?: '-',
+                        $order->kind_label,
+                        $order->payment_method_label,
+                        $order->payment_status_label,
+                        $order->status_label,
+                        $order->subtotal,
+                        $order->delivery_fee,
+                        $order->total,
+                    ]);
+                }
+
+                fclose($out);
+            }, $csvFilename, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+            ]);
+        }
+
+        // Default: Generate and download native PDF binary
+        $pdfBinary = TransactionReportPdfGenerator::generate($meta, $summary, $orders, $dailyBreakdown);
+        $pdfFilename = "rekap-transaksi-{$fileSlug}.pdf";
+
+        return response($pdfBinary, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="'.$pdfFilename.'"',
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+        ]);
+    }
+
+    /**
+     * Apply kind filter (dine_in, zendo_tracking, zendo_chat) to an Order query builder.
+     */
+    protected function applyOrderKindFilter(Builder $query, string $kind): void
+    {
+        if ($kind === 'dine_in') {
+            $query->where(function ($q) {
+                $q->whereNull('delivery_address')
+                    ->where(function ($n) {
+                        $n->whereNull('notes')
+                            ->orWhere('notes', 'not like', '%[KURIR ZENDO]%');
+                    });
+            });
+        } elseif ($kind === 'zendo_tracking') {
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('notes', 'like', '%[KURIR ZENDO]%')
+                        ->orWhereNotNull('delivery_address');
+                })->where(function ($sub2) {
+                    $sub2->where('notes', 'like', '%Pin:%')
+                        ->orWhere('notes', 'like', '%Tahap_Zendo%')
+                        ->orWhere('form_data', 'like', '%customer_lat%')
+                        ->orWhereHas('zendoDelivery');
+                });
+            });
+        } elseif ($kind === 'zendo_chat') {
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('notes', 'like', '%[KURIR ZENDO]%')
+                        ->orWhereNotNull('delivery_address');
+                })->where('notes', 'not like', '%Pin:%')
+                    ->where('notes', 'not like', '%Tahap_Zendo%')
+                    ->where(function ($sub3) {
+                        $sub3->whereNull('form_data')
+                            ->orWhere('form_data', 'not like', '%customer_lat%');
+                    })
+                    ->whereDoesntHave('zendoDelivery');
+            });
+        }
     }
 
     /**

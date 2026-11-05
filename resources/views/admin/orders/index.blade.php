@@ -523,6 +523,160 @@
         </form>
     </div>
 
+    {{-- 3B. Rekapitulasi & Download Laporan Transaksi (PDF / Cetak / CSV — Per Hari, Minggu, Bulan) --}}
+    <div id="rekap-laporan-section" class="bg-white border rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-sm anim-fade-up space-y-5" style="border-color: var(--admin-border-card, #E6E8E4);">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <div class="flex items-start sm:items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-emerald-50 text-[#2F6B4F] border border-emerald-200 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </span>
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold m-0" style="color: var(--admin-text-main, #1B1F1D);">
+                        Rekapitulasi &amp; Download Laporan Transaksi
+                    </h3>
+                    <p class="text-xs mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
+                        Unduh rekap laporan penjualan dalam format <strong>PDF (.pdf)</strong>, <strong>Cetak Laporan</strong>, atau <strong>CSV/Excel</strong> berdasarkan periode <strong>Per Hari</strong>, <strong>Per Minggu</strong>, maupun <strong>Per Bulan</strong>.
+                    </p>
+                </div>
+            </div>
+
+            {{-- Quick 1-Click PDF Recap Buttons --}}
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('admin.orders.export', ['period' => 'daily', 'date' => now()->toDateString(), 'format' => 'pdf']) }}"
+                   class="px-3 py-2 rounded-xl bg-warm-stone/60 hover:bg-warm-stone text-ink-black border border-[#E6E8E4] text-xs font-bold transition flex items-center gap-1.5 btn-press"
+                   title="Langsung unduh PDF rekap transaksi hari ini">
+                    <i class="fa-solid fa-file-arrow-down text-[#2F6B4F]"></i>
+                    <span>PDF Hari Ini</span>
+                </a>
+                <a href="{{ route('admin.orders.export', ['period' => 'weekly', 'week_date' => now()->toDateString(), 'format' => 'pdf']) }}"
+                   class="px-3 py-2 rounded-xl bg-warm-stone/60 hover:bg-warm-stone text-ink-black border border-[#E6E8E4] text-xs font-bold transition flex items-center gap-1.5 btn-press"
+                   title="Langsung unduh PDF rekap transaksi minggu ini">
+                    <i class="fa-solid fa-file-arrow-down text-[#2F6B4F]"></i>
+                    <span>PDF Minggu Ini</span>
+                </a>
+                <a href="{{ route('admin.orders.export', ['period' => 'monthly', 'month' => now()->format('Y-m'), 'format' => 'pdf']) }}"
+                   class="px-3 py-2 rounded-xl bg-warm-stone/60 hover:bg-warm-stone text-ink-black border border-[#E6E8E4] text-xs font-bold transition flex items-center gap-1.5 btn-press"
+                   title="Langsung unduh PDF rekap transaksi bulan ini">
+                    <i class="fa-solid fa-file-arrow-down text-[#2F6B4F]"></i>
+                    <span>PDF Bulan Ini</span>
+                </a>
+            </div>
+        </div>
+
+        <form action="{{ route('admin.orders.export') }}" method="GET" id="recapExportForm" class="space-y-4">
+            <input type="hidden" name="format" id="recapFormatInput" value="pdf">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                {{-- Pilihan Periode: Harian / Mingguan / Bulanan --}}
+                <div>
+                    <label for="recapPeriodSelect" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                        Periode Rekap
+                    </label>
+                    <select name="period"
+                            id="recapPeriodSelect"
+                            onchange="toggleRecapPeriodInputs(this.value)"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E8E4] bg-white text-xs font-bold text-ink-black focus:outline-none focus:border-neutral-800 transition cursor-pointer">
+                        <option value="daily">Per Hari (Harian)</option>
+                        <option value="weekly">Per Minggu (Mingguan)</option>
+                        <option value="monthly">Per Bulan (Bulanan)</option>
+                    </select>
+                </div>
+
+                {{-- Input Tanggal (Tampil menyesuaikan periode yang dipilih) --}}
+                <div>
+                    <div id="recapInputWrap_daily">
+                        <label for="recapDateInput" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                            Pilih Tanggal (Harian)
+                        </label>
+                        <input type="date"
+                               name="date"
+                               id="recapDateInput"
+                               value="{{ request('date', now()->toDateString()) }}"
+                               class="w-full px-3.5 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition">
+                    </div>
+
+                    <div id="recapInputWrap_weekly" class="hidden">
+                        <label for="recapWeekDateInput" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                            Tanggal Acuan Minggu (Sen&ndash;Min)
+                        </label>
+                        <input type="date"
+                               name="week_date"
+                               id="recapWeekDateInput"
+                               value="{{ now()->toDateString() }}"
+                               class="w-full px-3.5 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition">
+                    </div>
+
+                    <div id="recapInputWrap_monthly" class="hidden">
+                        <label for="recapMonthInput" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                            Pilih Bulan &amp; Tahun
+                        </label>
+                        <input type="month"
+                               name="month"
+                               id="recapMonthInput"
+                               value="{{ now()->format('Y-m') }}"
+                               class="w-full px-3.5 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition">
+                    </div>
+                </div>
+
+                {{-- Filter Jenis Transaksi --}}
+                <div>
+                    <label for="recapKindSelect" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                        Filter Jenis Layanan
+                    </label>
+                    <select name="kind"
+                            id="recapKindSelect"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E8E4] bg-white text-xs font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition cursor-pointer">
+                        <option value="all">Semua Jenis Layanan</option>
+                        <option value="dine_in" {{ request('kind') === 'dine_in' ? 'selected' : '' }}>Makan di Cafe / Kasir</option>
+                        <option value="zendo_tracking" {{ request('kind') === 'zendo_tracking' ? 'selected' : '' }}>Antar via Zendo (Pelacakan)</option>
+                        <option value="zendo_chat" {{ request('kind') === 'zendo_chat' ? 'selected' : '' }}>Chat Zendo (WhatsApp)</option>
+                    </select>
+                </div>
+
+                {{-- Filter Status Pesanan --}}
+                <div>
+                    <label for="recapStatusSelect" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                        Filter Status Pesanan
+                    </label>
+                    <select name="status"
+                            id="recapStatusSelect"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E8E4] bg-white text-xs font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition cursor-pointer">
+                        <option value="all">Semua Status Transaksi</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Hanya Selesai (Completed)</option>
+                        <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Sedang Diproses</option>
+                        <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Siap Saji</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Batal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-2.5 pt-2">
+                <button type="button"
+                        onclick="submitRecapExport('csv', false)"
+                        class="px-4 py-2.5 rounded-xl border border-[#E6E8E4] bg-white hover:bg-warm-stone/50 text-ink-black text-xs font-bold transition flex items-center gap-2 cursor-pointer btn-press">
+                    <i class="fa-solid fa-file-csv text-emerald-700"></i>
+                    <span>Download CSV / Excel</span>
+                </button>
+
+                <button type="button"
+                        onclick="submitRecapExport('print', true)"
+                        class="px-4 py-2.5 rounded-xl border border-[#E6E8E4] bg-warm-stone/60 hover:bg-warm-stone text-ink-black text-xs font-bold transition flex items-center gap-2 cursor-pointer btn-press">
+                    <i class="fa-solid fa-print text-charcoal"></i>
+                    <span>Cetak / Pratinjau PDF</span>
+                </button>
+
+                <button type="submit"
+                        onclick="document.getElementById('recapFormatInput').value = 'pdf'; document.getElementById('recapExportForm').removeAttribute('target');"
+                        class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-2 cursor-pointer btn-press"
+                        style="background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF;">
+                    <i class="fa-solid fa-file-pdf text-xs"></i>
+                    <span>Download Rekap PDF (.pdf)</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
     {{-- 4. Filter Jenis Pemesanan, Filter Status Tabs & Pencarian --}}
     <div class="space-y-3 anim-fade-up">
 
@@ -903,6 +1057,29 @@
         if (wrap) {
             wrap.style.display = checked ? 'block' : 'none';
         }
+    }
+
+    function toggleRecapPeriodInputs(period) {
+        ['daily', 'weekly', 'monthly'].forEach(p => {
+            const el = document.getElementById('recapInputWrap_' + p);
+            if (el) {
+                if (p === period) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            }
+        });
+    }
+
+    function submitRecapExport(format, newTab) {
+        const form = document.getElementById('recapExportForm');
+        const fmtInput = document.getElementById('recapFormatInput');
+        if (!form || !fmtInput) return;
+        fmtInput.value = format;
+        if (newTab) {
+            form.setAttribute('target', '_blank');
+        } else {
+            form.removeAttribute('target');
+        }
+        form.submit();
     }
 
     function insertVariable(tag) {

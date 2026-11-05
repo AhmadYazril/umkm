@@ -94,7 +94,8 @@ class KasirController extends Controller
                 try {
                     $user = User::find((int) $userId);
                     if ($user && $user->isKasir() && hash_equals(self::generateCookieToken($user), $token)) {
-                        if (! Auth::check() || Auth::id() !== $user->id) {
+                        // Do not overwrite an active Admin session when Kasir background sync runs
+                        if (! Auth::check()) {
                             Auth::login($user, false);
                         }
                         $request->session()->put('kasir_authenticated', true);

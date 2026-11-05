@@ -121,6 +121,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Protected admin routes
     Route::middleware('admin')->group(function () {
 
+        Route::get('/', fn () => redirect()->route('admin.dashboard'));
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
         // 1. Hero Section / Banner
@@ -178,6 +179,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Pesanan
         Route::get('/pesanan', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('/pesanan/rekap', [AdminOrderController::class, 'exportRecap'])->name('orders.export');
+        Route::get('/pesanan/rekap/export', [AdminOrderController::class, 'exportRecap'])->name('orders.recap');
         Route::post('/pesanan/settings', [AdminOrderController::class, 'updateSettings'])->name('orders.updateSettings');
         Route::post('/pesanan/settings/reset-template', [AdminOrderController::class, 'resetTemplate'])->name('orders.resetTemplate');
         Route::get('/pesanan/scan', [AdminOrderController::class, 'scanPage'])->name('orders.scan');
@@ -257,6 +260,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/pengaturan', [SettingController::class, 'index']);
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
         Route::post('/pengaturan', [SettingController::class, 'update']);
+        Route::post('/pengaturan/dashboard-chart', [SettingController::class, 'toggleDashboardChart'])->name('settings.toggleChart');
         Route::post('/pengaturan/test-wa', [SettingController::class, 'testZendoWhatsapp'])->name('settings.testWa');
         Route::post('/pengaturan/jam-operasional', [SettingController::class, 'updateHours'])->name('settings.hours');
     });

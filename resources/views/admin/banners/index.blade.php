@@ -129,7 +129,6 @@
                class="admin-chip-filter btn-press {{ $statusFilter === 'expired' ? 'is-active' : '' }}">
                 <span>Sudah Berakhir ({{ $expiredCount }})</span>
             </a>
-        </div>
     </div>
 
     {{-- Daftar Banner (Grid 2 Kolom di Layar Lebar, Desain Kartu Adaptif Bersih) --}}

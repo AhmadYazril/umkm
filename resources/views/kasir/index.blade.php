@@ -2004,7 +2004,10 @@
         async function syncKasirWithDatabase(showNotification = false) {
             try {
                 const res = await fetch(@json(route('kasir.sync')), {
-                    headers: { 'Accept': 'application/json' },
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {

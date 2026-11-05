@@ -121,6 +121,135 @@
 
     </div>
 
+    {{-- Grafik Keuangan Penjualan (Hanya tampil dan berjalan jika tidak di-hide di Pengaturan Admin) --}}
+    @if(!empty($showDashboardChart) && !empty($financialChart))
+        <div id="dashboardFinancialChartSection" class="bg-pure-white border border-hairline rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-card reveal-on-scroll anim-fade-up space-y-5">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-hairline">
+                <div class="flex items-start sm:items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0">
+                        <i class="fa-solid fa-chart-line text-sm"></i>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h2 class="text-base sm:text-lg font-extrabold text-ink-black">Grafik Keuangan Penjualan</h2>
+                            <span id="chartPeriodBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-mono font-bold uppercase">
+                                {{ $financialChart['daily']['title'] ?? '7 Hari Terakhir' }}
+                            </span>
+                        </div>
+                        <p class="text-[11.5px] text-muted-text mt-0.5">
+                            Visualisasi pergerakan omzet penjualan lunas/selesai dan total pesanan masuk secara berkala.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    {{-- Period Tabs: Harian / Mingguan / Bulanan --}}
+                    <div class="inline-flex items-center p-1 rounded-xl bg-warm-stone/60 border border-hairline text-xs font-bold">
+                        <button type="button"
+                                onclick="switchDashboardChartPeriod('daily')"
+                                id="chartTabBtn_daily"
+                                class="chart-period-btn px-3 py-1.5 rounded-lg transition cursor-pointer bg-ink-black text-white shadow-2xs">
+                            Harian (7 Hari)
+                        </button>
+                        <button type="button"
+                                onclick="switchDashboardChartPeriod('weekly')"
+                                id="chartTabBtn_weekly"
+                                class="chart-period-btn px-3 py-1.5 rounded-lg transition cursor-pointer text-muted-text hover:text-ink-black">
+                            Mingguan (4 Mgg)
+                        </button>
+                        <button type="button"
+                                onclick="switchDashboardChartPeriod('monthly')"
+                                id="chartTabBtn_monthly"
+                                class="chart-period-btn px-3 py-1.5 rounded-lg transition cursor-pointer text-muted-text hover:text-ink-black">
+                            Bulanan (12 Bln)
+                        </button>
+                    </div>
+
+                    {{-- Quick Hide Button (Langsung sembunyikan grafik) --}}
+                    <form action="{{ route('admin.settings.toggleChart') }}" method="POST" class="inline-block" onsubmit="return confirm('Sembunyikan (Hide) grafik keuangan dari Dashboard? Anda dapat menampilkannya kembali di halaman Pengaturan Admin.');">
+                        @csrf
+                        <input type="hidden" name="hide_dashboard_chart" value="1">
+                        <button type="submit"
+                                class="px-3 py-2 rounded-xl bg-pure-white hover:bg-warm-stone text-muted-text hover:text-ink-black border border-hairline text-xs font-bold transition flex items-center gap-1.5 cursor-pointer btn-press"
+                                title="Sembunyikan grafik ini (bisa diaktifkan lagi di Pengaturan)">
+                            <i class="fa-solid fa-eye-slash text-xs"></i>
+                            <span class="hidden sm:inline">Hide Grafik</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Summary Metrics Strip for Selected Period --}}
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <div class="p-3.5 rounded-2xl bg-warm-stone/30 border border-hairline">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Omzet Lunas / Selesai</span>
+                    <div id="chartSumRevenue" class="text-base sm:text-lg font-extrabold font-mono text-emerald-700 mt-1">
+                        Rp {{ number_format($financialChart['daily']['summary']['total_revenue'] ?? 0, 0, ',', '.') }}
+                    </div>
+                    <span id="chartSumPaidCount" class="text-[10px] text-muted-text block mt-0.5">
+                        {{ $financialChart['daily']['summary']['total_paid_orders'] ?? 0 }} transaksi selesai/lunas
+                    </span>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-warm-stone/30 border border-hairline">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Total Penjualan (Non-Batal)</span>
+                    <div id="chartSumGross" class="text-base sm:text-lg font-extrabold font-mono text-ink-black mt-1">
+                        Rp {{ number_format($financialChart['daily']['summary']['total_gross_sales'] ?? 0, 0, ',', '.') }}
+                    </div>
+                    <span id="chartSumTotalOrders" class="text-[10px] text-muted-text block mt-0.5">
+                        Total {{ $financialChart['daily']['summary']['total_orders'] ?? 0 }} pesanan masuk
+                    </span>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-warm-stone/30 border border-hairline">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Rata-Rata Omzet</span>
+                    <div id="chartSumAvg" class="text-base sm:text-lg font-extrabold font-mono text-ink-black mt-1">
+                        Rp {{ number_format($financialChart['daily']['summary']['avg_revenue'] ?? 0, 0, ',', '.') }}
+                    </div>
+                    <span class="text-[10px] text-muted-text block mt-0.5">Rata-rata per titik waktu</span>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-warm-stone/30 border border-hairline">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-muted-text font-bold block">Puncak Penjualan</span>
+                    <div id="chartSumPeak" class="text-base sm:text-lg font-extrabold font-mono text-ink-black mt-1">
+                        Rp {{ number_format($financialChart['daily']['summary']['peak_revenue'] ?? 0, 0, ',', '.') }}
+                    </div>
+                    <span id="chartSumPeakLabel" class="text-[10px] text-muted-text block mt-0.5">
+                        Tertinggi pada: {{ $financialChart['daily']['summary']['peak_label'] ?? '-' }}
+                    </span>
+                </div>
+            </div>
+
+            {{-- Canvas Chart Container --}}
+            <div class="relative w-full h-[270px] sm:h-[310px] pt-2 select-none">
+                <canvas id="financialSalesCanvas" class="w-full h-full block"></canvas>
+                <div id="financialChartTooltip"
+                     class="hidden absolute pointer-events-none z-20 bg-ink-black text-white text-[11px] rounded-xl px-3 py-2 shadow-lg border border-white/10 min-w-[175px] transition-opacity duration-100">
+                </div>
+            </div>
+
+            {{-- Legend & Shortcut to Rekap PDF Transaksi --}}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-hairline text-xs">
+                <div class="flex flex-wrap items-center gap-4">
+                    <span class="inline-flex items-center gap-2 font-semibold text-charcoal">
+                        <span class="w-3 h-3 rounded-xs bg-[#2F6B4F] inline-block"></span>
+                        <span>Omzet Penjualan (Selesai / Lunas)</span>
+                    </span>
+                    <span class="inline-flex items-center gap-2 font-semibold text-muted-text">
+                        <span class="w-3 h-3 rounded-xs bg-[#D5DFD9] border border-[#96B5A5] inline-block"></span>
+                        <span>Total Pesanan Masuk (Non-Batal)</span>
+                    </span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('admin.orders.index') }}#rekap-laporan-section" class="inline-flex items-center gap-1.5 font-bold text-[#2F6B4F] hover:underline">
+                        <i class="fa-solid fa-file-pdf text-xs"></i>
+                        <span>Download Rekap PDF Transaksi</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Main 2-Column Section: Pesanan Terbaru (Left) & Menu Terlaris + Quick Tools (Right) --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
@@ -297,4 +426,245 @@
     </div>
 
 </div>
+
+@if(!empty($showDashboardChart) && !empty($financialChart))
+@push('scripts')
+<script>
+(function () {
+    const chartDatasets = {{ \Illuminate\Support\Js::from($financialChart) }};
+    let activePeriod = 'daily';
+    let barHitboxes = [];
+
+    const canvas = document.getElementById('financialSalesCanvas');
+    const tooltip = document.getElementById('financialChartTooltip');
+    if (!canvas) return;
+
+    function formatRupiah(num) {
+        return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+    }
+
+    function formatShortRupiah(num) {
+        const val = Number(num || 0);
+        if (val >= 1000000) {
+            return 'Rp ' + (val / 1000000).toFixed(val % 1000000 === 0 ? 0 : 1).replace('.', ',') + ' jt';
+        }
+        if (val >= 1000) {
+            return 'Rp ' + Math.round(val / 1000).toLocaleString('id-ID') + ' rb';
+        }
+        return 'Rp ' + val;
+    }
+
+    function updateSummaryStrip(series) {
+        if (!series || !series.summary) return;
+        const s = series.summary;
+        const elRev = document.getElementById('chartSumRevenue');
+        const elPaid = document.getElementById('chartSumPaidCount');
+        const elGross = document.getElementById('chartSumGross');
+        const elOrders = document.getElementById('chartSumTotalOrders');
+        const elAvg = document.getElementById('chartSumAvg');
+        const elPeak = document.getElementById('chartSumPeak');
+        const elPeakLbl = document.getElementById('chartSumPeakLabel');
+        const elBadge = document.getElementById('chartPeriodBadge');
+
+        if (elBadge) elBadge.textContent = series.title || '';
+        if (elRev) elRev.textContent = formatRupiah(s.total_revenue);
+        if (elPaid) elPaid.textContent = (s.total_paid_orders || 0) + ' transaksi selesai/lunas';
+        if (elGross) elGross.textContent = formatRupiah(s.total_gross_sales);
+        if (elOrders) elOrders.textContent = 'Total ' + (s.total_orders || 0) + ' pesanan masuk';
+        if (elAvg) elAvg.textContent = formatRupiah(s.avg_revenue);
+        if (elPeak) elPeak.textContent = formatRupiah(s.peak_revenue);
+        if (elPeakLbl) elPeakLbl.textContent = 'Tertinggi pada: ' + (s.peak_label || '-');
+    }
+
+    function renderFinancialChart() {
+        const series = chartDatasets[activePeriod];
+        if (!series || !series.points) return;
+
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const width = Math.max(300, rect.width);
+        const height = Math.max(220, rect.height);
+
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        ctx.clearRect(0, 0, width, height);
+
+        const padLeft = 68;
+        const padRight = 18;
+        const padTop = 20;
+        const padBottom = 38;
+        const plotW = width - padLeft - padRight;
+        const plotH = height - padTop - padBottom;
+
+        const points = series.points;
+        const count = points.length;
+        let maxVal = 0;
+        points.forEach(pt => {
+            maxVal = Math.max(maxVal, Number(pt.revenue || 0), Number(pt.gross_sales || 0));
+        });
+        if (maxVal <= 0) maxVal = 100000;
+        else maxVal = Math.ceil(maxVal * 1.15 / 10000) * 10000;
+
+        // Horizontal grid lines & Y-axis labels
+        const gridSteps = 4;
+        ctx.font = '600 10px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        for (let i = 0; i <= gridSteps; i++) {
+            const ratio = i / gridSteps;
+            const y = padTop + plotH - (ratio * plotH);
+            const val = Math.round(maxVal * ratio);
+
+            ctx.strokeStyle = i === 0 ? '#D2D6D3' : '#ECEEED';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padLeft, y);
+            ctx.lineTo(width - padRight, y);
+            ctx.stroke();
+
+            ctx.fillStyle = '#7A847E';
+            ctx.fillText(formatShortRupiah(val), padLeft - 8, y);
+        }
+
+        // Draw bars & collect hitboxes
+        barHitboxes = [];
+        const groupW = plotW / Math.max(1, count);
+        const barW = Math.min(34, Math.max(10, groupW * 0.44));
+
+        const lineCoords = [];
+
+        points.forEach((pt, idx) => {
+            const centerX = padLeft + (idx * groupW) + (groupW / 2);
+            const grossVal = Number(pt.gross_sales || 0);
+            const revVal = Number(pt.revenue || 0);
+
+            const grossH = Math.max(grossVal > 0 ? 4 : 0, (grossVal / maxVal) * plotH);
+            const revH = Math.max(revVal > 0 ? 4 : 0, (revVal / maxVal) * plotH);
+
+            const xBar = centerX - (barW / 2);
+            const yGross = padTop + plotH - grossH;
+            const yRev = padTop + plotH - revH;
+
+            // Gross background bar (Pesanan Non-Batal)
+            if (grossH > 0) {
+                ctx.fillStyle = '#DCE6E0';
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(xBar, yGross, barW, grossH, [6, 6, 0, 0]) : ctx.rect(xBar, yGross, barW, grossH);
+                ctx.fill();
+            }
+
+            // Verified Revenue bar (Omzet Lunas / Selesai)
+            if (revH > 0) {
+                ctx.fillStyle = '#2F6B4F';
+                ctx.beginPath();
+                ctx.roundRect ? ctx.roundRect(xBar, yRev, barW, revH, [6, 6, 0, 0]) : ctx.rect(xBar, yRev, barW, revH);
+                ctx.fill();
+            }
+
+            const activeTopY = revVal > 0 ? yRev : yGross;
+            lineCoords.push({ x: centerX, y: activeTopY });
+
+            // X-axis label
+            ctx.fillStyle = '#555D58';
+            ctx.font = '600 10px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(pt.label || '', centerX, padTop + plotH + 10);
+
+            barHitboxes.push({
+                xLeft: padLeft + (idx * groupW),
+                xRight: padLeft + ((idx + 1) * groupW),
+                centerX: centerX,
+                topY: Math.min(yGross, yRev),
+                point: pt
+            });
+        });
+
+        // Smooth trend line connecting bar peaks
+        if (lineCoords.length > 1) {
+            ctx.strokeStyle = '#1B1F1D';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            lineCoords.forEach((pt, i) => {
+                if (i === 0) ctx.moveTo(pt.x, pt.y);
+                else ctx.lineTo(pt.x, pt.y);
+            });
+            ctx.stroke();
+
+            lineCoords.forEach(pt => {
+                ctx.fillStyle = '#FFFFFF';
+                ctx.strokeStyle = '#1B1F1D';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            });
+        }
+    }
+
+    window.switchDashboardChartPeriod = function (period) {
+        if (!chartDatasets[period]) return;
+        activePeriod = period;
+
+        ['daily', 'weekly', 'monthly'].forEach(p => {
+            const btn = document.getElementById('chartTabBtn_' + p);
+            if (!btn) return;
+            if (p === period) {
+                btn.className = 'chart-period-btn px-3 py-1.5 rounded-lg transition cursor-pointer bg-ink-black text-white shadow-2xs';
+            } else {
+                btn.className = 'chart-period-btn px-3 py-1.5 rounded-lg transition cursor-pointer text-muted-text hover:text-ink-black';
+            }
+        });
+
+        updateSummaryStrip(chartDatasets[period]);
+        renderFinancialChart();
+    };
+
+    canvas.addEventListener('mousemove', function (e) {
+        if (!tooltip || !barHitboxes.length) return;
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left;
+        const my = e.clientY - rect.top;
+
+        const hit = barHitboxes.find(b => mx >= b.xLeft && mx <= b.xRight);
+        if (!hit) {
+            tooltip.classList.add('hidden');
+            return;
+        }
+
+        const p = hit.point;
+        tooltip.innerHTML =
+            '<div class="font-bold text-emerald-300 mb-1">' + (p.full_label || p.label) + '</div>' +
+            '<div class="flex justify-between gap-3"><span>Omzet Lunas:</span><strong class="font-mono">' + formatRupiah(p.revenue) + '</strong></div>' +
+            '<div class="flex justify-between gap-3 text-stone-300"><span>Total Non-Batal:</span><span class="font-mono">' + formatRupiah(p.gross_sales) + '</span></div>' +
+            '<div class="flex justify-between gap-3 text-stone-300 pt-1 mt-1 border-t border-white/15"><span>Transaksi:</span><span class="font-mono">' + (p.orders_count || 0) + ' pesanan (' + (p.paid_count || 0) + ' lunas)</span></div>';
+
+        tooltip.classList.remove('hidden');
+        const tipW = tooltip.offsetWidth || 185;
+        let leftPos = hit.centerX - (tipW / 2);
+        leftPos = Math.max(8, Math.min(rect.width - tipW - 8, leftPos));
+        const topPos = Math.max(8, hit.topY - 78);
+
+        tooltip.style.left = leftPos + 'px';
+        tooltip.style.top = topPos + 'px';
+    });
+
+    canvas.addEventListener('mouseleave', function () {
+        if (tooltip) tooltip.classList.add('hidden');
+    });
+
+    window.addEventListener('resize', renderFinancialChart);
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderFinancialChart);
+    } else {
+        renderFinancialChart();
+    }
+})();
+</script>
+@endpush
+@endif
 @endsection
