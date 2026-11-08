@@ -64,7 +64,7 @@
             </div>
         @endif
 
-        <!-- Full Catalog Grid (Popular Dish Floating Plate Layout + Expandable Options / Add to Cart on Click) -->
+        <!-- Full Catalog Grid (Popular Dish Floating Plate Layout + Animated Expandable Options on Click) -->
         @if(count($filteredMenu) > 0)
             <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-start gap-x-6 gap-y-20 pt-16 pb-16">
                 @foreach($filteredMenu as $index => $item)
@@ -90,6 +90,7 @@
                     <div class="popular-dish-card group relative bg-white border border-stone-200/80 rounded-[2rem] p-5 pt-18 sm:pt-20 pb-5 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-fit self-start"
                          data-category="{{ $item['category'] }}"
                          data-item-id="{{ $item['id'] }}"
+                         data-price="{{ $item['price'] ?? 0 }}"
                          onclick="togglePopularDishOptions(this)">
                         
                         <!-- Floating Circular Plate -->
@@ -99,7 +100,7 @@
                                  class="w-full h-full object-cover rounded-full">
                         </div>
 
-                        <!-- Card Body: Name & Price ONLY ("cm keterangan harga sma nama", add keranjang tidak langsung muncul) -->
+                        <!-- Card Body: Name & Price -->
                         <div class="text-center pt-2">
                             <h3 class="font-editorial text-lg sm:text-xl font-bold text-neutral-900 leading-snug line-clamp-1 group-hover:text-black transition-colors">
                                 {{ $item['name'] }}
@@ -114,7 +115,7 @@
                             </div>
                         </div>
 
-                        <!-- Options Panel: Expands on Click ("nanti kalau di-klik baru muncul") -->
+                        <!-- Options Panel: Animasi halus muncul ketika kartu diklik -->
                         <div class="product-options-panel border-stone-150/80"
                              onclick="event.stopPropagation()">
                             
@@ -172,10 +173,10 @@
                             @endif
 
                             @if($txSettings['is_any_mode_active'] ?? true)
-                            <!-- Add to Cart Button (Muncul setelah kartu diklik) -->
+                            <!-- Add to Cart Button (Muncul dengan animasi saat diklik) -->
                             <button type="button" 
                                     onclick="event.stopPropagation(); submitPopularDishOrder(this.closest('.popular-dish-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')" 
-                                    class="w-full py-2.5 px-4 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-neutral-900/15 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
+                                    class="w-full py-2.5 px-4 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-neutral-900/15 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer mt-2">
                                 <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
                                 <span>+ Add to Cart</span>
                             </button>

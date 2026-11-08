@@ -45,21 +45,51 @@
     .cart-custom-scroll::-webkit-scrollbar-thumb { background: #ded8ce; border-radius: 9999px; }
     .cart-custom-scroll::-webkit-scrollbar-thumb:hover { background: #9c968f; }
 
-    /* Expandable Menu Options Panel */
+    /* Expandable Menu Options & Add to Cart Panel with Smooth Spring Animation */
     .product-options-panel {
         max-height: 0;
         opacity: 0;
         overflow: hidden;
         pointer-events: none;
-        transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, margin 0.3s ease, padding 0.3s ease;
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 1px dashed transparent;
+        transform: translateY(-8px);
+        transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    margin-top 0.35s ease,
+                    padding-top 0.35s ease,
+                    border-color 0.3s ease;
     }
+
     .popular-dish-card.active .product-options-panel {
         max-height: 500px;
         opacity: 1;
+        overflow: visible;
         pointer-events: auto;
         margin-top: 0.85rem;
         padding-top: 0.85rem;
-        border-top: 1px dashed rgba(44, 40, 37, 0.15);
+        border-top-color: rgba(44, 40, 37, 0.15);
+        transform: translateY(0);
+    }
+
+    .popular-dish-card {
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.3s ease;
+    }
+
+    .popular-dish-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .popular-dish-card.active {
+        border-color: #2c2825;
+        box-shadow: 0 20px 40px -10px rgba(44, 40, 37, 0.18);
+        transform: translateY(-2px);
     }
 
     #modalZendoMap { z-index: 10; }
@@ -938,9 +968,13 @@
     window.togglePopularDishOptions = function(cardEl) {
         if (!cardEl) return;
         const wasActive = cardEl.classList.contains('active');
+
+        // Tutup semua kartu lain yang sedang terbuka
         document.querySelectorAll('.popular-dish-card.active').forEach(c => {
             if (c !== cardEl) c.classList.remove('active');
         });
+
+        // Toggle kartu yang diklik (klik lagi = tutup)
         cardEl.classList.toggle('active', !wasActive);
     };
 

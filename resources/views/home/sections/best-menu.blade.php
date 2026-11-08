@@ -175,7 +175,7 @@
             <div class="flex-grow h-px bg-gradient-to-l from-transparent via-neutral-300 to-transparent"></div>
         </div>
 
-        <!-- 10 Menu Cards Grid (1 Baris 5: 5 Columns per Row + Expandable Options / Add to Cart on Click) -->
+        <!-- 10 Menu Cards Grid (1 Baris 5: 5 Columns per Row + Animated Expandable Options on Click) -->
         <div id="recommendations-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-start gap-x-5 gap-y-20 pt-16 transition-all duration-300 mb-2 mt-6">
             @foreach($recommendations as $index => $item)
                 @php
@@ -186,6 +186,7 @@
                 <div class="rec-card popular-dish-card group relative rounded-[2rem] p-4 sm:p-5 pt-16 sm:pt-20 pb-5 bg-white border border-stone-200/80 shadow-md hover:shadow-xl hover:border-neutral-400 transition-all duration-300 cursor-pointer h-fit self-start"
                      data-category="{{ $item['category'] }}"
                      data-item-id="{{ $item['id'] }}"
+                     data-price="{{ $item['price'] ?? 0 }}"
                      onclick="togglePopularDishOptions(this)">
                     
                     <!-- Floating Circular Plate (Overflows top of card) -->
@@ -195,7 +196,7 @@
                              class="w-full h-full object-cover rounded-full">
                     </div>
 
-                    <!-- Card Body: Name & Price ONLY ("bentuknya segini aja", add keranjang tidak langsung muncul) -->
+                    <!-- Card Body: Name & Price -->
                     <div class="text-center pt-2">
                         <h4 class="card-title font-editorial text-base sm:text-lg font-bold leading-snug line-clamp-1 text-neutral-900 group-hover:text-black transition-colors" title="{{ $item['name'] }}">
                             {{ $item['name'] }}
@@ -210,7 +211,7 @@
                         </div>
                     </div>
 
-                    <!-- Expandable Panel ("harus di klik dulu baru muncul") -->
+                    <!-- Expandable Panel (Animasi halus muncul ketika kartu diklik) -->
                     <div class="product-options-panel border-stone-150/80"
                          onclick="event.stopPropagation()">
                         
@@ -258,7 +259,7 @@
                                 @endif
                             </div>
                         @else
-                            <!-- Menu Tanpa Varian: Keterangan singkat bila ada, tanpa opsi radio -->
+                            <!-- Menu Tanpa Varian: Keterangan singkat deskripsi rasa -->
                             @if(!empty($item['short_info']))
                                 <p class="text-[11px] text-neutral-500 text-center mb-2.5 leading-snug line-clamp-2">
                                     {{ $item['short_info'] }}
@@ -266,10 +267,10 @@
                             @endif
                         @endif
 
-                        <!-- Add to Cart Button (Muncul setelah diklik, warna hitam elegan) -->
+                        <!-- Add to Cart Button (Muncul dengan animasi saat diklik) -->
                         <button type="button" 
                                 onclick="event.stopPropagation(); submitPopularDishOrder(this.closest('.popular-dish-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')" 
-                                class="w-full py-2 px-3 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-neutral-900/15 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer">
+                                class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-neutral-900/15 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer mt-2">
                             <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
                             <span>+ Add to Cart</span>
                         </button>
