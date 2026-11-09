@@ -1,5 +1,8 @@
 <!-- SECTION 2: ABOUT NUCOMU CAFE -->
-<section id="about" class="relative bg-[#FAFAFA] pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 overflow-hidden border-b border-[#DDDDDD]/80">
+<section id="about" 
+         class="relative pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 overflow-hidden border-b border-[#DDDDDD]/80"
+         style="background-color: #EADBC8; transition: background-color 0.8s ease;">
+
     {{-- NoScript Accessibility Fallback: Ensures content is visible if JS is disabled --}}
     <noscript>
         <style>
@@ -30,56 +33,73 @@
 
     {{-- Perimeter Decorative Element 1: Vertical Marginal Text on Left (Desktop Editorial Accent) --}}
     <div class="hidden xl:flex absolute left-5 2xl:left-8 top-1/3 -translate-y-1/2 flex-col items-center gap-6 pointer-events-none select-none z-10" aria-hidden="true">
-        <span class="vertical-lr-editorial text-[10px] font-semibold tracking-[0.3em] uppercase text-[#9E9E9E] font-body">
+        <span class="vertical-lr-editorial text-[10px] font-semibold tracking-[0.3em] uppercase text-[#7A6B60] font-body">
             NUCOMU CAFE &amp; EATERY
         </span>
-        <div class="w-px h-16 bg-[#CCCCCC]"></div>
+        <div class="w-px h-16 bg-[#54392B]/20"></div>
     </div>
 
     {{-- Perimeter Decorative Element 2: Top Right Editorial Established Timestamp --}}
     <div class="hidden sm:flex absolute right-6 sm:right-10 lg:right-16 top-10 sm:top-14 flex-col items-end pointer-events-none select-none z-10" aria-hidden="true">
         <div class="text-right">
-            <span class="block text-[11px] font-bold tracking-[0.2em] text-[#888888] uppercase font-body">EST.</span>
-            <span class="block text-[11px] font-medium tracking-[0.18em] text-[#888888] font-body">2024</span>
+            <span class="block text-[11px] font-bold tracking-[0.2em] text-[#7A6B60] uppercase font-body">EST.</span>
+            <span class="block text-[11px] font-medium tracking-[0.18em] text-[#7A6B60] font-body">2024</span>
         </div>
-        <div class="w-px h-10 bg-[#DDDDDD] mt-2"></div>
+        <div class="w-px h-10 bg-[#54392B]/20 mt-2"></div>
     </div>
 
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
-        <!-- SUBSECTION 2A: OUR STORY / ABOUT NUCOMU (MODERN ELEGANT MONOCHROME EDITORIAL) -->
+        <!-- SUBSECTION 2A: OUR STORY / ABOUT NUCOMU (ANIMATED VIDEO & DYNAMIC WARM BACKGROUNDS) -->
         <div id="our-story-section" class="mb-20 sm:mb-24 lg:mb-28">
             {{-- TWO-COLUMN MAIN CONTENT --}}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
 
-                {{-- KOLOM KIRI: ELEGANT LAYERED FLOATING FRAME DENGAN VIDEO NUCOMU CAFE --}}
+                {{-- KOLOM KIRI: ELEGANT LAYERED FLOATING FRAME DENGAN 4 ANIMASI VIDEO NUCOMU CAFE --}}
                 <div class="lg:col-span-6 flex justify-center lg:justify-start">
                     <div class="group/story-card relative w-full max-w-[440px] sm:max-w-[470px] lg:max-w-[490px] xl:max-w-[510px] p-4 sm:p-5 lg:p-6">
 
-                        {{-- 1. Lapisan Belakang (Back Plate): Abu-Abu Lembut (#A8A8A8), Rounded Corners, Rotasi -2.6 Derajat --}}
-                        <div class="story-anim-deco absolute inset-0 bg-[#A8A8A8] rounded-[28px] sm:rounded-[34px] lg:rounded-[40px] pointer-events-none z-0 shadow-md origin-center transform -rotate-2 sm:-rotate-[2.6deg]" aria-hidden="true"></div>
+                        {{-- 1. Lapisan Belakang (Back Plate): Dynamic warm matching tone, Rounded Corners, Rotasi -2.6 Derajat --}}
+                        <div id="about-backplate" 
+                             class="story-anim-deco absolute inset-0 bg-[#D5C0A8] rounded-[28px] sm:rounded-[34px] lg:rounded-[40px] pointer-events-none z-0 shadow-md origin-center transform -rotate-2 sm:-rotate-[2.6deg]"
+                             style="transition: background-color 0.8s ease;"
+                             aria-hidden="true"></div>
 
-                        {{-- 2. Frame Media Nucomu Cafe (Foto atau Video) --}}
+                        {{-- 2. Frame Media Nucomu Cafe (4 Video Animasi Sesuai Arahan) --}}
                         <div id="about-video-container"
-                             class="story-anim-photo group/carousel relative z-10 w-full rounded-[18px] sm:rounded-[22px] lg:rounded-[24px] overflow-hidden border-[3.5px] sm:border-4 border-white shadow-[0_20px_45px_-10px_rgba(0,0,0,0.22)] bg-pure-white select-none aspect-video"
-                             style="transition: background-color 0.4s ease;">
-                            @if(($brand['about_media_type'] ?? 'video') === 'video')
-                                <video id="about-video-player"
-                                       autoplay
-                                       muted
-                                       loop
-                                       playsinline
-                                       preload="auto"
-                                       class="w-full h-full object-cover block"
-                                       style="aspect-ratio: 16/9; transition: opacity 0.4s ease-in-out; opacity: 1;">
-                                    <source src="{{ $brand['about_media_url'] ?? asset('videos/tiramisu.mp4') }}" type="video/mp4">
-                                </video>
-                            @else
-                                <img src="{{ $brand['about_media_url'] ?? asset('images/reviews/dya-3.jpg') }}" 
-                                     alt="Nucomu Cafe" 
-                                     class="w-full h-full object-cover block"
-                                     style="aspect-ratio: 16/9;">
-                            @endif
+                             class="story-anim-photo group/carousel relative z-10 w-full rounded-[18px] sm:rounded-[22px] lg:rounded-[24px] overflow-hidden border-[3.5px] sm:border-4 border-white shadow-[0_20px_45px_-10px_rgba(0,0,0,0.22)] bg-neutral-900 select-none aspect-square"
+                             style="transition: background-color 0.5s ease;">
+                            
+                            <!-- Video 0: Tiramisu -->
+                            <video class="about-slide-video absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out opacity-100 z-10"
+                                   autoplay muted loop playsinline preload="auto">
+                                <source src="{{ asset('videos/tiramisu.mp4') }}" type="video/mp4">
+                            </video>
+
+                            <!-- Video 1: Cheesecake -->
+                            <video class="about-slide-video absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out opacity-0 z-0 pointer-events-none"
+                                   muted loop playsinline preload="auto">
+                                <source src="{{ asset('videos/cheesecake.mp4') }}" type="video/mp4">
+                            </video>
+
+                            <!-- Video 2: Spaghetti -->
+                            <video class="about-slide-video absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out opacity-0 z-0 pointer-events-none"
+                                   muted loop playsinline preload="auto">
+                                <source src="{{ asset('videos/spagheti.mp4') }}" type="video/mp4">
+                            </video>
+
+                            <!-- Video 3: Kopi Susu -->
+                            <video class="about-slide-video absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out opacity-0 z-0 pointer-events-none"
+                                   muted loop playsinline preload="auto">
+                                <source src="{{ asset('videos/kopsu.mp4') }}" type="video/mp4">
+                            </video>
+
+                            <!-- Badge Tag Dinamis di Atas Video (Pojok Kiri Bawah) -->
+                            <div id="about-video-badge" class="absolute bottom-3 left-3 z-30 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5 transition-all duration-300">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                <span id="about-video-badge-text">Menu 01 • Tiramisu</span>
+                            </div>
+
                         </div>
 
                         {{-- 3. Badge Logo Resmi Nucomu (Sudut Kiri Atas Foto) --}}
@@ -104,46 +124,36 @@
                     </div>
                 </div>
 
-                {{-- KOLOM KANAN: LABEL, HEADLINE EDITORIAL, DESKRIPSI & TOMBOL MENU --}}
+                {{-- KOLOM KANAN: LABEL, HEADLINE EDITORIAL, KETERANGAN MENGETIK CEPAT & TOMBOL MENU --}}
                 <div class="lg:col-span-6 flex flex-col justify-center text-left lg:pl-2">
 
                     {{-- 1. Label Section dengan Garis Aksen Tipis --}}
                     <div class="story-anim-right story-delay-1 flex items-center gap-3 mb-5">
-                        <span class="text-xs sm:text-[13px] font-bold text-[#666666] uppercase tracking-[0.22em] font-body">
-                            {{ $brand['about_label'] ?? 'OUR STORY / TENTANG KAMI' }}
+                        <span id="about-slide-label" class="text-xs sm:text-[13px] font-bold text-[#54392B] uppercase tracking-[0.22em] font-body transition-colors duration-500">
+                            SIGNATURE ARTISANAL DESSERT
                         </span>
-                        <div class="w-12 h-px bg-[#DDDDDD]" aria-hidden="true"></div>
+                        <div class="w-12 h-px bg-[#54392B]/25" aria-hidden="true"></div>
                     </div>
 
                     {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) --}}
-                    <div class="story-anim-right story-delay-2 mb-6">
-                        <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight">
-                            @if(!empty($brand['story_headline']))
-                                {{ $brand['story_headline'] }}
-                            @else
-                                <span class="block">Berawal dari Rasa,</span>
-                                <span class="block mt-1 sm:mt-1.5">Kembali karena Rindu.</span>
-                            @endif
+                    <div class="story-anim-right story-delay-2 mb-5 min-h-[72px] sm:min-h-[84px] flex items-center">
+                        <h2 id="about-slide-headline" class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight transition-opacity duration-300">
+                            Classic Italian<br>Tiramisu Nucomu
                         </h2>
                     </div>
 
-                    {{-- 3 & 4. Deskripsi Nucomu Cafe --}}
-                    <div class="space-y-4 max-w-xl text-[15px] sm:text-base text-[#666666] leading-[1.8] font-body mb-8">
+                    {{-- 3. Keterangan Nucomu Cafe: Animasi Mengetik Cepat & Selesai Baru Berubah --}}
+                    <div class="space-y-4 max-w-xl text-[15px] sm:text-base text-[#4A3B32] leading-[1.8] font-body mb-8 min-h-[110px] sm:min-h-[130px]">
                         <p class="story-anim-right story-delay-3">
-                            {{ $brand['story_p1'] ?? 'Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.' }}
+                            <span id="about-slide-typing-text"></span><span id="about-slide-typing-cursor" class="inline-block w-[2px] h-[1.1em] bg-[#1C1C1C] align-middle ml-1 animate-pulse" aria-hidden="true"></span>
                         </p>
-                        @if(!empty($brand['story_p2']))
-                            <p class="story-anim-right story-delay-4">
-                                {{ $brand['story_p2'] }}
-                            </p>
-                        @endif
                     </div>
 
-                    {{-- 5. Tombol Jelajahi Pilihan Menu --}}
+                    {{-- 4. Tombol Jelajahi Pilihan Menu --}}
                     <div class="story-anim-right story-delay-5">
-                        <a href="{{ $brand['about_button_link'] ?? '#menu' }}"
+                        <a href="#menu"
                            class="group inline-flex items-center gap-3.5 bg-[#242424] hover:bg-[#383838] active:bg-[#1A1A1A] text-white text-sm sm:text-[15px] font-medium py-3.5 px-8 rounded-full transition-colors duration-300 shadow-[0_8px_20px_-4px_rgba(36,36,36,0.3)] hover:shadow-[0_12px_28px_-6px_rgba(36,36,36,0.4)] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
-                            <span>{{ $brand['about_button_text'] ?? 'Jelajahi Pilihan Menu' }}</span>
+                            <span>Jelajahi Pilihan Menu</span>
                             <svg class="w-4 h-4 text-white transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>
@@ -156,7 +166,7 @@
 
             {{-- QUOTE SECTION: MINIMALIST EDITORIAL QUOTE CARD --}}
             <div id="story-quote-wrapper" class="mt-16 sm:mt-20 lg:mt-24">
-                <div class="relative bg-[#F2F2F2] border border-[#DDDDDD] rounded-[24px] sm:rounded-[28px] p-6 sm:p-8 lg:p-9 shadow-[0_10px_30px_rgba(0,0,0,0.03)] transition-all duration-300 hover:border-[#CCCCCC]">
+                <div class="relative bg-white/70 backdrop-blur-sm border border-[#54392B]/15 rounded-[24px] sm:rounded-[28px] p-6 sm:p-8 lg:p-9 shadow-[0_10px_30px_rgba(0,0,0,0.03)] transition-all duration-300 hover:border-[#54392B]/30">
                     
                     <div class="flex flex-col md:flex-row items-center md:items-start lg:items-center justify-between gap-6">
 
@@ -194,19 +204,19 @@
         </div>
 
         <!-- SUBSECTION 2B: FASILITAS CAFE (MODERN ELEGANT MONOCHROME — FLOATING GALLERY) -->
-        <div id="facilities" class="pt-14 sm:pt-18 lg:pt-22 border-t border-[#E5E5E5]">
+        <div id="facilities" class="pt-14 sm:pt-18 lg:pt-22 border-t border-[#54392B]/15">
             
             <!-- 1. Introduction Header (Minimal Editorial Split) -->
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#E5E5E5] gap-4 reveal-fade-up">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#54392B]/15 gap-4 reveal-fade-up">
                 <div>
-                    <span class="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.22em] font-body block mb-2">
+                    <span class="text-[11px] font-semibold text-[#7A6B60] uppercase tracking-[0.22em] font-body block mb-2">
                         OUR SPACE / FASILITAS NUCOMU
                     </span>
                     <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#1C1C1C] tracking-tight font-body leading-tight">
                         Setiap Sudut, Punya Cerita.
                     </h2>
                 </div>
-                <p class="font-body text-xs sm:text-sm text-[#666666] max-w-md font-normal leading-relaxed">
+                <p class="font-body text-xs sm:text-sm text-[#5C4E45] max-w-md font-normal leading-relaxed">
                     Dirancang dengan cermat untuk kenyamanan bekerja, kehangatan bercengkerama, hingga ketenangan beribadah.
                 </p>
             </div>
@@ -219,171 +229,197 @@
     </div>
 </section>
 
-<!-- SCRIPT: ABOUT SECTION VIDEO SEQUENCER -->
+<!-- SCRIPT: ABOUT SECTION 4 VIDEO SEQUENCER DENGAN ANIMASI MENGETIK & GANTI WARNA BACKGROUND -->
 <script>
     (function() {
-        const playlist = [
-            'video/tiramisu.mp4',
-            'video/chescake.mp4',
-            'video/spagheti.mp4',
-            'video/kopsu.mp4'
-        ];
-        let currentIndex = 0;
+        const aboutSection = document.getElementById('about');
+        const backplate = document.getElementById('about-backplate');
         const container = document.getElementById('about-video-container');
-        const video = document.getElementById('about-video-player');
-        const canvas = document.getElementById('about-video-canvas');
-        if (!video || !canvas) return;
+        const labelEl = document.getElementById('about-slide-label');
+        const headlineEl = document.getElementById('about-slide-headline');
+        const typingTextEl = document.getElementById('about-slide-typing-text');
+        const cursorEl = document.getElementById('about-slide-typing-cursor');
+        const badgeTextEl = document.getElementById('about-video-badge-text');
 
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        let animFrameId = null;
+        if (!aboutSection || !typingTextEl) return;
 
-        // Preload cache for smooth transitions
-        const preloaded = {};
-        function preloadVideo(index) {
-            const src = playlist[index];
-            if (!preloaded[src]) {
-                const v = document.createElement('video');
-                v.preload = 'auto';
-                v.src = src;
-                preloaded[src] = v;
+        const videos = container ? Array.from(container.querySelectorAll('.about-slide-video')) : [];
+
+        // Data 4 video animasi Nucomu Cafe dengan warna background, headline & keterangan
+        const slides = [
+            {
+                label: 'SIGNATURE ARTISANAL DESSERT',
+                headline: 'Classic Italian<br>Tiramisu Nucomu',
+                text: 'Lapisan ladyfingers berpadu espresso Sendang Tulungagung, krim mascarpone lembut, dan taburan cocoa powder murni pilihan untuk momen santai yang memikat rasa.',
+                badge: 'Menu 01 • Tiramisu',
+                bgColor: '#EADBC8',
+                backplateColor: '#D5C0A8'
+            },
+            {
+                label: 'BEST SELLER ARTISANAL DAIRY',
+                headline: 'Basque Burnt<br>Cheesecake',
+                text: 'Creamy baked basque cheesecake dengan burnt caramelized top yang gurih harum dan filling vanilla beans lumer di lidah, favorit sepanjang masa di Nucomu Cafe.',
+                badge: 'Menu 02 • Cheesecake',
+                bgColor: '#F6DFD2',
+                backplateColor: '#E2C4B3'
+            },
+            {
+                label: 'HEARTY ITALIAN COMFORT MEAL',
+                headline: 'Spaghetti Aglio<br>Olio Con Peperoncino',
+                text: 'Pasta spaghetti al dente berpadu tumisan bawang putih aromatik, cabai kering harum, minyak zaitun extra virgin, dan taburan peterseli segar untuk santap hangat yang lezat.',
+                badge: 'Menu 03 • Spaghetti',
+                bgColor: '#F1D2B8',
+                backplateColor: '#DAB598'
+            },
+            {
+                label: 'AUTHENTIC SPECIALTY COFFEE',
+                headline: 'Es Kopi Susu<br>Gula Aren Nucomu',
+                text: 'Racikan espresso murni dari biji kopi arabika lereng Gunung Wilis Sendang Tulungagung, berpadu susu segar gurih dingin dan sirup gula aren organik yang memanjakan hari Anda.',
+                badge: 'Menu 04 • Kopi Susu',
+                bgColor: '#D9DECF',
+                backplateColor: '#BFC7B2'
             }
+        ];
+
+        let currentIndex = 0;
+        let typingTimeout = null;
+        let pauseTimeout = null;
+        let isTyping = false;
+        let isVisible = true;
+
+        function clearTimers() {
+            if (typingTimeout) {
+                clearTimeout(typingTimeout);
+                typingTimeout = null;
+            }
+            if (pauseTimeout) {
+                clearTimeout(pauseTimeout);
+                pauseTimeout = null;
+            }
+            isTyping = false;
         }
 
-        // Preload next video while current is playing
-        preloadVideo((currentIndex + 1) % playlist.length);
+        function renderSlide(index) {
+            clearTimers();
+            const slide = slides[index];
+            if (!slide) return;
 
-        let isTransitioning = false;
-
-        function renderKopsuFrame() {
-            if (currentIndex !== 3 || video.paused || video.ended) {
-                return;
+            // 1. Ubah warna background section About & Backplate secara halus
+            aboutSection.style.backgroundColor = slide.bgColor;
+            if (backplate) {
+                backplate.style.backgroundColor = slide.backplateColor;
             }
 
-            if (video.videoWidth && (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight)) {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-            }
-
-            const w = canvas.width;
-            const h = canvas.height;
-            if (w && h) {
-                // Enlarge image (scale 1.38x) from center
-                const scale = 1.38;
-                const sw = w / scale;
-                const sh = h / scale;
-                const sx = (w - sw) / 2;
-                const sy = (h - sh) / 2;
-
-                ctx.drawImage(video, sx, sy, sw, sh, 0, 0, w, h);
-
-                const imgData = ctx.getImageData(0, 0, w, h);
-                const data32 = new Uint32Array(imgData.data.buffer);
-                const len = data32.length;
-
-                // Hero section Kopi Susu theme color #D9DECF:
-                // R: 217 (0xD9), G: 222 (0xDE), B: 207 (0xCF)
-                for (let i = 0; i < len; i++) {
-                    const pixel = data32[i];
-                    const r = pixel & 0xFF;
-                    const g = (pixel >> 8) & 0xFF;
-                    const b = (pixel >> 16) & 0xFF;
-                    const maxChannel = Math.max(r, g, b);
-
-                    // Remove dark charcoal background & blend smoothly
-                    if (maxChannel <= 48) {
-                        data32[i] = 0xFFCFDED9;
-                    } else if (maxChannel < 68) {
-                        const factor = (maxChannel - 48) / 20;
-                        const blendedR = Math.round(217 * (1 - factor) + r * factor);
-                        const blendedG = Math.round(222 * (1 - factor) + g * factor);
-                        const blendedB = Math.round(207 * (1 - factor) + b * factor);
-                        data32[i] = (0xFF << 24) | (blendedB << 16) | (blendedG << 8) | blendedR;
+            // 2. Ganti video animasi dengan crossfade halus
+            videos.forEach((video, idx) => {
+                if (idx === index) {
+                    video.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
+                    video.classList.add('opacity-100', 'z-10');
+                    video.currentTime = 0;
+                    if (isVisible && !document.hidden) {
+                        video.play().catch(function() {});
                     }
-                }
-
-                ctx.putImageData(imgData, 0, 0);
-            }
-
-            animFrameId = requestAnimationFrame(renderKopsuFrame);
-        }
-
-        function playVideoSafely() {
-            video.muted = true;
-            const promise = video.play();
-            if (promise !== undefined) {
-                promise.catch(function() {
-                    function retryPlay() {
-                        video.muted = true;
-                        video.play().then(function() {
-                            window.removeEventListener('click', retryPlay);
-                            window.removeEventListener('touchstart', retryPlay);
-                            window.removeEventListener('scroll', retryPlay);
-                        }).catch(function() {});
-                    }
-                    window.addEventListener('click', retryPlay, { once: false, passive: true });
-                    window.addEventListener('touchstart', retryPlay, { once: false, passive: true });
-                    window.addEventListener('scroll', retryPlay, { once: false, passive: true });
-                });
-            }
-        }
-
-        function transitionToNext() {
-            if (isTransitioning) return;
-            isTransitioning = true;
-
-            // Fade out active display
-            if (currentIndex === 3) {
-                canvas.style.opacity = '0';
-            } else {
-                video.style.opacity = '0';
-            }
-
-            setTimeout(function() {
-                if (animFrameId) {
-                    cancelAnimationFrame(animFrameId);
-                    animFrameId = null;
-                }
-
-                currentIndex = (currentIndex + 1) % playlist.length;
-                video.src = playlist[currentIndex];
-                video.load();
-
-                // Preload upcoming video
-                preloadVideo((currentIndex + 1) % playlist.length);
-
-                if (currentIndex === 3) {
-                    // Match container background with hero section theme color #D9DECF
-                    if (container) container.style.backgroundColor = '#D9DECF';
-                    video.style.opacity = '0';
-                    canvas.style.display = 'block';
                 } else {
-                    if (container) container.style.backgroundColor = '#FFFFFF';
-                    canvas.style.display = 'none';
-                    canvas.style.opacity = '0';
+                    video.classList.add('opacity-0', 'pointer-events-none', 'z-0');
+                    video.classList.remove('opacity-100', 'z-10');
+                    video.pause();
                 }
+            });
 
-                function onPlaying() {
-                    video.removeEventListener('playing', onPlaying);
-                    if (currentIndex === 3) {
-                        canvas.style.opacity = '1';
-                        renderKopsuFrame();
+            // 3. Update Badge, Label, dan Headline
+            if (badgeTextEl) {
+                badgeTextEl.textContent = slide.badge;
+            }
+            if (labelEl) {
+                labelEl.textContent = slide.label;
+            }
+            if (headlineEl) {
+                headlineEl.style.opacity = '0';
+                setTimeout(function() {
+                    headlineEl.innerHTML = slide.headline;
+                    headlineEl.style.opacity = '1';
+                }, 200);
+            }
+
+            // 4. Animasi Mengetik Agak Cepat untuk Keterangan
+            typingTextEl.textContent = '';
+            if (cursorEl) {
+                cursorEl.classList.remove('hidden');
+                cursorEl.style.opacity = '1';
+            }
+
+            let charIndex = 0;
+            const targetText = slide.text;
+            const typingSpeed = 18; // Agak cepat (18ms per karakter)
+            isTyping = true;
+
+            function typeNextChar() {
+                if (!isVisible || document.hidden) return;
+
+                if (charIndex < targetText.length) {
+                    typingTextEl.textContent = targetText.slice(0, charIndex + 1);
+                    charIndex++;
+                    typingTimeout = setTimeout(typeNextChar, typingSpeed);
+                } else {
+                    // Pengetikan teks telah selesai secara utuh
+                    isTyping = false;
+
+                    // "jadinya setiap teks menulis sampai selesai baru animasi nya berubah"
+                    // Tunggu jeda membaca (3.2 detik) setelah teks selesai ditulis, baru ganti ke animasi berikutnya
+                    pauseTimeout = setTimeout(function() {
+                        currentIndex = (currentIndex + 1) % slides.length;
+                        renderSlide(currentIndex);
+                    }, 3200);
+                }
+            }
+
+            // Mulai mengetik teks setelah delay singkat agar sinkron dengan transisi video
+            typingTimeout = setTimeout(typeNextChar, 250);
+        }
+
+        // Jalankan IntersectionObserver agar animasi hanya berjalan saat user melihat section About
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    isVisible = entry.isIntersecting;
+                    const activeVideo = videos[currentIndex];
+                    if (isVisible) {
+                        if (activeVideo && activeVideo.paused) {
+                            activeVideo.play().catch(function() {});
+                        }
+                        if (!isTyping && !pauseTimeout) {
+                            renderSlide(currentIndex);
+                        }
                     } else {
-                        video.style.opacity = '1';
+                        if (activeVideo && !activeVideo.paused) {
+                            activeVideo.pause();
+                        }
+                        clearTimers();
                     }
-                    isTransitioning = false;
-                }
+                });
+            }, { threshold: 0.15 });
 
-                video.addEventListener('playing', onPlaying);
-                playVideoSafely();
-            }, 400);
-        }
-
-        video.addEventListener('ended', transitionToNext);
-
-        if (document.readyState === 'complete') {
-            playVideoSafely();
+            observer.observe(aboutSection);
         } else {
-            window.addEventListener('load', playVideoSafely);
+            renderSlide(0);
         }
+
+        // Pause saat tab browser tidak aktif, resume saat kembali aktif
+        document.addEventListener('visibilitychange', function() {
+            const activeVideo = videos[currentIndex];
+            if (document.hidden) {
+                if (activeVideo && !activeVideo.paused) {
+                    activeVideo.pause();
+                }
+                clearTimers();
+            } else {
+                if (isVisible) {
+                    if (activeVideo && activeVideo.paused) {
+                        activeVideo.play().catch(function() {});
+                    }
+                    renderSlide(currentIndex);
+                }
+            }
+        });
     })();
 </script>
