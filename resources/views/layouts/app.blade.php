@@ -7,6 +7,37 @@
     <title>@yield('title', 'Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
     <meta name="description" content="@yield('meta_description', 'Nucomu Cafe — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
 
+    <!-- Anti-flicker Early State Resolver for Nucomu Opening Intro (Main Page Only) -->
+    @if(request()->routeIs('home') || request()->is('/'))
+    <script>
+        (function() {
+            try {
+                if (sessionStorage.getItem('nucomu_intro_seen') === '1') {
+                    document.documentElement.classList.add('nucomu-intro-seen');
+                } else {
+                    document.documentElement.classList.add('nucomu-intro-active');
+                }
+            } catch (e) {
+                document.documentElement.classList.add('nucomu-intro-seen');
+            }
+        })();
+    </script>
+    <style>
+        html.nucomu-intro-seen #nucomu-intro-overlay { display: none !important; }
+        html.nucomu-intro-active { overflow: hidden !important; }
+        html.nucomu-intro-active body { overflow: hidden !important; }
+    </style>
+    <noscript>
+        <style>
+            #nucomu-intro-overlay { display: none !important; }
+            html.nucomu-intro-active, html.nucomu-intro-active body { overflow: auto !important; }
+        </style>
+    </noscript>
+
+    <!-- LCP Preload for Hero Welcome Slide -->
+    <link rel="preload" as="image" href="{{ asset('images/hero/hero-welcome.webp') }}" type="image/webp" fetchpriority="high">
+    @endif
+
     <!-- Google Fonts: Cormorant Garamond, Manrope, Alex Brush & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,6 +95,11 @@
 </head>
 <body class="bg-warm-ivory text-charcoal font-body antialiased selection:bg-ink-black selection:text-warm-ivory">
 
+    <!-- Opening Intro / Preloader (Main Page Only) -->
+    @if(request()->routeIs('home') || request()->is('/'))
+        @include('home.partials.intro')
+    @endif
+
     <!-- Header Navigation -->
     @include('components.navbar')
 
@@ -85,8 +121,8 @@
     <script>
         window.NUCOMU_WA_NUMBER = "{{ config('nucomu.contact.whatsapp_number', '6281234567890') }}";
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="{{ asset('js/nucomu.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+    <script src="{{ asset('js/nucomu.js') }}" defer></script>
 
     <!-- Page-specific scripts -->
     @stack('scripts')

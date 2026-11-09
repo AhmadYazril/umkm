@@ -1453,7 +1453,7 @@ class NucomuController extends Controller
             if ($dineType === 'dine_in' && $tableNo !== '') {
                 $kasirParts[] = "[Nomor Meja: {$tableNo}]";
             } elseif ($dineType === 'take_away') {
-                $kasirParts[] = "[Bawa Pulang / Take Away]";
+                $kasirParts[] = '[Bawa Pulang / Take Away]';
             }
         }
         if ($rawNotes !== '') {

@@ -21,7 +21,7 @@ $menuCatalog = [
         'opt1_title' => 'Pilihan Telur',
         'opt1_choices' => ['Sunny Side Up', 'Over Medium', 'Well Done'],
         'opt2_title' => 'Spicy Level',
-        'opt2_choices' => ['Mild', 'Medium Spicy', 'Extra Hot']
+        'opt2_choices' => ['Mild', 'Medium Spicy', 'Extra Hot'],
     ],
     'sig-latte' => [
         'id' => 'sig-latte',
@@ -35,7 +35,7 @@ $menuCatalog = [
         'opt1_title' => 'Level Manis',
         'opt1_choices' => ['Normal (100%)', 'Less Sugar (50%)', 'Tanpa Gula (0%)'],
         'opt2_title' => 'Suhu Saji',
-        'opt2_choices' => ['Dingin / Iced', 'Hangat / Hot']
+        'opt2_choices' => ['Dingin / Iced', 'Hangat / Hot'],
     ],
     'cheesecake' => [
         'id' => 'cheesecake',
@@ -49,7 +49,7 @@ $menuCatalog = [
         'opt1_title' => 'Suhu Saji',
         'opt1_choices' => ['Chilled (Dingin)', 'Room Temp', 'Warm (Hangat)'],
         'opt2_title' => 'Extra Topping',
-        'opt2_choices' => ['Vanilla Cream', 'Berry Compote', 'Original']
+        'opt2_choices' => ['Vanilla Cream', 'Berry Compote', 'Original'],
     ],
     'spaghetti-aglio' => [
         'id' => 'spaghetti-aglio',
@@ -63,7 +63,7 @@ $menuCatalog = [
         'opt1_title' => 'Tingkat Pedas',
         'opt1_choices' => ['Mild Sedang', 'Pedas Gurih', 'Extra Pedas'],
         'opt2_title' => 'Pilihan Topping',
-        'opt2_choices' => ['Extra Parmesan', 'Crispy Beef Bits', 'Garlic Toast']
+        'opt2_choices' => ['Extra Parmesan', 'Crispy Beef Bits', 'Garlic Toast'],
     ],
     'truffle-fries' => [
         'id' => 'truffle-fries',
@@ -77,7 +77,7 @@ $menuCatalog = [
         'opt1_title' => 'Pilihan Saus',
         'opt1_choices' => ['Truffle Aioli', 'Smoky BBQ', 'Sambal Nucomu'],
         'opt2_title' => 'Pilihan Bumbu',
-        'opt2_choices' => ['Original Sea Salt', 'Nori Seaweed', 'Spicy Balado']
+        'opt2_choices' => ['Original Sea Salt', 'Nori Seaweed', 'Spicy Balado'],
     ],
     'cold-brew' => [
         'id' => 'cold-brew',
@@ -91,7 +91,7 @@ $menuCatalog = [
         'opt1_title' => 'Penyajian',
         'opt1_choices' => ['On The Rocks (Es)', 'Murni Botol Dingin'],
         'opt2_title' => 'Varian Rasa',
-        'opt2_choices' => ['Original Pure Black', 'Sweet Cold Foam']
+        'opt2_choices' => ['Original Pure Black', 'Sweet Cold Foam'],
     ],
     'matcha-uji' => [
         'id' => 'matcha-uji',
@@ -105,7 +105,7 @@ $menuCatalog = [
         'opt1_title' => 'Level Manis',
         'opt1_choices' => ['Normal Manis', 'Less Sugar', 'Tanpa Gula'],
         'opt2_title' => 'Pilihan Susu',
-        'opt2_choices' => ['Fresh Milk', 'Oat Milk (+Rp 5k)']
+        'opt2_choices' => ['Fresh Milk', 'Oat Milk (+Rp 5k)'],
     ],
     'donut-choco' => [
         'id' => 'donut-choco',
@@ -119,7 +119,7 @@ $menuCatalog = [
         'opt1_title' => 'Pilihan Glaze',
         'opt1_choices' => ['Dark Choco Pistachio', 'White Choco Almond'],
         'opt2_title' => 'Suhu Saji',
-        'opt2_choices' => ['Normal Room Temp', 'Warm Hangat']
+        'opt2_choices' => ['Normal Room Temp', 'Warm Hangat'],
     ],
     'americano' => [
         'id' => 'americano',
@@ -133,7 +133,7 @@ $menuCatalog = [
         'opt1_title' => 'Suhu Saji',
         'opt1_choices' => ['Dingin / Iced', 'Panas / Hot'],
         'opt2_title' => 'Pilihan Beans',
-        'opt2_choices' => ['House Blend Sendang', 'Single Origin Fruity']
+        'opt2_choices' => ['House Blend Sendang', 'Single Origin Fruity'],
     ],
     'tiramisu' => [
         'id' => 'tiramisu',
@@ -147,7 +147,7 @@ $menuCatalog = [
         'opt1_title' => 'Suhu Saji',
         'opt1_choices' => ['Chilled (Dingin)', 'Room Temp'],
         'opt2_title' => 'Taburan',
-        'opt2_choices' => ['Dark Cocoa Dusting', 'Extra Espresso Shot']
+        'opt2_choices' => ['Dark Cocoa Dusting', 'Extra Espresso Shot'],
     ],
     'earl-grey' => [
         'id' => 'earl-grey',
@@ -161,7 +161,7 @@ $menuCatalog = [
         'opt1_title' => 'Penyajian',
         'opt1_choices' => ['Hot Pot (Teko)', 'Iced Carafe (Dingin)'],
         'opt2_title' => 'Pemanis',
-        'opt2_choices' => ['Madu Murni', 'Gula Tebu', 'Tanpa Pemanis']
+        'opt2_choices' => ['Madu Murni', 'Gula Tebu', 'Tanpa Pemanis'],
     ],
     'velvet-cake' => [
         'id' => 'velvet-cake',
@@ -175,20 +175,20 @@ $menuCatalog = [
         'opt1_title' => 'Suhu Saji',
         'opt1_choices' => ['Chilled (Dingin)', 'Room Temp'],
         'opt2_title' => 'Pilihan Krim',
-        'opt2_choices' => ['Pure Whipped Cream', 'Ganache Glaze']
-    ]
+        'opt2_choices' => ['Pure Whipped Cream', 'Ganache Glaze'],
+    ],
 ];
 
 // Handle API POST: Create Order
 if (isset($_GET['api']) && $_GET['api'] === 'order' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!headers_sent()) {
+    if (! headers_sent()) {
         header('Content-Type: application/json; charset=utf-8');
     }
 
     $raw = file_get_contents('php://input');
     $data = json_decode($raw, true);
 
-    if (!$data || !is_array($data)) {
+    if (! $data || ! is_array($data)) {
         http_response_code(400);
         echo json_encode(['success' => false, 'message' => 'Format data tidak valid.']);
         exit;
@@ -227,7 +227,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'order' && $_SERVER['REQUEST_METHOD'
     foreach ($items as $item) {
         $itemId = $item['id'] ?? '';
         $qty = max(1, intval($item['qty'] ?? 1));
-        
+
         $unitPrice = 0;
         $itemName = $item['name'] ?? 'Menu';
         if (isset($menuCatalog[$itemId])) {
@@ -245,21 +245,21 @@ if (isset($_GET['api']) && $_GET['api'] === 'order' && $_SERVER['REQUEST_METHOD'
             'unit_price' => $unitPrice,
             'qty' => $qty,
             'line_total' => $lineTotal,
-            'options' => $item['options'] ?? ''
+            'options' => $item['options'] ?? '',
         ];
     }
 
     $deliveryFee = ($processMethod === 'zendo') ? 10000 : 0;
     $grandTotal = $subtotal + $deliveryFee;
-    $orderCode = 'NCM-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4));
+    $orderCode = 'NCM-'.date('Ymd').'-'.strtoupper(substr(uniqid(), -4));
 
     // Store in SQLite database using PDO
     try {
-        $dbPath = __DIR__ . '/nucomu_orders.sqlite';
-        $db = new PDO('sqlite:' . $dbPath);
+        $dbPath = __DIR__.'/nucomu_orders.sqlite';
+        $db = new PDO('sqlite:'.$dbPath);
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $db->exec("
+        $db->exec('
             CREATE TABLE IF NOT EXISTS orders (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 order_code TEXT UNIQUE,
@@ -285,7 +285,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'order' && $_SERVER['REQUEST_METHOD'
                 options_text TEXT,
                 FOREIGN KEY(order_id) REFERENCES orders(id)
             );
-        ");
+        ');
 
         $stmt = $db->prepare("
             INSERT INTO orders (order_code, customer_name, customer_phone, process_method, delivery_address, table_no, notes, subtotal, delivery_fee, grand_total, status)
@@ -301,15 +301,15 @@ if (isset($_GET['api']) && $_GET['api'] === 'order' && $_SERVER['REQUEST_METHOD'
             ':notes' => $notes,
             ':subtotal' => $subtotal,
             ':fee' => $deliveryFee,
-            ':total' => $grandTotal
+            ':total' => $grandTotal,
         ]);
 
         $orderId = $db->lastInsertId();
 
-        $stmtItem = $db->prepare("
+        $stmtItem = $db->prepare('
             INSERT INTO order_items (order_id, menu_name, unit_price, qty, line_total, options_text)
             VALUES (:order_id, :name, :price, :qty, :total, :options)
-        ");
+        ');
         foreach ($verifiedItems as $vItem) {
             $stmtItem->execute([
                 ':order_id' => $orderId,
@@ -317,10 +317,11 @@ if (isset($_GET['api']) && $_GET['api'] === 'order' && $_SERVER['REQUEST_METHOD'
                 ':price' => $vItem['unit_price'],
                 ':qty' => $vItem['qty'],
                 ':total' => $vItem['line_total'],
-                ':options' => $vItem['options']
+                ':options' => $vItem['options'],
             ]);
         }
-    } catch (\Throwable $e) {}
+    } catch (Throwable $e) {
+    }
 
     echo json_encode([
         'success' => true,
@@ -330,14 +331,14 @@ if (isset($_GET['api']) && $_GET['api'] === 'order' && $_SERVER['REQUEST_METHOD'
         'subtotal' => $subtotal,
         'delivery_fee' => $deliveryFee,
         'grand_total' => $grandTotal,
-        'message' => 'Pesanan Anda berhasil dikonfirmasi!'
+        'message' => 'Pesanan Anda berhasil dikonfirmasi!',
     ]);
     exit;
 }
 
 // Handle API GET: Menu list
 if (isset($_GET['api']) && $_GET['api'] === 'menu') {
-    if (!headers_sent()) {
+    if (! headers_sent()) {
         header('Content-Type: application/json; charset=utf-8');
     }
     $cat = $_GET['category'] ?? 'all';
@@ -522,7 +523,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'menu') {
 
             <!-- 3b & 3c. Grid Kartu Menu (Comfortable Grid + Overhanging Plate + Rich Options) -->
             <div class="menu-grid" id="menuGrid">
-                <?php foreach ($menuCatalog as $item): ?>
+                <?php foreach ($menuCatalog as $item) { ?>
                     <div class="menu-card-slot" 
                          data-category="<?= htmlspecialchars($item['category']) ?>" 
                          data-chef-special="<?= $item['is_chef_special'] ?>"
@@ -551,7 +552,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'menu') {
                                     <!-- Column 1 -->
                                     <div>
                                         <span class="option-group-title"><?= htmlspecialchars($item['opt1_title']) ?></span>
-                                        <?php foreach ($item['opt1_choices'] as $idx => $choice): ?>
+                                        <?php foreach ($item['opt1_choices'] as $idx => $choice) { ?>
                                             <label class="radio-pill-label">
                                                 <input type="radio" 
                                                        name="opt1_<?= htmlspecialchars($item['id']) ?>" 
@@ -559,13 +560,13 @@ if (isset($_GET['api']) && $_GET['api'] === 'menu') {
                                                        <?= $idx === 0 ? 'checked' : '' ?>>
                                                 <span><?= htmlspecialchars($choice) ?></span>
                                             </label>
-                                        <?php endforeach; ?>
+                                        <?php } ?>
                                     </div>
 
                                     <!-- Column 2 -->
                                     <div>
                                         <span class="option-group-title"><?= htmlspecialchars($item['opt2_title']) ?></span>
-                                        <?php foreach ($item['opt2_choices'] as $idx => $choice): ?>
+                                        <?php foreach ($item['opt2_choices'] as $idx => $choice) { ?>
                                             <label class="radio-pill-label">
                                                 <input type="radio" 
                                                        name="opt2_<?= htmlspecialchars($item['id']) ?>" 
@@ -573,7 +574,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'menu') {
                                                        <?= $idx === 0 ? 'checked' : '' ?>>
                                                 <span><?= htmlspecialchars($choice) ?></span>
                                             </label>
-                                        <?php endforeach; ?>
+                                        <?php } ?>
                                     </div>
                                 </div>
 
@@ -590,7 +591,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'menu') {
                         </div>
 
                     </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
 
         </div>
