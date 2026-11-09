@@ -231,7 +231,11 @@ class NucomuController extends Controller
         $transactionMode = $txSettings['transaction_mode'];
         $zendoWhatsapp = $txSettings['zendo_whatsapp_clean'];
 
-        $reservationFields = ReservationField::active()->get();
+        try {
+            $reservationFields = ReservationField::active()->get();
+        } catch (\Throwable $e) {
+            $reservationFields = collect();
+        }
 
         return view('home.index', compact(
             'activeBanners',
