@@ -71,16 +71,20 @@
                         Ruang santai bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan momen-momen sederhana yang berkesan.
                     </p>
 
-                    <!-- Quote Block with Scroll Reveal & Hover Shimmer -->
-                    <div class="footer-quote-box mt-6 flex items-stretch gap-3.5 cursor-default group/quote select-none py-1">
-                        <!-- Animated vertical line: scaleY(0) -> scaleY(1) -->
-                        <div class="w-[2px] bg-zinc-700/80 rounded-full relative overflow-hidden shrink-0 self-stretch">
-                            <div class="footer-quote-line absolute inset-0 bg-white w-full rounded-full origin-top transition-transform duration-700 ease-out" style="transform: scaleY(0);"></div>
+                    <!-- Quote Block with Scroll Reveal & Typewriter Animation -->
+                    <div class="footer-quote-box mt-6 flex items-stretch gap-3.5 cursor-pointer group/quote select-none py-1"
+                         id="footer-quote-box"
+                         title="Klik untuk memutar ulang efek ketik"
+                         role="region"
+                         aria-label="Slogan Nucomu Cafe">
+                        <!-- Animated vertical line: scaleY(0) -> scaleY(1) with glowing accent -->
+                        <div class="w-[2px] bg-zinc-700/80 rounded-full relative overflow-hidden shrink-0 self-stretch min-h-[50px]">
+                            <div class="footer-quote-line absolute inset-0 bg-white w-full rounded-full origin-top transition-transform duration-700 ease-out shadow-[0_0_8px_rgba(255,255,255,0.7)]" style="transform: scaleY(0);"></div>
                         </div>
-                        <!-- Quote text: slow fade-in and +5px right slide -->
-                        <div class="footer-quote-content py-0.5 transition-all duration-700 ease-out opacity-0 -translate-x-[5px]">
+                        <!-- Quote text: typewriter effect with reserved min-height to prevent layout shifts -->
+                        <div class="footer-quote-content py-0.5 transition-all duration-700 ease-out opacity-0 -translate-x-[5px] flex items-center min-h-[54px] sm:min-h-[58px]">
                             <p class="font-editorial italic text-lg sm:text-xl text-zinc-200 leading-snug footer-quote-text transition-all duration-300">
-                                "Tempat Kembali, Rasa yang<br>Dirindukan."
+                                <span id="footer-typewriter-target" class="footer-quote-text-target">"Tempat Kembali, Rasa yang<br>Dirindukan."</span><span id="footer-typewriter-cursor" class="footer-typewriter-cursor" aria-hidden="true"></span>
                             </p>
                         </div>
                     </div>
@@ -393,7 +397,7 @@
         70% { transform: translateY(1.5px); }
     }
 
-    /* 5. Quote Section Scroll Reveal & Hover Shimmer */
+    /* 5. Quote Section Scroll Reveal, Typewriter & Shimmer */
     .quote-revealed .footer-quote-line {
         transform: scaleY(1) !important;
     }
@@ -402,7 +406,41 @@
         transform: translateX(0) !important;
     }
 
-    .footer-quote-box:hover .footer-quote-text {
+    /* Typewriter Caret Animation */
+    .footer-typewriter-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1.1em;
+        background-color: #ffffff;
+        margin-left: 2px;
+        vertical-align: -0.1em;
+        border-radius: 9999px;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+        transition: opacity 0.15s ease;
+        opacity: 0;
+    }
+    .footer-typewriter-cursor.blinking {
+        opacity: 1 !important;
+        animation: footerCursorBlink 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .footer-typewriter-cursor.typing {
+        opacity: 1 !important;
+        animation: none;
+    }
+    @keyframes footerCursorBlink {
+        0%, 100% {
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
+        }
+        50% {
+            opacity: 0.15;
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.2);
+        }
+    }
+
+    /* Shimmer effect on text: on hover or right after finishing typing */
+    .footer-quote-box:hover .footer-quote-text-target,
+    .footer-quote-text-target.shimmering {
         background: linear-gradient(
             105deg,
             #e4e4e7 0%,
@@ -498,9 +536,14 @@
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Reveal Quote block
+                        // Reveal Quote block & Trigger Typewriter
                         const quoteBox = footerSection.querySelector('.footer-quote-box');
-                        if (quoteBox) quoteBox.classList.add('quote-revealed');
+                        if (quoteBox) {
+                            quoteBox.classList.add('quote-revealed');
+                            if (typeof startFooterQuoteTypewriter === 'function') {
+                                startFooterQuoteTypewriter();
+                            }
+                        }
 
                         // Reveal Navigation list staggered
                         const navList = footerSection.querySelector('#footer-nav-list');
@@ -515,9 +558,190 @@
         } else {
             // Direct fallback
             const quoteBox = document.querySelector('.footer-quote-box');
-            if (quoteBox) quoteBox.classList.add('quote-revealed');
+            if (quoteBox) {
+                quoteBox.classList.add('quote-revealed');
+                if (typeof startFooterQuoteTypewriter === 'function') {
+                    startFooterQuoteTypewriter();
+                }
+            }
             const navList = document.querySelector('#footer-nav-list');
             if (navList) navList.classList.add('footer-nav-visible');
         }
+
+        // --- 4. Nucomu Slogan Typewriter & Breathing Loop ---
+        let startFooterQuoteTypewriter = function() {};
+
+        (function setupQuoteTypewriter() {
+            const quoteBox = document.getElementById('footer-quote-box');
+            const quoteTarget = document.getElementById('footer-typewriter-target');
+            const quoteCursor = document.getElementById('footer-typewriter-cursor');
+
+            if (!quoteBox || !quoteTarget || !quoteCursor) return;
+
+            const line1 = '"Tempat Kembali, Rasa yang';
+            const line2 = 'Dirindukan."';
+
+            let typingTimeout = null;
+            let isHovered = false;
+            let isStarted = false;
+            let currentLine = 1;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            quoteBox.addEventListener('mouseenter', function() {
+                isHovered = true;
+            });
+
+            quoteBox.addEventListener('mouseleave', function() {
+                isHovered = false;
+            });
+
+            // Replay immediately on click
+            quoteBox.addEventListener('click', function() {
+                if (typingTimeout) clearTimeout(typingTimeout);
+                isDeleting = false;
+                currentLine = 1;
+                charIndex = 0;
+                quoteTarget.classList.remove('shimmering');
+                quoteTarget.innerHTML = '';
+                setCursorState('typing');
+                typeStep();
+            });
+
+            function setCursorState(state) {
+                if (state === 'typing') {
+                    quoteCursor.classList.remove('blinking');
+                    quoteCursor.classList.add('typing');
+                    quoteCursor.style.opacity = '1';
+                } else if (state === 'blinking') {
+                    quoteCursor.classList.remove('typing');
+                    quoteCursor.classList.add('blinking');
+                } else if (state === 'hidden') {
+                    quoteCursor.classList.remove('blinking', 'typing');
+                    quoteCursor.style.opacity = '0';
+                }
+            }
+
+            function typeStep() {
+                // Respect users who prefer reduced motion
+                if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    quoteTarget.innerHTML = line1 + '<br>' + line2;
+                    setCursorState('blinking');
+                    return;
+                }
+
+                if (!isDeleting) {
+                    setCursorState('typing');
+
+                    if (currentLine === 1) {
+                        if (charIndex < line1.length) {
+                            charIndex++;
+                            quoteTarget.innerHTML = line1.substring(0, charIndex);
+
+                            // Natural cadence: slightly longer pause at comma
+                            const char = line1.charAt(charIndex - 1);
+                            let delay = 50 + Math.random() * 25;
+                            if (char === ',') delay += 180;
+
+                            typingTimeout = setTimeout(typeStep, delay);
+                        } else {
+                            // Move to line 2 with line-break
+                            currentLine = 2;
+                            charIndex = 0;
+                            quoteTarget.innerHTML = line1 + '<br>';
+                            typingTimeout = setTimeout(typeStep, 160);
+                        }
+                    } else if (currentLine === 2) {
+                        if (charIndex < line2.length) {
+                            charIndex++;
+                            quoteTarget.innerHTML = line1 + '<br>' + line2.substring(0, charIndex);
+
+                            // Natural cadence: longer pause at period
+                            const char = line2.charAt(charIndex - 1);
+                            let delay = 50 + Math.random() * 25;
+                            if (char === '.') delay += 200;
+
+                            typingTimeout = setTimeout(typeStep, delay);
+                        } else {
+                            // Completed full sentence!
+                            setCursorState('blinking');
+
+                            // Soft light shimmer across the finished quote
+                            quoteTarget.classList.add('shimmering');
+                            setTimeout(function() {
+                                quoteTarget.classList.remove('shimmering');
+                            }, 2200);
+
+                            // Comfortable reading delay before starting smooth backspace
+                            function scheduleDelete(remainingMs) {
+                                if (isHovered) {
+                                    // Pause deleting when hovered so user can read
+                                    typingTimeout = setTimeout(function() {
+                                        scheduleDelete(1500);
+                                    }, 1000);
+                                    return;
+                                }
+
+                                if (remainingMs <= 0) {
+                                    isDeleting = true;
+                                    typeStep();
+                                } else {
+                                    const step = Math.min(500, remainingMs);
+                                    typingTimeout = setTimeout(function() {
+                                        scheduleDelete(remainingMs - step);
+                                    }, step);
+                                }
+                            }
+
+                            scheduleDelete(4500);
+                        }
+                    }
+                } else {
+                    // Backspacing
+                    if (isHovered) {
+                        setCursorState('blinking');
+                        typingTimeout = setTimeout(typeStep, 600);
+                        return;
+                    }
+
+                    setCursorState('typing');
+
+                    if (currentLine === 2) {
+                        if (charIndex > 0) {
+                            charIndex--;
+                            quoteTarget.innerHTML = line1 + '<br>' + line2.substring(0, charIndex);
+                            typingTimeout = setTimeout(typeStep, 24);
+                        } else {
+                            // Move back to line 1
+                            currentLine = 1;
+                            charIndex = line1.length;
+                            quoteTarget.innerHTML = line1;
+                            typingTimeout = setTimeout(typeStep, 30);
+                        }
+                    } else if (currentLine === 1) {
+                        if (charIndex > 0) {
+                            charIndex--;
+                            quoteTarget.innerHTML = line1.substring(0, charIndex);
+                            typingTimeout = setTimeout(typeStep, 24);
+                        } else {
+                            // Backspaced to start! Brief breath before typing again
+                            isDeleting = false;
+                            currentLine = 1;
+                            charIndex = 0;
+                            setCursorState('blinking');
+                            typingTimeout = setTimeout(typeStep, 750);
+                        }
+                    }
+                }
+            }
+
+            startFooterQuoteTypewriter = function() {
+                if (isStarted) return;
+                isStarted = true;
+                quoteTarget.innerHTML = '';
+                setCursorState('typing');
+                typingTimeout = setTimeout(typeStep, 300);
+            };
+        })();
     })();
 </script>
