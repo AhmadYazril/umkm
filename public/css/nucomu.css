@@ -13,6 +13,44 @@
     --soft-beige: #E7DED1;
     --warm-stone: #DAD7CF;
     --accent-gold: #C2A378;
+
+    /* Hero Theme Color & Navbar Dynamic Frosted Glass Variables */
+    --hero-bg-color: #140E0A;
+
+    /* ======================================================================
+       Navbar Dynamic Monochrome Color Variables
+       ====================================================================== */
+    /* Condition 1: Di atas hero gelap (.navbar--over-hero) */
+    --navbar-hero-bg: rgba(20, 14, 10, 0.50);
+    --navbar-hero-blur: 12px;
+    --navbar-hero-border: rgba(255, 255, 255, 0.12);
+    --navbar-hero-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+    --navbar-hero-text: rgba(255, 255, 255, 0.72);
+    --navbar-hero-text-hover: #FFFFFF;
+    --navbar-hero-text-active: #FFFFFF;
+    --navbar-hero-underline: #FFFFFF;
+    --navbar-hero-logo-filter: brightness(0) invert(1);
+    --navbar-hero-cart-bg: #FFFFFF;
+    --navbar-hero-cart-text: #111111;
+    --navbar-hero-cart-border: rgba(255, 255, 255, 0.30);
+    --navbar-hero-badge-bg: #111111;
+    --navbar-hero-badge-text: #FFFFFF;
+
+    /* Condition 2: Melewati hero / Section terang (.navbar--scrolled) */
+    --navbar-scrolled-bg: rgba(255, 255, 255, 0.78);
+    --navbar-scrolled-blur: 14px;
+    --navbar-scrolled-border: rgba(0, 0, 0, 0.08);
+    --navbar-scrolled-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+    --navbar-scrolled-text: #4A4A4A;
+    --navbar-scrolled-text-hover: #111111;
+    --navbar-scrolled-text-active: #111111;
+    --navbar-scrolled-underline: #111111;
+    --navbar-scrolled-logo-filter: none;
+    --navbar-scrolled-cart-bg: #111111;
+    --navbar-scrolled-cart-text: #FFFFFF;
+    --navbar-scrolled-cart-border: rgba(0, 0, 0, 0.15);
+    --navbar-scrolled-badge-bg: #FFFFFF;
+    --navbar-scrolled-badge-text: #111111;
 }
 
 html {
@@ -77,11 +115,228 @@ body {
     border: 1px solid rgba(231, 222, 209, 0.65);
 }
 
-/* Navbar Scroll Transition */
+/* ==========================================================================
+   Navbar Adaptive Frosted Glass & Section-Based State Transitions
+   - Base / Default & Condition 2 (.navbar--scrolled): Clean white frosted glass
+   - Condition 1 (.navbar--over-hero): Dark frosted glass over dark hero/section
+   - Visibility (.navbar-visible / .navbar-hidden): Hide on scroll down, show on scroll up
+   ========================================================================== */
 #main-navbar {
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    background-color: var(--navbar-scrolled-bg);
+    backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    border-bottom: 1px solid var(--navbar-scrolled-border);
+    box-shadow: var(--navbar-scrolled-shadow);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.3s ease,
+                backdrop-filter 0.3s ease,
+                -webkit-backdrop-filter 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
 }
 
+/* Base link & element defaults within navbar */
+#main-navbar .desktop-nav-link {
+    color: var(--navbar-scrolled-text);
+    transition: color 0.3s ease;
+}
+
+#main-navbar .desktop-nav-link:hover {
+    color: var(--navbar-scrolled-text-hover);
+}
+
+#main-navbar .desktop-nav-link.active {
+    color: var(--navbar-scrolled-text-active);
+    font-weight: 700;
+}
+
+#main-navbar #navbar-brand-logo,
+#main-navbar a[aria-label="Nucomu Cafe"] img {
+    filter: var(--navbar-scrolled-logo-filter);
+    transition: filter 0.3s ease, transform 0.2s ease;
+}
+
+#main-navbar .mobile-hamburger-btn,
+#main-navbar button[aria-label="Buka Menu Navigasi"] {
+    color: var(--navbar-scrolled-text);
+    transition: color 0.3s ease;
+}
+
+#main-navbar .mobile-hamburger-btn:hover,
+#main-navbar button[aria-label="Buka Menu Navigasi"]:hover {
+    color: var(--navbar-scrolled-text-hover);
+}
+
+/* Base Cart Button Defaults */
+#main-navbar .nav-cart-btn {
+    background-color: var(--navbar-scrolled-cart-bg);
+    color: var(--navbar-scrolled-cart-text);
+    border: 1px solid var(--navbar-scrolled-cart-border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+
+#main-navbar .nav-cart-btn:hover {
+    filter: brightness(1.1);
+}
+
+#main-navbar .nav-cart-btn #nav-cart-badge {
+    background-color: var(--navbar-scrolled-badge-bg);
+    color: var(--navbar-scrolled-badge-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ==========================================================================
+   Kondisi 1: Di atas section / hero bertema GELAP (.navbar--over-hero)
+   ========================================================================== */
+#main-navbar.navbar--over-hero {
+    background-color: var(--navbar-hero-bg);
+    backdrop-filter: blur(var(--navbar-hero-blur, 12px));
+    -webkit-backdrop-filter: blur(var(--navbar-hero-blur, 12px));
+    border-bottom: 1px solid var(--navbar-hero-border);
+    box-shadow: var(--navbar-hero-shadow);
+}
+
+#main-navbar.navbar--over-hero #navbar-brand-logo,
+#main-navbar.navbar--over-hero a[aria-label="Nucomu Cafe"] img {
+    filter: var(--navbar-hero-logo-filter);
+}
+
+#main-navbar.navbar--over-hero .desktop-nav-link {
+    color: var(--navbar-hero-text); /* rgba(255, 255, 255, 0.72) */
+}
+
+#main-navbar.navbar--over-hero .desktop-nav-link:hover {
+    color: var(--navbar-hero-text-hover); /* #FFFFFF */
+}
+
+#main-navbar.navbar--over-hero .desktop-nav-link.active {
+    color: var(--navbar-hero-text-active); /* #FFFFFF */
+    font-weight: 700;
+}
+
+#main-navbar.navbar--over-hero .nav-link::after {
+    background-color: var(--navbar-hero-underline); /* #FFFFFF */
+}
+
+#main-navbar.navbar--over-hero .mobile-hamburger-btn,
+#main-navbar.navbar--over-hero button[aria-label="Buka Menu Navigasi"] {
+    color: var(--navbar-hero-text);
+}
+
+#main-navbar.navbar--over-hero .mobile-hamburger-btn:hover,
+#main-navbar.navbar--over-hero button[aria-label="Buka Menu Navigasi"]:hover {
+    color: var(--navbar-hero-text-hover);
+}
+
+#main-navbar.navbar--over-hero .nav-cart-btn {
+    background-color: var(--navbar-hero-cart-bg); /* #FFFFFF */
+    color: var(--navbar-hero-cart-text); /* #111111 */
+    border: 1px solid var(--navbar-hero-cart-border);
+}
+
+#main-navbar.navbar--over-hero .nav-cart-btn:hover {
+    background-color: #F0F0F0;
+    color: #111111;
+}
+
+#main-navbar.navbar--over-hero .nav-cart-btn #nav-cart-badge {
+    background-color: var(--navbar-hero-badge-bg); /* #111111 */
+    color: var(--navbar-hero-badge-text); /* #FFFFFF */
+}
+
+/* ==========================================================================
+   Kondisi 2: Di atas section TERANG (.navbar--scrolled, .navbar-scrolled, .navbar--past-hero)
+   ========================================================================== */
+#main-navbar.navbar--scrolled,
+#main-navbar.navbar-scrolled,
+#main-navbar.navbar--past-hero {
+    background-color: var(--navbar-scrolled-bg);
+    backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    border-bottom: 1px solid var(--navbar-scrolled-border);
+    box-shadow: var(--navbar-scrolled-shadow);
+}
+
+#main-navbar.navbar--scrolled #navbar-brand-logo,
+#main-navbar.navbar-scrolled #navbar-brand-logo,
+#main-navbar.navbar--past-hero #navbar-brand-logo,
+#main-navbar.navbar--scrolled a[aria-label="Nucomu Cafe"] img,
+#main-navbar.navbar-scrolled a[aria-label="Nucomu Cafe"] img,
+#main-navbar.navbar--past-hero a[aria-label="Nucomu Cafe"] img {
+    filter: var(--navbar-scrolled-logo-filter);
+}
+
+#main-navbar.navbar--scrolled .desktop-nav-link,
+#main-navbar.navbar-scrolled .desktop-nav-link,
+#main-navbar.navbar--past-hero .desktop-nav-link {
+    color: var(--navbar-scrolled-text); /* #4A4A4A */
+}
+
+#main-navbar.navbar--scrolled .desktop-nav-link:hover,
+#main-navbar.navbar-scrolled .desktop-nav-link:hover,
+#main-navbar.navbar--past-hero .desktop-nav-link:hover {
+    color: var(--navbar-scrolled-text-hover); /* #111111 */
+}
+
+#main-navbar.navbar--scrolled .desktop-nav-link.active,
+#main-navbar.navbar-scrolled .desktop-nav-link.active,
+#main-navbar.navbar--past-hero .desktop-nav-link.active {
+    color: var(--navbar-scrolled-text-active); /* #111111 */
+    font-weight: 700;
+}
+
+#main-navbar.navbar--scrolled .nav-link::after,
+#main-navbar.navbar-scrolled .nav-link::after,
+#main-navbar.navbar--past-hero .nav-link::after {
+    background-color: var(--navbar-scrolled-underline); /* #111111 */
+}
+
+#main-navbar.navbar--scrolled .mobile-hamburger-btn,
+#main-navbar.navbar-scrolled .mobile-hamburger-btn,
+#main-navbar.navbar--past-hero .mobile-hamburger-btn,
+#main-navbar.navbar--scrolled button[aria-label="Buka Menu Navigasi"],
+#main-navbar.navbar-scrolled button[aria-label="Buka Menu Navigasi"],
+#main-navbar.navbar--past-hero button[aria-label="Buka Menu Navigasi"] {
+    color: var(--navbar-scrolled-text);
+}
+
+#main-navbar.navbar--scrolled .mobile-hamburger-btn:hover,
+#main-navbar.navbar-scrolled .mobile-hamburger-btn:hover,
+#main-navbar.navbar--past-hero .mobile-hamburger-btn:hover,
+#main-navbar.navbar--scrolled button[aria-label="Buka Menu Navigasi"]:hover,
+#main-navbar.navbar-scrolled button[aria-label="Buka Menu Navigasi"]:hover,
+#main-navbar.navbar--past-hero button[aria-label="Buka Menu Navigasi"]:hover {
+    color: var(--navbar-scrolled-text-hover);
+}
+
+#main-navbar.navbar--scrolled .nav-cart-btn,
+#main-navbar.navbar-scrolled .nav-cart-btn,
+#main-navbar.navbar--past-hero .nav-cart-btn {
+    background-color: var(--navbar-scrolled-cart-bg); /* #111111 */
+    color: var(--navbar-scrolled-cart-text); /* #FFFFFF */
+    border: 1px solid var(--navbar-scrolled-cart-border);
+}
+
+#main-navbar.navbar--scrolled .nav-cart-btn:hover,
+#main-navbar.navbar-scrolled .nav-cart-btn:hover,
+#main-navbar.navbar--past-hero .nav-cart-btn:hover {
+    background-color: #222222;
+    color: #FFFFFF;
+}
+
+#main-navbar.navbar--scrolled .nav-cart-btn #nav-cart-badge,
+#main-navbar.navbar-scrolled .nav-cart-btn #nav-cart-badge,
+#main-navbar.navbar--past-hero .nav-cart-btn #nav-cart-badge {
+    background-color: var(--navbar-scrolled-badge-bg); /* #FFFFFF */
+    color: var(--navbar-scrolled-badge-text); /* #111111 */
+}
+
+/* Perilaku Hide/Show saat scroll (translateY independen dari warna) */
 #main-navbar.navbar-hidden {
     transform: translateY(-100%);
 }
@@ -104,8 +359,8 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #E06D24;
-    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    background-color: currentColor;
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
 }
 
 .nav-link:hover::after,
@@ -114,8 +369,21 @@ body {
 }
 
 .nav-link.active {
-    color: #E06D24;
     font-weight: 700;
+}
+
+/* Accessible Monochrome Focus Visible States */
+#main-navbar a:focus-visible,
+#main-navbar button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+#main-navbar .nav-cart-btn:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 9999px;
 }
 
 /* Image Zoom & Editorial Crop */
@@ -692,6 +960,122 @@ body {
     }
     .hero-steam-container {
         display: none !important;
+    }
+}
+
+/* ==========================================================================
+   Hero Slider Controls (Arrows & Bottom Pill Pagination)
+   - Default: Hidden (opacity: 0, pointer-events: none)
+   - Visible strictly on #home:hover (when mouse is inside hero area)
+   - Subtle slide offset: translateX(±8px) for arrows, translateY(8px) for pill
+   - Accessible: Keyboard navigation (:focus-visible) reveals controls
+   - Touch devices (@media (hover: none) and (pointer: coarse)): Always visible
+   ========================================================================== */
+
+/* Panah Navigasi Kiri & Kanan (Default: Sembunyi) */
+#home .hero-nav-arrow {
+    opacity: 0;
+    pointer-events: none;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: opacity 0.3s ease,
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+#home .hero-prev-arrow {
+    transform: translate(-8px, -50%);
+}
+
+#home .hero-next-arrow {
+    transform: translate(8px, -50%);
+}
+
+/* Bottom Controls Pill Bar (Dots & Pause/Play) (Default: Sembunyi) */
+#home .hero-controls-bar,
+#home #desktop-hero-dots,
+#home #mobile-hero-dots {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 8px);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    transition: opacity 0.3s ease,
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+/* State Muncul: HANYA saat kursor berada di dalam area container hero (#home:hover) */
+#home:hover .hero-nav-arrow {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#home:hover .hero-prev-arrow {
+    transform: translate(0, -50%);
+}
+
+#home:hover .hero-next-arrow {
+    transform: translate(0, -50%);
+}
+
+#home:hover .hero-controls-bar,
+#home:hover #desktop-hero-dots,
+#home:hover #mobile-hero-dots {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+
+/* Aksesibilitas Keyboard: Tampil HANYA saat kontrol menerima fokus keyboard (:focus-visible) */
+#home .hero-nav-arrow:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, -50%);
+    outline: 2px solid #1C1C1C;
+    outline-offset: 2px;
+}
+
+#home .hero-controls-bar:has(:focus-visible),
+#home .hero-controls-bar:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+
+#home .hero-dot-btn:focus-visible,
+#home #hero-pause-btn:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+/* Interaksi hover khusus saat kursor tepat di atas tombol panah */
+#home .hero-nav-arrow:hover {
+    transform: translate(0, -50%) scale(1.08);
+}
+
+#home .hero-nav-arrow:active {
+    transform: translate(0, -50%) scale(0.95);
+}
+
+/* Layar Sentuh murni tanpa cursor hover (@media (hover: none) and (pointer: coarse)) */
+@media (hover: none) and (pointer: coarse) {
+    #home .hero-nav-arrow {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(0, -50%);
+    }
+
+    #home .hero-controls-bar,
+    #home #desktop-hero-dots,
+    #home #mobile-hero-dots {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(-50%, 0);
     }
 }
 

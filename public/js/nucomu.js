@@ -321,6 +321,13 @@ function initHeroSlider() {
         }
     });
 
+    // Pastikan klik mouse pada kontrol tidak meninggalkan fokus yang menempel
+    heroSection.querySelectorAll('.hero-nav-arrow, .hero-dot-btn, #hero-pause-btn').forEach(btn => {
+        btn.addEventListener('mouseup', function() {
+            this.blur();
+        });
+    });
+
     // Pause when hero receives focus, resume on blur
     heroSection.addEventListener('focusin', () => {
         if (!heroIsPaused) {
@@ -552,7 +559,6 @@ function renderHeroSlide(index) {
     const heroSection = document.getElementById('home');
     const slides = getActiveHeroSlides();
     const dots = getActiveHeroDots();
-    const counterCurrent = document.getElementById('hero-current-num');
     if (!slides.length) return;
 
     if (index >= slides.length) {
@@ -564,14 +570,21 @@ function renderHeroSlide(index) {
     if (heroSection) {
         const bgColor = slides[index]?.getAttribute('data-bg-color') || HERO_BG_COLORS[index] || '#140E0A';
         heroSection.style.backgroundColor = bgColor;
+        document.documentElement.style.setProperty('--hero-bg-color', bgColor);
+
+        // Sinkronisasi data-navbar-theme pada hero section dengan tema slide aktif
+        const slideTheme = slides[index]?.getAttribute('data-theme');
+        // Hanya slide bertema 'dark' (Slide 0) yang mengaktifkan mode gelap navbar
+        // Slide bertema 'light' (seperti Slide 3 Strawberry Basque Cheesecake atau Slide 2) dan 'gold' menjadi 'light'
+        const isDarkSlide = (slideTheme === 'dark');
+        heroSection.setAttribute('data-navbar-theme', isDarkSlide ? 'dark' : 'light');
+
+        if (typeof window.updateNavbarTheme === 'function') {
+            window.updateNavbarTheme();
+        }
     }
 
-    // 2. Update Counter Text "01", "02", etc.
-    if (counterCurrent) {
-        counterCurrent.textContent = String(index + 1).padStart(2, '0');
-    }
-
-    // 3. Switch Slides & Update Accessibility
+    // 2. Switch Slides & Update Accessibility
     slides.forEach((slide, idx) => {
         if (idx === index) {
             slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
@@ -606,44 +619,112 @@ function renderHeroSlide(index) {
 }
 
 /* ==========================================================================
-   1. NAVBAR SCROLL BEHAVIOR (Hide on Scroll Down, Show on Scroll Up)
+   1. NAVBAR SCROLL & SECTION-BASED ADAPTIVE FROSTED GLASS
+   - Deteksi tema section yang berada tepat di bawah navbar (probe di titik tengah navbar)
+   - Section gelap (hero slide gelap, footer) -> .navbar--over-hero (kaca gelap, teks & logo terang)
+   - Section terang (hero slide kue strawberry/terang, about, menu, dll) -> .navbar--scrolled (putih transparan 78%, teks & logo gelap)
+   - Sembunyi saat scroll ke bawah (navbar-hidden), muncul saat scroll ke atas (navbar-visible)
+   - Update tema berjalan konsisten meskipun navbar sedang tersembunyi
    ========================================================================== */
 function initNavbarScroll() {
     const navbar = document.getElementById('main-navbar');
     if (!navbar) return;
 
-    let lastScrollY = window.scrollY;
+    let lastScrollY = Math.max(0, window.scrollY);
     let ticking = false;
     const scrollThreshold = 10;
+
+    /**
+     * Menentukan tema ('dark' atau 'light') berdasarkan section yang berada tepat di bawah navbar.
+     * Menggunakan titik uji vertikal (probeY) sebesar 50% tinggi navbar.
+     */
+    function detectSectionThemeAtNavbar() {
+        const navHeight = navbar.offsetHeight || 70;
+        const probeY = navHeight * 0.5;
+
+        // Ambil seluruh section dan footer di halaman
+        const candidateSections = document.querySelectorAll('section, footer, [data-navbar-theme]');
+        for (let i = 0; i < candidateSections.length; i++) {
+            const sec = candidateSections[i];
+            const rect = sec.getBoundingClientRect();
+            // Cek apakah probeY berada dalam rentang batas atas & bawah section
+            if (rect.top <= probeY && rect.bottom > probeY) {
+                const theme = sec.getAttribute('data-navbar-theme');
+                return theme === 'dark' ? 'dark' : 'light';
+            }
+        }
+
+        // Halaman tanpa hero atau tanpa section gelap default ke kondisi terang ('light')
+        return 'light';
+    }
+
+    /**
+     * Terapkan tema navbar secara eksklusif (hanya satu kondisi aktif pada satu waktu)
+     */
+    function applyNavbarTheme() {
+        const theme = detectSectionThemeAtNavbar();
+
+        if (theme === 'dark') {
+            navbar.classList.add('navbar--over-hero');
+            navbar.classList.remove('navbar--scrolled', 'navbar-scrolled', 'navbar--past-hero');
+        } else {
+            navbar.classList.add('navbar--scrolled');
+            navbar.classList.remove('navbar--over-hero');
+        }
+    }
+
+    // Ekspor fungsi agar dapat dipanggil oleh slider hero atau event lain
+    window.updateNavbarTheme = applyNavbarTheme;
+
+    function updateNavbar() {
+        const currentScrollY = Math.max(0, window.scrollY);
+        const scrollDifference = currentScrollY - lastScrollY;
+
+        // 1. Selalu perbarui tema navbar (tetap sinkron meskipun navbar sedang tersembunyi)
+        applyNavbarTheme();
+
+        // 2. Perilaku Sembunyi/Muncul saat Scroll (Hide on Scroll Down, Show on Scroll Up)
+        if (currentScrollY < 80) {
+            // Dekat puncak halaman: selalu tampilkan navbar
+            navbar.classList.remove('navbar-hidden');
+            navbar.classList.add('navbar-visible');
+        } else if (scrollDifference > scrollThreshold) {
+            // Scrolling ke BAWAH: sembunyikan navbar dengan transisi translateY
+            navbar.classList.add('navbar-hidden');
+            navbar.classList.remove('navbar-visible');
+        } else if (scrollDifference < -scrollThreshold) {
+            // Scrolling ke ATAS: tampilkan navbar kembali dengan transisi translateY
+            navbar.classList.remove('navbar-hidden');
+            navbar.classList.add('navbar-visible');
+        }
+
+        lastScrollY = currentScrollY;
+    }
 
     window.addEventListener('scroll', () => {
         if (!ticking) {
             window.requestAnimationFrame(() => {
-                const currentScrollY = window.scrollY;
-                const scrollDifference = currentScrollY - lastScrollY;
-
-                // Always show navbar near top of page
-                if (currentScrollY < 80) {
-                    navbar.classList.remove('navbar-hidden');
-                    navbar.classList.add('navbar-visible');
-                    navbar.classList.remove('shadow-md');
-                } else if (scrollDifference > scrollThreshold) {
-                    // Scrolling DOWN -> Hide navbar smoothly
-                    navbar.classList.add('navbar-hidden');
-                    navbar.classList.remove('navbar-visible');
-                } else if (scrollDifference < -scrollThreshold) {
-                    // Scrolling UP -> Show navbar smoothly
-                    navbar.classList.remove('navbar-hidden');
-                    navbar.classList.add('navbar-visible');
-                    navbar.classList.add('shadow-md');
-                }
-
-                lastScrollY = currentScrollY;
+                updateNavbar();
                 ticking = false;
             });
             ticking = true;
         }
     }, { passive: true });
+
+    window.addEventListener('resize', () => {
+        updateNavbar();
+    }, { passive: true });
+
+    window.addEventListener('nucomu:intro-done', () => {
+        updateNavbar();
+    }, { passive: true });
+
+    window.addEventListener('load', () => {
+        updateNavbar();
+    }, { passive: true });
+
+    // Set status awal saat fungsi dijalankan
+    updateNavbar();
 }
 
 /* ==========================================================================

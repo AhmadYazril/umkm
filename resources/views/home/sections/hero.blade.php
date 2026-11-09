@@ -205,7 +205,8 @@
 
 
 <section id="home" 
-         class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero"
+         data-navbar-theme="dark"
+         class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero pt-16 sm:pt-20"
          style="background-color: #EADBC8; transition: background-color 0.8s ease;">
 
     <!-- Soft feathered ambient glow for warmth and depth -->
@@ -689,13 +690,13 @@
         @if($activeBanners->count() > 1)
             <button type="button" 
                     onclick="prevHeroSlide()" 
-                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    class="hero-nav-arrow hero-prev-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                     aria-label="Slide Sebelumnya">
                 <span class="material-symbols-outlined text-xl">chevron_left</span>
             </button>
             <button type="button" 
                     onclick="nextHeroSlide()" 
-                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    class="hero-nav-arrow hero-next-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                     aria-label="Slide Berikutnya">
                 <span class="material-symbols-outlined text-xl">chevron_right</span>
             </button>
@@ -703,7 +704,7 @@
 
         <!-- Desktop Indicator Dots -->
         @if($activeBanners->count() > 1)
-            <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="desktop-hero-dots">
+            <div class="hero-controls-bar hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="desktop-hero-dots">
                 @foreach($activeBanners as $b)
                     <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#E06D24]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
                 @endforeach
@@ -711,7 +712,7 @@
         @endif
 
         <!-- Mobile Indicator Dots (4 Slide Hero Bawaan) -->
-        <div class="flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="mobile-hero-dots">
+        <div class="hero-controls-bar flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="mobile-hero-dots">
             <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1"></button>
             <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
             <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
@@ -722,7 +723,7 @@
         <!-- Left Carousel Arrow -->
         <button type="button" 
                 onclick="prevHeroSlide()" 
-                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/85 hover:bg-white text-[#1C1C1C] border border-stone-200/80 backdrop-blur-md shadow-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                 aria-label="Slide Sebelumnya">
             <span class="material-symbols-outlined text-xl">chevron_left</span>
         </button>
@@ -730,20 +731,13 @@
         <!-- Right Carousel Arrow -->
         <button type="button" 
                 onclick="nextHeroSlide()" 
-                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/85 hover:bg-white text-[#1C1C1C] border border-stone-200/80 backdrop-blur-md shadow-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                 aria-label="Slide Berikutnya">
             <span class="material-symbols-outlined text-xl">chevron_right</span>
         </button>
 
-        <!-- Bottom Controls Bar: Counter, Dots, Pause/Play -->
-        <div class="hero-controls-bar absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-black/40 hover:bg-black/55 backdrop-blur-md px-4 py-1.5 sm:py-2 rounded-full border border-white/15 transition-all text-white select-none shadow-sm">
-            <!-- Counter "01 / 04" -->
-            <span class="hero-counter-text font-mono text-xs tracking-widest font-semibold">
-                <span id="hero-current-num">01</span> / <span id="hero-total-num">{{ sprintf('%02d', $totalSlides) }}</span>
-            </span>
-
-            <span class="w-px h-3.5 bg-white/25" aria-hidden="true"></span>
-
+        <!-- Bottom Controls Bar: Dots, Pause/Play (Clean Balanced Pill without Counter) -->
+        <div class="hero-controls-bar absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 sm:gap-3 bg-black/45 hover:bg-black/60 backdrop-blur-md pl-3.5 pr-2.5 py-1.5 sm:py-2 rounded-full border border-white/20 text-white select-none shadow-md">
             <!-- Slide Indicator Dots -->
             <div class="flex items-center gap-1.5" role="tablist" aria-label="Indikator Slide Hero">
                 @foreach($slides as $idx => $s)
@@ -758,13 +752,14 @@
                 @endforeach
             </div>
 
+            <!-- Divider -->
             <span class="w-px h-3.5 bg-white/25" aria-hidden="true"></span>
 
             <!-- Pause / Play Button -->
             <button type="button"
                     id="hero-pause-btn"
                     onclick="toggleHeroAutoplay()"
-                    class="w-6 h-6 flex items-center justify-center text-white/80 hover:text-white transition-colors focus:outline-none cursor-pointer"
+                    class="w-6 h-6 flex items-center justify-center text-white/80 hover:text-white transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white/50 rounded-full cursor-pointer"
                     aria-label="Jeda tayangan slide otomatis"
                     title="Jeda / Putar tayangan otomatis">
                 <span id="hero-pause-icon" class="material-symbols-outlined text-base">pause</span>
