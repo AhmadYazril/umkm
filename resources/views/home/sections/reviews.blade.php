@@ -1,6 +1,27 @@
 <!-- SECTION 6: UNIFIED REVIEWS SECTION (MONOCHROME EDITORIAL) -->
 @php
     $allReviewsCollection = collect($dynamicReviews ?? []);
+    if ($allReviewsCollection->isEmpty()) {
+        $allReviewsCollection = collect(config('nucomu.reviews', []))->map(function (array $review) {
+            $rawImages = $review['review_images'] ?? (! empty($review['review_image']) ? [$review['review_image']] : []);
+            $resolvedImages = collect($rawImages)->filter()->map(function (string $img) {
+                return (! str_starts_with($img, 'http://') && ! str_starts_with($img, 'https://')) ? asset(ltrim($img, '/')) : $img;
+            })->values()->all();
+
+            return [
+                'name' => $review['name'] ?? 'Pengunjung Nucomu',
+                'handle' => $review['handle'] ?? 'Local Guide · Ulasan',
+                'avatar_url' => $review['avatar'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+                'rating' => (int) ($review['rating'] ?? 5),
+                'content' => $review['comment'] ?? '',
+                'order_tag' => $review['order_tag'] ?? 'Menu Nucomu',
+                'time_ago' => $review['time_ago'] ?? 'Baru-baru ini',
+                'review_image' => $resolvedImages[0] ?? null,
+                'review_images' => $resolvedImages,
+                'source' => 'google_maps',
+            ];
+        });
+    }
 @endphp
 <section id="reviews" class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 relative z-10 bg-[#FAF8F5] text-[#1C1C1C] overflow-hidden border-b border-[#E5E5E5]">
 

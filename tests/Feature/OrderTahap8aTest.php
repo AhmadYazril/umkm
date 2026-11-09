@@ -658,4 +658,25 @@ class OrderTahap8aTest extends TestCase
         $resUnavail->assertStatus(422);
         $this->assertStringContainsString('sedang tidak tersedia', $resUnavail->json('message'));
     }
+
+    public function test_hiding_zendo_only_hides_zendo_and_keeps_grabfood_visible(): void
+    {
+        // Default: both Zendo and GrabFood are visible on homepage
+        $resDefault = $this->get(route('home'));
+        $resDefault->assertStatus(200);
+        $resDefault->assertSee('Delivery via WhatsApp (Zendo)');
+        $resDefault->assertSee('Pesan Menu Favoritmu di GrabFood');
+        $resDefault->assertSee('Reservasi Tempat & Acara');
+
+        // When Zendo is disabled/hidden: only Zendo card is hidden; GrabFood & Reservasi remain visible
+        Setting::set('order_mode_zendo_tracking', '0');
+        Setting::set('order_mode_zendo_chat', '0');
+        Setting::set('order_mode_zendo', '0');
+
+        $resZendoHidden = $this->get(route('home'));
+        $resZendoHidden->assertStatus(200);
+        $resZendoHidden->assertDontSee('Delivery via WhatsApp (Zendo)');
+        $resZendoHidden->assertSee('Pesan Menu Favoritmu di GrabFood');
+        $resZendoHidden->assertSee('Reservasi Tempat & Acara');
+    }
 }
