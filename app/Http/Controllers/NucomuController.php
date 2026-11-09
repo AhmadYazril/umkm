@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -263,17 +264,96 @@ class NucomuController extends Controller
     }
 
     /**
-     * Get pinned reviews from the local database that have been curated by the admin.
-     * Only reviews with is_pinned = true and is_active = true are returned.
+     * Combine all Google Maps reviews (live Places API if configured + config Google Maps reviews)
+     * with website-submitted reviews from the local database.
      */
     protected function getCombinedReviews(): Collection
     {
-        $pinnedReviews = collect();
+        $googleMapsReviews = collect();
+
+        // 1. Optional live Google Places API reviews if API key & Place ID are configured
         try {
-            $pinnedReviews = Testimonial::where('is_active', true)
-                ->where('is_pinned', true)
+            $apiKey = config('nucomu.integrations.google_places_api_key');
+            $placeId = config('nucomu.integrations.google_place_id');
+
+            if (! empty($apiKey) && ! empty($placeId)) {
+                $livePlacesReviews = Cache::remember('nucomu_google_places_reviews', now()->addHours(6), function () use ($apiKey, $placeId) {
+                    $response = Http::timeout(4)->get('https://maps.googleapis.com/maps/api/place/details/json', [
+                        'place_id' => $placeId,
+                        'fields' => 'reviews,rating,user_ratings_total',
+                        'language' => 'id',
+                        'key' => $apiKey,
+                    ]);
+
+                    if ($response->successful()) {
+                        return $response->json('result.reviews', []);
+                    }
+
+                    return [];
+                });
+
+                if (! empty($livePlacesReviews) && is_array($livePlacesReviews)) {
+                    foreach ($livePlacesReviews as $item) {
+                        $googleMapsReviews->push([
+                            'name' => $item['author_name'] ?? 'Pengunjung Google Maps',
+                            'handle' => 'Ulasan Google Maps',
+                            'avatar_url' => $item['profile_photo_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+                            'rating' => (int) ($item['rating'] ?? 5),
+                            'content' => $item['text'] ?? 'Tempat nyaman dan kopi nikmat di Nucomu Cafe.',
+                            'order_tag' => 'Google Maps Review',
+                            'time_ago' => $item['relative_time_description'] ?? 'Google Maps',
+                            'source' => 'google_maps',
+                            'source_label' => 'Google Maps',
+                        ]);
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Fallback to configured Google Maps reviews
+        }
+
+        // 2. Include all Google Maps reviews from config('nucomu.reviews')
+        $configGoogleReviews = collect(config('nucomu.reviews', []))->map(function (array $review) {
+            $rawImages = $review['review_images'] ?? (! empty($review['review_image']) ? [$review['review_image']] : []);
+            $resolvedImages = collect($rawImages)->filter()->map(function (string $img) {
+                if (! str_starts_with($img, 'http://') && ! str_starts_with($img, 'https://')) {
+                    return asset(ltrim($img, '/'));
+                }
+
+                return $img;
+            })->values()->all();
+
+            $primaryImage = $resolvedImages[0] ?? null;
+
+            return [
+                'name' => $review['name'] ?? 'Pengunjung Nucomu',
+                'handle' => $review['handle'] ?? 'Local Guide · Ulasan',
+                'avatar_url' => $review['avatar'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+                'rating' => (int) ($review['rating'] ?? 5),
+                'content' => $review['comment'] ?? '',
+                'order_tag' => $review['order_tag'] ?? 'Menu Nucomu',
+                'time_ago' => $review['time_ago'] ?? 'Baru-baru ini',
+                'review_image' => $primaryImage,
+                'review_images' => $resolvedImages,
+                'source' => 'google_maps',
+            ];
+        });
+
+        $googleMapsReviews = $configGoogleReviews->concat($googleMapsReviews)->unique(function (array $item) {
+            return strtolower($item['name'].'|'.$item['content']);
+        })->values();
+
+        // 3. Website reviews stored in database (submitted via website form, not sent to Google Maps)
+        $websiteReviews = collect();
+        try {
+            $sampleNames = ['rina s.', 'bagas p.', 'dewi a.', 'fajar m.', 'siti n.', 'reza k.', 'anisa t.', 'budi r.'];
+            $websiteReviews = Testimonial::where('is_active', true)
+                ->where('is_sample', false)
                 ->latest()
                 ->get()
+                ->reject(function (Testimonial $t) use ($sampleNames) {
+                    return in_array(strtolower(trim($t->name)), $sampleNames, true);
+                })
                 ->map(function (Testimonial $t) {
                     $imgUrl = $t->review_image ?? null;
                     if ($imgUrl && ! str_starts_with($imgUrl, 'http://') && ! str_starts_with($imgUrl, 'https://')) {
@@ -281,29 +361,28 @@ class NucomuController extends Controller
                     }
 
                     return [
-                        'id' => $t->id,
                         'name' => $t->name,
                         'handle' => $t->handle ?? 'Pengunjung Nucomu',
                         'avatar_url' => $t->avatar_url ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-                        'avatar' => $t->avatar_url ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
                         'rating' => (int) $t->rating,
-                        'stars' => (int) $t->rating,
                         'content' => $t->content,
-                        'text' => $t->content,
-                        'comment' => $t->content,
                         'order_tag' => $t->order_tag ?? 'Menu Nucomu',
                         'time_ago' => $t->created_at ? $t->created_at->diffForHumans() : 'Baru saja',
                         'review_image' => $imgUrl,
                         'review_images' => $imgUrl ? [$imgUrl] : [],
                         'source' => $t->source ?: 'website',
-                        'is_pinned' => true,
                     ];
                 });
         } catch (\Throwable $e) {
             // Keep empty if DB is unavailable
         }
 
-        return $pinnedReviews;
+        // Put all reviews together in one unified list (Google Maps reviews + Website reviews)
+        if (session()->has('review_success')) {
+            return $websiteReviews->concat($googleMapsReviews)->values();
+        }
+
+        return $googleMapsReviews->concat($websiteReviews)->values();
     }
 
     /**
