@@ -4,196 +4,276 @@
 @section('meta_description', 'Jelajahi seluruh daftar menu minuman kopi, non-kopi, dessert artisanal, dan makanan ringan di Nucomu Cafe Tulungagung.')
 
 @section('content')
-<div class="pt-28 pb-20 bg-warm-ivory min-h-screen border-b border-light-gray/60">
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+<div class="pt-28 pb-24 bg-[#FAF8F5] min-h-screen border-b border-light-gray/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Breadcrumbs & Back Link -->
-        <div class="mb-8">
-            <a href="{{ route('home') }}#menu" class="inline-flex items-center space-x-1.5 text-xs uppercase tracking-editorial-widest font-semibold text-medium-gray hover:text-ink-black transition-colors">
+        <div class="mb-6">
+            <a href="{{ route('home') }}#menu" class="inline-flex items-center space-x-1.5 text-xs uppercase tracking-editorial-widest font-semibold text-neutral-400 hover:text-neutral-900 transition-colors">
                 <span class="material-symbols-outlined text-sm">arrow_back</span>
                 <span>Kembali ke Beranda</span>
             </a>
         </div>
 
         <!-- Page Header -->
-        <div class="text-center max-w-2xl mx-auto mb-14">
-            <span class="text-[11px] font-semibold uppercase tracking-editorial-widest text-medium-gray block mb-2">KATALOG LENGKAP MENU</span>
-            <h1 class="font-editorial text-4xl sm:text-6xl font-bold text-ink-black tracking-tight">Katalog Sajian Nucomu</h1>
-            <p class="font-body text-xs sm:text-sm text-charcoal/70 mt-3 leading-relaxed">
-                Seluruh racikan kopi single origin Sendang Tulungagung, seduhan daun teh bergamot, ceremonial matcha, dan kue buatan rumah.
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-[11px] font-semibold uppercase tracking-widest text-neutral-400 block mb-2">KATALOG LENGKAP MENU</span>
+            <h1 class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 tracking-tight">Katalog Sajian Nucomu</h1>
+            <p class="font-body text-xs sm:text-sm text-neutral-500 mt-2.5 leading-relaxed">
+                Koleksi racikan kopi single origin Sendang Tulungagung, seduhan daun teh bergamot, ceremonial matcha, dan sajian hangat dapur Nucomu.
             </p>
         </div>
 
-        <!-- Category Filter Tabs (Dinamis dari Admin) -->
-        <div class="flex justify-center items-center flex-wrap gap-2.5 mb-14 border-b border-light-gray pb-4">
+        <!-- 1. Baris Kategori Dinamis dari Database (Teks dengan Indikator Titik Aktif) -->
+        <div class="flex items-center justify-center flex-wrap gap-x-6 sm:gap-x-10 gap-y-3 mb-14 border-b border-stone-200/70 pb-3" role="tablist">
+            @php
+                $activeCategories = $dbCategories->filter(function($c) {
+                    return (bool) $c->is_active;
+                });
+            @endphp
+
+            <!-- Tab Semua Menu -->
             <a href="{{ route('menu.all', ['category' => 'all']) }}" 
-               class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'all' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                Semua Menu
+               role="tab"
+               aria-selected="{{ $selectedCategory === 'all' ? 'true' : 'false' }}"
+               class="group flex flex-col items-center focus:outline-none transition-colors">
+                <span class="text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors {{ $selectedCategory === 'all' ? 'text-neutral-900 font-bold' : 'text-neutral-400 group-hover:text-neutral-700' }}">
+                    Semua Menu
+                </span>
+                @if($selectedCategory === 'all')
+                    <span class="w-1.5 h-1.5 rounded-full bg-neutral-900 mt-1.5"></span>
+                @else
+                    <span class="w-1.5 h-1.5 rounded-full bg-transparent mt-1.5"></span>
+                @endif
             </a>
-            @if(isset($dbCategories) && $dbCategories->isNotEmpty())
-                @foreach($dbCategories as $cat)
-                    <a href="{{ route('menu.all', ['category' => $cat->slug]) }}" 
-                       class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === $cat->slug ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                        {{ $cat->name }}
-                    </a>
-                @endforeach
-            @else
-                <a href="{{ route('menu.all', ['category' => 'coffee']) }}" 
-                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'coffee' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                    Coffee
+
+            <!-- Tab Kategori dari Database (Urutan Admin) -->
+            @foreach($activeCategories as $catItem)
+                @php
+                    $isCurrentCatActive = ($selectedCategory === $catItem->slug);
+                @endphp
+                <a href="{{ route('menu.all', ['category' => $catItem->slug]) }}" 
+                   role="tab"
+                   aria-selected="{{ $isCurrentCatActive ? 'true' : 'false' }}"
+                   class="group flex flex-col items-center focus:outline-none transition-colors">
+                    <span class="text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors {{ $isCurrentCatActive ? 'text-neutral-900 font-bold' : 'text-neutral-400 group-hover:text-neutral-700' }}">
+                        {{ $catItem->name }}
+                    </span>
+                    @if($isCurrentCatActive)
+                        <span class="w-1.5 h-1.5 rounded-full bg-neutral-900 mt-1.5"></span>
+                    @else
+                        <span class="w-1.5 h-1.5 rounded-full bg-transparent mt-1.5"></span>
+                    @endif
                 </a>
-                <a href="{{ route('menu.all', ['category' => 'non-coffee']) }}" 
-                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'non-coffee' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                    Non-Coffee
-                </a>
-                <a href="{{ route('menu.all', ['category' => 'dessert']) }}" 
-                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'dessert' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                    Dessert
-                </a>
-                <a href="{{ route('menu.all', ['category' => 'snacks']) }}" 
-                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'snacks' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                    Food & Snacks
-                </a>
-            @endif
+            @endforeach
         </div>
 
         @if(! ($txSettings['is_any_mode_active'] ?? true))
-            <div class="max-w-2xl mx-auto mb-10 p-4 rounded-2xl bg-white/80 border border-soft-beige text-charcoal/80 text-center text-xs sm:text-sm">
-                <i class="fa-solid fa-circle-info mr-1.5 text-ink-black"></i>
+            <div class="max-w-2xl mx-auto mb-10 p-4 rounded-2xl bg-white/90 border border-stone-200 text-stone-600 text-center text-xs sm:text-sm shadow-xs">
+                <i class="fa-solid fa-circle-info mr-1.5 text-neutral-900"></i>
                 Pemesanan online sedang tidak tersedia saat ini. Silakan berkunjung langsung ke kafe kami.
             </div>
         @endif
 
-        <!-- Full Catalog Grid (Popular Dish Floating Plate Layout + Animated Expandable Options on Click) -->
+        <!-- 2 & 3. N-Column Layout (5 Kolom Desktop, 3 Kolom Tablet, 2 Kolom Mobile) -->
         @if(count($filteredMenu) > 0)
-            <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-start gap-x-6 gap-y-20 pt-16 pb-16">
+            <!-- Source Cards Pool (Rendered in Blade, distributed into N independent vertical columns via JS) -->
+            <div id="catalog-cards-pool" style="display: none;" aria-hidden="true">
                 @foreach($filteredMenu as $index => $item)
                     @php
+                        $itemSlug = \Illuminate\Support\Str::slug($item['id'] ?? $item['name']);
                         $cat = $item['category'] ?? 'coffee';
-                        $unit = $item['unit'] ?? ($cat === 'coffee' || $cat === 'beverages' ? '/cup' : ($cat === 'dessert' ? '/slice' : '/porsi'));
-                        $hasOptions = !isset($item['options']) || !empty($item['options']);
-                        $opt1 = $hasOptions ? ($item['options'][0] ?? match($cat) {
-                            'coffee', 'beverages' => ['title' => 'Level Manis', 'choices' => ['Normal (100%)', 'Less Sugar (50%)', 'Tanpa Gula (0%)']],
-                            'meals' => ['title' => 'Pilihan Telur', 'choices' => ['Sunny Side Up', 'Over Medium', 'Well Done']],
-                            'dessert' => ['title' => 'Suhu Saji', 'choices' => ['Chilled (Dingin)', 'Room Temp', 'Warm (Hangat)']],
-                            'snacks' => ['title' => 'Pilihan Saus', 'choices' => ['Truffle Mayo', 'Smoky BBQ', 'Sambal Nucomu']],
-                            default => ['title' => 'Pilihan Rasa', 'choices' => ['Normal', 'Less Sugar', 'Tanpa Gula']]
-                        }) : null;
-                        $opt2 = $hasOptions ? ($item['options'][1] ?? match($cat) {
-                            'coffee', 'beverages' => ['title' => 'Penyajian', 'choices' => ['Dingin / Iced', 'Hangat / Hot', 'Extra Oat Milk']],
-                            'meals' => ['title' => 'Spicy Level', 'choices' => ['Mild', 'Medium Spicy', 'Extra Hot']],
-                            'dessert' => ['title' => 'Extra Topping', 'choices' => ['Vanilla Cream', 'Berry Compote', 'Original']],
-                            'snacks' => ['title' => 'Porsi', 'choices' => ['Regular Size', 'Sharing Size', 'Extra Parmesan']],
-                            default => ['title' => 'Penyajian', 'choices' => ['Dingin', 'Hangat']]
-                        }) : null;
+                        // Tentukan satuan berdasarkan data atau kategori fallback tanpa menambah kolom DB
+                        $unit = $item['unit'] ?? match(strtolower($cat)) {
+                            'coffee', 'kopi', 'non-coffee', 'non-kopi', 'beverages' => '/cup',
+                            'dessert' => '/slice',
+                            'snack', 'snacks', 'makanan', 'meals' => '/porsi',
+                            default => '/porsi'
+                        };
+                        $hasOptions = !empty($item['options']);
+                        $opt1 = $hasOptions ? ($item['options'][0] ?? null) : null;
+                        $opt2 = $hasOptions ? ($item['options'][1] ?? null) : null;
+                        $isAvailable = $item['is_available'] ?? true;
                     @endphp
-                    <div class="popular-dish-card group relative bg-white border border-stone-200/80 rounded-[2rem] p-5 pt-18 sm:pt-20 pb-5 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer h-fit self-start"
-                         data-category="{{ $item['category'] }}"
-                         data-item-id="{{ $item['id'] }}"
-                         data-price="{{ $item['price'] ?? 0 }}"
-                         onclick="togglePopularDishOptions(this)">
+                    <div class="menu-card-wrapper" 
+                         data-index="{{ $index }}"
+                         data-category="{{ $item['category'] ?? '' }}"
+                         data-id="{{ $item['id'] ?? $itemSlug }}"
+                         data-name="{{ $item['name'] }}"
+                         data-price="{{ $item['price'] }}">
                         
-                        <!-- Floating Circular Plate -->
-                        <div class="dish-plate-wrap absolute -top-12 sm:-top-16 left-1/2 -translate-x-1/2 w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden p-1.5 bg-white shadow-xl border border-stone-200/90 transition-transform duration-300 group-hover:scale-105 z-10 flex items-center justify-center">
-                            <img src="{{ $item['image'] }}" 
-                                 alt="{{ $item['name'] }}" 
-                                 class="w-full h-full object-cover rounded-full">
-                        </div>
-
-                        <!-- Card Body: Name & Price -->
-                        <div class="text-center pt-2">
-                            <h3 class="font-editorial text-lg sm:text-xl font-bold text-neutral-900 leading-snug line-clamp-1 group-hover:text-black transition-colors">
-                                {{ $item['name'] }}
-                            </h3>
-                            <div class="mt-1 flex items-baseline justify-center space-x-1">
-                                <span class="card-price font-editorial text-lg font-bold text-neutral-900">
-                                    {{ $item['price_formatted'] }}
-                                </span>
-                                <span class="text-xs text-neutral-400 font-normal">
-                                    {{ $unit }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Options Panel: Animasi halus muncul ketika kartu diklik -->
-                        <div class="product-options-panel border-stone-150/80"
-                             onclick="event.stopPropagation()">
+                        <article class="menu-card {{ !$isAvailable ? 'opacity-65 grayscale-[30%]' : '' }}"
+                                 data-card-id="cat-{{ $itemSlug }}-{{ $index }}"
+                                 data-id="{{ $item['id'] ?? $itemSlug }}"
+                                 data-name="{{ $item['name'] }}"
+                                 data-price="{{ $item['price'] }}">
                             
-                            @if($hasOptions)
-                                <div class="grid grid-cols-2 gap-3 mb-4 text-left">
-                                    <!-- Column 1 -->
-                                    @if($opt1)
-                                    <div>
-                                        <span class="text-xs font-bold text-neutral-800 block mb-2 tracking-tight">
-                                            {{ $opt1['title'] }}
+                            <!-- Header Trigger: Klik bagian atas kartu (avatar, nama, harga) untuk buka/tutup -->
+                            <button type="button" 
+                                    class="menu-card-header-btn" 
+                                    onclick="toggleMenuCard(this.closest('.menu-card'))"
+                                    aria-expanded="false"
+                                    aria-controls="drawer-cat-{{ $itemSlug }}-{{ $index }}"
+                                    title="Klik untuk membuka detail menu {{ $item['name'] }}">
+                                
+                                <!-- Foto Bulat (Avatar) Menembus Tepi Atas Kartu -->
+                                <div class="menu-card-avatar">
+                                    <img src="{{ $item['image'] }}" 
+                                         alt="{{ $item['name'] }}" 
+                                         loading="lazy" 
+                                         width="130" 
+                                         height="130"
+                                         class="w-full h-full object-cover">
+                                    @if(!$isAvailable)
+                                        <span class="absolute inset-0 bg-black/60 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center">
+                                            Habis
                                         </span>
-                                        <div class="space-y-1.5">
-                                            @foreach($opt1['choices'] as $cIdx => $choice)
-                                                <label class="flex items-center space-x-2 text-[11px] sm:text-xs text-neutral-600 cursor-pointer hover:text-neutral-900 select-none group">
-                                                    <input type="radio" 
-                                                           name="opt1_cat_{{ $item['id'] }}" 
-                                                           value="{{ $choice }}" 
-                                                           {{ $cIdx === 0 ? 'checked' : '' }}
-                                                           class="accent-neutral-900 w-3.5 h-3.5 cursor-pointer">
-                                                    <span class="group-hover:text-neutral-900">{{ $choice }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    @endif
-
-                                    <!-- Column 2 -->
-                                    @if($opt2)
-                                    <div>
-                                        <span class="text-xs font-bold text-neutral-800 block mb-2 tracking-tight">
-                                            {{ $opt2['title'] }}
-                                        </span>
-                                        <div class="space-y-1.5">
-                                            @foreach($opt2['choices'] as $cIdx => $choice)
-                                                <label class="flex items-center space-x-2 text-[11px] sm:text-xs text-neutral-600 cursor-pointer hover:text-neutral-900 select-none group">
-                                                    <input type="radio" 
-                                                           name="opt2_cat_{{ $item['id'] }}" 
-                                                           value="{{ $choice }}" 
-                                                           {{ $cIdx === 0 ? 'checked' : '' }}
-                                                           class="accent-neutral-900 w-3.5 h-3.5 cursor-pointer">
-                                                    <span class="group-hover:text-neutral-900">{{ $choice }}</span>
-                                                </label>
-                                            @endforeach
-                                        </div>
-                                    </div>
                                     @endif
                                 </div>
-                            @else
-                                <!-- Menu Tanpa Varian: Keterangan singkat bila ada, tanpa opsi radio -->
-                                @if(!empty($item['short_info']))
-                                    <p class="text-[11px] text-neutral-500 text-center mb-3 leading-snug line-clamp-2">
-                                        {{ $item['short_info'] }}
-                                    </p>
-                                @endif
-                            @endif
 
-                            @if($txSettings['is_any_mode_active'] ?? true)
-                            <!-- Add to Cart Button (Muncul dengan animasi saat diklik) -->
-                            <button type="button" 
-                                    onclick="event.stopPropagation(); submitPopularDishOrder(this.closest('.popular-dish-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')" 
-                                    class="w-full py-2.5 px-4 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-neutral-900/15 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer mt-2">
-                                <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
-                                <span>+ Add to Cart</span>
+                                <!-- Judul Menu Serif -->
+                                <h3 class="menu-card-name" title="{{ $item['name'] }}">
+                                    {{ $item['name'] }}
+                                </h3>
+
+                                <!-- Baris Harga & Satuan (font-variant-numeric: lining-nums) -->
+                                <div class="menu-card-price-row">
+                                    <span class="font-editorial-num">{{ $item['price_formatted'] }}</span>
+                                    <span class="menu-card-unit">{{ $unit }}</span>
+                                </div>
                             </button>
-                            @endif
-                        </div>
+
+                            <!-- Drawer yang Mengintip Saat Hover (18px) dan Terbuka Penuh Saat Klik -->
+                            <div id="drawer-cat-{{ $itemSlug }}-{{ $index }}" 
+                                 class="menu-card-drawer" 
+                                 onclick="event.stopPropagation()">
+                                
+                                <!-- Garis Pemisah Tipis (Mengintip saat Hover) -->
+                                <div class="menu-card-divider"></div>
+
+                                <!-- Isi Menu (Opsi Varian / Deskripsi Singkat + Tombol Add to Cart) -->
+                                <div class="menu-card-drawer-content">
+                                    @if($hasOptions)
+                                        <div class="options-columns mb-3">
+                                            @if($opt1)
+                                            <div>
+                                                <span class="option-group-title">{{ $opt1['title'] }}</span>
+                                                <div class="space-y-0.5">
+                                                    @foreach($opt1['choices'] as $cIdx => $choice)
+                                                        <label class="radio-pill-label">
+                                                            <input type="radio" 
+                                                                   name="opt1_cat_{{ $itemSlug }}_{{ $index }}" 
+                                                                   value="{{ $choice }}" 
+                                                                   {{ $cIdx === 0 ? 'checked' : '' }}>
+                                                            <span class="truncate">{{ $choice }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            @endif
+
+                                            @if($opt2)
+                                            <div>
+                                                <span class="option-group-title">{{ $opt2['title'] }}</span>
+                                                <div class="space-y-0.5">
+                                                    @foreach($opt2['choices'] as $cIdx => $choice)
+                                                        <label class="radio-pill-label">
+                                                            <input type="radio" 
+                                                                   name="opt2_cat_{{ $itemSlug }}_{{ $index }}" 
+                                                                   value="{{ $choice }}" 
+                                                                   {{ $cIdx === 0 ? 'checked' : '' }}>
+                                                            <span class="truncate">{{ $choice }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <!-- Menu Tanpa Varian: Deskripsi singkat maks 2 baris -->
+                                        <p class="menu-card-desc">
+                                            {{ $item['short_info'] ?? 'Sajian autentik barista pilihan Nucomu Cafe.' }}
+                                        </p>
+                                    @endif
+
+                                    @if($txSettings['is_any_mode_active'] ?? true)
+                                        @if($isAvailable)
+                                            <button type="button" 
+                                                    onclick="submitMenuCardOrder(this.closest('.menu-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')"
+                                                    class="btn-add-cart"
+                                                    aria-label="Tambah {{ $item['name'] }} ke Keranjang">
+                                                <span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                                <span>+ Add to Cart</span>
+                                            </button>
+                                        @else
+                                            <button type="button" disabled class="btn-add-cart disabled">
+                                                <span>Menu Habis</span>
+                                            </button>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+
+                        </article>
                     </div>
                 @endforeach
             </div>
+
+            <!-- Dynamic N-Column Flex Container -->
+            <div id="catalog-columns-container" class="menu-columns-container pt-16 pb-16">
+                <!-- Distributed dynamically into N columns by script -->
+            </div>
+
+            <!-- Inline Distribution Trigger -->
+            <script>
+                if (typeof window.distributeMenuCards === 'function') {
+                    window.distributeMenuCards('catalog-cards-pool', 'catalog-columns-container');
+                } else {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        if (typeof window.distributeMenuCards === 'function') {
+                            window.distributeMenuCards('catalog-cards-pool', 'catalog-columns-container');
+                        }
+                    });
+                }
+            </script>
+
+            <!-- Noscript Fallback -->
+            <noscript>
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-x-4 sm:gap-x-6 gap-y-24 sm:gap-y-28 pt-16 pb-16">
+                    @foreach($filteredMenu as $index => $item)
+                        @php
+                            $itemSlug = \Illuminate\Support\Str::slug($item['id'] ?? $item['name']);
+                            $cat = $item['category'] ?? 'coffee';
+                            $unit = $item['unit'] ?? match(strtolower($cat)) {
+                                'coffee', 'kopi', 'non-coffee', 'non-kopi', 'beverages' => '/cup',
+                                'dessert' => '/slice',
+                                'snack', 'snacks', 'makanan', 'meals' => '/porsi',
+                                default => '/porsi'
+                            };
+                            $isAvailable = $item['is_available'] ?? true;
+                        @endphp
+                        <div class="menu-card">
+                            <div class="menu-card-avatar">
+                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
+                            </div>
+                            <h3 class="menu-card-name">{{ $item['name'] }}</h3>
+                            <div class="menu-card-price-row">
+                                <span class="font-editorial-num">{{ $item['price_formatted'] }}</span>
+                                <span class="menu-card-unit">{{ $unit }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </noscript>
         @else
             <!-- Empty State -->
-            <div class="text-center py-16 bg-pure-white border border-soft-beige rounded max-w-xl mx-auto p-8 shadow-sm">
-                <span class="material-symbols-outlined text-medium-gray text-5xl mb-3">coffee</span>
-                <h3 class="font-editorial text-2xl font-bold text-ink-black">Menu Belum Tersedia</h3>
-                <p class="font-body text-xs text-medium-gray mt-1 leading-relaxed">
+            <div class="text-center py-16 bg-white border border-stone-200 rounded-2xl max-w-xl mx-auto p-8 shadow-xs my-10">
+                <span class="material-symbols-outlined text-stone-400 text-5xl mb-3">coffee</span>
+                <h3 class="font-editorial text-2xl font-bold text-neutral-900">Menu Belum Tersedia</h3>
+                <p class="font-body text-xs text-neutral-500 mt-1 leading-relaxed">
                     Daftar sajian untuk kategori ini sedang disiapkan oleh barista kami.
                 </p>
-                <a href="{{ route('menu.all', ['category' => 'all']) }}" class="mt-5 inline-block text-xs font-semibold uppercase tracking-widest text-ink-black border-b border-ink-black pb-0.5">
+                <a href="{{ route('menu.all', ['category' => 'all']) }}" class="mt-5 inline-block text-xs font-semibold uppercase tracking-widest text-neutral-900 border-b border-neutral-900 pb-0.5 hover:text-neutral-600 transition-colors">
                     Kembali ke Semua Menu &rarr;
                 </a>
             </div>

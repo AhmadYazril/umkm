@@ -1641,10 +1641,23 @@ window.filterRecommendations = function(category, buttonEl) {
         if (indicator) indicator.classList.remove('hidden');
     }
 
-    // 2. Filter the 8 recommendation cards with smooth opacity transition
+    // 2. Filter recommendation cards with smooth opacity transition
+    window.activeRecommendationCategory = category;
+    const container = document.getElementById('recommendations-columns-container');
     const grid = document.getElementById('recommendations-grid');
     const emptyState = document.getElementById('recommendations-empty-state');
     const cards = document.querySelectorAll('.rec-card');
+
+    if (container && typeof window.distributeMenuCards === 'function') {
+        container.style.opacity = '0.2';
+        container.style.transform = 'translateY(4px)';
+        setTimeout(() => {
+            window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container', category);
+            container.style.opacity = '1';
+            container.style.transform = 'translateY(0)';
+        }, 180);
+        return;
+    }
 
     if (grid) {
         grid.style.opacity = '0.2';
