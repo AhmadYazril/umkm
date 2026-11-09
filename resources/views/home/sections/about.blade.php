@@ -132,6 +132,7 @@
                         <span id="about-slide-label" class="text-xs sm:text-[13px] font-bold text-[#54392B] uppercase tracking-[0.22em] font-body transition-colors duration-500">
                             SIGNATURE ARTISANAL DESSERT
                         </span>
+                        <span class="sr-only">OUR STORY / TENTANG KAMI - Berawal dari Rasa, Kembali karena Rindu.</span>
                         <div class="w-12 h-px bg-[#54392B]/25" aria-hidden="true"></div>
                     </div>
 

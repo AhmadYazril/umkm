@@ -5,6 +5,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    initNucomuIntro();
     initHeroSlider();
     initNavbarScroll();
     initScrollSpy();
@@ -19,28 +20,164 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   0. HERO MENU VIDEO AUTO-SLIDER (5s Auto-Transition & Dynamic Warm Palette)
+   00. NUCOMU OPENING INTRO / PRELOADER ENGINE
+   ========================================================================== */
+window.nucomuIntroIsDone = false;
+let introTimerOutro = null;
+let introTimerFinish = null;
+let introSafetyTimer = null;
+let introIsFinished = false;
+
+window.skipNucomuIntro = function() {
+    if (introIsFinished) return;
+    window.nucomuIntroIsDone = true;
+    const overlay = document.getElementById('nucomu-intro-overlay');
+    if (!overlay) {
+        finishNucomuIntro();
+        return;
+    }
+
+    if (introTimerOutro) clearTimeout(introTimerOutro);
+    if (introTimerFinish) clearTimeout(introTimerFinish);
+
+    overlay.classList.add('is-fading');
+    setTimeout(() => {
+        finishNucomuIntro();
+    }, 300);
+};
+
+function finishNucomuIntro() {
+    if (introIsFinished) return;
+    introIsFinished = true;
+    window.nucomuIntroIsDone = true;
+
+    if (introTimerOutro) clearTimeout(introTimerOutro);
+    if (introTimerFinish) clearTimeout(introTimerFinish);
+    if (introSafetyTimer) clearTimeout(introSafetyTimer);
+
+    try {
+        sessionStorage.setItem('nucomu_intro_seen', '1');
+    } catch (e) {
+        // Fallback for private browsing
+    }
+
+    const overlay = document.getElementById('nucomu-intro-overlay');
+    if (overlay) {
+        overlay.setAttribute('aria-hidden', 'true');
+        overlay.remove();
+    }
+
+    document.documentElement.classList.remove('nucomu-intro-active');
+    document.documentElement.classList.add('nucomu-intro-seen');
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
+
+    // Dispatch immediately and also via microtask/event queue so late listeners catch it
+    window.dispatchEvent(new CustomEvent('nucomu:intro-done'));
+    setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('nucomu:intro-done'));
+    }, 0);
+}
+
+function initNucomuIntro() {
+    const overlay = document.getElementById('nucomu-intro-overlay');
+    if (!overlay) {
+        window.nucomuIntroIsDone = true;
+        window.dispatchEvent(new CustomEvent('nucomu:intro-done'));
+        return;
+    }
+
+    let hasSeen = false;
+    try {
+        hasSeen = sessionStorage.getItem('nucomu_intro_seen') === '1';
+    } catch (e) {
+        hasSeen = true;
+    }
+
+    if (hasSeen || document.documentElement.classList.contains('nucomu-intro-seen')) {
+        finishNucomuIntro();
+        return;
+    }
+
+    // Hard safety timeout: 5.5 seconds maximum
+    introSafetyTimer = setTimeout(() => {
+        if (!introIsFinished) {
+            finishNucomuIntro();
+        }
+    }, 5500);
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+        // Show static logo + text with brief fade (<=0.6s) then close
+        introTimerOutro = setTimeout(() => {
+            overlay.classList.add('is-fading');
+            introTimerFinish = setTimeout(() => {
+                finishNucomuIntro();
+            }, 300);
+        }, 500);
+        return;
+    }
+
+    // Normal timeline synchronized with SVG render time:
+    // 0.0s - 1.2s: Ring draws
+    // 0.6s - 2.2s: Mark draws
+    // 2.1s - 3.0s: Dot drops
+    // 2.6s: Trigger text "NUCOMU CAFE" fade up (checks font load with max 1s wait to prevent FOUT)
+    // 3.5s - 4.2s: Overlay lifts (translateY -100%) over 0.7s
+    // 4.2s (total ±4.2s): Finish and remove overlay from DOM
+    const startOrigin = window.__nucomuIntroStartTime || performance.now();
+    const elapsed = Math.max(0, performance.now() - startOrigin);
+
+    const textDelay = Math.max(0, 2600 - elapsed);
+    setTimeout(() => {
+        if (introIsFinished) return;
+        const textEl = overlay.querySelector('.intro-text');
+        if (textEl) {
+            const showText = () => {
+                if (!introIsFinished) {
+                    textEl.classList.add('is-visible');
+                }
+            };
+            if ('fonts' in document) {
+                const fontPromise = document.fonts.load('600 14px Manrope').catch(() => {});
+                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1000));
+                Promise.race([fontPromise, timeoutPromise]).then(showText);
+            } else {
+                showText();
+            }
+        }
+    }, textDelay);
+
+    const outroDelay = Math.max(0, 3500 - elapsed);
+    introTimerOutro = setTimeout(() => {
+        overlay.classList.add('is-leaving');
+        introTimerFinish = setTimeout(() => {
+            finishNucomuIntro();
+        }, 700);
+    }, outroDelay);
+}
+
+/* ==========================================================================
+   0. HERO 4-SLIDE SLIDER ENGINE (7s Auto-Transition & Editorial Controls)
    ========================================================================== */
 /**
  * WAKTU PERGANTIAN SLIDE OTOMATIS (Milidetik)
- * Ubah nilai di bawah ini untuk mempercepat atau memperlambat pergantian slide.
- * Contoh: 5000 = 5 detik, 4000 = 4 detik, 7000 = 7 detik.
+ * Nilai 7000 = 7 detik sesuai spesifikasi.
  */
-const SLIDE_INTERVAL = 5000;
+const SLIDE_INTERVAL = 7000;
 
 /**
- * PALET WARNA BACKGROUND HERO PER MENU
- * Urutan warna serasi dengan nuansa hangat & lembut Nucomu Cafe:
- * [0] Tiramisu   -> krem kecokelatan (#EADBC8)
- * [1] Cheesecake -> peach lembut     (#F6DFD2)
- * [2] Spaghetti  -> terakota muda    (#F1D2B8)
- * [3] Kopi Susu  -> sage kehijauan   (#D9DECF)
+ * PALET WARNA BACKGROUND HERO
+ * [0] Slide 0 (Welcome Latte)    -> #140E0A (Dark Coffee)
+ * [1] Slide 1 (Fresh Beans)      -> #D7A461 (Honey Golden Canvas)
+ * [2] Slide 2 (Fresh Brew)       -> #EDEDED (Light Warm Gray)
+ * [3] Slide 3 (Sweet Moment)     -> #FAFAFA (Off-White)
  */
 const HERO_BG_COLORS = [
-    '#EADBC8', // Slide 0: Tiramisu
-    '#F6DFD2', // Slide 1: Cheesecake
-    '#F1D2B8', // Slide 2: Spaghetti
-    '#D9DECF'  // Slide 3: Kopi Susu
+    '#140E0A',
+    '#D7A461',
+    '#EDEDED',
+    '#FAFAFA'
 ];
 
 let heroCurrentIndex = 0;
@@ -136,29 +273,145 @@ function initHeroSlider() {
     const slides = getActiveHeroSlides();
     if (!slides.length) return;
 
-    // Check prefers-reduced-motion
+    // Single slide condition: hide controls and disable autoplay
+    if (slides.length <= 1) {
+        const controls = heroSection.querySelectorAll('.hero-nav-arrow, .hero-controls-bar');
+        controls.forEach(ctrl => ctrl.style.display = 'none');
+        renderHeroSlide(0);
+        return;
+    }
+
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Set initial background color and activate slide 0
+    // Set initial slide
     renderHeroSlide(heroCurrentIndex);
 
-    // Only start auto-timer if reduced motion is NOT preferred
-    if (!prefersReducedMotion) {
-        startHeroAutoSlide();
+    function startHeroTimer() {
+        if (!prefersReducedMotion && !heroIsPaused) {
+            startHeroAutoSlide();
+        }
+    }
+
+    const isIntroPending = document.documentElement.classList.contains('nucomu-intro-active') && !window.nucomuIntroIsDone;
+
+    if (isIntroPending) {
+        window.addEventListener('nucomu:intro-done', () => {
+            startHeroTimer();
+        }, { once: true });
+        // Fallback safety in case event was missed
+        setTimeout(() => {
+            if (!heroTimerId && !heroIsPaused && heroIsVisibleOnScreen) {
+                startHeroTimer();
+            }
+        }, 5000);
+    } else {
+        startHeroTimer();
     }
 
     // Pause on desktop hover, resume on mouse leave
     heroSection.addEventListener('mouseenter', () => {
-        heroIsPaused = true;
-        clearHeroAutoSlide();
+        if (!heroIsPaused) {
+            clearHeroAutoSlide();
+        }
     });
 
     heroSection.addEventListener('mouseleave', () => {
-        heroIsPaused = false;
-        if (!prefersReducedMotion && heroIsVisibleOnScreen) {
+        if (!prefersReducedMotion && !heroIsPaused && heroIsVisibleOnScreen) {
             startHeroAutoSlide();
         }
     });
+
+    // Pause when hero receives focus, resume on blur
+    heroSection.addEventListener('focusin', () => {
+        if (!heroIsPaused) {
+            clearHeroAutoSlide();
+        }
+    });
+
+    heroSection.addEventListener('focusout', () => {
+        if (!prefersReducedMotion && !heroIsPaused && heroIsVisibleOnScreen) {
+            startHeroAutoSlide();
+        }
+    });
+
+    // Keyboard navigation when hero section is focused
+    heroSection.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            window.nextHeroSlide();
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            window.prevHeroSlide();
+        }
+    });
+
+    // Subtle 3D parallax effect on desktop fine pointers
+    if (window.matchMedia('(pointer: fine)').matches && !prefersReducedMotion) {
+        heroSection.addEventListener('mousemove', (e) => {
+            const rect = heroSection.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            const activeSlide = slides[heroCurrentIndex];
+            if (!activeSlide) return;
+
+            const productEl = activeSlide.querySelector('.hero-product-layer');
+            const headlineEl = activeSlide.querySelector('.hero-giant-headline');
+            const floaters = activeSlide.querySelectorAll('.hero-floater');
+
+            if (productEl) {
+                productEl.style.transform = `translate(${x * 12}px, ${y * 12}px)`;
+            }
+            if (headlineEl) {
+                headlineEl.style.transform = `translate(${x * -8}px, ${y * -8}px)`;
+            }
+            floaters.forEach((floater) => {
+                const depth = parseFloat(floater.dataset.depth || '20');
+                floater.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+            });
+
+            // 3D Vortex Scene Parallax & Tilt
+            const vortexScene = activeSlide.querySelector('.hero-vortex-scene');
+            if (vortexScene) {
+                vortexScene.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 10}deg)`;
+            }
+            const vortexNodes = activeSlide.querySelectorAll('.vortex-bean-node[data-depth]');
+            vortexNodes.forEach((node) => {
+                const depth = parseFloat(node.dataset.depth || '20');
+                node.style.marginLeft = `${x * depth * 1.4}px`;
+                node.style.marginTop = `${y * depth * 1.4}px`;
+            });
+
+            // Slide 1 Background Headline (PARTNER / RICH AROMA) Parallax
+            const partnerEl = activeSlide.querySelector('.hero-partner-text, .hero-rich-aroma');
+            if (partnerEl) {
+                partnerEl.style.transform = `translate(${x * -8}px, ${y * -8}px)`;
+            }
+        });
+
+        heroSection.addEventListener('mouseleave', () => {
+            const activeSlide = slides[heroCurrentIndex];
+            if (!activeSlide) return;
+            const productEl = activeSlide.querySelector('.hero-product-layer');
+            const headlineEl = activeSlide.querySelector('.hero-giant-headline');
+            const floaters = activeSlide.querySelectorAll('.hero-floater');
+            if (productEl) productEl.style.transform = '';
+            if (headlineEl) headlineEl.style.transform = '';
+            floaters.forEach((floater) => {
+                floater.style.transform = '';
+            });
+
+            const vortexScene = activeSlide.querySelector('.hero-vortex-scene');
+            if (vortexScene) vortexScene.style.transform = '';
+            const vortexNodes = activeSlide.querySelectorAll('.vortex-bean-node[data-depth]');
+            vortexNodes.forEach((node) => {
+                node.style.marginLeft = '';
+                node.style.marginTop = '';
+            });
+
+            const partnerEl = activeSlide.querySelector('.hero-partner-text, .hero-rich-aroma');
+            if (partnerEl) partnerEl.style.transform = '';
+        });
+    }
 
     // Pause when browser tab is not active / hidden
     document.addEventListener('visibilitychange', () => {
@@ -179,7 +432,7 @@ function initHeroSlider() {
         }
     });
 
-    // Pause auto-slide and video when hero is scrolled out of viewport
+    // Pause auto-slide when hero is scrolled out of viewport
     if ('IntersectionObserver' in window) {
         const heroObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -220,7 +473,6 @@ function initHeroSlider() {
         const diffX = touchStartX - touchEndX;
         const diffY = touchStartY - touchEndY;
 
-        // Ensure horizontal swipe is dominant
         if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
             if (diffX > 0) {
                 window.nextHeroSlide();
@@ -233,6 +485,9 @@ function initHeroSlider() {
 
 function startHeroAutoSlide() {
     clearHeroAutoSlide();
+    const slides = document.querySelectorAll('.hero-slide-item');
+    if (slides.length <= 1) return;
+
     heroTimerId = setInterval(() => {
         window.nextHeroSlide();
     }, SLIDE_INTERVAL);
@@ -244,6 +499,23 @@ function clearHeroAutoSlide() {
         heroTimerId = null;
     }
 }
+
+window.toggleHeroAutoplay = function() {
+    const pauseBtn = document.getElementById('hero-pause-btn');
+    const pauseIcon = document.getElementById('hero-pause-icon');
+
+    if (heroIsPaused) {
+        heroIsPaused = false;
+        if (pauseIcon) pauseIcon.textContent = 'pause';
+        if (pauseBtn) pauseBtn.setAttribute('aria-label', 'Jeda tayangan slide otomatis');
+        startHeroAutoSlide();
+    } else {
+        heroIsPaused = true;
+        if (pauseIcon) pauseIcon.textContent = 'play_arrow';
+        if (pauseBtn) pauseBtn.setAttribute('aria-label', 'Lanjutkan tayangan slide otomatis');
+        clearHeroAutoSlide();
+    }
+};
 
 window.nextHeroSlide = function() {
     const slides = getActiveHeroSlides();
@@ -280,6 +552,7 @@ function renderHeroSlide(index) {
     const heroSection = document.getElementById('home');
     const slides = getActiveHeroSlides();
     const dots = getActiveHeroDots();
+    const counterCurrent = document.getElementById('hero-current-num');
     if (!slides.length) return;
 
     if (index >= slides.length) {
@@ -289,67 +562,44 @@ function renderHeroSlide(index) {
 
     // 1. Dynamic Smooth Background Transition
     if (heroSection) {
-        const bgColor = HERO_BG_COLORS[index] || slides[index]?.getAttribute('data-bg-color') || '#EADBC8';
+        const bgColor = slides[index]?.getAttribute('data-bg-color') || HERO_BG_COLORS[index] || '#140E0A';
         heroSection.style.backgroundColor = bgColor;
     }
 
-    // 2. Switch Slides & Play/Pause/Reset Videos
-    slides.forEach((slide, idx) => {
-        const video = slide.querySelector('video');
-        const textContent = slide.querySelector('.hero-text-content');
-        const videoContainer = slide.querySelector('.hero-video-container');
+    // 2. Update Counter Text "01", "02", etc.
+    if (counterCurrent) {
+        counterCurrent.textContent = String(index + 1).padStart(2, '0');
+    }
 
+    // 3. Switch Slides & Update Accessibility
+    slides.forEach((slide, idx) => {
         if (idx === index) {
-            // Activate incoming slide
             slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
             slide.classList.add('active', 'opacity-100', 'z-10');
-
-            if (textContent) {
-                textContent.classList.remove('translate-y-3', 'opacity-0');
-                textContent.classList.add('translate-y-0', 'opacity-100');
-            }
-            if (videoContainer) {
-                videoContainer.classList.remove('scale-95', 'opacity-0');
-                videoContainer.classList.add('scale-100', 'opacity-100');
-            }
-
-            if (video) {
-                video.currentTime = 0;
-                if (heroIsVisibleOnScreen && !document.hidden) {
-                    const playPromise = video.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(() => {});
-                    }
-                }
-            }
+            slide.setAttribute('aria-hidden', 'false');
+            slide.removeAttribute('inert');
         } else {
-            // Deactivate outgoing slide
             slide.classList.add('opacity-0', 'pointer-events-none', 'z-0');
             slide.classList.remove('active', 'opacity-100', 'z-10');
-
-            if (textContent) {
-                textContent.classList.add('translate-y-3', 'opacity-0');
-                textContent.classList.remove('translate-y-0', 'opacity-100');
-            }
-            if (videoContainer) {
-                videoContainer.classList.add('scale-95', 'opacity-0');
-                videoContainer.classList.remove('scale-100', 'opacity-100');
-            }
-
-            if (video) {
-                video.pause();
-                video.currentTime = 0;
-            }
+            slide.setAttribute('aria-hidden', 'true');
+            slide.setAttribute('inert', '');
         }
     });
 
-    // 3. Update Indicator Dots
+    // 4. Update Indicator Dots
     dots.forEach((dot, idx) => {
+        const isBanner = slides[index]?.classList.contains('hero-banner-slide');
         if (idx === index) {
-            dot.className = 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300';
+            dot.className = isBanner
+                ? 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300'
+                : 'hero-dot-btn h-1.5 rounded-full transition-all duration-300 w-6 bg-white';
+            dot.setAttribute('aria-selected', 'true');
             dot.setAttribute('aria-current', 'true');
         } else {
-            dot.className = 'hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300';
+            dot.className = isBanner
+                ? 'hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300'
+                : 'hero-dot-btn h-1.5 rounded-full transition-all duration-300 w-2 bg-white/35 hover:bg-white/70';
+            dot.setAttribute('aria-selected', 'false');
             dot.removeAttribute('aria-current');
         }
     });
@@ -1731,6 +1981,12 @@ window.toggleLayananDetailPanel = function() {
     }
 };
 
+window.openLayananDetailPanel = function() {
+    const panelWrapper = document.getElementById('layanan-detail-panel');
+    if (!panelWrapper || panelWrapper.classList.contains('is-open')) return;
+    window.toggleLayananDetailPanel();
+};
+
 window.closeLayananDetailPanel = function() {
     const panelWrapper = document.getElementById('layanan-detail-panel');
     const toggleBtn = document.getElementById('btn-toggle-layanan-detail');
@@ -1738,7 +1994,9 @@ window.closeLayananDetailPanel = function() {
     const toggleIcon = document.getElementById('btn-toggle-layanan-icon');
     const cardReservasi = document.getElementById('layanan-card-reservasi');
 
-    if (!panelWrapper || !panelWrapper.classList.contains('is-open')) return;
+    if (!panelWrapper) return;
+    const isCurrentlyOpen = panelWrapper.classList.contains('is-open') || !panelWrapper.classList.contains('hidden');
+    if (!isCurrentlyOpen) return;
 
     panelWrapper.classList.remove('is-open');
     panelWrapper.setAttribute('aria-hidden', 'true');
@@ -2502,7 +2760,15 @@ function formatDisplayDate(dateStr) {
 function initKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            // Bila modal reservasi sedang terbuka, Escape hanya menutup modal dulu, bukan panel detail
+            // 1. Bila intro overlay sedang aktif, Escape melewati intro
+            const isIntroActive = document.documentElement.classList.contains('nucomu-intro-active') && !window.nucomuIntroIsDone;
+            const introOverlay = document.getElementById('nucomu-intro-overlay');
+            if (isIntroActive && introOverlay && !introOverlay.classList.contains('is-fading')) {
+                window.skipNucomuIntro();
+                return;
+            }
+
+            // 2. Bila modal reservasi sedang terbuka, Escape hanya menutup modal dulu, bukan panel detail
             const resModal = document.getElementById('reservation-modal');
             const isResModalOpen = resModal && !resModal.classList.contains('hidden') && (resModal.classList.contains('modal-open') || resModal.classList.contains('opacity-100')) && !resModal.classList.contains('pointer-events-none');
             

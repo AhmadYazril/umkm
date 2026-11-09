@@ -245,10 +245,30 @@ body {
 }
 
 /* ==========================================================================
-   Hero Animated Menu Video Slider Styles
+   Hero 4-Slide Slider Styles (Slide 0 Welcome + Slides 1-3 Product Poster)
    ========================================================================== */
 #home {
-    transition: background-color 0.8s ease;
+    transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Scroll offset for fixed/sticky navbar */
+#home,
+#about,
+#menu,
+#gallery,
+#layanan,
+#contact {
+    scroll-margin-top: 4.5rem;
+}
+@media (min-width: 640px) {
+    #home,
+    #about,
+    #menu,
+    #gallery,
+    #layanan,
+    #contact {
+        scroll-margin-top: 5.5rem;
+    }
 }
 
 .hero-slide-item {
@@ -259,7 +279,7 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.6s ease, visibility 0.6s ease;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 0;
 }
 
@@ -270,48 +290,409 @@ body {
     z-index: 10;
 }
 
-/* Video scale & fade transition */
-.hero-slide-item .hero-video-container {
-    transform: scale(0.92);
+/* Staggered entrance transitions for active slide */
+.hero-slide-item .hero-text-content > * {
     opacity: 0;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
-    will-change: transform, opacity;
+    transform: translateY(16px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.hero-slide-item.active .hero-video-container {
-    transform: scale(1);
+.hero-slide-item.active .hero-text-content > * {
     opacity: 1;
-}
-
-/* Text slide & fade transition */
-.hero-slide-item .hero-text-content {
-    transform: translateY(14px);
-    opacity: 0;
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease;
-    will-change: transform, opacity;
-}
-
-.hero-slide-item.active .hero-text-content {
     transform: translateY(0);
+}
+.hero-slide-item.active .hero-text-content > *:nth-child(1) { transition-delay: 80ms; }
+.hero-slide-item.active .hero-text-content > *:nth-child(2) { transition-delay: 160ms; }
+.hero-slide-item.active .hero-text-content > *:nth-child(3) { transition-delay: 240ms; }
+.hero-slide-item.active .hero-text-content > *:nth-child(4) { transition-delay: 320ms; }
+.hero-slide-item.active .hero-text-content > *:nth-child(5) { transition-delay: 400ms; }
+
+/* Giant headline entrance */
+.hero-slide-item .hero-giant-headline {
+    opacity: 0;
+    transform: scale(0.94);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+.hero-slide-item.active .hero-giant-headline {
     opacity: 1;
+    transform: scale(1);
 }
 
-/* Video tags global defaults for menu */
-video.hero-slide-video {
-    object-fit: contain;
+/* Product layer entrance */
+.hero-slide-item .hero-product-layer {
+    opacity: 0;
+    transform: translateY(20px) scale(0.92);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+}
+.hero-slide-item.active .hero-product-layer {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Floating beans entrance */
+.hero-slide-item .hero-floater {
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+.hero-slide-item.active .hero-floater {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Product info entrance (bottom-left) */
+.hero-slide-item .hero-product-info > * {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hero-slide-item.active .hero-product-info > * {
+    opacity: 1;
+    transform: translateY(0);
+}
+.hero-slide-item.active .hero-product-info > *:nth-child(1) { transition-delay: 200ms; }
+.hero-slide-item.active .hero-product-info > *:nth-child(2) { transition-delay: 280ms; }
+.hero-slide-item.active .hero-product-info > *:nth-child(3) { transition-delay: 360ms; }
+
+/* ==========================================================================
+   SLIDE 1: HONEY GOLDEN THEME + 3D VORTEX COFFEE BEAN ENGINE
+   ========================================================================== */
+
+/* Latar Gradien Emas Madu */
+.hero-gold-canvas {
+    background: radial-gradient(circle at 80% 10%, #F9DAA9 0%, transparent 60%),
+                radial-gradient(circle at 15% 85%, #C48A45 0%, transparent 55%),
+                #D7A461;
+    box-shadow: inset 0 0 120px rgba(100, 60, 20, 0.22);
+}
+
+/* Garis Cahaya Sutra (Silk Light Ribbons) */
+.hero-silk-ribbons {
+    mix-blend-mode: screen;
+    opacity: 0.75;
+    animation: heroSilkWaveDrift 7.5s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+}
+.hero-silk-wave-thick {
+    mix-blend-mode: screen;
+    opacity: 0.75;
+    filter: blur(4px);
+}
+.hero-silk-wave-thin {
+    mix-blend-mode: screen;
+    opacity: 0.85;
+    filter: blur(1.5px);
+}
+@keyframes heroSilkWaveDrift {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0.55;
+    }
+    50% {
+        transform: translate3d(28px, -18px, 0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate3d(-15px, 20px, 0);
+        opacity: 0.6;
+    }
+}
+
+/* Bayangan Lembut Hangat di Bawah Kemasan */
+.hero-pack-shadow-warm {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 210px;
+    height: 26px;
+    background: radial-gradient(ellipse at center, rgba(70, 35, 10, 0.5) 0%, rgba(70, 35, 10, 0) 70%);
+    border-radius: 50%;
+    filter: blur(5px);
+    z-index: 18;
+    animation: heroWarmShadowPulse 5.5s ease-in-out infinite alternate;
+}
+@keyframes heroWarmShadowPulse {
+    0% { transform: translateX(-50%) scale(1); opacity: 0.55; }
+    50% { transform: translateX(-50%) scale(0.88); opacity: 0.35; }
+    100% { transform: translateX(-50%) scale(1); opacity: 0.55; }
+}
+
+/* Pil Label Cokelat Tua */
+.hero-pill-badge {
+    background-color: #431D0A;
+    color: #EDDAC1;
+}
+
+/* Transisi Halus Masuk & Keluar Slide 1 (Crossfade + Golden Blur 0.8s) */
+#hero-slide-1 {
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#hero-slide-1.active {
+    filter: blur(0px);
+}
+#hero-slide-1:not(.active) {
+    filter: blur(8px);
+}
+
+/* Ambient Warm Glow behind coffee pack */
+.hero-glow-amber-vortex {
+    background: radial-gradient(circle 540px at 50% 50%, rgba(228, 160, 90, 0.32) 0%, rgba(180, 110, 50, 0.14) 45%, rgba(36, 36, 36, 0) 75%);
+}
+
+/* Golden Light Silk Ribbons */
+.hero-light-ribbons {
+    opacity: 0.8;
+}
+
+/* 3D Vortex Scene Container */
+.hero-vortex-scene {
+    transform-style: preserve-3d;
+    perspective: 1200px;
+    transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Pack 3D Floating Levitation */
+.hero-pack-3d {
+    animation: heroPackFloat3D 5.5s ease-in-out infinite alternate;
+    transform-origin: center bottom;
+    will-change: transform;
+}
+@keyframes heroPackFloat3D {
+    0% { transform: translateY(0px) rotate(-0.5deg); }
+    50% { transform: translateY(-12px) rotate(0.8deg); }
+    100% { transform: translateY(0px) rotate(-0.5deg); }
+}
+
+/* Individual Vortex Bean Node */
+.vortex-bean-node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+    user-select: none;
+    transform-style: preserve-3d;
+    will-change: transform, margin;
+}
+
+/* Vortex Bean Image (Drop Shadow & Filter) */
+.vortex-bean-img {
     width: 100%;
-    height: 100%;
-}
-
-video.menu-lazy-video {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-}
-
-/* Best menu dish plate: cropped square video fits inside circle */
-#best-hero-video {
+    height: auto;
     object-fit: contain;
+    display: block;
+    transition: transform 0.25s ease-out;
+}
+
+/* 4 Distinct Orbital Keyframes */
+@keyframes vortexBeanOrbit1 {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    50% { transform: translate3d(8px, -12px, 15px) rotate(15deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+@keyframes vortexBeanOrbit2 {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    50% { transform: translate3d(-10px, 14px, -10px) rotate(-20deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+@keyframes vortexBeanOrbit3 {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    50% { transform: translate3d(14px, 10px, 20px) rotate(-12deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+@keyframes vortexBeanOrbit4 {
+    0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+    50% { transform: translate3d(-12px, -10px, 10px) rotate(18deg); }
+    100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+
+.hero-bean-orbit-1 { animation: vortexBeanOrbit1 5.2s ease-in-out infinite alternate; will-change: transform; }
+.hero-bean-orbit-2 { animation: vortexBeanOrbit2 6.1s ease-in-out infinite alternate; will-change: transform; }
+.hero-bean-orbit-3 { animation: vortexBeanOrbit3 4.8s ease-in-out infinite alternate; will-change: transform; }
+.hero-bean-orbit-4 { animation: vortexBeanOrbit4 5.7s ease-in-out infinite alternate; will-change: transform; }
+
+/* Eruptive Slide Entrance for Vortex Beans */
+.hero-slide-item.active .vortex-bean-node {
+    animation: heroVortexErupt 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes heroVortexErupt {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 0, -80px) scale(0.15) rotate(calc(var(--target-rot, 0deg) - 90deg));
+    }
+    100% {
+        opacity: var(--target-opacity, 1);
+        transform: translate3d(var(--target-x, 0px), var(--target-y, 0px), var(--target-z, 0px)) rotate(var(--target-rot, 0deg));
+    }
+}
+
+/* 3D Floating Coffee Beans Organic Movement */
+@keyframes hero-bean-float-1 {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(6deg); }
+    100% { transform: translateY(4px) rotate(-4deg); }
+}
+@keyframes hero-bean-float-2 {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(14px) rotate(-8deg); }
+    100% { transform: translateY(-6px) rotate(5deg); }
+}
+@keyframes hero-bean-float-3 {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(6px, -14px) rotate(8deg); }
+    100% { transform: translate(-4px, 6px) rotate(-6deg); }
+}
+@keyframes hero-bean-float-4 {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-8px, -10px) rotate(-10deg); }
+    100% { transform: translate(5px, 8px) rotate(7deg); }
+}
+
+.hero-bean-anim-1 { animation: hero-bean-float-1 5.2s ease-in-out infinite alternate; will-change: transform; }
+.hero-bean-anim-2 { animation: hero-bean-float-2 6.1s ease-in-out infinite alternate; will-change: transform; }
+.hero-bean-anim-3 { animation: hero-bean-float-3 4.8s ease-in-out infinite alternate; will-change: transform; }
+.hero-bean-anim-4 { animation: hero-bean-float-4 5.7s ease-in-out infinite alternate; will-change: transform; }
+
+/* Ken Burns Effect for Slide 0 */
+.hero-ken-burns {
+    animation: hero-ken-burns 16s ease-out infinite alternate;
+    transform-origin: 72% 50%;
+    will-change: transform;
+}
+@keyframes hero-ken-burns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+}
+
+/* Steam Wisps (latte surface at 72% x, 38% y) */
+.hero-steam-container {
+    width: 60px;
+    height: 70px;
+}
+.hero-steam-wisp {
+    position: absolute;
+    bottom: 0;
+    width: 14px;
+    height: 48px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 70%);
+    filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+}
+.hero-steam-1 {
+    left: 14px;
+    animation: hero-steam-rise 3.2s ease-out infinite;
+}
+.hero-steam-2 {
+    left: 28px;
+    animation: hero-steam-rise 3.8s ease-out 1.1s infinite;
+}
+.hero-steam-3 {
+    left: 20px;
+    animation: hero-steam-rise 4.2s ease-out 2.2s infinite;
+}
+@keyframes hero-steam-rise {
+    0% {
+        transform: translateY(0) scaleX(0.7);
+        opacity: 0;
+    }
+    25% {
+        opacity: 0.35;
+    }
+    75% {
+        opacity: 0.15;
+    }
+    100% {
+        transform: translateY(-46px) scaleX(1.4);
+        opacity: 0;
+    }
+}
+
+/* Product Floating (Idle) */
+.hero-float-idle {
+    animation: hero-float-idle 5.5s ease-in-out infinite alternate;
+    will-change: transform;
+}
+@keyframes hero-float-idle {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+
+/* Product Floating + Rotation (Slide 3: gentle ±8px float, max 3 deg rotation) */
+.hero-float-rotate {
+    animation: hero-float-rotate 6s ease-in-out infinite alternate;
+    will-change: transform;
+}
+@keyframes hero-float-rotate {
+    0% { transform: translateY(0) rotate(-2.5deg); }
+    100% { transform: translateY(-8px) rotate(2.5deg); }
+}
+
+/* Soft Product Shadow */
+.hero-product-shadow {
+    position: absolute;
+    bottom: -14px;
+    left: 15%;
+    width: 70%;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 70%);
+    filter: blur(8px);
+    z-index: 15;
+    animation: hero-shadow-pulse 5.5s ease-in-out infinite alternate;
+}
+.hero-product-shadow-wide {
+    left: 8%;
+    width: 84%;
+    height: 28px;
+    filter: blur(10px);
+}
+@keyframes hero-shadow-pulse {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(0.85); opacity: 0.2; }
+}
+
+/* Reduced Motion Override for Hero */
+@media (prefers-reduced-motion: reduce) {
+    .hero-slide-item {
+        transition: opacity 0.3s ease, visibility 0.3s ease !important;
+    }
+    .hero-slide-item .hero-text-content > *,
+    .hero-slide-item .hero-giant-headline,
+    .hero-slide-item .hero-product-layer,
+    .hero-slide-item .hero-product-info > * {
+        transform: none !important;
+        transition: opacity 0.3s ease !important;
+        animation: none !important;
+    }
+    .hero-ken-burns,
+    .hero-float-idle,
+    .hero-float-rotate,
+    .hero-pack-3d,
+    .hero-product-shadow,
+    .hero-pack-shadow-warm,
+    .hero-silk-ribbons,
+    .hero-silk-wave-thick,
+    .hero-silk-wave-thin,
+    .hero-steam-wisp,
+    .hero-bean-anim-1,
+    .hero-bean-anim-2,
+    .hero-bean-anim-3,
+    .hero-bean-anim-4,
+    .hero-bean-orbit-1,
+    .hero-bean-orbit-2,
+    .hero-bean-orbit-3,
+    .hero-bean-orbit-4,
+    .vortex-bean-node,
+    .vortex-bean-img {
+        animation: none !important;
+        transform: none !important;
+    }
+    .hero-steam-container {
+        display: none !important;
+    }
 }
 
 /* ==========================================================================
@@ -815,5 +1196,174 @@ video.menu-lazy-video {
     pointer-events: none;
     transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s ease, opacity 0.3s ease;
 }
+
+/* ==========================================================================
+   NUCOMU OPENING INTRO / PRELOADER (MODERN ELEGANT MONOCHROME)
+   ========================================================================== */
+html.nucomu-intro-seen #nucomu-intro-overlay {
+    display: none !important;
+}
+
+html.nucomu-intro-active,
+html.nucomu-intro-active body {
+    overflow: hidden !important;
+}
+
+.nucomu-intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background-color: #FAFAFA;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    will-change: transform, opacity;
+    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+                opacity 0.7s ease;
+}
+
+/* Outro: Terangkat ke atas (translateY -100%) selama 0.7s */
+.nucomu-intro-overlay.is-leaving {
+    transform: translateY(-100%);
+    opacity: 0.98;
+    pointer-events: none;
+}
+
+/* Skip / Quick Outro: Fade out cepat 0.3s */
+.nucomu-intro-overlay.is-fading {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.nucomu-intro-svg {
+    width: min(70vw, 290px);
+    height: auto;
+    overflow: visible;
+}
+
+/* Ring Tipis Luar (1.5px, #E5E5E5, drawn 0 to 1.2s) */
+.intro-ring {
+    fill: none;
+    stroke: #E5E5E5;
+    stroke-width: 1.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transform-origin: 109px 118px;
+    transform: rotate(-90deg);
+}
+
+.nucomu-intro-active .intro-ring {
+    animation: intro-draw-ring 1.2s ease-out forwards;
+}
+
+/* Goresan Logo Mark (#1C1C1C, drawn 0.6s to 2.2s, stroke-linecap: round) */
+.intro-mark {
+    fill: none;
+    stroke: #1C1C1C;
+    stroke-width: 12;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.nucomu-intro-active .intro-mark {
+    animation: intro-draw-mark 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards;
+}
+
+/* Titik Dot (#1C1C1C, drop 2.1s to 3.0s, transform-box fill-box, origin center) */
+.intro-dot {
+    fill: #1C1C1C;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.nucomu-intro-active .intro-dot {
+    animation: intro-drop-dot 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) 2.1s forwards;
+}
+
+/* Teks NUCOMU CAFE (muncul dengan fade + slide up 12px selama 0.5s saat font sudah siap / is-visible) */
+.intro-text {
+    opacity: 0;
+    transform: translateY(12px);
+    will-change: opacity, transform;
+}
+
+.intro-text.is-visible {
+    animation: intro-text-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Keyframes */
+@keyframes intro-draw-ring {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes intro-draw-mark {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes intro-drop-dot {
+    0% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.6);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes intro-text-fade-up {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tombol Lewati di Pojok Kanan Bawah */
+.nucomu-intro-skip {
+    cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+    letter-spacing: 0.12em;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+    .intro-ring,
+    .intro-mark {
+        stroke-dashoffset: 0 !important;
+        animation: none !important;
+    }
+    .intro-dot {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+    .intro-text {
+        opacity: 1 !important;
+        transform: none !important;
+        animation: none !important;
+    }
+    .nucomu-intro-overlay {
+        transition: opacity 0.4s ease !important;
+        transform: none !important;
+    }
+    .nucomu-intro-overlay.is-leaving {
+        opacity: 0 !important;
+        transform: none !important;
+    }
+}
+
 
 
