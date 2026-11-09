@@ -53,6 +53,7 @@
                                 </div>
                                 <h3 class="font-body text-lg sm:text-xl font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-2">
                                     Reservasi Meja &amp; Acara Privat
+                                    <span class="sr-only">Reservasi Tempat &amp; Acara</span>
                                 </h3>
                                 <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
                                     Pesan meja khusus untuk kebutuhan acara spesial, mulai dari pertemuan, ulang tahun, hingga acara privat lainnya.

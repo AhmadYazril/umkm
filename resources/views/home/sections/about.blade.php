@@ -130,17 +130,24 @@
                     {{-- 1. Label Section dengan Garis Aksen Tipis --}}
                     <div class="story-anim-right story-delay-1 flex items-center gap-3 mb-5">
                         <span id="about-slide-label" class="text-xs sm:text-[13px] font-bold text-[#54392B] uppercase tracking-[0.22em] font-body transition-colors duration-500">
-                            SIGNATURE ARTISANAL DESSERT
+                            {{ $brand['about_label'] ?? 'SIGNATURE ARTISANAL DESSERT' }}
                         </span>
-                        <span class="sr-only">OUR STORY / TENTANG KAMI - Berawal dari Rasa, Kembali karena Rindu.</span>
+                        <span class="sr-only">{{ $brand['about_label'] ?? 'OUR STORY / TENTANG KAMI' }}</span>
                         <div class="w-12 h-px bg-[#54392B]/25" aria-hidden="true"></div>
                     </div>
 
                     {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) --}}
                     <div class="story-anim-right story-delay-2 mb-5 min-h-[72px] sm:min-h-[84px] flex items-center">
                         <h2 id="about-slide-headline" class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight transition-opacity duration-300">
-                            Classic Italian<br>Tiramisu Nucomu
+                            @if(!empty($brand['story_headline']))
+                                {{ $brand['story_headline'] }}
+                            @else
+                                Classic Italian<br>Tiramisu Nucomu
+                            @endif
                         </h2>
+                        <span class="sr-only">
+                            {{ $brand['story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.' }}
+                        </span>
                     </div>
 
                     {{-- 3. Keterangan Nucomu Cafe: Animasi Mengetik Cepat & Selesai Baru Berubah --}}
@@ -148,13 +155,17 @@
                         <p class="story-anim-right story-delay-3">
                             <span id="about-slide-typing-text"></span><span id="about-slide-typing-cursor" class="inline-block w-[2px] h-[1.1em] bg-[#1C1C1C] align-middle ml-1 animate-pulse" aria-hidden="true"></span>
                         </p>
+                        <div class="sr-only">
+                            <p>{{ $brand['story_p1'] ?? 'Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.' }}</p>
+                            <p>{{ $brand['story_p2'] ?? 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.' }}</p>
+                        </div>
                     </div>
 
                     {{-- 4. Tombol Jelajahi Pilihan Menu --}}
                     <div class="story-anim-right story-delay-5">
-                        <a href="#menu"
+                        <a href="{{ $brand['about_button_link'] ?? '#menu' }}"
                            class="group inline-flex items-center gap-3.5 bg-[#242424] hover:bg-[#383838] active:bg-[#1A1A1A] text-white text-sm sm:text-[15px] font-medium py-3.5 px-8 rounded-full transition-colors duration-300 shadow-[0_8px_20px_-4px_rgba(36,36,36,0.3)] hover:shadow-[0_12px_28px_-6px_rgba(36,36,36,0.4)] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
-                            <span>Jelajahi Pilihan Menu</span>
+                            <span>{{ $brand['about_button_text'] ?? 'Jelajahi Pilihan Menu' }}</span>
                             <svg class="w-4 h-4 text-white transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>
