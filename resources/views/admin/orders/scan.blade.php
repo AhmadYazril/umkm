@@ -8,7 +8,7 @@
         <div>
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warm-stone border border-hairline text-[11px] font-semibold text-charcoal mb-2">
                 <i class="fa-solid fa-qrcode text-[10px]"></i>
-                <span>Kasir Station</span>
+                <span>Meja Kasir</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-ink-black tracking-tight font-sans">
                 Scan QR Code Pesanan
@@ -100,10 +100,11 @@
                                 $statusMap = [
                                     'pending' => ['label' => 'Pending', 'class' => 'bg-amber-50 text-amber-800 border-amber-200'],
                                     'processing' => ['label' => 'Diproses', 'class' => 'bg-blue-50 text-blue-800 border-blue-200'],
+                                    'ready' => ['label' => 'Siap Saji', 'class' => 'bg-purple-50 text-purple-800 border-purple-200'],
                                     'completed' => ['label' => 'Selesai', 'class' => 'bg-emerald-50 text-emerald-800 border-emerald-200'],
-                                    'cancelled' => ['label' => 'Dibatalkan', 'class' => 'bg-rose-50 text-rose-800 border-rose-200'],
+                                    'cancelled' => ['label' => 'Batal', 'class' => 'bg-rose-50 text-rose-800 border-rose-200'],
                                 ];
-                                $s = $statusMap[$order->status] ?? ['label' => $order->status, 'class' => 'bg-warm-stone text-charcoal border-hairline'];
+                                $s = $statusMap[$order->status] ?? ['label' => $order->status_label ?? $order->status, 'class' => 'bg-warm-stone text-charcoal border-hairline'];
                             @endphp
                             <span class="text-xs font-bold px-3 py-1 rounded-full border {{ $s['class'] }}">{{ $s['label'] }}</span>
                         </div>
@@ -157,7 +158,7 @@
                             </div>
                             <div class="text-right">
                                 <span class="font-mono font-bold text-ink-black block">Rp {{ number_format($ro->total, 0, ',', '.') }}</span>
-                                <span class="text-[9px] uppercase font-bold text-muted-text">{{ $ro->status }}</span>
+                                <span class="text-[9px] font-bold text-muted-text">{{ $ro->status_label }}</span>
                             </div>
                         </div>
                     @empty

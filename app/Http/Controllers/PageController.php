@@ -7,6 +7,7 @@ use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\OperatingHour;
 use App\Models\Reservation;
+use App\Models\ReservationField;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class PageController extends Controller
 {
     public function gallery()
     {
-        $gallery = GalleryItem::orderBy('sort_order')->get();
+        $gallery = GalleryItem::where('is_active', true)->orderBy('sort_order')->get();
 
         return view('public.gallery', compact('gallery'));
     }
@@ -29,8 +30,9 @@ class PageController extends Controller
     public function reservation()
     {
         $hours = OperatingHour::orderBy('day_of_week')->get();
+        $fields = ReservationField::active()->get();
 
-        return view('public.reservation', compact('hours'));
+        return view('public.reservation', compact('hours', 'fields'));
     }
 
     public function storeReservation(Request $request)
@@ -63,10 +65,11 @@ class PageController extends Controller
 
     public function contact()
     {
+        $contact = NucomuController::getContactSettings();
         $settings = Setting::pluck('value', 'key');
         $operatingHours = OperatingHour::orderBy('day_of_week')->get();
 
-        return view('public.contact', compact('settings', 'operatingHours'));
+        return view('public.contact', compact('contact', 'settings', 'operatingHours'));
     }
 
     public function events()

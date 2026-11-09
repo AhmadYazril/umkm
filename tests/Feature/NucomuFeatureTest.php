@@ -10,6 +10,7 @@ use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\Setting;
+use App\Models\Testimonial;
 use App\Models\User;
 use App\Models\ZendoDelivery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,6 +36,28 @@ class NucomuFeatureTest extends TestCase
         $response->assertSee('Basque Burnt Cheesecake');
         $response->assertSee('nucomu.css');
         $response->assertSee('nucomu.js');
+        $response->assertSee('Jl. Mayor Sujadi, Manggisan, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221');
+        $response->assertSee('200 meter ke timur dari Bravo Swalayan (sisi utara jalan sebelum perempatan).');
+        $response->assertSee('+62 859-3496-0910');
+        $response->assertSee('wa.me/6285934960910');
+        $response->assertSee('contact-tab-slider');
+        $response->assertSee('contact-map-perspective-wrap');
+        $response->assertSee('contact-map-zoom-target');
+        $response->assertSee('contact-btn-shimmer');
+        $response->assertSee('contact-invert-fill');
+        $response->assertSee('contact-arrow-icon');
+        $response->assertSee('global-footer');
+        $response->assertSee('footer-status-badge');
+        $response->assertSee('footer-hours-card');
+        $response->assertSee('footer-quote-box');
+        $response->assertSee('footer-magnet-btn');
+        $response->assertSee('footer-sun-icon');
+        $response->assertSee('footer-moon-icon');
+        $response->assertSee('footer-dash-line');
+        $response->assertSee('footer-nav-item');
+        $response->assertSee('updateNucomuFooterHours');
+        $response->assertDontSee('[ISI: alamat lengkap');
+        $response->assertDontSee('[ISI: nomor WhatsApp');
     }
 
     public function test_nucomu_all_menu_page_loads_successfully(): void
@@ -98,6 +121,18 @@ class NucomuFeatureTest extends TestCase
             'source' => 'website',
             'is_active' => true,
         ]);
+
+        // In Modul 6, reviews must be pinned by admin to appear on the web
+        Testimonial::where('name', 'Rara Pelanggan Web')->update(['is_pinned' => true]);
+        foreach (['Dya slma', 'Febry Hassan', 'Karina Wulan Cahyani', 'Muhammad Kaisi', 'Tani Kopi', 'Aulia Rahma'] as $pinnedName) {
+            Testimonial::create([
+                'name' => $pinnedName,
+                'content' => 'Kopi dan suasana sangat mantap.',
+                'rating' => 5,
+                'is_pinned' => true,
+                'is_active' => true,
+            ]);
+        }
 
         $response = $this->get('/');
         $response->assertStatus(200);

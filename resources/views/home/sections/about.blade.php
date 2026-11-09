@@ -59,23 +59,27 @@
                         {{-- 1. Lapisan Belakang (Back Plate): Abu-Abu Lembut (#A8A8A8), Rounded Corners, Rotasi -2.6 Derajat --}}
                         <div class="story-anim-deco absolute inset-0 bg-[#A8A8A8] rounded-[28px] sm:rounded-[34px] lg:rounded-[40px] pointer-events-none z-0 shadow-md origin-center transform -rotate-2 sm:-rotate-[2.6deg]" aria-hidden="true"></div>
 
-                        {{-- 2. Frame Video Nucomu Cafe (Rasio 16:9, Bingkai Putih Tegas) --}}
+                        {{-- 2. Frame Media Nucomu Cafe (Foto atau Video) --}}
                         <div id="about-video-container"
                              class="story-anim-photo group/carousel relative z-10 w-full rounded-[18px] sm:rounded-[22px] lg:rounded-[24px] overflow-hidden border-[3.5px] sm:border-4 border-white shadow-[0_20px_45px_-10px_rgba(0,0,0,0.22)] bg-pure-white select-none aspect-video"
                              style="transition: background-color 0.4s ease;">
-                            <video id="about-video-player"
-                                   autoplay
-                                   muted
-                                   playsinline
-                                   preload="auto"
-                                   class="w-full h-full object-contain block"
-                                   style="aspect-ratio: 16/9; mix-blend-mode: multiply; transition: opacity 0.4s ease-in-out; opacity: 1;">
-                                <source src="video/tiramisu.mp4" type="video/mp4">
-                            </video>
-                            <canvas id="about-video-canvas"
-                                    class="w-full h-full object-contain block absolute inset-0 pointer-events-none"
-                                    style="aspect-ratio: 16/9; display: none; opacity: 0; transition: opacity 0.4s ease-in-out;">
-                            </canvas>
+                            @if(($brand['about_media_type'] ?? 'video') === 'video')
+                                <video id="about-video-player"
+                                       autoplay
+                                       muted
+                                       loop
+                                       playsinline
+                                       preload="auto"
+                                       class="w-full h-full object-cover block"
+                                       style="aspect-ratio: 16/9; transition: opacity 0.4s ease-in-out; opacity: 1;">
+                                    <source src="{{ $brand['about_media_url'] ?? asset('videos/tiramisu.mp4') }}" type="video/mp4">
+                                </video>
+                            @else
+                                <img src="{{ $brand['about_media_url'] ?? asset('images/reviews/dya-3.jpg') }}" 
+                                     alt="Nucomu Cafe" 
+                                     class="w-full h-full object-cover block"
+                                     style="aspect-ratio: 16/9;">
+                            @endif
                         </div>
 
                         {{-- 3. Badge Logo Resmi Nucomu (Sudut Kiri Atas Foto) --}}
@@ -106,12 +110,12 @@
                     {{-- 1. Label Section dengan Garis Aksen Tipis --}}
                     <div class="story-anim-right story-delay-1 flex items-center gap-3 mb-5">
                         <span class="text-xs sm:text-[13px] font-bold text-[#666666] uppercase tracking-[0.22em] font-body">
-                            OUR STORY / TENTANG KAMI
+                            {{ $brand['about_label'] ?? 'OUR STORY / TENTANG KAMI' }}
                         </span>
                         <div class="w-12 h-px bg-[#DDDDDD]" aria-hidden="true"></div>
                     </div>
 
-                    {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) untuk Kedua Baris --}}
+                    {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) --}}
                     <div class="story-anim-right story-delay-2 mb-6">
                         <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight">
                             @if(!empty($brand['story_headline']))
@@ -123,21 +127,23 @@
                         </h2>
                     </div>
 
-                    {{-- 3 & 4. Deskripsi Nucomu Cafe (Dua Paragraf dengan Typografi Rapi & Proporsional) --}}
+                    {{-- 3 & 4. Deskripsi Nucomu Cafe --}}
                     <div class="space-y-4 max-w-xl text-[15px] sm:text-base text-[#666666] leading-[1.8] font-body mb-8">
                         <p class="story-anim-right story-delay-3">
                             {{ $brand['story_p1'] ?? 'Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.' }}
                         </p>
-                        <p class="story-anim-right story-delay-4">
-                            {{ $brand['story_p2'] ?? 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.' }}
-                        </p>
+                        @if(!empty($brand['story_p2']))
+                            <p class="story-anim-right story-delay-4">
+                                {{ $brand['story_p2'] }}
+                            </p>
+                        @endif
                     </div>
 
-                    {{-- 5. Tombol Jelajahi Pilihan Menu (Pill Button Charcoal #242424 dengan Smooth Hover) --}}
+                    {{-- 5. Tombol Jelajahi Pilihan Menu --}}
                     <div class="story-anim-right story-delay-5">
-                        <a href="#menu"
+                        <a href="{{ $brand['about_button_link'] ?? '#menu' }}"
                            class="group inline-flex items-center gap-3.5 bg-[#242424] hover:bg-[#383838] active:bg-[#1A1A1A] text-white text-sm sm:text-[15px] font-medium py-3.5 px-8 rounded-full transition-colors duration-300 shadow-[0_8px_20px_-4px_rgba(36,36,36,0.3)] hover:shadow-[0_12px_28px_-6px_rgba(36,36,36,0.4)] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
-                            <span>Jelajahi Pilihan Menu</span>
+                            <span>{{ $brand['about_button_text'] ?? 'Jelajahi Pilihan Menu' }}</span>
                             <svg class="w-4 h-4 text-white transform transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                             </svg>
@@ -165,10 +171,10 @@
                         {{-- Center: Quote Typography with Screen Reader & Typewriter Fallback --}}
                         <div class="flex-grow text-center md:text-left px-1 sm:px-3">
                             <p class="sr-only">
-                                "Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan."
+                                "{{ $brand['about_quote'] ?? 'Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.' }}"
                             </p>
                             <blockquote class="font-editorial italic font-medium text-lg sm:text-xl lg:text-[22px] text-[#333333] leading-[1.55]">
-                                <span id="story-typewriter-text">&ldquo;Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.&rdquo;</span><span id="story-typewriter-cursor" class="story-typing-cursor inline-block w-[2px] h-[1em] bg-[#333333] align-middle ml-1 hidden" aria-hidden="true"></span>
+                                <span id="story-typewriter-text">&ldquo;{{ $brand['about_quote'] ?? 'Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.' }}&rdquo;</span><span id="story-typewriter-cursor" class="story-typing-cursor inline-block w-[2px] h-[1em] bg-[#333333] align-middle ml-1 hidden" aria-hidden="true"></span>
                             </blockquote>
                         </div>
 
@@ -205,11 +211,8 @@
                 </p>
             </div>
 
-            <!-- 2. Interactive Floating Gallery (Indoor / Outdoor) -->
+            <!-- 2. Interactive Floating Gallery (Carousel Fasilitas Dinamis) -->
             @include('home.sections.facilities.gallery')
-
-            <!-- 3. Additional Facilities (Musala & Restroom) -->
-            @include('home.sections.facilities.additional-cards')
 
         </div>
 

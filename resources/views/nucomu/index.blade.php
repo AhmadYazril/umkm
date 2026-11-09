@@ -102,72 +102,8 @@
         </div>
     </section>
 
-    {{-- 1. GALLERY STORY --}}
-    <section id="gallery" class="py-6 px-4 relative z-10">
-        <div class="max-w-3xl mx-auto">
-            <div class="flex items-center justify-between mb-3 px-1">
-                <div class="flex items-center gap-2.5">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1C1C1C] opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-[#1C1C1C]"></span>
-                    </span>
-                    <span class="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.22em] font-body">04 / LIVE STORY FEED</span>
-                </div>
-                <span id="storyStatusTag" class="text-[10px] sm:text-[11px] font-medium text-[#777777] bg-white px-3.5 py-1 rounded-full border border-[#E5E5E5] shadow-2xs font-body">
-                    Otomatis Berganti • Hover untuk Pause
-                </span>
-            </div>
-
-            <div class="relative group/story-outer">
-                <div class="absolute inset-0 bg-[#E8E8E8] rounded-[2.1rem] pointer-events-none z-0 transform translate-y-1 sm:translate-y-1.5 opacity-60" aria-hidden="true"></div>
-
-                <div id="storyContainer"
-                     class="wide-story-frame w-full rounded-story relative z-10 overflow-hidden bg-neutral-900 shadow-md border border-[#E5E5E5] cursor-pointer group select-none transition-transform duration-300"
-                     onmouseenter="pauseStory()" onmouseleave="resumeStory()">
-
-                    <img id="storyImage" src="" alt="Gallery Image" class="w-full h-full object-cover transition-all duration-700 ease-in-out transform scale-100 group-hover:scale-105">
-
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/15 to-black/85 pointer-events-none"></div>
-
-                    <div class="absolute top-0 left-0 right-0 p-5 sm:p-6 z-20 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full p-0.5 bg-white/40 backdrop-blur-md shadow-md border border-white/50">
-                                <img id="storyAvatar" src="" class="w-full h-full rounded-full object-cover">
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-1.5">
-                                    <span id="storyAuthor" class="text-xs sm:text-sm font-semibold text-white drop-shadow-sm font-body">Barista Corner</span>
-                                    <i class="fa-solid fa-circle-check text-white/90 text-xs"></i>
-                                </div>
-                                <span id="storyTime" class="text-[10px] sm:text-xs text-neutral-300 drop-shadow-sm font-body">Baru saja</span>
-                            </div>
-                        </div>
-                        <span id="storyCategoryBadge" class="text-[10px] sm:text-xs font-semibold uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-[#1C1C1C]/80 backdrop-blur-md border border-white/20 text-white shadow-md font-body">#CraftCoffee</span>
-                    </div>
-
-                    <div class="absolute inset-0 z-10 flex">
-                        <div class="w-1/3 h-full" onclick="prevStory(event)"></div>
-                        <div class="w-2/3 h-full" onclick="nextStory(event)"></div>
-                    </div>
-
-                    <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-20 space-y-2 pointer-events-none">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C1C1C]/80 backdrop-blur-md border border-white/20 text-[10px] sm:text-xs font-semibold text-white font-body">
-                            <i class="fa-solid fa-location-dot text-neutral-300"></i> Nucomu Main Bar
-                        </div>
-                        <h3 id="storyTitle" class="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight drop-shadow font-editorial">Loading Story...</h3>
-                        <p id="storyDesc" class="text-xs sm:text-sm text-neutral-200 leading-relaxed drop-shadow max-w-xl font-body">Please wait...</p>
-                    </div>
-
-                    <div class="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white backdrop-blur-md shadow-lg border border-white/50 flex items-center justify-center text-[#1C1C1C] opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </div>
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/90 hover:bg-white backdrop-blur-md shadow-lg border border-white/50 flex items-center justify-center text-[#1C1C1C] opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    {{-- 1. GALLERY SHOWCASE (3-PHOTO STUDIO DISPLAY) --}}
+    @include('home.sections.gallery')
 
     {{-- CTA Pesan Menu --}}
     <section class="py-4 px-4 relative z-10">
@@ -331,6 +267,30 @@
                 </div>
             @endif
 
+            {{-- Validation or upload error --}}
+            @if($errors->any() || session('error'))
+                <div class="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs space-y-1">
+                    <div class="font-bold flex items-center gap-1.5 text-rose-700">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>{{ session('error') ? 'Terjadi kesalahan unggah:' : 'Terdapat kesalahan formulir:' }}</span>
+                    </div>
+                    @if(session('error'))
+                        <p class="leading-relaxed">{{ session('error') }}</p>
+                    @endif
+                    @if($errors->any())
+                        <ul class="list-disc list-inside space-y-0.5 pl-2 text-[11px]">
+                            @foreach($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endif
+
+            @php
+                $reviewLimits = \App\Support\FileUploadHelper::getEffectiveLimit(5 * 1024 * 1024, 'foto ulasan');
+            @endphp
+
             <form action="{{ route('nucomu.review.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
                 @csrf
                 <div>
@@ -372,8 +332,19 @@
                     <label class="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#F5F5F5] border border-dashed border-[#CCCCCC] hover:border-[#1C1C1C] text-xs text-[#666666] cursor-pointer transition-colors">
                         <i class="fa-solid fa-camera text-[#1C1C1C]"></i>
                         <span id="nucomuReviewImageLabel">Pilih foto dari perangkat Anda...</span>
-                        <input type="file" name="review_image" accept="image/*" class="hidden" onchange="if(this.files && this.files[0]) document.getElementById('nucomuReviewImageLabel').innerText = this.files[0].name;">
+                        <input type="file" name="review_image" id="reviewImageInput" accept=".jpg,.jpeg,.png,.webp"
+                               data-max-bytes="{{ $reviewLimits['effective_bytes'] ?? $reviewLimits['limit_bytes'] ?? 5242880 }}"
+                               data-allowed-ext="jpg,jpeg,png,webp"
+                               data-feedback-target="#reviewImageFeedback"
+                               class="hidden" onchange="if(this.files && this.files[0]) document.getElementById('nucomuReviewImageLabel').innerText = this.files[0].name;">
                     </label>
+                    <div id="reviewImageFeedback" class="mt-1 text-left"></div>
+                    <p class="text-[10.5px] text-[#888888] mt-1">Format: JPG, PNG, WebP &bull; Maksimal {{ $reviewLimits['formatted'] ?? $reviewLimits['limit_formatted'] ?? '5 MB' }}.</p>
+                    @if(!empty($reviewLimits['is_throttled'] ?? $reviewLimits['is_limited_by_server']))
+                        <p class="text-[10px] text-amber-800 font-medium mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Batas server PHP saat ini ({{ $reviewLimits['server_limit_formatted'] ?? '2 MB' }}) lebih kecil dari batas aplikasi (5 MB).
+                        </p>
+                    @endif
                 </div>
 
                 <button type="submit" class="w-full py-3.5 rounded-full bg-[#1C1C1C] hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95">
@@ -398,59 +369,6 @@
         // ============================================
         const stories = @json($stories);
         const reviews = @json($reviews);
-
-        const DEFAULT_STORY_IMAGE = 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80';
-        const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
-
-        // ============================================
-        // 1. GALLERY STORY
-        // ============================================
-        let storyIndex = 0;
-        let storyTimer = null;
-        let isStoryPaused = false;
-
-        function updateStoryUI() {
-            if (!stories.length) return;
-            const s = stories[storyIndex];
-            document.getElementById('storyImage').src = s.image || DEFAULT_STORY_IMAGE;
-            document.getElementById('storyAvatar').src = s.avatar_url || DEFAULT_AVATAR;
-            document.getElementById('storyAuthor').innerText = s.author || 'Barista Corner';
-            document.getElementById('storyTime').innerText = s.time_label || 'Baru saja';
-            document.getElementById('storyCategoryBadge').innerText = s.category_badge || '#Nucomu';
-            document.getElementById('storyTitle').innerText = s.caption || 'Nucomu Story';
-            document.getElementById('storyDesc').innerText = s.description || '';
-        }
-
-        function startStoryLoop() {
-            clearInterval(storyTimer);
-            storyTimer = setInterval(() => {
-                if (!isStoryPaused && stories.length > 1) {
-                    storyIndex = (storyIndex + 1) % stories.length;
-                    updateStoryUI();
-                }
-            }, 4000);
-        }
-
-        function nextStory(e) { if (e) e.stopPropagation(); storyIndex = (storyIndex + 1) % stories.length; updateStoryUI(); }
-        function prevStory(e) { if (e) e.stopPropagation(); storyIndex = (storyIndex - 1 + stories.length) % stories.length; updateStoryUI(); }
-
-        function pauseStory() {
-            isStoryPaused = true;
-            const tag = document.getElementById('storyStatusTag');
-            if (tag) {
-                tag.innerText = 'PAUSED (Di-hold)';
-                tag.classList.add('text-[#1C1C1C]', 'border-[#1C1C1C]/40', 'bg-[#F5F5F5]');
-            }
-        }
-
-        function resumeStory() {
-            isStoryPaused = false;
-            const tag = document.getElementById('storyStatusTag');
-            if (tag) {
-                tag.innerText = 'Otomatis Berganti • Hover untuk Pause';
-                tag.classList.remove('text-[#1C1C1C]', 'border-[#1C1C1C]/40', 'bg-[#F5F5F5]');
-            }
-        }
 
         // ============================================
         // 2. REVIEWS
@@ -559,14 +477,12 @@
 
         // Init
         window.onload = function () {
-            updateStoryUI();
-            startStoryLoop();
             updateReviewUI();
             startReviewLoop();
             setRating(5);
 
-            // Auto-open modal if review_success flash was set
-            @if(session('review_success'))
+            // Auto-open modal if review_success flash or errors were set
+            @if(session('review_success') || $errors->any() || session('error'))
                 openReviewModal();
             @endif
         };

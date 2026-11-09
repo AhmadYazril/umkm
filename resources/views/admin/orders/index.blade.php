@@ -1,133 +1,888 @@
 @extends('layouts.admin')
-@section('title', 'Manajemen Pesanan Masuk — Nucomu Cafe')
+@section('title', 'Transaksi — Nucomu Cafe')
 
 @section('content')
-<div class="space-y-8 max-w-7xl mx-auto">
-    
-    {{-- Header Section --}}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-hairline anim-fade-up">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-warm-stone border border-hairline text-[11px] font-semibold text-charcoal mb-2">
-                <i class="fa-solid fa-receipt text-[10px]"></i>
-                <span>Arus Transaksi Masuk</span>
+<div class="space-y-6 max-w-7xl mx-auto pb-10">
+
+    {{-- 1. Header Halaman Standar (x-page-header dengan Judul Tenang, Tombol ? Petunjuk & Scanner QR) --}}
+    <x-page-header title="Transaksi">
+        <x-slot name="actions">
+            <div class="flex items-center gap-2.5">
+                {{-- Tombol Buka POS Kasir --}}
+                <a href="{{ route('kasir.index') }}" target="_blank"
+                   class="min-h-[36px] px-3.5 py-2 rounded-xl text-[13px] font-semibold border bg-white hover:bg-stone-50 transition flex items-center gap-2 shadow-2xs btn-press"
+                   style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
+                   title="Buka POS Kasir (/kasir)">
+                    <i class="fa-solid fa-cash-register text-xs" aria-hidden="true"></i>
+                    <span>POS Kasir</span>
+                </a>
+
+                {{-- Tombol Petunjuk --}}
+                <button type="button"
+                        class="admin-help-link btn-press"
+                        id="orders-help-trigger"
+                        aria-expanded="false"
+                        aria-controls="orders-help-panel"
+                        onclick="toggleHelpPanel('orders-help-panel')">
+                    <i class="fa-regular fa-circle-question text-[13px]" aria-hidden="true"></i>
+                    <span class="toggle-label" data-open="? Petunjuk" data-close="Tutup petunjuk">? Petunjuk</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] toggle-chevron" aria-hidden="true"></i>
+                </button>
+
+                {{-- Tombol Buka Scanner QR --}}
+                <a href="{{ route('admin.orders.scan') }}"
+                   class="min-h-[36px] px-4 py-2 rounded-xl text-[13.5px] font-semibold transition flex items-center gap-2 shadow-sm cursor-pointer btn-press"
+                   style="background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF;"
+                   title="Buka pemindai slip QR pesanan kasir">
+                    <i class="fa-solid fa-qrcode text-xs" aria-hidden="true"></i>
+                    <span>Buka Scanner QR</span>
+                </a>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-ink-black tracking-tight font-sans">
-                Manajemen Pesanan Masuk
-            </h1>
-            <p class="text-xs text-muted-text mt-1">
-                Daftar transaksi pesanan dine-in, takeaway, kurir Zendo, dan scan slip QR kasir.
-            </p>
+        </x-slot>
+
+        {{-- Panel Petunjuk Penggunaan (x-help-panel) --}}
+        <x-slot name="help">
+            <x-help-panel id="orders-help-panel" :trigger="false">
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="text-[15px] font-bold tracking-tight" style="color: var(--admin-text-main, #1B1F1D); font-family: var(--font-heading);">
+                            Panduan Mengatur Cara Transaksi &amp; Pesanan
+                        </h3>
+                        <p class="text-[12.5px] mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
+                            Halaman ini mengatur bagaimana pelanggan bertransaksi di website kafe serta mencatat daftar pesanan masuk.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div class="p-3 rounded-xl border bg-white space-y-1.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center"
+                                  style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">1</span>
+                            <div class="font-bold text-[13px]" style="color: var(--admin-text-main, #1B1F1D);">Makan di Cafe (Kasir)</div>
+                            <p class="text-[12px] leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Berdiri sendiri (bebas aktif/nonaktif). Pelanggan memilih menu dan bayar tunai atau QRIS, lalu kasir memindai slip QR barcode untuk konfirmasi lunas.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl border bg-white space-y-1.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center"
+                                  style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">2</span>
+                            <div class="font-bold text-[13px]" style="color: var(--admin-text-main, #1B1F1D);">Antar via Zendo (Pelacakan)</div>
+                            <p class="text-[12px] leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Pengantaran kurir lengkap dengan peta GPS interaktif dan live tracking status kurir. <strong>Saling mengunci</strong> dengan mode chat Zendo.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl border bg-white space-y-1.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="w-6 h-6 rounded-md font-bold text-xs flex items-center justify-center"
+                                  style="background-color: var(--admin-bg-sidebar-active, #E6F0EA); color: var(--admin-btn-primary-bg, #2F6B4F);">3</span>
+                            <div class="font-bold text-[13px]" style="color: var(--admin-text-main, #1B1F1D);">Hanya Chat ke Zendo</div>
+                            <p class="text-[12px] leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Pesanan langsung dikirim lewat WhatsApp ke nomor Zendo dengan draf pesan otomatis. <strong>Saling mengunci</strong> dengan mode pelacakan kurir.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </x-help-panel>
+        </x-slot>
+    </x-page-header>
+
+    {{-- Flash Notifications --}}
+    @if(session('success'))
+        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-[13px] flex items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+                <span class="font-medium">{{ session('success') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-emerald-700 hover:text-emerald-900 font-bold text-sm leading-none">&times;</button>
         </div>
-        <div class="flex flex-wrap items-center gap-2.5">
-            <a href="{{ route('kasir.index') }}" target="_blank" class="px-4 py-2.5 rounded-xl bg-pure-white hover:bg-warm-stone text-ink-black border border-hairline font-bold text-xs uppercase tracking-wider transition shadow-xs flex items-center gap-2 btn-press">
-                <i class="fa-solid fa-cash-register text-xs"></i>
-                <span>Buka POS Kasir</span>
-            </a>
-            <a href="{{ route('admin.orders.scan') }}" class="px-4 py-2.5 rounded-xl bg-ink-black text-white font-bold text-xs uppercase tracking-wider hover:bg-charcoal transition shadow-xs flex items-center gap-2 btn-press">
-                <i class="fa-solid fa-qrcode text-xs"></i>
-                <span>Buka Scanner QR</span>
-            </a>
+    @endif
+
+    @if(session('error'))
+        <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs sm:text-[13px] flex items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-2.5">
+                <i class="fa-solid fa-circle-exclamation text-rose-600 text-sm"></i>
+                <span class="font-medium">{{ session('error') }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-rose-700 hover:text-rose-900 font-bold text-sm leading-none">&times;</button>
+        </div>
+    @endif
+
+    {{-- Banner Peringatan Jika Semua Mode Transaksi Sedang Nonaktif --}}
+    @if(! $orderModeDineIn && ! $orderModeZendoTracking && ! $orderModeZendoChat)
+        <div class="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 text-xs sm:text-[13px] flex items-start gap-3.5 shadow-xs">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg mt-0.5 shrink-0"></i>
+            <div class="space-y-1">
+                <strong class="font-bold block text-sm">Semua cara pemesanan sedang dimatikan.</strong>
+                <p class="leading-relaxed m-0 text-amber-900">
+                    Pelanggan saat ini tidak dapat memesan melalui website. Tombol keranjang belanja disembunyikan dan daftar menu tampil sebagai katalog informasi. Aktifkan minimal salah satu saklar di bawah jika ingin menerima pesanan kembali.
+                </p>
+            </div>
+        </div>
+    @endif
+
+    {{-- 2. Ringkasan Metrik Transaksi --}}
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 anim-fade-up">
+        <div class="bg-white border rounded-2xl p-4 shadow-sm" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <span class="text-[10px] uppercase font-mono font-bold tracking-wider text-muted-text block mb-1">Total Pesanan</span>
+            <div class="flex items-baseline justify-between">
+                <span class="text-2xl sm:text-3xl font-extrabold font-mono" style="color: var(--admin-text-main, #1B1F1D);">{{ number_format($totalOrders, 0, ',', '.') }}</span>
+                <span class="w-7 h-7 rounded-lg bg-warm-stone text-charcoal flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-receipt"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="bg-white border rounded-2xl p-4 shadow-sm" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <span class="text-[10px] uppercase font-mono font-bold tracking-wider text-amber-700 block mb-1">Pending</span>
+            <div class="flex items-baseline justify-between">
+                <span class="text-2xl sm:text-3xl font-extrabold text-amber-900 font-mono">{{ number_format($pendingOrders, 0, ',', '.') }}</span>
+                <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-clock"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="bg-white border rounded-2xl p-4 shadow-sm" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <span class="text-[10px] uppercase font-mono font-bold tracking-wider text-blue-700 block mb-1">Diproses</span>
+            <div class="flex items-baseline justify-between">
+                <span class="text-2xl sm:text-3xl font-extrabold text-blue-900 font-mono">{{ number_format($processingOrders, 0, ',', '.') }}</span>
+                <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-fire-burner"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="bg-white border rounded-2xl p-4 shadow-sm" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <span class="text-[10px] uppercase font-mono font-bold tracking-wider text-emerald-700 block mb-1">Selesai</span>
+            <div class="flex items-baseline justify-between">
+                <span class="text-2xl sm:text-3xl font-extrabold text-emerald-900 font-mono">{{ number_format($completedOrders, 0, ',', '.') }}</span>
+                <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-check"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="col-span-2 lg:col-span-1 bg-white border rounded-2xl p-4 shadow-sm" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <span class="text-[10px] uppercase font-mono font-bold tracking-wider text-muted-text block mb-1">Omzet Selesai</span>
+            <div class="flex items-baseline justify-between">
+                <span class="text-lg sm:text-xl font-extrabold font-mono truncate" style="color: var(--admin-text-main, #1B1F1D);">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</span>
+                <span class="w-7 h-7 rounded-lg bg-warm-stone text-charcoal flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-wallet"></i>
+                </span>
+            </div>
         </div>
     </div>
 
-    {{-- Filter Status Tabs --}}
-    <div class="flex items-center space-x-2 overflow-x-auto pb-1 border-b border-hairline text-xs font-bold reveal-on-scroll anim-fade-up">
-        <a href="{{ route('admin.orders.index') }}" 
-           class="px-4 py-2 rounded-xl transition-all {{ !request('status') ? 'bg-ink-black text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
-            Semua Pesanan
-        </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" 
-           class="px-4 py-2 rounded-xl transition-all {{ request('status') === 'pending' ? 'bg-amber-50 text-amber-900 border border-amber-200 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
-            Pending
-        </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" 
-           class="px-4 py-2 rounded-xl transition-all {{ request('status') === 'processing' ? 'bg-blue-50 text-blue-900 border border-blue-200 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
-            Diproses
-        </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'completed']) }}" 
-           class="px-4 py-2 rounded-xl transition-all {{ request('status') === 'completed' ? 'bg-emerald-50 text-emerald-900 border border-emerald-200 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
-            Selesai
-        </a>
-        <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" 
-           class="px-4 py-2 rounded-xl transition-all {{ request('status') === 'cancelled' ? 'bg-rose-50 text-rose-900 border border-rose-200 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
-            Dibatalkan
-        </a>
+    {{-- 3. Form Pengaturan 3 Mode Transaksi --}}
+    <div class="bg-white border rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-sm anim-fade-up space-y-6" style="border-color: var(--admin-border-card, #E6E8E4);">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-4 border-b" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <div>
+                <h3 class="text-base sm:text-lg font-bold flex items-center gap-2 m-0" style="color: var(--admin-text-main, #1B1F1D);">
+                    <i class="fa-solid fa-sliders text-xs"></i>
+                    <span>Pengaturan Cara Transaksi Kafe</span>
+                </h3>
+                <p class="text-xs mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
+                    Tentukan cara transaksi yang dibuka untuk customer. Masing-masing mode memiliki saklar ON/OFF sendiri.
+                </p>
+            </div>
+        </div>
+
+        <form action="{{ route('admin.orders.updateSettings') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+
+            {{-- Penanda mode antar mana yang terakhir disentuh admin (untuk normalisasi saling mengunci) --}}
+            <input type="hidden" name="last_changed_mode" id="last_changed_mode" value="">
+
+            {{-- 3 Kartu Mode Grid --}}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+                {{-- KARTU MODE 1: Makan di Cafe (Kasir) --}}
+                <div id="card_mode_dine_in" 
+                     class="p-4 rounded-2xl border transition-all space-y-3.5 flex flex-col justify-between {{ $orderModeDineIn ? 'bg-[#FAFDFB] border-emerald-300' : 'bg-warm-stone/20 border-[#E6E8E4]' }}">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#2F6B4F] text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                                    <i class="fa-solid fa-store"></i>
+                                </span>
+                                <div>
+                                    <h4 class="text-sm font-extrabold m-0" style="color: var(--admin-text-main, #1B1F1D);">Makan di Cafe</h4>
+                                    <span id="badge_mode_dine_in" class="text-[10px] font-mono font-bold uppercase tracking-wider {{ $orderModeDineIn ? 'text-emerald-700' : 'text-muted-text' }}">
+                                        {{ $orderModeDineIn ? '● Status: AKTIF' : '○ Status: NONAKTIF' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Switch ON/OFF --}}
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0 mt-0.5">
+                                <input type="checkbox" 
+                                       name="order_mode_dine_in" 
+                                       id="order_mode_dine_in" 
+                                       value="1" 
+                                       class="sr-only peer" 
+                                       {{ $orderModeDineIn ? 'checked' : '' }}
+                                       onchange="handleModeSwitchChange('dine_in', this)">
+                                <div class="w-11 h-6 bg-neutral-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2F6B4F]"></div>
+                            </label>
+                        </div>
+
+                        <p class="text-xs leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                            Customer memesan makan di tempat / bawa pulang dan menerima slip dengan barcode/QR. Kasir memindai slip untuk konfirmasi lunas.
+                        </p>
+                    </div>
+
+                    {{-- Sub-Pengaturan Mode 1: Pilihan Pembayaran & QRIS --}}
+                    <div class="pt-3 border-t space-y-3 text-xs" style="border-color: var(--admin-border-card, #E6E8E4);">
+                        <span class="text-[11px] font-bold block" style="color: var(--admin-text-main, #1B1F1D);">
+                            Pilihan Pembayaran Kasir:
+                        </span>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center gap-2 p-2 rounded-xl bg-white border border-[#E6E8E4] cursor-pointer hover:border-neutral-400 select-none">
+                                <input type="checkbox" name="order_dine_in_cash" value="1" class="accent-[#2F6B4F] w-4 h-4" {{ $orderDineInCash ? 'checked' : '' }}>
+                                <span class="font-semibold text-xs" style="color: var(--admin-text-main, #1B1F1D);">Tunai (Cash)</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 rounded-xl bg-white border border-[#E6E8E4] cursor-pointer hover:border-neutral-400 select-none">
+                                <input type="checkbox" name="order_dine_in_qris" id="order_dine_in_qris" value="1" class="accent-[#2F6B4F] w-4 h-4" {{ $orderDineInQris ? 'checked' : '' }} onchange="toggleQrisUploadWrap(this.checked)">
+                                <span class="font-semibold text-xs" style="color: var(--admin-text-main, #1B1F1D);">QRIS</span>
+                            </label>
+                        </div>
+
+                        {{-- Upload Gambar QRIS Toko --}}
+                        <div id="qris_upload_wrap" class="space-y-2 pt-1">
+                            <label class="block text-[11px] font-bold" style="color: var(--admin-text-main, #1B1F1D);">
+                                Foto Kode QRIS Kafe <span class="text-muted-text font-normal">(Opsional)</span>
+                            </label>
+
+                            @if(!empty($qrisImage) && file_exists(public_path($qrisImage)))
+                                <div class="p-2.5 rounded-xl bg-white border border-[#E6E8E4] flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-2 min-w-0">
+                                        <img src="{{ asset($qrisImage) }}" alt="QRIS Kafe" class="w-10 h-10 object-contain rounded border border-[#E6E8E4] bg-white shrink-0">
+                                        <div class="min-w-0">
+                                            <span class="text-[11px] font-mono font-bold block truncate" style="color: var(--admin-text-main, #1B1F1D);">QRIS Aktif</span>
+                                            <span class="text-[10px] text-emerald-700 block">Tersimpan</span>
+                                        </div>
+                                    </div>
+                                    <label class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-600 hover:text-rose-800 cursor-pointer">
+                                        <input type="checkbox" name="remove_qris_image" value="1" class="accent-rose-600">
+                                        <span>Hapus</span>
+                                    </label>
+                                </div>
+                            @endif
+
+                            <input type="file" 
+                                   name="qris_image" 
+                                   accept="image/png,image/jpeg,image/webp" 
+                                   class="w-full text-xs text-muted-text file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-[#E6E8E4] file:bg-warm-stone file:text-xs file:font-bold file:text-charcoal hover:file:bg-neutral-200 cursor-pointer">
+                            <p class="text-[10px] text-muted-text m-0">
+                                Format PNG/JPG/WebP rasio 1:1, maks 2 MB.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- KARTU MODE 2: Antar via Zendo (Pelacakan Kurir) --}}
+                <div id="card_mode_zendo_tracking" 
+                     class="p-4 rounded-2xl border transition-all space-y-3.5 flex flex-col justify-between {{ $orderModeZendoTracking ? 'bg-[#FAFDFB] border-emerald-300' : 'bg-warm-stone/20 border-[#E6E8E4]' }}">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-[#2F6B4F] text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                                    <i class="fa-solid fa-map-location-dot"></i>
+                                </span>
+                                <div>
+                                    <h4 class="text-sm font-extrabold m-0" style="color: var(--admin-text-main, #1B1F1D);">Antar via Zendo</h4>
+                                    <span id="badge_mode_zendo_tracking" class="text-[10px] font-mono font-bold uppercase tracking-wider {{ $orderModeZendoTracking ? 'text-emerald-700' : 'text-muted-text' }}">
+                                        {{ $orderModeZendoTracking ? '● Status: AKTIF (Pelacakan)' : '○ Status: NONAKTIF' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Switch ON/OFF --}}
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0 mt-0.5">
+                                <input type="checkbox" 
+                                       name="order_mode_zendo_tracking" 
+                                       id="order_mode_zendo_tracking" 
+                                       value="1" 
+                                       class="sr-only peer" 
+                                       {{ $orderModeZendoTracking ? 'checked' : '' }}
+                                       onchange="handleModeSwitchChange('tracking', this)">
+                                <div class="w-11 h-6 bg-neutral-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2F6B4F]"></div>
+                            </label>
+                        </div>
+
+                        <p class="text-xs leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                            Pengantaran pesanan oleh kurir Zendo dengan pemantauan posisi kurir di peta interaktif secara langsung (live tracking GPS).
+                        </p>
+                    </div>
+
+                    {{-- Informasi Saling Mengunci & Bagian Lipat Pengaturan --}}
+                    <div class="pt-3 border-t space-y-3 text-xs" style="border-color: var(--admin-border-card, #E6E8E4);">
+                        <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900 text-[11px] flex items-start gap-2">
+                            <i class="fa-solid fa-lock text-amber-700 mt-0.5 shrink-0 text-xs"></i>
+                            <span><strong>Saling mengunci:</strong> Menyalakan mode ini otomatis mematikan mode chat WhatsApp Zendo di sebelah kanan.</span>
+                        </div>
+
+                        {{-- Bagian Lipat: Pengaturan Pelacakan Kurir & Nomor Zendo --}}
+                        <details class="group rounded-xl border bg-white overflow-hidden" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <summary class="px-3 py-2.5 flex items-center justify-between font-bold text-xs cursor-pointer select-none hover:bg-warm-stone/20 transition-colors" style="color: var(--admin-text-main, #1B1F1D);">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-sliders text-muted-text text-[11px]"></i>
+                                    <span>Pengaturan Pelacakan</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-muted-text group-open:rotate-180 transition-transform"></i>
+                            </summary>
+
+                            <div class="p-3 border-t space-y-3 text-xs bg-[#FAFDFB]/60" style="border-color: var(--admin-border-card, #E6E8E4);">
+                                {{-- Nomor WhatsApp Kurir Zendo --}}
+                                <div>
+                                    <label for="zendo_whatsapp_mode2" class="block text-[11px] font-bold mb-1" style="color: var(--admin-text-main, #1B1F1D);">
+                                        Nomor WhatsApp Zendo <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           id="zendo_whatsapp_mode2" 
+                                           value="{{ old('zendo_whatsapp', $zendoWhatsapp) }}" 
+                                           placeholder="085707300240"
+                                           class="zendo-wa-input w-full px-3 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold focus:outline-none focus:border-neutral-800 transition">
+                                    <span class="text-[10px] text-muted-text mt-0.5 block">Tersinkronisasi dengan Kontak &amp; Mode Chat (key: <code>zendo_whatsapp</code>).</span>
+                                </div>
+
+                                {{-- Ringkasan Pengaturan Tarif & Armada yang Sudah Ada --}}
+                                <div class="p-2.5 rounded-xl bg-warm-stone/20 border border-[#E6E8E4] space-y-1 text-[11px]">
+                                    <div class="flex justify-between text-muted-text">
+                                        <span>Tarif 0 &ndash; 3 km:</span>
+                                        <strong class="font-mono text-charcoal">Rp {{ number_format($zendoTariff['tier_0_3'] ?? 10000, 0, ',', '.') }}</strong>
+                                    </div>
+                                    <div class="flex justify-between text-muted-text">
+                                        <span>Tarif 3,1 &ndash; 4 km:</span>
+                                        <strong class="font-mono text-charcoal">Rp {{ number_format($zendoTariff['tier_3_4'] ?? 12000, 0, ',', '.') }}</strong>
+                                    </div>
+                                    <div class="flex justify-between text-muted-text">
+                                        <span>Tarif &gt;7 km:</span>
+                                        <strong class="font-mono text-charcoal">+Rp {{ number_format($zendoTariff['extra_per_km'] ?? 2500, 0, ',', '.') }}/km</strong>
+                                    </div>
+                                    @if(!empty($zendoPublicUrl))
+                                        <div class="flex justify-between text-muted-text pt-1 border-t border-[#E6E8E4]">
+                                            <span>Domain Tracking:</span>
+                                            <strong class="font-mono text-charcoal truncate">{{ $zendoPublicUrl }}</strong>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="pt-0.5">
+                                    <a href="{{ route('admin.zendo.index') }}" 
+                                       class="inline-flex items-center gap-1.5 font-bold text-[11.5px] hover:underline" 
+                                       style="color: var(--admin-btn-primary-bg, #2F6B4F);">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                        <span>Buka Pengaturan Lengkap Armada &amp; Tarif Zendo</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                {{-- KARTU MODE 3: Hanya Chat ke Zendo (WhatsApp) --}}
+                <div id="card_mode_zendo_chat" 
+                     class="p-4 rounded-2xl border transition-all space-y-3.5 flex flex-col justify-between {{ $orderModeZendoChat ? 'bg-[#FAFDFB] border-emerald-300' : 'bg-warm-stone/20 border-[#E6E8E4]' }}">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-sm shadow-xs shrink-0">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </span>
+                                <div>
+                                    <h4 class="text-sm font-extrabold m-0" style="color: var(--admin-text-main, #1B1F1D);">Hanya Chat ke Zendo</h4>
+                                    <span id="badge_mode_zendo_chat" class="text-[10px] font-mono font-bold uppercase tracking-wider {{ $orderModeZendoChat ? 'text-emerald-700' : 'text-muted-text' }}">
+                                        {{ $orderModeZendoChat ? '● Status: AKTIF (Chat WA)' : '○ Status: NONAKTIF' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Switch ON/OFF --}}
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0 mt-0.5">
+                                <input type="checkbox" 
+                                       name="order_mode_zendo_chat" 
+                                       id="order_mode_zendo_chat" 
+                                       value="1" 
+                                       class="sr-only peer" 
+                                       {{ $orderModeZendoChat ? 'checked' : '' }}
+                                       onchange="handleModeSwitchChange('chat', this)">
+                                <div class="w-11 h-6 bg-neutral-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                        </div>
+
+                        <p class="text-xs leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                            Pesanan langsung dikirim lewat WhatsApp ke nomor Zendo dengan draf pesan otomatis tanpa peta pelacakan kurir.
+                        </p>
+                    </div>
+
+                    {{-- Informasi Saling Mengunci & Input Singkat --}}
+                    <div class="pt-3 border-t space-y-2 text-xs" style="border-color: var(--admin-border-card, #E6E8E4);">
+                        <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200 text-amber-900 text-[11px] flex items-start gap-2">
+                            <i class="fa-solid fa-lock text-amber-700 mt-0.5 shrink-0 text-xs"></i>
+                            <span><strong>Saling mengunci:</strong> Menyalakan mode ini otomatis mematikan mode pelacakan kurir di sebelah kiri.</span>
+                        </div>
+
+                        {{-- Nomor WhatsApp Zendo --}}
+                        <div>
+                            <label for="zendo_whatsapp" class="block text-[11px] font-bold mb-1" style="color: var(--admin-text-main, #1B1F1D);">
+                                Nomor WhatsApp Zendo <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="text" 
+                                   id="zendo_whatsapp" 
+                                   name="zendo_whatsapp" 
+                                   value="{{ old('zendo_whatsapp', $zendoWhatsapp) }}" 
+                                   placeholder="085707300240"
+                                   class="zendo-wa-input w-full px-3 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold focus:outline-none focus:border-neutral-800 transition">
+                            <span class="text-[10px] text-muted-text mt-0.5 block">Tersinkronisasi dengan halaman Kontak (key: <code>zendo_whatsapp</code>).</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Template Chat WhatsApp Zendo Editor (Bawah 3 Kartu) --}}
+            <div class="p-4 sm:p-5 rounded-2xl border space-y-3" style="border-color: var(--admin-border-card, #E6E8E4); background-color: #FAFDFB;">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div>
+                        <label for="zendoChatTemplateTextarea" class="text-xs sm:text-sm font-extrabold flex items-center gap-1.5 m-0" style="color: var(--admin-text-main, #1B1F1D);">
+                            <i class="fa-solid fa-comment-dots text-emerald-600"></i>
+                            <span>Template Pesan WhatsApp ke Zendo</span>
+                        </label>
+                        <p class="text-[11px] mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
+                            Draf teks ini akan otomatis tersusun saat pelanggan mengirim pesanan ke WhatsApp Zendo.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" 
+                                onclick="document.getElementById('resetTemplateForm').submit();"
+                                class="px-3 py-1.5 rounded-lg border border-[#E6E8E4] bg-white hover:bg-neutral-100 text-charcoal text-[11px] font-bold transition flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                            <span>Reset ke Bawaan</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Interactive Variable Chips --}}
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider block mb-1 text-muted-text">
+                        Klik Variabel untuk Menyisipkan ke Template:
+                    </span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="insertVariable('{kode_pesanan}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {kode_pesanan}
+                        </button>
+                        <button type="button" onclick="insertVariable('{nama}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {nama}
+                        </button>
+                        <button type="button" onclick="insertVariable('{telepon}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {telepon}
+                        </button>
+                        <button type="button" onclick="insertVariable('{alamat}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {alamat}
+                        </button>
+                        <button type="button" onclick="insertVariable('{daftar_pesanan}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {daftar_pesanan}
+                        </button>
+                        <button type="button" onclick="insertVariable('{total}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {total}
+                        </button>
+                        <button type="button" onclick="insertVariable('{subtotal}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {subtotal}
+                        </button>
+                        <button type="button" onclick="insertVariable('{ongkir}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {ongkir}
+                        </button>
+                        <button type="button" onclick="insertVariable('{catatan}')" class="px-2 py-0.5 rounded-md bg-white hover:bg-neutral-100 border border-[#E6E8E4] text-[11px] font-mono font-bold text-ink-black transition cursor-pointer">
+                            {catatan}
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Textarea --}}
+                <textarea id="zendoChatTemplateTextarea" 
+                          name="zendo_chat_template" 
+                          rows="6" 
+                          class="w-full p-3 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono text-ink-black leading-relaxed focus:outline-none focus:border-neutral-800 transition resize-y">{{ old('zendo_chat_template', $zendoChatTemplate) }}</textarea>
+            </div>
+
+            {{-- Tombol Simpan Pengaturan --}}
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="submit" 
+                        class="min-h-[40px] px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-2 cursor-pointer btn-press"
+                        style="background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF;">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                    <span>Simpan Pengaturan Transaksi</span>
+                </button>
+            </div>
+        </form>
+
+        {{-- Form Reset Template (Hidden) --}}
+        <form id="resetTemplateForm" action="{{ route('admin.orders.resetTemplate') }}" method="POST" class="hidden" onsubmit="return confirm('Kembalikan format pesan chat WhatsApp Kurir Zendo ke format standar bawaan?');">
+            @csrf
+        </form>
     </div>
 
-    {{-- Orders Table Card --}}
-    <div class="bg-pure-white border border-hairline rounded-2xl sm:rounded-3xl overflow-hidden shadow-card reveal-on-scroll">
+    {{-- 3B. Rekapitulasi & Download Laporan Transaksi (PDF / Cetak / CSV — Per Hari, Minggu, Bulan) --}}
+    <div id="rekap-laporan-section" class="bg-white border rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-sm anim-fade-up space-y-5" style="border-color: var(--admin-border-card, #E6E8E4);">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <div class="flex items-start sm:items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-emerald-50 text-[#2F6B4F] border border-emerald-200 flex items-center justify-center text-sm shrink-0">
+                    <i class="fa-solid fa-file-pdf"></i>
+                </span>
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold m-0" style="color: var(--admin-text-main, #1B1F1D);">
+                        Rekapitulasi &amp; Download Laporan Transaksi
+                    </h3>
+                    <p class="text-xs mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
+                        Unduh rekap laporan penjualan dalam format <strong>PDF (.pdf)</strong>, <strong>Cetak Laporan</strong>, atau <strong>CSV/Excel</strong> berdasarkan periode <strong>Per Hari</strong>, <strong>Per Minggu</strong>, maupun <strong>Per Bulan</strong>.
+                    </p>
+                </div>
+            </div>
+
+            {{-- Quick 1-Click PDF Recap Buttons --}}
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('admin.orders.export', ['period' => 'daily', 'date' => now()->toDateString(), 'format' => 'pdf']) }}"
+                   class="px-3 py-2 rounded-xl bg-warm-stone/60 hover:bg-warm-stone text-ink-black border border-[#E6E8E4] text-xs font-bold transition flex items-center gap-1.5 btn-press"
+                   title="Langsung unduh PDF rekap transaksi hari ini">
+                    <i class="fa-solid fa-file-arrow-down text-[#2F6B4F]"></i>
+                    <span>PDF Hari Ini</span>
+                </a>
+                <a href="{{ route('admin.orders.export', ['period' => 'weekly', 'week_date' => now()->toDateString(), 'format' => 'pdf']) }}"
+                   class="px-3 py-2 rounded-xl bg-warm-stone/60 hover:bg-warm-stone text-ink-black border border-[#E6E8E4] text-xs font-bold transition flex items-center gap-1.5 btn-press"
+                   title="Langsung unduh PDF rekap transaksi minggu ini">
+                    <i class="fa-solid fa-file-arrow-down text-[#2F6B4F]"></i>
+                    <span>PDF Minggu Ini</span>
+                </a>
+                <a href="{{ route('admin.orders.export', ['period' => 'monthly', 'month' => now()->format('Y-m'), 'format' => 'pdf']) }}"
+                   class="px-3 py-2 rounded-xl bg-warm-stone/60 hover:bg-warm-stone text-ink-black border border-[#E6E8E4] text-xs font-bold transition flex items-center gap-1.5 btn-press"
+                   title="Langsung unduh PDF rekap transaksi bulan ini">
+                    <i class="fa-solid fa-file-arrow-down text-[#2F6B4F]"></i>
+                    <span>PDF Bulan Ini</span>
+                </a>
+            </div>
+        </div>
+
+        <form action="{{ route('admin.orders.export') }}" method="GET" id="recapExportForm" class="space-y-4">
+            <input type="hidden" name="format" id="recapFormatInput" value="pdf">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                {{-- Pilihan Periode: Harian / Mingguan / Bulanan --}}
+                <div>
+                    <label for="recapPeriodSelect" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                        Periode Rekap
+                    </label>
+                    <select name="period"
+                            id="recapPeriodSelect"
+                            onchange="toggleRecapPeriodInputs(this.value)"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E8E4] bg-white text-xs font-bold text-ink-black focus:outline-none focus:border-neutral-800 transition cursor-pointer">
+                        <option value="daily">Per Hari (Harian)</option>
+                        <option value="weekly">Per Minggu (Mingguan)</option>
+                        <option value="monthly">Per Bulan (Bulanan)</option>
+                    </select>
+                </div>
+
+                {{-- Input Tanggal (Tampil menyesuaikan periode yang dipilih) --}}
+                <div>
+                    <div id="recapInputWrap_daily">
+                        <label for="recapDateInput" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                            Pilih Tanggal (Harian)
+                        </label>
+                        <input type="date"
+                               name="date"
+                               id="recapDateInput"
+                               value="{{ request('date', now()->toDateString()) }}"
+                               class="w-full px-3.5 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition">
+                    </div>
+
+                    <div id="recapInputWrap_weekly" class="hidden">
+                        <label for="recapWeekDateInput" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                            Tanggal Acuan Minggu (Sen&ndash;Min)
+                        </label>
+                        <input type="date"
+                               name="week_date"
+                               id="recapWeekDateInput"
+                               value="{{ now()->toDateString() }}"
+                               class="w-full px-3.5 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition">
+                    </div>
+
+                    <div id="recapInputWrap_monthly" class="hidden">
+                        <label for="recapMonthInput" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                            Pilih Bulan &amp; Tahun
+                        </label>
+                        <input type="month"
+                               name="month"
+                               id="recapMonthInput"
+                               value="{{ now()->format('Y-m') }}"
+                               class="w-full px-3.5 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition">
+                    </div>
+                </div>
+
+                {{-- Filter Jenis Transaksi --}}
+                <div>
+                    <label for="recapKindSelect" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                        Filter Jenis Layanan
+                    </label>
+                    <select name="kind"
+                            id="recapKindSelect"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E8E4] bg-white text-xs font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition cursor-pointer">
+                        <option value="all">Semua Jenis Layanan</option>
+                        <option value="dine_in" {{ request('kind') === 'dine_in' ? 'selected' : '' }}>Makan di Cafe / Kasir</option>
+                        <option value="zendo_tracking" {{ request('kind') === 'zendo_tracking' ? 'selected' : '' }}>Antar via Zendo (Pelacakan)</option>
+                        <option value="zendo_chat" {{ request('kind') === 'zendo_chat' ? 'selected' : '' }}>Chat Zendo (WhatsApp)</option>
+                    </select>
+                </div>
+
+                {{-- Filter Status Pesanan --}}
+                <div>
+                    <label for="recapStatusSelect" class="block text-[11px] font-bold mb-1.5 uppercase tracking-wider text-muted-text">
+                        Filter Status Pesanan
+                    </label>
+                    <select name="status"
+                            id="recapStatusSelect"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E8E4] bg-white text-xs font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition cursor-pointer">
+                        <option value="all">Semua Status Transaksi</option>
+                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Hanya Selesai (Completed)</option>
+                        <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Sedang Diproses</option>
+                        <option value="ready" {{ request('status') === 'ready' ? 'selected' : '' }}>Siap Saji</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Batal</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-2.5 pt-2">
+                <button type="button"
+                        onclick="submitRecapExport('csv', false)"
+                        class="px-4 py-2.5 rounded-xl border border-[#E6E8E4] bg-white hover:bg-warm-stone/50 text-ink-black text-xs font-bold transition flex items-center gap-2 cursor-pointer btn-press">
+                    <i class="fa-solid fa-file-csv text-emerald-700"></i>
+                    <span>Download CSV / Excel</span>
+                </button>
+
+                <button type="button"
+                        onclick="submitRecapExport('print', true)"
+                        class="px-4 py-2.5 rounded-xl border border-[#E6E8E4] bg-warm-stone/60 hover:bg-warm-stone text-ink-black text-xs font-bold transition flex items-center gap-2 cursor-pointer btn-press">
+                    <i class="fa-solid fa-print text-charcoal"></i>
+                    <span>Cetak / Pratinjau PDF</span>
+                </button>
+
+                <button type="submit"
+                        onclick="document.getElementById('recapFormatInput').value = 'pdf'; document.getElementById('recapExportForm').removeAttribute('target');"
+                        class="px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-2 cursor-pointer btn-press"
+                        style="background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF;">
+                    <i class="fa-solid fa-file-pdf text-xs"></i>
+                    <span>Download Rekap PDF (.pdf)</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {{-- 4. Filter Jenis Pemesanan, Filter Status Tabs & Pencarian --}}
+    <div class="space-y-3 anim-fade-up">
+
+        {{-- Baris 1: Filter Berdasarkan Jenis Pemesanan (Semua, Di cafe, Antar Zendo, Chat Zendo) --}}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border text-xs" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <div class="flex items-center gap-2 text-muted-text font-bold uppercase tracking-wider text-[11px] shrink-0">
+                <i class="fa-solid fa-filter text-xs"></i>
+                <span>Jenis Pemesanan:</span>
+            </div>
+
+            <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 w-full sm:w-auto">
+                {{-- Semua Jenis --}}
+                <a href="{{ route('admin.orders.index', request()->except('kind', 'page')) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold {{ !request('kind') ? 'bg-[#1B1F1D] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    Semua Jenis ({{ $totalOrders }})
+                </a>
+
+                {{-- Di Cafe (Kasir) --}}
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['kind' => 'dine_in'])) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'dine_in' ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    <i class="fa-solid fa-store text-[11px]"></i>
+                    <span>Di Cafe ({{ $totalDineIn }})</span>
+                </a>
+
+                {{-- Antar Zendo (Pelacakan) --}}
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['kind' => 'zendo_tracking'])) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_tracking' ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    <i class="fa-solid fa-map-location-dot text-[11px]"></i>
+                    <span>Antar Zendo ({{ $totalZendoTracking }})</span>
+                </a>
+
+                {{-- Chat Zendo (WA) --}}
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['kind' => 'zendo_chat'])) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_chat' ? 'bg-emerald-700 text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    <i class="fa-brands fa-whatsapp text-[12px]"></i>
+                    <span>Chat Zendo ({{ $totalZendoChat }})</span>
+                </a>
+            </div>
+        </div>
+
+        {{-- Baris 2: Filter Status Pesanan & Pencarian --}}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b text-xs font-bold" style="border-color: var(--admin-border-card, #E6E8E4);">
+            
+            {{-- Status Filter Tabs --}}
+            <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pb-1">
+                <a href="{{ route('admin.orders.index', request()->except('status', 'page')) }}" 
+                   class="px-3.5 py-2 rounded-xl transition-all whitespace-nowrap {{ !request('status') ? 'bg-[#1B1F1D] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
+                    Semua Status ({{ $totalOrders }})
+                </a>
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['status' => 'pending'])) }}" 
+                   class="px-3.5 py-2 rounded-xl transition-all whitespace-nowrap {{ request('status') === 'pending' ? 'bg-amber-100 text-amber-900 border border-amber-300 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
+                    Pending ({{ $pendingOrders }})
+                </a>
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['status' => 'processing'])) }}" 
+                   class="px-3.5 py-2 rounded-xl transition-all whitespace-nowrap {{ request('status') === 'processing' ? 'bg-blue-100 text-blue-900 border border-blue-300 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
+                    Diproses ({{ $processingOrders }})
+                </a>
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['status' => 'ready'])) }}" 
+                   class="px-3.5 py-2 rounded-xl transition-all whitespace-nowrap {{ request('status') === 'ready' ? 'bg-purple-100 text-purple-900 border border-purple-300 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
+                    Siap Saji ({{ $readyOrders }})
+                </a>
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['status' => 'completed'])) }}" 
+                   class="px-3.5 py-2 rounded-xl transition-all whitespace-nowrap {{ request('status') === 'completed' ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
+                    Selesai ({{ $completedOrders }})
+                </a>
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['status' => 'cancelled'])) }}" 
+                   class="px-3.5 py-2 rounded-xl transition-all whitespace-nowrap {{ request('status') === 'cancelled' ? 'bg-rose-100 text-rose-900 border border-rose-300 font-bold' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone' }}">
+                    Batal ({{ $cancelledOrders }})
+                </a>
+            </div>
+
+            {{-- Search Input (Preserves current filters) --}}
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="relative w-full sm:w-72">
+                @if(request('kind'))
+                    <input type="hidden" name="kind" value="{{ request('kind') }}">
+                @endif
+                @if(request('status'))
+                    <input type="hidden" name="status" value="{{ request('status') }}">
+                @endif
+                <input type="text" 
+                       name="search" 
+                       value="{{ request('search') }}" 
+                       placeholder="Cari kode / nama / HP..."
+                       class="w-full pl-9 pr-8 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs text-ink-black placeholder-muted-text focus:outline-none focus:border-neutral-800 transition shadow-xs">
+                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-text text-xs">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                @if(request('search'))
+                    <a href="{{ route('admin.orders.index', request()->except('search', 'page')) }}" 
+                       class="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-text hover:text-rose-600 text-xs" 
+                       title="Hapus pencarian">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                @endif
+            </form>
+
+        </div>
+
+    </div>
+
+    {{-- 5. Tabel Pesanan Masuk --}}
+    <div class="bg-white border rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm anim-fade-up" style="border-color: var(--admin-border-card, #E6E8E4);">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-charcoal">
-                <thead class="bg-warm-stone/50 text-muted-text uppercase text-[10px] font-mono tracking-widest border-b border-hairline">
+                <thead class="bg-warm-stone/50 text-muted-text uppercase text-[10px] font-mono tracking-widest border-b" style="border-color: var(--admin-border-card, #E6E8E4);">
                     <tr>
                         <th class="px-6 py-4">Kode &amp; Waktu</th>
                         <th class="px-6 py-4">Pemesan</th>
-                        <th class="px-6 py-4">Tipe &amp; Meja</th>
+                        <th class="px-6 py-4">Jenis Transaksi</th>
                         <th class="px-6 py-4">Total</th>
-                        <th class="px-6 py-4">Metode Bayar</th>
-                        <th class="px-6 py-4">Status Pesanan</th>
+                        <th class="px-6 py-4">Pembayaran</th>
+                        <th class="px-6 py-4">Status &amp; Ubah</th>
                         <th class="px-6 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-hairline">
+                <tbody class="divide-y" style="border-color: var(--admin-border-card, #E6E8E4);">
                     @forelse($orders as $order)
                         <tr class="hover:bg-warm-stone/30 transition-colors">
+                            {{-- Kode & Waktu --}}
                             <td class="px-6 py-4">
-                                <span class="font-mono font-bold text-ink-black block text-sm">{{ $order->code }}</span>
+                                <span class="font-mono font-bold block text-sm" style="color: var(--admin-text-main, #1B1F1D);">{{ $order->code }}</span>
                                 <span class="text-[10px] text-muted-text font-mono">{{ $order->created_at->format('d/m/Y H:i') }} WIB</span>
                             </td>
 
+                            {{-- Pemesan --}}
                             <td class="px-6 py-4">
-                                <span class="font-bold text-ink-black text-sm block">{{ $order->customer_name }}</span>
-                                <span class="text-[11px] text-muted-text font-mono">{{ $order->customer_phone && $order->customer_phone !== '-' ? $order->customer_phone : 'Slip Pesan QR' }}</span>
+                                <span class="font-bold text-sm block" style="color: var(--admin-text-main, #1B1F1D);">{{ $order->customer_name }}</span>
+                                <span class="text-[11px] text-muted-text font-mono">{{ $order->customer_phone && $order->customer_phone !== '-' ? $order->customer_phone : 'Slip QR / Kasir' }}</span>
+                                @if($order->delivery_address)
+                                    <span class="text-[10px] text-charcoal/70 line-clamp-1 mt-0.5" title="{{ $order->delivery_address }}">
+                                        📍 {{ $order->delivery_address }}
+                                    </span>
+                                @endif
                             </td>
 
+                            {{-- Jenis Transaksi (Terpetakan Akurat) --}}
                             <td class="px-6 py-4">
-                                @if(str_starts_with((string) $order->notes, '[KURIR ZENDO]'))
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
-                                        <i class="fa-brands fa-whatsapp"></i> Kurir Zendo
+                                @if($order->kind === 'zendo_tracking')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                                        <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Antar Zendo (Pelacakan)
                                     </span>
+                                    @if($order->delivery_fee > 0)
+                                        <span class="text-[10px] text-muted-text font-mono block mt-1">Ongkir: Rp {{ number_format($order->delivery_fee, 0, ',', '.') }}</span>
+                                    @endif
+                                @elseif($order->kind === 'zendo_chat')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                                        <i class="fa-brands fa-whatsapp text-emerald-600"></i> Chat Zendo (WA)
+                                    </span>
+                                    @if($order->delivery_fee > 0)
+                                        <span class="text-[10px] text-muted-text font-mono block mt-1">Ongkir: Rp {{ number_format($order->delivery_fee, 0, ',', '.') }}</span>
+                                    @endif
                                 @else
-                                    <span class="uppercase font-bold text-charcoal bg-warm-stone px-2 py-0.5 rounded-full border border-hairline text-[10px]">
-                                        {{ str_replace('_', ' ', $order->order_type) }}
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-100 text-charcoal border border-[#E6E8E4] text-[10px] font-bold">
+                                        <i class="fa-solid fa-store text-[#2F6B4F]"></i> Di Cafe ({{ $order->order_type === 'take_away' ? 'Bawa Pulang' : 'Makan di Tempat' }})
                                     </span>
-                                @endif
-                                @if($order->table)
-                                    <span class="text-[10px] text-muted-text font-mono block mt-1">Meja #{{ $order->table->number }}</span>
+                                    @if($order->table)
+                                        <span class="text-[10px] text-muted-text font-mono block mt-1">Meja #{{ $order->table->number }}</span>
+                                    @endif
                                 @endif
                             </td>
 
-                            <td class="px-6 py-4 font-mono font-bold text-ink-black text-sm">
-                                Rp {{ number_format($order->total, 0, ',', '.') }}
-                            </td>
-
+                            {{-- Total --}}
                             <td class="px-6 py-4">
-                                <span class="text-[11px] font-semibold block text-charcoal">{{ strtoupper($order->payment_method ?? 'TUNAI') }}</span>
+                                <span class="font-mono font-bold text-sm block" style="color: var(--admin-text-main, #1B1F1D);">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                                @if($order->items_count ?? $order->items->count())
+                                    <span class="text-[10px] text-muted-text font-mono">{{ $order->items_count ?? $order->items->count() }} Item menu</span>
+                                @endif
+                            </td>
+
+                            {{-- Pembayaran --}}
+                            <td class="px-6 py-4">
+                                <span class="text-[11px] font-semibold block uppercase" style="color: var(--admin-text-main, #1B1F1D);">{{ $order->payment_method_label }}</span>
                                 <span class="text-[10px] font-bold {{ $order->payment_status === 'paid' ? 'text-emerald-700' : 'text-amber-700' }}">
                                     {{ $order->payment_status === 'paid' ? '● Lunas' : '○ Belum Bayar' }}
                                 </span>
                             </td>
 
+                            {{-- Status & Ubah Cepat Langsung di Tabel --}}
                             <td class="px-6 py-4">
-                                @if($order->status === 'pending')
-                                    <span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Pending</span>
-                                @elseif($order->status === 'processing')
-                                    <span class="bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Diproses</span>
-                                @elseif($order->status === 'ready')
-                                    <span class="bg-purple-50 text-purple-800 border border-purple-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Siap Saji</span>
-                                @elseif($order->status === 'completed')
-                                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Selesai</span>
-                                @else
-                                    <span class="bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">Batal</span>
-                                @endif
+                                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="inline-block">
+                                    @csrf
+                                    <select name="status" 
+                                            data-prev="{{ $order->status }}"
+                                            onchange="handleQuickStatusChange(this, '{{ $order->code }}')" 
+                                            class="text-[11px] font-bold rounded-xl border px-2.5 py-1 cursor-pointer transition shadow-2xs focus:outline-none {{ $order->status === 'completed' ? 'bg-emerald-50 text-emerald-900 border-emerald-300' : ($order->status === 'processing' ? 'bg-blue-50 text-blue-900 border-blue-300' : ($order->status === 'ready' ? 'bg-purple-50 text-purple-900 border-purple-300' : ($order->status === 'cancelled' ? 'bg-rose-50 text-rose-900 border-rose-300' : 'bg-amber-50 text-amber-900 border-amber-300'))) }}"
+                                            title="Klik untuk langsung memperbarui status pesanan">
+                                        <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Diproses</option>
+                                        <option value="ready" {{ $order->status === 'ready' ? 'selected' : '' }}>Siap Saji</option>
+                                        <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Selesai</option>
+                                        <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Batal</option>
+                                    </select>
+                                </form>
                             </td>
 
+                            {{-- Aksi --}}
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-1.5">
-                                    <a href="{{ route('admin.orders.show', $order->id) }}" class="px-3 py-1.5 rounded-lg bg-warm-stone hover:bg-ink-black hover:text-white text-ink-black text-xs font-bold transition btn-press">
+                                    <a href="{{ route('admin.orders.show', $order->id) }}" 
+                                       class="px-3 py-1.5 rounded-lg bg-warm-stone hover:bg-neutral-200 text-charcoal text-xs font-bold transition btn-press">
                                         Detail
                                     </a>
-                                    <a href="{{ route('admin.orders.receipt', $order->id) }}" target="_blank" class="p-1.5 rounded-lg bg-warm-stone hover:bg-ink-black hover:text-white text-muted-text transition btn-press" title="Cetak Nota">
+                                    <a href="{{ route('admin.orders.receipt', $order->id) }}" 
+                                       target="_blank" 
+                                       class="p-1.5 rounded-lg bg-warm-stone hover:bg-neutral-200 text-muted-text transition btn-press" 
+                                       title="Cetak Nota">
                                         <i class="fa-solid fa-print text-xs"></i>
                                     </a>
                                 </div>
@@ -139,7 +894,8 @@
                                 <div class="w-12 h-12 rounded-2xl bg-warm-stone flex items-center justify-center mx-auto mb-3 text-muted-text">
                                     <i class="fa-solid fa-receipt text-lg"></i>
                                 </div>
-                                <p class="font-medium text-xs">Tidak ada data pesanan pada kriteria ini.</p>
+                                <p class="font-bold text-sm" style="color: var(--admin-text-main, #1B1F1D);">Tidak ada pesanan ditemukan</p>
+                                <p class="text-xs text-muted-text mt-1">Coba sesuaikan kata kunci pencarian atau ubah tab jenis &amp; status filter.</p>
                             </td>
                         </tr>
                     @endforelse
@@ -147,12 +903,229 @@
             </table>
         </div>
 
-        @if($orders->hasPages())
-            <div class="p-4 border-t border-hairline bg-warm-ivory">
-                {{ $orders->links() }}
+        {{-- Pagination Bahasa Indonesia --}}
+        <div class="p-4 border-t bg-warm-stone/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-text" style="border-color: var(--admin-border-card, #E6E8E4);">
+            <div>
+                @if($orders->total() > 0)
+                    Menampilkan <span class="font-bold text-ink-black">{{ $orders->firstItem() }}</span> &ndash; <span class="font-bold text-ink-black">{{ $orders->lastItem() }}</span> dari <span class="font-bold text-ink-black">{{ $orders->total() }}</span> pesanan
+                @else
+                    Menampilkan 0 pesanan
+                @endif
             </div>
-        @endif
+
+            @if($orders->hasPages())
+                <div class="flex items-center gap-1">
+                    {{-- Previous Page Link --}}
+                    @if ($orders->onFirstPage())
+                        <span class="px-3 py-1.5 rounded-lg border border-[#E6E8E4] bg-neutral-100 text-neutral-400 text-xs font-semibold cursor-not-allowed">
+                            &laquo; Sebelumnya
+                        </span>
+                    @else
+                        <a href="{{ $orders->previousPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-[#E6E8E4] bg-white hover:bg-neutral-100 text-ink-black text-xs font-semibold transition">
+                            &laquo; Sebelumnya
+                        </a>
+                    @endif
+
+                    <span class="px-3 py-1.5 rounded-lg bg-white border border-[#E6E8E4] text-xs font-bold text-ink-black">
+                        Hal {{ $orders->currentPage() }} / {{ $orders->lastPage() }}
+                    </span>
+
+                    {{-- Next Page Link --}}
+                    @if ($orders->hasMorePages())
+                        <a href="{{ $orders->nextPageUrl() }}" class="px-3 py-1.5 rounded-lg border border-[#E6E8E4] bg-white hover:bg-neutral-100 text-ink-black text-xs font-semibold transition">
+                            Berikutnya &raquo;
+                        </a>
+                    @else
+                        <span class="px-3 py-1.5 rounded-lg border border-[#E6E8E4] bg-neutral-100 text-neutral-400 text-xs font-semibold cursor-not-allowed">
+                            Berikutnya &raquo;
+                        </span>
+                    @endif
+                </div>
+            @endif
+        </div>
     </div>
 
 </div>
+
+{{-- Script for Confirmation Dialog, Mutual Locking, Two-Way Phone Sync & Helpers --}}
+<script>
+    function confirmDisableLastMode(inputEl) {
+        if (!inputEl.checked) {
+            const dineIn = document.getElementById('order_mode_dine_in').checked;
+            const tracking = document.getElementById('order_mode_zendo_tracking').checked;
+            const chat = document.getElementById('order_mode_zendo_chat').checked;
+            const totalActive = [dineIn, tracking, chat].filter(Boolean).length;
+
+            if (totalActive === 0) {
+                const confirmed = confirm(
+                    'Perhatian: Ini adalah cara transaksi terakhir yang masih aktif.\n\n' +
+                    'Jika Anda mematikannya, pelanggan sama sekali tidak akan bisa memesan melalui website dan daftar menu hanya akan menjadi katalog informasi.\n\n' +
+                    'Apakah Anda yakin ingin mematikan cara transaksi ini?'
+                );
+                if (!confirmed) {
+                    inputEl.checked = true;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function handleModeSwitchChange(mode, inputEl) {
+        if (!confirmDisableLastMode(inputEl)) {
+            // Jika pengguna membatalkan dialog konfirmasi, kembalikan tampilan visual tetap aktif
+            if (mode === 'dine_in') updateDineInState(true);
+            else if (mode === 'tracking') toggleZendoMode('tracking', true);
+            else if (mode === 'chat') toggleZendoMode('chat', true);
+            return;
+        }
+
+        if (mode === 'dine_in') {
+            updateDineInState(inputEl.checked);
+        } else if (mode === 'tracking' || mode === 'chat') {
+            toggleZendoMode(mode, inputEl.checked);
+        }
+    }
+
+    function updateDineInState(checked) {
+        const card = document.getElementById('card_mode_dine_in');
+        const badge = document.getElementById('badge_mode_dine_in');
+        if (checked) {
+            card.classList.remove('bg-warm-stone/20', 'border-[#E6E8E4]');
+            card.classList.add('bg-[#FAFDFB]', 'border-emerald-300');
+            badge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700';
+            badge.innerText = '● Status: AKTIF';
+        } else {
+            card.classList.remove('bg-[#FAFDFB]', 'border-emerald-300');
+            card.classList.add('bg-warm-stone/20', 'border-[#E6E8E4]');
+            badge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-muted-text';
+            badge.innerText = '○ Status: NONAKTIF';
+        }
+    }
+
+    function toggleZendoMode(toggledMode, isChecked) {
+        const trackingInput = document.getElementById('order_mode_zendo_tracking');
+        const chatInput = document.getElementById('order_mode_zendo_chat');
+        const lastChangedInput = document.getElementById('last_changed_mode');
+
+        const trackingCard = document.getElementById('card_mode_zendo_tracking');
+        const trackingBadge = document.getElementById('badge_mode_zendo_tracking');
+        const chatCard = document.getElementById('card_mode_zendo_chat');
+        const chatBadge = document.getElementById('badge_mode_zendo_chat');
+
+        if (toggledMode === 'tracking' && isChecked) {
+            // Mode pelacakan kurir dinyalakan -> otomatis matikan mode chat Zendo
+            chatInput.checked = false;
+            lastChangedInput.value = 'tracking';
+        } else if (toggledMode === 'chat' && isChecked) {
+            // Mode chat Zendo dinyalakan -> otomatis matikan mode pelacakan kurir
+            trackingInput.checked = false;
+            lastChangedInput.value = 'chat';
+        } else {
+            lastChangedInput.value = '';
+        }
+
+        // Sinkronisasi tampilan visual kartu Pelacakan
+        if (trackingInput.checked) {
+            trackingCard.classList.remove('bg-warm-stone/20', 'border-[#E6E8E4]');
+            trackingCard.classList.add('bg-[#FAFDFB]', 'border-emerald-300');
+            trackingBadge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700';
+            trackingBadge.innerText = '● Status: AKTIF (Pelacakan)';
+        } else {
+            trackingCard.classList.remove('bg-[#FAFDFB]', 'border-emerald-300');
+            trackingCard.classList.add('bg-warm-stone/20', 'border-[#E6E8E4]');
+            trackingBadge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-muted-text';
+            trackingBadge.innerText = '○ Status: NONAKTIF';
+        }
+
+        // Sinkronisasi tampilan visual kartu Chat Zendo
+        if (chatInput.checked) {
+            chatCard.classList.remove('bg-warm-stone/20', 'border-[#E6E8E4]');
+            chatCard.classList.add('bg-[#FAFDFB]', 'border-emerald-300');
+            chatBadge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700';
+            chatBadge.innerText = '● Status: AKTIF (Chat WA)';
+        } else {
+            chatCard.classList.remove('bg-[#FAFDFB]', 'border-emerald-300');
+            chatCard.classList.add('bg-warm-stone/20', 'border-[#E6E8E4]');
+            chatBadge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-muted-text';
+            chatBadge.innerText = '○ Status: NONAKTIF';
+        }
+    }
+
+    function toggleQrisUploadWrap(checked) {
+        const wrap = document.getElementById('qris_upload_wrap');
+        if (wrap) {
+            wrap.style.display = checked ? 'block' : 'none';
+        }
+    }
+
+    function toggleRecapPeriodInputs(period) {
+        ['daily', 'weekly', 'monthly'].forEach(p => {
+            const el = document.getElementById('recapInputWrap_' + p);
+            if (el) {
+                if (p === period) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            }
+        });
+    }
+
+    function submitRecapExport(format, newTab) {
+        const form = document.getElementById('recapExportForm');
+        const fmtInput = document.getElementById('recapFormatInput');
+        if (!form || !fmtInput) return;
+        fmtInput.value = format;
+        if (newTab) {
+            form.setAttribute('target', '_blank');
+        } else {
+            form.removeAttribute('target');
+        }
+        form.submit();
+    }
+
+    function insertVariable(tag) {
+        const textarea = document.getElementById('zendoChatTemplateTextarea');
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+
+        textarea.value = text.substring(0, start) + tag + text.substring(end);
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + tag.length;
+    }
+
+    // Quick order status change handler with confirmation for 'cancelled' and 'completed'
+    function handleQuickStatusChange(selectEl, orderCode) {
+        const newStatus = selectEl.value;
+        const prevStatus = selectEl.getAttribute('data-prev') || selectEl.defaultValue;
+
+        if (newStatus === 'cancelled') {
+            if (!confirm(`Konfirmasi: Apakah Anda yakin ingin membatalkan pesanan ${orderCode}?`)) {
+                selectEl.value = prevStatus;
+                return false;
+            }
+        } else if (newStatus === 'completed') {
+            if (!confirm(`Konfirmasi: Tandai pesanan ${orderCode} sebagai Selesai?`)) {
+                selectEl.value = prevStatus;
+                return false;
+            }
+        }
+
+        selectEl.setAttribute('data-prev', newStatus);
+        selectEl.form.submit();
+    }
+
+    // Two-way synchronization for Zendo WhatsApp phone number inputs (Mode 2 & Mode 3)
+    document.addEventListener('DOMContentLoaded', () => {
+        const waInputs = document.querySelectorAll('.zendo-wa-input');
+        waInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                waInputs.forEach(other => {
+                    if (other !== this) other.value = this.value;
+                });
+            });
+        });
+    });
+</script>
 @endsection

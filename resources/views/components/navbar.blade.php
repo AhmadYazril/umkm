@@ -1,3 +1,7 @@
+@php
+    $navTxSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
+    $isAnyOrderModeActive = (bool) ($navTxSettings['is_any_mode_active'] ?? true);
+@endphp
 <!-- Main Top Navbar (Styled with Nucomu Warm Ivory & Terracotta Theme) -->
 <header id="main-navbar" class="sticky top-0 left-0 right-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#54392B]/10 navbar-visible transition-all duration-300">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
@@ -35,6 +39,7 @@
                class="desktop-nav-link nav-link font-body text-sm lg:text-base font-semibold text-[#2A1D17] hover:text-[#E06D24] transition-colors">
                 Contact
             </a>
+            @if($isAnyOrderModeActive)
             <button type="button" 
                     onclick="openCartModal()" 
                     class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#15151c] text-amber-400 border border-amber-500/30 text-xs font-bold hover:bg-black transition-all cursor-pointer">
@@ -42,6 +47,7 @@
                 <span>Keranjang</span>
                 <span id="nav-cart-badge" class="px-1.5 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black leading-none">0</span>
             </button>
+            @endif
         </nav>
 
 
@@ -87,6 +93,7 @@
 
         <!-- Drawer Bottom Actions -->
         <div class="pt-6 border-t border-[#54392B]/10 flex flex-col space-y-3">
+            @if($isAnyOrderModeActive)
             <button type="button" 
                     onclick="toggleMobileDrawer(); openCartModal();" 
                     class="w-full py-3.5 bg-[#15151c] hover:bg-black text-amber-400 border border-amber-500/30 text-xs font-bold uppercase tracking-wider rounded-xl text-center transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2">
@@ -94,6 +101,7 @@
                 <span>Buka Keranjang Pesanan</span>
                 <span id="drawer-cart-badge" class="px-2 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black">0</span>
             </button>
+            @endif
             <button type="button" 
                     onclick="toggleMobileDrawer(); openReservationModal('Mobile Drawer');" 
                     class="w-full py-3 bg-[#2A1D17] hover:bg-[#E06D24] text-white text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95">

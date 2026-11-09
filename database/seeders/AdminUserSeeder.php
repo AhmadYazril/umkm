@@ -15,7 +15,7 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Admin Nucomu',
                 'email' => 'admin@nucomu.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('admin12345'),
                 'role' => 'admin',
             ]
         );

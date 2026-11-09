@@ -1,5 +1,7 @@
-<!-- SECTION 1: HOME / HERO (4 SLIDES: SLIDE 0 WELCOME LATTE + SLIDES 1-3 PRODUCT IN FRONT OF GIANT HEADLINE) -->
+﻿<!-- SECTION 1: HOME / HERO (4 SLIDES: SLIDE 0 WELCOME LATTE + SLIDES 1-3 PRODUCT IN FRONT OF GIANT HEADLINE) -->
 @php
+    $activeBanners = $activeBanners ?? ($banners ?? collect());
+
     // Generate 3D Vortex Beans for Slide 1 (Fresh Beans) matching screen recording exactly
     $vortexBeans = [];
     $numSpiral = 24;
@@ -199,6 +201,7 @@
     $totalSlides = count($slides);
 @endphp
 
+
 <section id="home" 
          class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero focus:outline-none"
          style="background-color: {{ $slides[0]['bg_color'] ?? '#140E0A' }}; transition: background-color 0.8s ease;"
@@ -207,7 +210,65 @@
          aria-label="Nucomu Cafe Hero Slider"
          tabindex="0">
 
-    <!-- =========================================================================
+    <!-- Soft feathered ambient glow for warmth and depth -->
+    <div class="absolute inset-0 pointer-events-none z-1" 
+         style="background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 60%, transparent 100%);">
+    </div>
+
+    @if(isset($activeBanners) && $activeBanners->count() > 0)
+        <!-- =========================================================================
+             1. DESKTOP ONLY: PROMOTIONAL BANNERS (SCREEN WIDTH >= 768px)
+             Di HP banner TIDAK ditampilkan dan media (gambar/video) TIDAK diunduh.
+             ========================================================================= -->
+        <div class="hidden md:block w-full h-full absolute inset-0" id="desktop-hero-banners-wrapper">
+            @foreach($activeBanners as $banner)
+                <div class="hero-slide-item hero-banner-slide absolute inset-0 w-full h-full flex items-center justify-center {{ $loop->first ? 'active z-10' : 'opacity-0 pointer-events-none z-0' }}"
+                     data-slide-index="{{ $loop->index }}"
+                     data-layout-mode="{{ $banner->layout_mode ?: 'poster' }}"
+                     data-bg-color="#FAF8F5">
+                    
+                    @if(($banner->layout_mode ?: 'poster') === 'poster')
+                        <!-- -----------------------------------------------------------------
+                             MODE 1: POSTER (DEFAULT) - Full Edge-to-Edge Desktop
+                             Seluruh poster menjadi link jika button_link diisi
+                             ----------------------------------------------------------------- -->
+                        @if(!empty($banner->button_link))
+                            <a href="{{ $banner->button_link }}" class="group/poster relative w-full h-full flex items-center justify-center overflow-hidden block cursor-pointer" title="{{ $banner->title }}">
+
+        <!-- Desktop Nav Arrows (Hanya jika banner aktif > 1) -->
+        @if($activeBanners->count() > 1)
+            <button type="button" 
+                    onclick="prevHeroSlide()" 
+                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    aria-label="Slide Sebelumnya">
+                <span class="material-symbols-outlined text-xl">chevron_left</span>
+            </button>
+            <button type="button" 
+                    onclick="nextHeroSlide()" 
+                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    aria-label="Slide Berikutnya">
+                <span class="material-symbols-outlined text-xl">chevron_right</span>
+            </button>
+        @endif
+
+        <!-- Desktop Indicator Dots -->
+        @if($activeBanners->count() > 1)
+            <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="desktop-hero-dots">
+                @foreach($activeBanners as $b)
+                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#E06D24]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
+                @endforeach
+            </div>
+        @endif
+
+        <!-- Mobile Indicator Dots (4 Slide Hero Bawaan) -->
+        <div class="flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="mobile-hero-dots">
+            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1"></button>
+            <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
+            <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
+            <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4"></button>
+        </div>
+    @else
+        <!-- =========================================================================
          HERO SLIDES CONTAINER
          ========================================================================= -->
     @foreach($slides as $index => $slide)
@@ -536,6 +597,7 @@
                 <span id="hero-pause-icon" class="material-symbols-outlined text-base">pause</span>
             </button>
         </div>
+    @endif
     @endif
 
 </section>

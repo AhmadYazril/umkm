@@ -522,7 +522,7 @@
             <span>Temukan Kami</span>
         </div>
         <h2 class="text-3xl sm:text-5xl font-serif font-bold text-zinc-950 dark:text-white tracking-tight mb-4">Kunjungi Nucomu Cafe</h2>
-        <p class="text-zinc-700 dark:text-zinc-300 mb-1.5 text-base font-medium">{{ $settings['cafe_address'] ?? '[ISI: alamat lengkap]' }}</p>
+        <p class="text-zinc-700 dark:text-zinc-300 mb-1.5 text-base font-medium">{{ $settings['cafe_address'] ?? 'Jl. Mayor Sujadi, Manggisan, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221' }}</p>
         <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8">Tulungagung, Jawa Timur</p>
         
         <div class="bg-white/80 dark:bg-zinc-900/70 border border-zinc-200/80 dark:border-white/10 rounded-[2.25rem] h-64 flex items-center justify-center shadow-lg backdrop-blur-md">

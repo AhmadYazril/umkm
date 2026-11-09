@@ -77,6 +77,7 @@
             </div>
         @endif
 
+        @if($allReviewsCollection->isNotEmpty())
         <!-- Featured Spotlight Review Container (Auto-Loop, Monochrome Frame) -->
         <div class="max-w-3xl mx-auto mb-10">
             <div id="homeReviewContainer" 
@@ -235,6 +236,26 @@
                     <i class="fa-solid fa-up-right-and-down-left-from-center text-xs"></i>
                     <span>Lihat Semua di Jendela Penuh</span>
                 </button>
+            </div>
+        @endif
+        @else
+            <!-- Neutral Empty State when no reviews are pinned -->
+            <div class="max-w-2xl mx-auto py-12 px-6 rounded-3xl bg-white border border-[#E5E5E5] text-center space-y-3 shadow-xs">
+                <div class="w-12 h-12 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center mx-auto text-[#1C1C1C]">
+                    <i class="fa-regular fa-comment-dots text-lg"></i>
+                </div>
+                <h3 class="text-base font-bold text-[#1C1C1C]">Belum Ada Ulasan yang Disematkan</h3>
+                <p class="text-xs text-[#666666] max-w-md mx-auto leading-relaxed">
+                    Pengalaman berkunjung di Nucomu Cafe akan segera ditampilkan di sini. Jadilah yang pertama membagikan kesan Anda!
+                </p>
+                <div class="pt-2">
+                    <button type="button"
+                            onclick="openHomeReviewModal()"
+                            class="text-xs font-bold text-white bg-[#1C1C1C] hover:bg-black active:scale-95 transition-all inline-flex items-center gap-2 px-5 py-2.5 rounded-full shadow-xs">
+                        <i class="fa-solid fa-pen-to-square text-white"></i>
+                        <span>Tulis Ulasan Anda</span>
+                    </button>
+                </div>
             </div>
         @endif
     </div>

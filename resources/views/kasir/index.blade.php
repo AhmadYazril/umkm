@@ -1,7 +1,7 @@
 @php
     $firstCategoryKey = $groupedCategories->first()['key'] ?? 'minuman';
-    $outOfStockCount = $catalogItems->where('stock', '<=', 0)->count();
-    $lowStockCount = $catalogItems->filter(fn ($i) => $i['stock'] > 0 && $i['stock'] <= 5)->count();
+    $outOfStockCount = $catalogItems->filter(fn ($i) => ! $i['is_available'] || (int) $i['stock'] <= 0)->count();
+    $availableCount = $catalogItems->count() - $outOfStockCount;
 @endphp
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
@@ -238,6 +238,11 @@
                     <div class="flex items-center gap-2 text-[11px] text-muted truncate">
                         <span class="font-semibold text-charcoal truncate">{{ auth()->user()->name ?? 'Kasir Nucomu' }}</span>
                         <span>•</span>
+                        <span class="inline-flex items-center gap-1 text-[10px] text-muted font-mono bg-ivory px-2 py-0.5 rounded-lg border border-line" title="Database otomatis tersinkron setiap beberapa detik">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>Auto-Sync DB</span>
+                        </span>
+                        <span>•</span>
                         <span id="kasirLiveClock" class="font-mono text-[10px] text-ink font-semibold">{{ now()->format('H:i:s') }}</span>
                     </div>
                 </div>
@@ -264,9 +269,9 @@
                     <span>Stok Barang</span>
                     <span
                         id="headerStockAlertBadge"
-                        class="px-1.5 py-0.5 rounded-md text-[10px] font-mono leading-none {{ ($outOfStockCount + $lowStockCount) > 0 ? 'bg-ink text-white' : 'bg-stone-warm text-charcoal' }}"
+                        class="px-1.5 py-0.5 rounded-md text-[10px] font-mono leading-none {{ $outOfStockCount > 0 ? 'bg-ink text-white' : 'bg-stone-warm text-charcoal' }}"
                     >
-                        {{ $catalogItems->where('stock', '>', 0)->count() }}/{{ $catalogItems->count() }}
+                        {{ $outOfStockCount > 0 ? $outOfStockCount . ' Habis' : 'Semua Ada' }}
                     </span>
                 </button>
                 <button
@@ -292,7 +297,7 @@
                 </button>
             </nav>
 
-            {{-- Right Actions: Live DB Sync, Stats, Admin Link & Logout --}}
+            {{-- Right Actions: Stats, Admin Link & Logout (Tombol Sinkron Manual Dihilangkan) --}}
             <div class="flex items-center gap-2 shrink-0">
                 <div class="hidden xl:flex items-center gap-3 bg-ivory border border-line rounded-xl px-3.5 py-1.5 text-xs">
                     <div>
@@ -305,17 +310,6 @@
                         <span id="headerTodayRevenue" class="font-mono font-bold text-ink ml-1">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</span>
                     </div>
                 </div>
-
-                <button
-                    type="button"
-                    id="btnKasirSyncDb"
-                    onclick="syncKasirWithDatabase(true)"
-                    class="px-2.5 py-2 rounded-xl border border-line bg-ivory hover:bg-stone-warm text-xs font-bold text-ink transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
-                    title="Sinkronkan Data Stok & Pesanan dengan Database & Admin"
-                >
-                    <i id="iconKasirSyncDb" class="fa-solid fa-arrows-rotate text-[11px]"></i>
-                    <span class="hidden md:inline text-[11px]">Sinkron DB</span>
-                </button>
 
                 <a
                     href="{{ route('admin.dashboard') }}"
@@ -441,12 +435,13 @@
                                             data-menu-id="{{ $menu['id'] }}"
                                             data-menu-name="{{ $menu['name'] }}"
                                             data-menu-price="{{ $menu['price'] }}"
-                                            data-menu-stock="{{ $menu['stock'] }}"
+                                            data-menu-stock="{{ $menu['is_available'] ? 25 : 0 }}"
+                                            data-menu-available="{{ $menu['is_available'] ? '1' : '0' }}"
                                             data-menu-category="{{ $menu['group_key'] }}"
                                             data-menu-subcategory="{{ $menu['sub_category'] }}"
                                             data-menu-image="{{ $menu['image'] }}"
                                             data-search-text="{{ strtolower($menu['name'] . ' ' . $menu['group_label'] . ' ' . $menu['sub_category']) }}"
-                                            class="kasir-menu-box {{ $menu['stock'] <= 0 ? 'is-out-of-stock' : '' }} group text-left bg-white border border-line flex flex-col justify-between cursor-pointer focus:outline-none anim-cascade"
+                                            class="kasir-menu-box {{ ! $menu['is_available'] ? 'is-out-of-stock' : '' }} group text-left bg-white border border-line flex flex-col justify-between cursor-pointer focus:outline-none anim-cascade"
                                             style="animation-delay: {{ min(($itemIdx * 35), 280) }}ms"
                                         >
                                             {{-- Full-Bleed Top Image with Subtle Zoom & Vignette --}}
@@ -460,12 +455,12 @@
                                                 >
                                                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-65 group-hover:opacity-45 transition-opacity"></div>
 
-                                                {{-- Top-Left Live Stock Pill --}}
+                                                {{-- Top-Left Live Stock Pill (Tersedia vs Habis, Tanpa Jumlah Angka) --}}
                                                 <span
                                                     id="menuBoxStockPill-{{ $menu['id'] }}"
-                                                    class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm {{ $menu['stock'] <= 0 ? 'bg-ink text-white' : ($menu['stock'] <= 5 ? 'bg-amber-100 text-amber-950 border border-amber-300' : 'bg-white/95 backdrop-blur-md text-ink') }}"
+                                                    class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm {{ ! $menu['is_available'] ? 'bg-ink text-white' : 'bg-emerald-50 text-emerald-800 border border-emerald-200' }}"
                                                 >
-                                                    {{ $menu['stock'] <= 0 ? 'STOK HABIS' : 'Stok: ' . $menu['stock'] }}
+                                                    {{ ! $menu['is_available'] ? 'HABIS' : 'TERSEDIA' }}
                                                 </span>
 
                                                 {{-- Subcategory Pill on Bottom-Left of Photo --}}
@@ -482,7 +477,7 @@
                                                 </span>
                                             </div>
 
-                                            {{-- Card Body: Menu Name, Price & Quick Stock Control Trigger --}}
+                                            {{-- Card Body: Menu Name, Price & Direct Habis/Ada Toggle Trigger --}}
                                             <div class="p-3.5 flex-1 flex flex-col justify-between bg-white">
                                                 <h3 class="text-xs sm:text-[13px] font-extrabold text-ink leading-snug line-clamp-2 group-hover:text-charcoal transition-colors">
                                                     {{ $menu['name'] }}
@@ -493,15 +488,16 @@
                                                         {{ $menu['price_formatted'] }}
                                                     </span>
 
-                                                    {{-- Quick Stock Edit Trigger (Stops propagation so it opens Stock Modal without adding to cart) --}}
+                                                    {{-- Direct Habis / Ada Toggle Button --}}
                                                     <button
                                                         type="button"
-                                                        onclick="openQuickStockModal(event, {{ $menu['id'] }})"
-                                                        class="px-2 py-1 rounded-lg bg-ivory hover:bg-ink hover:text-white border border-line text-[10px] font-mono font-bold text-charcoal transition-colors flex items-center gap-1 cursor-pointer"
-                                                        title="Atur Stok {{ $menu['name'] }}"
+                                                        id="menuBoxToggleBtn-{{ $menu['id'] }}"
+                                                        onclick="toggleMenuStockStatus(event, {{ $menu['id'] }})"
+                                                        class="px-2.5 py-1 rounded-lg border text-[10px] font-mono font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95 {{ $menu['is_available'] ? 'bg-ivory hover:bg-ink hover:text-white border-line text-charcoal' : 'bg-ink text-white border-ink hover:bg-charcoal' }}"
+                                                        title="{{ $menu['is_available'] ? 'Klik untuk tandai HABIS' : 'Klik untuk tandai TERSEDIA' }}"
                                                     >
-                                                        <i class="fa-solid fa-boxes-stacked text-[9px]"></i>
-                                                        <span>Stok</span>
+                                                        <i class="fa-solid {{ $menu['is_available'] ? 'fa-ban' : 'fa-check' }} text-[9px]"></i>
+                                                        <span>{{ $menu['is_available'] ? 'Habis' : 'Ada' }}</span>
                                                     </button>
                                                 </div>
                                             </div>
@@ -737,33 +733,33 @@
              ===================================================================== --}}
         <section id="kasirMainPanel-stock" class="{{ $activeTab === 'stock' ? '' : 'hidden' }} space-y-5">
 
-            {{-- Summary Counters + Filter Bar (Strictly Categorized) --}}
+            {{-- Summary Counters: Tersedia vs Habis (Tanpa Jumlah Angka) --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-white border border-line rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                        <span class="text-[10px] font-mono uppercase tracking-wider text-muted block">Menu Tersedia</span>
-                        <span id="stockStatAvailable" class="text-2xl font-mono font-extrabold text-ink">{{ $catalogItems->where('stock', '>', 0)->count() }}</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-muted block">Menu Tersedia (Ada)</span>
+                        <span id="stockStatAvailable" class="text-2xl font-mono font-extrabold text-emerald-700">{{ $catalogItems->filter(fn ($i) => $i['is_available'] && $i['stock'] > 0)->count() }}</span>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-ivory border border-line flex items-center justify-center text-ink">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
                         <i class="fa-solid fa-check"></i>
                     </div>
                 </div>
                 <div class="bg-white border border-line rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                        <span class="text-[10px] font-mono uppercase tracking-wider text-muted block">Stok Menipis (1-5)</span>
-                        <span id="stockStatLow" class="text-2xl font-mono font-extrabold text-ink">{{ $lowStockCount }}</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-muted block">Menu Habis (Kosong)</span>
+                        <span id="stockStatOut" class="text-2xl font-mono font-extrabold text-ink">{{ $catalogItems->filter(fn ($i) => ! $i['is_available'] || $i['stock'] <= 0)->count() }}</span>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-ivory border border-line flex items-center justify-center text-ink">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div class="w-10 h-10 rounded-xl bg-ink text-white flex items-center justify-center">
+                        <i class="fa-solid fa-ban"></i>
                     </div>
                 </div>
                 <div class="bg-white border border-line rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                        <span class="text-[10px] font-mono uppercase tracking-wider text-muted block">Stok Habis (0)</span>
-                        <span id="stockStatOut" class="text-2xl font-mono font-extrabold text-ink">{{ $outOfStockCount }}</span>
+                        <span class="text-[10px] font-mono uppercase tracking-wider text-muted block">Total Menu Terdaftar</span>
+                        <span class="text-2xl font-mono font-extrabold text-ink">{{ $catalogItems->count() }}</span>
                     </div>
-                    <div class="w-10 h-10 rounded-xl bg-ink text-white flex items-center justify-center">
-                        <i class="fa-solid fa-ban"></i>
+                    <div class="w-10 h-10 rounded-xl bg-ivory border border-line flex items-center justify-center text-charcoal">
+                        <i class="fa-solid fa-boxes-stacked"></i>
                     </div>
                 </div>
             </div>
@@ -784,19 +780,19 @@
                     @endforeach
                 </div>
 
-                <div class="relative w-full md:w-64">
+                <div class="relative w-full md:w-72">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-muted"></i>
                     <input
                         type="search"
                         id="kasirStockSearchInput"
                         oninput="filterStockItems()"
-                        placeholder="Cari menu untuk atur stok..."
+                        placeholder="Cari menu untuk ubah status habis / ada..."
                         class="w-full bg-ivory border border-line rounded-xl pl-9 pr-3.5 py-2 text-xs text-ink placeholder-muted focus:outline-none focus:border-ink"
                     >
                 </div>
             </div>
 
-            {{-- Stock Cards per Category --}}
+            {{-- Stock Cards per Category (Status Ada vs Habis, Tanpa Input Angka) --}}
             <div class="space-y-6">
                 @foreach($groupedCategories as $groupIndex => $catGroup)
                     <div
@@ -805,6 +801,9 @@
                     >
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                             @foreach($catGroup['items'] as $menu)
+                                @php
+                                    $isAvail = (bool) $menu['is_available'] && (int) $menu['stock'] > 0;
+                                @endphp
                                 <div
                                     id="stockCard-{{ $menu['id'] }}"
                                     data-stock-search="{{ strtolower($menu['name'] . ' ' . $menu['sub_category']) }}"
@@ -826,74 +825,30 @@
                                         </div>
 
                                         <div class="text-right shrink-0">
-                                            <span class="text-[10px] font-mono uppercase text-muted block">Sisa Stok</span>
+                                            <span class="text-[10px] font-mono uppercase text-muted block mb-1">Status</span>
                                             <span
-                                                id="stockCardValue-{{ $menu['id'] }}"
-                                                class="text-xl font-mono font-extrabold text-ink"
+                                                id="stockCardStatus-{{ $menu['id'] }}"
+                                                class="inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold uppercase tracking-wider {{ $isAvail ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-ink text-white' }}"
                                             >
-                                                {{ $menu['stock'] }}
+                                                {{ $isAvail ? 'Tersedia' : 'Habis' }}
                                             </span>
                                         </div>
                                     </div>
 
-                                    {{-- Quick Stock Controls: Habiskan (0), -1, +1, +5, +10, and Direct Input --}}
-                                    <div class="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
-                                        <div class="flex items-center gap-1">
-                                            <button
-                                                type="button"
-                                                onclick="updateMenuStock({{ $menu['id'] }}, { stock: 0 })"
-                                                class="px-2.5 py-1.5 rounded-lg border border-line hover:bg-ink hover:text-white text-[10px] font-mono font-bold text-charcoal transition cursor-pointer"
-                                                title="Set Stok Habis (0)"
-                                            >
-                                                Habis
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onclick="updateMenuStock({{ $menu['id'] }}, { delta: -1 })"
-                                                class="w-8 h-8 rounded-lg bg-ivory hover:bg-stone-warm border border-line text-xs font-mono font-bold text-ink transition cursor-pointer"
-                                            >
-                                                -1
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onclick="updateMenuStock({{ $menu['id'] }}, { delta: 1 })"
-                                                class="w-8 h-8 rounded-lg bg-ivory hover:bg-stone-warm border border-line text-xs font-mono font-bold text-ink transition cursor-pointer"
-                                            >
-                                                +1
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onclick="updateMenuStock({{ $menu['id'] }}, { delta: 5 })"
-                                                class="px-2.5 py-1.5 rounded-lg bg-ivory hover:bg-stone-warm border border-line text-[11px] font-mono font-bold text-ink transition cursor-pointer"
-                                            >
-                                                +5
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onclick="updateMenuStock({{ $menu['id'] }}, { delta: 10 })"
-                                                class="px-2.5 py-1.5 rounded-lg bg-ivory hover:bg-stone-warm border border-line text-[11px] font-mono font-bold text-ink transition cursor-pointer"
-                                            >
-                                                +10
-                                            </button>
-                                        </div>
-
-                                        <div class="flex items-center gap-1.5">
-                                            <input
-                                                type="number"
-                                                id="stockInput-{{ $menu['id'] }}"
-                                                value="{{ $menu['stock'] }}"
-                                                min="0"
-                                                max="9999"
-                                                class="w-16 bg-ivory border border-line rounded-lg px-2 py-1 text-xs font-mono font-bold text-ink text-center focus:outline-none focus:border-ink"
-                                            >
-                                            <button
-                                                type="button"
-                                                onclick="saveDirectStockInput({{ $menu['id'] }})"
-                                                class="px-2.5 py-1.5 rounded-lg bg-ink text-white text-[10px] font-mono font-bold uppercase tracking-wider cursor-pointer active:scale-95 transition"
-                                            >
-                                                Set
-                                            </button>
-                                        </div>
+                                    {{-- Quick Action: Pencet Habis / Tersedia --}}
+                                    <div class="pt-3 border-t border-line flex items-center justify-between gap-2">
+                                        <span id="stockCardDesc-{{ $menu['id'] }}" class="text-xs text-muted truncate">
+                                            {{ $isAvail ? 'Siap dipesan kasir & pelanggan' : 'Dinonaktifkan karena habis' }}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            id="stockCardActionBtn-{{ $menu['id'] }}"
+                                            onclick="toggleMenuStockStatus(event, {{ $menu['id'] }})"
+                                            class="shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 {{ $isAvail ? 'bg-ivory hover:bg-ink hover:text-white border border-line text-charcoal' : 'bg-ink text-white hover:bg-charcoal border border-ink' }}"
+                                        >
+                                            <i class="fa-solid {{ $isAvail ? 'fa-ban' : 'fa-check' }}"></i>
+                                            <span>{{ $isAvail ? 'Pencet Habis' : 'Pencet Ada / Tersedia' }}</span>
+                                        </button>
                                     </div>
                                 </div>
                             @endforeach
@@ -1168,56 +1123,6 @@
         </button>
     </div>
 
-    {{-- =========================================================================
-         MODAL 1: QUICK STOCK CONTROL MODAL (DARI KOTAK MENU)
-         ========================================================================= --}}
-    <div id="kasirQuickStockModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div class="bg-white border border-line rounded-[2rem] max-w-sm w-full p-6 shadow-2xl anim-modal-pop relative">
-            <button
-                type="button"
-                onclick="closeQuickStockModal()"
-                class="w-8 h-8 rounded-full bg-ivory border border-line text-ink hover:bg-ink hover:text-white transition flex items-center justify-center absolute top-4 right-4 cursor-pointer"
-            >
-                <i class="fa-solid fa-xmark text-xs"></i>
-            </button>
-
-            <span class="text-[10px] font-mono font-bold uppercase tracking-widest px-2.5 py-1 rounded-md bg-ivory border border-line text-ink">
-                Kontrol Stok Kasir
-            </span>
-            <h3 id="quickStockMenuName" class="text-lg font-extrabold text-ink mt-2">Nama Menu</h3>
-
-            <div class="my-5 bg-ivory border border-line rounded-2xl p-4 flex items-center justify-between">
-                <span class="text-xs font-bold text-charcoal">Stok Saat Ini</span>
-                <span id="quickStockCurrentVal" class="text-2xl font-mono font-extrabold text-ink">25</span>
-            </div>
-
-            <div class="grid grid-cols-5 gap-1.5 mb-4">
-                <button type="button" onclick="applyQuickModalStock({ stock: 0 })" class="py-2 rounded-xl border border-line hover:bg-ink hover:text-white text-xs font-mono font-bold cursor-pointer transition">Habis</button>
-                <button type="button" onclick="applyQuickModalStock({ delta: -1 })" class="py-2 rounded-xl bg-ivory hover:bg-stone-warm border border-line text-xs font-mono font-bold cursor-pointer transition">-1</button>
-                <button type="button" onclick="applyQuickModalStock({ delta: 1 })" class="py-2 rounded-xl bg-ivory hover:bg-stone-warm border border-line text-xs font-mono font-bold cursor-pointer transition">+1</button>
-                <button type="button" onclick="applyQuickModalStock({ delta: 5 })" class="py-2 rounded-xl bg-ivory hover:bg-stone-warm border border-line text-xs font-mono font-bold cursor-pointer transition">+5</button>
-                <button type="button" onclick="applyQuickModalStock({ delta: 10 })" class="py-2 rounded-xl bg-ivory hover:bg-stone-warm border border-line text-xs font-mono font-bold cursor-pointer transition">+10</button>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <input
-                    type="number"
-                    id="quickStockDirectInput"
-                    min="0"
-                    max="9999"
-                    placeholder="Jumlah stok..."
-                    class="flex-1 bg-ivory border border-line rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-ink focus:outline-none focus:border-ink"
-                >
-                <button
-                    type="button"
-                    onclick="saveQuickModalDirectStock()"
-                    class="px-5 py-2.5 rounded-xl bg-ink text-white text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                    Simpan
-                </button>
-            </div>
-        </div>
-    </div>
 
     {{-- =========================================================================
          MODAL 2: BUKTI TRANSAKSI BERHASIL & CETAK STRUK (TANPA MEMBUAT QR)
@@ -1292,10 +1197,9 @@
             cart: [],
             activeCategory: @json($firstCategoryKey),
             activeStockCategory: @json($firstCategoryKey),
-            quickStockMenuId: null,
             stocks: {
                 @foreach($catalogItems as $ci)
-                    {{ $ci['id'] }}: {{ (int) $ci['stock'] }},
+                    {{ $ci['id'] }}: {{ $ci['is_available'] && (int)$ci['stock'] > 0 ? 25 : 0 }},
                 @endforeach
             },
             hostIp: localStorage.getItem('nucomu_kasir_host_ip') || @json($host),
@@ -1359,20 +1263,14 @@
             const name = boxEl.getAttribute('data-menu-name') || 'Menu';
             const price = Number(boxEl.getAttribute('data-menu-price')) || 0;
             const image = boxEl.getAttribute('data-menu-image') || '';
-            const availableStock = Number(KASIR_STATE.stocks[id] ?? boxEl.getAttribute('data-menu-stock') ?? 0);
+            const isAvailable = Number(KASIR_STATE.stocks[id] ?? (boxEl.getAttribute('data-menu-stock') ?? 25)) > 0;
 
-            if (availableStock <= 0) {
-                showKasirToast(`Stok ${name} sedang HABIS! Silakan isi stok terlebih dahulu.`);
+            if (!isAvailable) {
+                showKasirToast(`Menu ${name} sedang HABIS! Silakan pencet tombol Ada terlebih dahulu.`);
                 return;
             }
 
             const existing = KASIR_STATE.cart.find(item => item.id === id);
-            const currentCartQty = existing ? existing.qty : 0;
-
-            if (currentCartQty + 1 > availableStock) {
-                showKasirToast(`Sisa stok ${name} hanya ${availableStock} porsi.`);
-                return;
-            }
 
             if (event) {
                 const rect = boxEl.getBoundingClientRect();
@@ -1417,9 +1315,9 @@
             const idx = KASIR_STATE.cart.findIndex(i => i.id === id);
             if (idx === -1) return;
 
-            const availableStock = Number(KASIR_STATE.stocks[id] ?? 0);
-            if (delta > 0 && KASIR_STATE.cart[idx].qty + delta > availableStock) {
-                showKasirToast(`Sisa stok hanya ${availableStock} porsi.`);
+            const isAvailable = Number(KASIR_STATE.stocks[id] ?? 25) > 0;
+            if (delta > 0 && !isAvailable) {
+                showKasirToast(`Menu ${KASIR_STATE.cart[idx].name} sedang HABIS.`);
                 return;
             }
 
@@ -1530,58 +1428,21 @@
         }
 
         /**
-         * Stock Control Engine (Syncs POS Menu Boxes + Stock Management Tab + Server)
+         * Stock Control Engine (Status Ada vs Habis, Tanpa Jumlah Angka)
          */
-        function openQuickStockModal(event, menuId) {
-            if (event) event.stopPropagation();
-            const id = Number(menuId);
-            KASIR_STATE.quickStockMenuId = id;
-
-            const box = document.querySelector(`.kasir-menu-box[data-menu-id="${id}"]`);
-            const name = box?.getAttribute('data-menu-name') || 'Menu';
-            const currentStock = Number(KASIR_STATE.stocks[id] ?? 0);
-
-            const nameEl = document.getElementById('quickStockMenuName');
-            const valEl = document.getElementById('quickStockCurrentVal');
-            const inputEl = document.getElementById('quickStockDirectInput');
-            const modal = document.getElementById('kasirQuickStockModal');
-
-            if (nameEl) nameEl.textContent = name;
-            if (valEl) valEl.textContent = String(currentStock);
-            if (inputEl) inputEl.value = String(currentStock);
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
+        async function toggleMenuStockStatus(event, menuId) {
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
             }
-        }
+            const id = Number(menuId);
+            const currentStock = Number(KASIR_STATE.stocks[id] ?? 25);
+            const isCurrentlyAvailable = currentStock > 0;
+            const nextAvailable = !isCurrentlyAvailable;
 
-        function closeQuickStockModal() {
-            const modal = document.getElementById('kasirQuickStockModal');
-            if (!modal) return;
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            KASIR_STATE.quickStockMenuId = null;
-        }
+            // Optimistic UI update
+            applyStockToDom(id, nextAvailable ? 25 : 0, nextAvailable);
 
-        function applyQuickModalStock(payload) {
-            if (!KASIR_STATE.quickStockMenuId) return;
-            updateMenuStock(KASIR_STATE.quickStockMenuId, payload);
-        }
-
-        function saveQuickModalDirectStock() {
-            if (!KASIR_STATE.quickStockMenuId) return;
-            const val = Number(document.getElementById('quickStockDirectInput')?.value ?? 0);
-            updateMenuStock(KASIR_STATE.quickStockMenuId, { stock: Math.max(0, val) });
-            closeQuickStockModal();
-        }
-
-        function saveDirectStockInput(menuId) {
-            const input = document.getElementById(`stockInput-${menuId}`);
-            const val = Number(input?.value ?? 0);
-            updateMenuStock(menuId, { stock: Math.max(0, val) });
-        }
-
-        async function updateMenuStock(menuId, options = {}) {
             try {
                 const res = await fetch(@json(route('kasir.stock.update')), {
                     method: 'POST',
@@ -1591,82 +1452,106 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
                     },
                     body: JSON.stringify({
-                        menu_id: menuId,
-                        ...options,
+                        menu_id: id,
+                        toggle: true,
+                        is_available: nextAvailable,
+                        stock: nextAvailable ? 25 : 0,
                     }),
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    applyStockToDom(Number(data.menu_id), Number(data.stock));
-                    showKasirToast(data.message || 'Stok diperbarui');
+                    applyStockToDom(Number(data.menu_id), Number(data.stock), Boolean(data.is_available));
+                    showKasirToast(data.message || (nextAvailable ? 'Menu diset TERSEDIA' : 'Menu diset HABIS'));
+                } else {
+                    applyStockToDom(id, currentStock, isCurrentlyAvailable);
+                    showKasirToast('Gagal mengubah status menu');
                 }
             } catch (e) {
-                showKasirToast('Gagal memperbarui stok barang');
+                applyStockToDom(id, currentStock, isCurrentlyAvailable);
+                showKasirToast('Gagal mengubah status menu');
             }
         }
 
-        function applyStockToDom(menuId, newStock) {
+        function applyStockToDom(menuId, stockVal, isAvailableVal = null) {
             const id = Number(menuId);
-            const stock = Math.max(0, Number(newStock) || 0);
+            const isAvailable = isAvailableVal !== null ? Boolean(isAvailableVal) : (Number(stockVal) > 0);
+            const stock = isAvailable ? 25 : 0;
             KASIR_STATE.stocks[id] = stock;
 
-            // 1. Update Menu Box in POS Catalog
+            // 1. Update Menu Box in POS Catalog (Tab 1)
             const box = document.querySelector(`.kasir-menu-box[data-menu-id="${id}"]`);
             const pill = document.getElementById(`menuBoxStockPill-${id}`);
+            const toggleBtn = document.getElementById(`menuBoxToggleBtn-${id}`);
             if (box) {
                 box.setAttribute('data-menu-stock', String(stock));
-                box.classList.toggle('is-out-of-stock', stock <= 0);
+                box.classList.toggle('is-out-of-stock', !isAvailable);
             }
             if (pill) {
-                pill.textContent = stock <= 0 ? 'STOK HABIS' : `Stok: ${stock}`;
-                if (stock <= 0) {
-                    pill.className = 'absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm bg-ink text-white';
-                } else if (stock <= 5) {
-                    pill.className = 'absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm bg-amber-100 text-amber-950 border border-amber-300';
-                } else {
-                    pill.className = 'absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm bg-white/95 backdrop-blur-md text-ink';
-                }
+                pill.textContent = isAvailable ? 'TERSEDIA' : 'HABIS';
+                pill.className = isAvailable
+                    ? 'absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm bg-emerald-50 text-emerald-800 border border-emerald-200'
+                    : 'absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider shadow-sm bg-ink text-white';
+            }
+            if (toggleBtn) {
+                toggleBtn.className = isAvailable
+                    ? 'px-2.5 py-1 rounded-lg border text-[10px] font-mono font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95 bg-ivory hover:bg-ink hover:text-white border-line text-charcoal'
+                    : 'px-2.5 py-1 rounded-lg border text-[10px] font-mono font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95 bg-ink text-white border-ink hover:bg-charcoal';
+                toggleBtn.title = isAvailable ? 'Klik untuk tandai HABIS' : 'Klik untuk tandai TERSEDIA';
+                toggleBtn.innerHTML = isAvailable
+                    ? '<i class="fa-solid fa-ban text-[9px]"></i><span>Habis</span>'
+                    : '<i class="fa-solid fa-check text-[9px]"></i><span>Ada</span>';
             }
 
-            // 2. Update Stock Tab Card & Quick Modal
-            const cardVal = document.getElementById(`stockCardValue-${id}`);
-            const cardInput = document.getElementById(`stockInput-${id}`);
-            if (cardVal) cardVal.textContent = String(stock);
-            if (cardInput) cardInput.value = String(stock);
-
-            if (KASIR_STATE.quickStockMenuId === id) {
-                const qVal = document.getElementById('quickStockCurrentVal');
-                const qIn = document.getElementById('quickStockDirectInput');
-                if (qVal) qVal.textContent = String(stock);
-                if (qIn) qIn.value = String(stock);
+            // 2. Update Stock Tab Card (Tab 2)
+            const cardStatus = document.getElementById(`stockCardStatus-${id}`);
+            const cardBtn = document.getElementById(`stockCardActionBtn-${id}`);
+            const cardDesc = document.getElementById(`stockCardDesc-${id}`);
+            if (cardStatus) {
+                cardStatus.textContent = isAvailable ? 'Tersedia' : 'Habis';
+                cardStatus.className = isAvailable
+                    ? 'inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200'
+                    : 'inline-block px-2.5 py-1 rounded-lg text-xs font-mono font-bold uppercase tracking-wider bg-ink text-white';
+            }
+            if (cardBtn) {
+                cardBtn.className = isAvailable
+                    ? 'shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 bg-ivory hover:bg-ink hover:text-white border border-line text-charcoal'
+                    : 'shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 bg-ink text-white hover:bg-charcoal border border-ink';
+                cardBtn.innerHTML = isAvailable
+                    ? '<i class="fa-solid fa-ban"></i><span>Pencet Habis</span>'
+                    : '<i class="fa-solid fa-check"></i><span>Pencet Ada / Tersedia</span>';
+            }
+            if (cardDesc) {
+                cardDesc.textContent = isAvailable
+                    ? 'Siap dipesan kasir & pelanggan'
+                    : 'Dinonaktifkan karena habis';
             }
 
-            // 3. Clamp cart item if stock was reduced below cart qty
-            const cartIdx = KASIR_STATE.cart.findIndex(i => i.id === id);
-            if (cartIdx !== -1 && KASIR_STATE.cart[cartIdx].qty > stock) {
-                if (stock <= 0) {
+            // 3. Remove from cart if item is marked out of stock
+            if (!isAvailable) {
+                const cartIdx = KASIR_STATE.cart.findIndex(i => i.id === id);
+                if (cartIdx !== -1) {
                     KASIR_STATE.cart.splice(cartIdx, 1);
-                } else {
-                    KASIR_STATE.cart[cartIdx].qty = stock;
+                    renderKasirCart();
                 }
-                renderKasirCart();
             }
 
-            // 4. Recalculate Stock Summary Counters
+            // 4. Recalculate summary counters
             const allStocks = Object.values(KASIR_STATE.stocks).map(Number);
             const availCount = allStocks.filter(s => s > 0).length;
-            const lowCount = allStocks.filter(s => s > 0 && s <= 5).length;
             const outCount = allStocks.filter(s => s <= 0).length;
 
             const statAvail = document.getElementById('stockStatAvailable');
-            const statLow = document.getElementById('stockStatLow');
             const statOut = document.getElementById('stockStatOut');
             const headerBadge = document.getElementById('headerStockAlertBadge');
 
             if (statAvail) statAvail.textContent = String(availCount);
-            if (statLow) statLow.textContent = String(lowCount);
             if (statOut) statOut.textContent = String(outCount);
-            if (headerBadge) headerBadge.textContent = `${availCount}/${allStocks.length}`;
+            if (headerBadge) {
+                headerBadge.textContent = outCount > 0 ? `${outCount} Habis` : 'Semua Ada';
+                headerBadge.className = outCount > 0
+                    ? 'px-1.5 py-0.5 rounded-md text-[10px] font-mono leading-none bg-ink text-white'
+                    : 'px-1.5 py-0.5 rounded-md text-[10px] font-mono leading-none bg-stone-warm text-charcoal';
+            }
         }
 
         function filterStockCategory(catKey) {
@@ -2117,12 +2002,12 @@
         }
 
         async function syncKasirWithDatabase(showNotification = false) {
-            const icon = document.getElementById('iconKasirSyncDb');
-            if (icon) icon.classList.add('fa-spin');
-
             try {
                 const res = await fetch(@json(route('kasir.sync')), {
-                    headers: { 'Accept': 'application/json' },
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
@@ -2131,25 +2016,33 @@
                     }
                     if (data.stocks) {
                         Object.values(data.stocks).forEach(item => {
-                            applyStockToDom(Number(item.id), Number(item.stock));
+                            applyStockToDom(Number(item.id), Number(item.stock), Boolean(item.is_available));
                         });
                     }
                     if (showNotification) {
-                        showKasirToast('Data Kasir berhasil disinkronkan dengan Database & Admin');
+                        showKasirToast('Database & Admin tersinkron otomatis');
                     }
                 }
             } catch (err) {
                 if (showNotification) {
                     showKasirToast('Gagal menyinkronkan data');
                 }
-            } finally {
-                if (icon) icon.classList.remove('fa-spin');
             }
         }
 
+        // Automatic DB sync (runs silently every 8 seconds, on focus, and on tab visibility)
         setInterval(() => {
             syncKasirWithDatabase(false);
-        }, 12000);
+        }, 8000);
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                syncKasirWithDatabase(false);
+            }
+        });
+        window.addEventListener('focus', () => {
+            syncKasirWithDatabase(false);
+        });
 
         function filterKasirOrderStatus(status) {
             document.querySelectorAll('.kasir-ord-filter').forEach(btn => {

@@ -30,7 +30,7 @@ class HomeController extends Controller
         $facilities = Facility::where('is_active', true)->orderBy('sort_order')->get();
         $hours = OperatingHour::orderBy('day_of_week')->get();
         $testimonials = Testimonial::where('is_active', true)->take(6)->get();
-        $gallery = GalleryItem::orderBy('sort_order')->take(6)->get();
+        $gallery = GalleryItem::where('is_active', true)->orderBy('sort_order')->take(6)->get();
         $events = Event::where('is_active', true)->orderBy('date')->take(3)->get();
         $settings = Setting::pluck('value', 'key');
 

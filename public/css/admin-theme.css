@@ -1,0 +1,759 @@
+/**
+ * ============================================================================
+ * NUCOMU CAFE — PUSAT TOKEN & TEMA PANEL ADMIN (admin-theme.css)
+ * ============================================================================
+ * 
+ * File ini adalah SATU-SATUNYA pusat definisi seluruh warna, radius, bayangan,
+ * tipografi, dan skala ukuran antarmuka panel admin Nucomu Cafe.
+ * 
+ * ----------------------------------------------------------------------------
+ * PANDUAN PENGGANTIAN TEMA (Desain A "Terang Segar" <-> Desain B "Krem Hangat"):
+ * ----------------------------------------------------------------------------
+ * Cara 1 (Sangat Direkomendasikan & Cukup 1 Huruf):
+ *   Buka berkas `resources/views/layouts/admin.blade.php`.
+ *   Pada tag <html> paling atas:
+ *     - Untuk Desain A (Aktif sekarang) : <html lang="id" data-admin-theme="a">
+ *     - Untuk Desain B (Krem Hangat)     : <html lang="id" data-admin-theme="b">
+ *   Cukup ubah nilai data-admin-theme dari "a" menjadi "b" (atau sebaliknya).
+ * 
+ * Cara 2 (Lewat file CSS ini langsung):
+ *   Tukar blok variabel di bawah ini antara blok Desain A dan Desain B.
+ * ============================================================================
+ */
+
+/* ============================================================================
+   1. GLOBAL TYPOGRAPHY & DESIGN TOKENS
+   Heading: Manrope (Weight 600) | Body/Content: Plus Jakarta Sans
+   ============================================================================ */
+:root {
+    --font-heading: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-heading-accent: 'Fraunces', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+    font-size: 14px !important;
+}
+
+html, body, button, input, select, textarea, optgroup {
+    font-family: var(--font-body);
+    font-variant-numeric: lining-nums tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Judul Halaman Standar Panel Admin (Tenang, Manrope 600, 22-24px, -0.02em) */
+.admin-page-title {
+    font-family: var(--font-heading) !important;
+    font-weight: 600 !important;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--admin-text-main);
+    line-height: 1.25;
+    font-variant-numeric: lining-nums tabular-nums;
+    margin: 0;
+}
+@media (min-width: 640px) {
+    .admin-page-title {
+        font-size: 24px;
+    }
+}
+
+/* Tautan Teks Kecil Petunjuk (? Petunjuk) */
+.admin-help-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6B7270;
+    background: transparent;
+    border: none;
+    padding: 6px 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.15s ease;
+    user-select: none;
+}
+.admin-help-link:hover,
+.admin-help-link[aria-expanded="true"] {
+    color: var(--admin-btn-primary-bg);
+    text-decoration: none;
+}
+.admin-help-link:focus-visible {
+    outline: 2px solid var(--admin-btn-primary-bg);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+@media (max-width: 639px) {
+    .admin-help-link {
+        min-height: 44px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
+
+/* Proteksi penuh agar Font Awesome 6 (Solid, Regular, Brands) tidak tertimpa font teks */
+.fa, .fas, .far, .fal, .fad,
+.fa-solid, .fa-regular, .fa-light, .fa-thin, .fa-duotone,
+.fa::before, .fas::before, .far::before, .fal::before, .fad::before,
+.fa-solid::before, .fa-regular::before, .fa-light::before, .fa-thin::before, .fa-duotone::before {
+    font-family: "Font Awesome 6 Free" !important;
+}
+
+.fab, .fa-brands,
+.fab::before, .fa-brands::before {
+    font-family: "Font Awesome 6 Brands" !important;
+}
+
+/* ============================================================================
+   2. DESAIN A: "Terang Segar" (TEMA AKTIF DEFAULT)
+   Latar: #F6F7F5 | Sidebar: Putih #FFFFFF | Teks: #1B1F1D
+   Aksen Utama: Hijau Hutan (Forest Green #2F6B4F) | Kartu: Putih sudut 12px
+   ============================================================================ */
+:root,
+html[data-admin-theme="a"] {
+    /* Dimensi & Skala */
+    --admin-header-height: 56px;
+    --admin-sidebar-width: 200px;
+    --admin-sidebar-item-height: 36px;
+    --admin-btn-height: 34px;
+
+    /* Latar Belakang & Pembatas Halaman */
+    --admin-bg-page: #F6F7F5;
+    --admin-text-main: #1B1F1D;
+    --admin-text-sub: #555D58;
+    --admin-text-muted: #7A847E;
+
+    /* Header (Menyatu dengan latar halaman) */
+    --admin-bg-header: #F6F7F5;
+    --admin-border-header: #E6E8E4;
+
+    /* Sidebar Bersih Terang */
+    --admin-bg-sidebar: #FFFFFF;
+    --admin-border-sidebar: #E6E8E4;
+    --admin-text-sidebar: #4D5751;
+    --admin-icon-sidebar: #7A847E;
+    --admin-group-sidebar: #88938C;
+    --admin-bg-sidebar-hover: #F0F4F1;
+    
+    /* Menu Aktif Sidebar */
+    --admin-bg-sidebar-active: #E6F0EA;
+    --admin-text-sidebar-active: #2F6B4F;
+    --admin-icon-sidebar-active: #2F6B4F;
+
+    /* Badge Angka di Sidebar */
+    --admin-badge-sidebar-bg: #E6F0EA;
+    --admin-badge-sidebar-text: #2F6B4F;
+
+    /* Scrollbar Halus & Membaur */
+    --admin-scrollbar-sidebar: #D4D8D2;
+    --admin-scrollbar-sidebar-hover: #B8C0B5;
+
+    /* Logo Brand Block */
+    --admin-logo-box-bg: #E6F0EA;
+    --admin-logo-box-border: #D1DFD6;
+    --admin-logo-text: #1B1F1D;
+
+    /* Kartu Konten */
+    --admin-bg-card: #FFFFFF;
+    --admin-border-card: #E6E8E4;
+    --admin-radius-card: 12px;
+    --admin-shadow-card: 0 1px 3px rgba(27, 31, 29, 0.04), 0 4px 12px rgba(27, 31, 29, 0.03);
+    --admin-shadow-card-hover: 0 4px 16px rgba(47, 107, 79, 0.08), 0 1px 3px rgba(27, 31, 29, 0.04);
+
+    /* Tombol Utama (Aksen Hijau Hutan #2F6B4F) */
+    --admin-btn-primary-bg: #2F6B4F;
+    --admin-btn-primary-text: #FFFFFF;
+    --admin-btn-primary-hover: #24543D;
+
+    /* Tombol Sekunder / Garis Tepi */
+    --admin-btn-secondary-bg: #FFFFFF;
+    --admin-btn-secondary-border: #E6E8E4;
+    --admin-btn-secondary-text: #1B1F1D;
+    --admin-btn-secondary-hover: #F0F4F1;
+
+    /* Filter Chips */
+    --admin-chip-active-bg: #2F6B4F;
+    --admin-chip-active-text: #FFFFFF;
+    --admin-chip-active-border: #2F6B4F;
+    --admin-chip-inactive-bg: #FFFFFF;
+    --admin-chip-inactive-text: #555D58;
+    --admin-chip-inactive-border: #E6E8E4;
+    --admin-chip-inactive-hover: #F0F4F1;
+
+    /* Indikator Status Semantik */
+    --admin-status-active-bg-solid: #2F6B4F;
+    --admin-status-active-bg: #E6F0EA;
+    --admin-status-active-text: #24543D;
+    --admin-status-active-border: rgba(47, 107, 79, 0.35);
+
+    --admin-status-expiring-bg-solid: #D9A441;
+    --admin-status-expiring-bg: #FEF7EA;
+    --admin-status-expiring-text: #8A6200;
+    --admin-status-expiring-border: rgba(217, 164, 65, 0.45);
+
+    --admin-status-upcoming-bg-solid: #4A728C;
+    --admin-status-upcoming-bg: #EBF3F8;
+    --admin-status-upcoming-text: #2B4A60;
+    --admin-status-upcoming-border: rgba(74, 114, 140, 0.35);
+
+    --admin-status-expired-bg-solid: #6C7570;
+    --admin-status-expired-bg: #EAECEB;
+    --admin-status-expired-text: #474E4A;
+    --admin-status-expired-border: rgba(108, 117, 112, 0.30);
+
+    --admin-status-danger-bg-solid: #C0392B;
+    --admin-status-danger-bg: #FDEEEB;
+    --admin-status-danger-text: #C0392B;
+    --admin-status-danger-border: rgba(192, 57, 43, 0.35);
+
+    /* Progress Bar Tayang */
+    --admin-progress-track: #EAECE8;
+    --admin-progress-bar: #2F6B4F;
+}
+
+/* ============================================================================
+   3. DESAIN B: "Krem Hangat" (PALET CADANGAN SIAP PAKAI)
+   Latar: #FBF8F3 | Sidebar: #F4EFE7 | Teks: #2B2420
+   Tombol Utama: Espresso #3B2F2A | Status: Sage #5E7D5B | Kartu: Putih sudut 14px
+   ============================================================================ */
+html[data-admin-theme="b"] {
+    /* Dimensi & Skala */
+    --admin-header-height: 56px;
+    --admin-sidebar-width: 200px;
+    --admin-sidebar-item-height: 36px;
+    --admin-btn-height: 34px;
+
+    /* Latar Belakang & Pembatas Halaman */
+    --admin-bg-page: #FBF8F3;
+    --admin-text-main: #2B2420;
+    --admin-text-sub: #6A5F56;
+    --admin-text-muted: #8A7F75;
+
+    /* Header (Menyatu dengan latar halaman) */
+    --admin-bg-header: #FBF8F3;
+    --admin-border-header: #EAE3D8;
+
+    /* Sidebar Krem Hangat */
+    --admin-bg-sidebar: #F4EFE7;
+    --admin-border-sidebar: #EAE3D8;
+    --admin-text-sidebar: #655B53;
+    --admin-icon-sidebar: #8A7F75;
+    --admin-group-sidebar: #9A8E83;
+    --admin-bg-sidebar-hover: #EFE8DD;
+    
+    /* Menu Aktif Sidebar */
+    --admin-bg-sidebar-active: #E9E0D2;
+    --admin-text-sidebar-active: #2B2420;
+    --admin-icon-sidebar-active: #2B2420;
+
+    /* Badge Angka di Sidebar */
+    --admin-badge-sidebar-bg: #3B2F2A;
+    --admin-badge-sidebar-text: #FAF7F2;
+
+    /* Scrollbar Halus & Membaur */
+    --admin-scrollbar-sidebar: #DFD7CA;
+    --admin-scrollbar-sidebar-hover: #C6BCAE;
+
+    /* Logo Brand Block */
+    --admin-logo-box-bg: #E9E0D2;
+    --admin-logo-box-border: #D8CEBE;
+    --admin-logo-text: #2B2420;
+
+    /* Kartu Konten */
+    --admin-bg-card: #FFFFFF;
+    --admin-border-card: #EAE3D8;
+    --admin-radius-card: 14px;
+    --admin-shadow-card: 0 1px 3px rgba(43, 36, 32, 0.04), 0 8px 20px rgba(43, 36, 32, 0.04);
+    --admin-shadow-card-hover: 0 4px 16px rgba(43, 36, 32, 0.08), 0 1px 3px rgba(43, 36, 32, 0.04);
+
+    /* Tombol Utama (Aksen Espresso Pekat #3B2F2A) */
+    --admin-btn-primary-bg: #3B2F2A;
+    --admin-btn-primary-text: #FAF7F2;
+    --admin-btn-primary-hover: #241C18;
+
+    /* Tombol Sekunder / Garis Tepi */
+    --admin-btn-secondary-bg: #FFFFFF;
+    --admin-btn-secondary-border: #EAE3D8;
+    --admin-btn-secondary-text: #2B2420;
+    --admin-btn-secondary-hover: #F4EFE7;
+
+    /* Filter Chips */
+    --admin-chip-active-bg: #3B2F2A;
+    --admin-chip-active-text: #FAF7F2;
+    --admin-chip-active-border: #3B2F2A;
+    --admin-chip-inactive-bg: #FFFFFF;
+    --admin-chip-inactive-text: #6A5F56;
+    --admin-chip-inactive-border: #EAE3D8;
+    --admin-chip-inactive-hover: #F4EFE7;
+
+    /* Indikator Status Semantik */
+    --admin-status-active-bg-solid: #5E7D5B;
+    --admin-status-active-bg: #EBF2EB;
+    --admin-status-active-text: #3D543A;
+    --admin-status-active-border: rgba(94, 125, 91, 0.35);
+
+    --admin-status-expiring-bg-solid: #D9A441;
+    --admin-status-expiring-bg: #FEF7EA;
+    --admin-status-expiring-text: #8A6200;
+    --admin-status-expiring-border: rgba(217, 164, 65, 0.45);
+
+    --admin-status-upcoming-bg-solid: #6F8194;
+    --admin-status-upcoming-bg: #EEF2F6;
+    --admin-status-upcoming-text: #475768;
+    --admin-status-upcoming-border: rgba(111, 129, 148, 0.35);
+
+    --admin-status-expired-bg-solid: #7C7268;
+    --admin-status-expired-bg: #ECE7E0;
+    --admin-status-expired-text: #534A42;
+    --admin-status-expired-border: rgba(124, 114, 104, 0.30);
+
+    --admin-status-danger-bg-solid: #B33A3A;
+    --admin-status-danger-bg: #FDF2F0;
+    --admin-status-danger-text: #B33A3A;
+    --admin-status-danger-border: rgba(179, 58, 58, 0.35);
+
+    /* Progress Bar Tayang */
+    --admin-progress-track: #EDE7DC;
+    --admin-progress-bar: #5E7D5B;
+}
+
+/* ============================================================================
+   4. KELAS UTILITY ADAPTIF BERBASIS VARIABEL TEMA
+   ============================================================================ */
+
+/* Kartu Standar */
+.admin-card {
+    background-color: var(--admin-bg-card);
+    border: 1px solid var(--admin-border-card);
+    border-radius: var(--admin-radius-card);
+    box-shadow: var(--admin-shadow-card);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .admin-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--admin-shadow-card-hover);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-card {
+        transition: none !important;
+        transform: none !important;
+    }
+    .admin-card:hover {
+        transform: none !important;
+    }
+}
+
+/* Sidebar Navigasi Adaptif */
+.admin-sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--admin-scrollbar-sidebar) transparent;
+}
+.admin-sidebar-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.admin-sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+.admin-sidebar-scroll::-webkit-scrollbar-thumb {
+    background: var(--admin-scrollbar-sidebar);
+    border-radius: 4px;
+}
+.admin-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--admin-scrollbar-sidebar-hover);
+}
+
+.admin-sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    height: 36px;
+    min-height: 44px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--admin-text-sidebar);
+    transition: all 0.15s ease;
+    user-select: none;
+}
+@media (min-width: 768px) {
+    .admin-sidebar-nav-item {
+        min-height: 36px;
+    }
+}
+.admin-sidebar-nav-item:hover {
+    background-color: var(--admin-bg-sidebar-hover);
+    color: var(--admin-text-sidebar-active);
+}
+.admin-sidebar-nav-item:hover svg,
+.admin-sidebar-nav-item:hover i {
+    color: var(--admin-icon-sidebar-active) !important;
+}
+.admin-sidebar-nav-item.is-active {
+    background-color: var(--admin-bg-sidebar-active);
+    color: var(--admin-text-sidebar-active);
+    font-weight: 600;
+}
+.admin-sidebar-nav-item.is-active svg,
+.admin-sidebar-nav-item.is-active i {
+    color: var(--admin-icon-sidebar-active) !important;
+}
+
+.admin-sidebar-group-label {
+    padding: 14px 10px 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--admin-group-sidebar);
+    user-select: none;
+}
+
+.admin-sidebar-badge {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border-radius: 9999px;
+    background-color: var(--admin-badge-sidebar-bg);
+    color: var(--admin-badge-sidebar-text);
+    font-size: 10.5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Header UI Elements */
+.admin-header-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 34px;
+    min-height: 40px;
+    border-radius: 9999px;
+    background-color: var(--admin-bg-card);
+    border: 1px solid var(--admin-border-card);
+    color: var(--admin-text-main);
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+@media (min-width: 640px) {
+    .admin-header-pill {
+        min-height: 34px;
+    }
+}
+
+.admin-header-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 34px;
+    min-height: 40px;
+    border-radius: 12px;
+    background-color: var(--admin-btn-secondary-bg);
+    border: 1px solid var(--admin-btn-secondary-border);
+    color: var(--admin-btn-secondary-text);
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+@media (min-width: 640px) {
+    .admin-header-btn {
+        min-height: 34px;
+    }
+}
+.admin-header-btn:hover {
+    background-color: var(--admin-btn-secondary-hover);
+}
+
+.admin-header-icon-btn {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 12px;
+    background-color: var(--admin-btn-secondary-bg);
+    border: 1px solid var(--admin-btn-secondary-border);
+    color: var(--admin-btn-secondary-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+@media (min-width: 640px) {
+    .admin-header-icon-btn {
+        min-width: 34px;
+        min-height: 34px;
+        width: 34px;
+        height: 34px;
+    }
+}
+.admin-header-icon-btn:hover {
+    background-color: var(--admin-btn-secondary-hover);
+}
+
+/* Filter Chips */
+.admin-chip-filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 33px;
+    min-height: 44px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    user-select: none;
+    background-color: var(--admin-chip-inactive-bg);
+    color: var(--admin-chip-inactive-text);
+    border: 1px solid var(--admin-chip-inactive-border);
+}
+@media (min-width: 640px) {
+    .admin-chip-filter {
+        min-height: 33px;
+    }
+}
+.admin-chip-filter:hover {
+    background-color: var(--admin-chip-inactive-hover);
+    color: var(--admin-text-main);
+}
+.admin-chip-filter.is-active {
+    background-color: var(--admin-chip-active-bg);
+    color: var(--admin-chip-active-text);
+    border-color: var(--admin-chip-active-border);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Status Badges */
+.admin-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2.5px 8px;
+    border-radius: 9999px;
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid transparent;
+}
+.admin-status-badge.status-active {
+    background-color: var(--admin-status-active-bg);
+    color: var(--admin-status-active-text);
+    border-color: var(--admin-status-active-border);
+}
+.admin-status-badge.status-expiring {
+    background-color: var(--admin-status-expiring-bg);
+    color: var(--admin-status-expiring-text);
+    border-color: var(--admin-status-expiring-border);
+}
+.admin-status-badge.status-upcoming {
+    background-color: var(--admin-status-upcoming-bg);
+    color: var(--admin-status-upcoming-text);
+    border-color: var(--admin-status-upcoming-border);
+}
+.admin-status-badge.status-expired {
+    background-color: var(--admin-status-expired-bg);
+    color: var(--admin-status-expired-text);
+    border-color: var(--admin-status-expired-border);
+}
+
+/* Tombol Standar */
+.admin-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 14px;
+    height: 34px;
+    min-height: 44px;
+    border-radius: 12px;
+    background-color: var(--admin-btn-primary-bg);
+    color: var(--admin-btn-primary-text);
+    border: 1px solid transparent;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    user-select: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+@media (min-width: 640px) {
+    .admin-btn-primary {
+        min-height: 34px;
+    }
+}
+.admin-btn-primary:hover {
+    background-color: var(--admin-btn-primary-hover);
+}
+
+.admin-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 12px;
+    height: 33px;
+    min-height: 44px;
+    border-radius: 8px;
+    background-color: var(--admin-btn-secondary-bg);
+    color: var(--admin-btn-secondary-text);
+    border: 1px solid var(--admin-btn-secondary-border);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+@media (min-width: 640px) {
+    .admin-btn-secondary {
+        min-height: 33px;
+    }
+}
+.admin-btn-secondary:hover {
+    background-color: var(--admin-btn-secondary-hover);
+}
+
+/* Tombol Pil Outline (Contoh: Tombol ? Petunjuk di Header Halaman) */
+.admin-btn-outline-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 13px;
+    height: 34px;
+    min-height: 44px;
+    border-radius: 9999px;
+    background-color: var(--admin-bg-card);
+    color: var(--admin-text-sub);
+    border: 1px solid var(--admin-border-header);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    user-select: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+@media (min-width: 640px) {
+    .admin-btn-outline-pill {
+        min-height: 34px;
+    }
+}
+.admin-btn-outline-pill:hover {
+    background-color: var(--admin-bg-sidebar-hover);
+    color: var(--admin-text-main);
+    border-color: var(--admin-border-sidebar);
+}
+.admin-btn-outline-pill[aria-expanded="true"] {
+    background-color: var(--admin-bg-sidebar-active);
+    color: var(--admin-text-sidebar-active);
+    border-color: var(--admin-border-header);
+}
+
+/* Micro Interactions */
+.btn-press {
+    transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-press:active {
+    transform: scale(0.97);
+}
+
+/* Screen Reader Utility */
+.sr-only,
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* ============================================================================
+   5. REUSABLE HELP PANEL COMPONENT (x-help-panel)
+   ============================================================================ */
+.help-panel-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--admin-btn-primary-bg);
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 6px 0;
+    transition: color 0.15s ease, opacity 0.15s ease;
+    user-select: none;
+    text-decoration: none;
+}
+@media (max-width: 639px) {
+    .help-panel-toggle {
+        min-height: 44px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+}
+.help-panel-toggle:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: var(--admin-btn-primary-hover);
+}
+.help-panel-toggle:focus-visible {
+    outline: 2px solid var(--admin-btn-primary-bg);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+.help-panel-toggle .toggle-chevron {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.help-panel-toggle[aria-expanded="true"] .toggle-chevron {
+    transform: rotate(180deg);
+}
+
+.help-panel-container {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    opacity: 0;
+}
+.help-panel-container.is-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+}
+.help-panel-inner {
+    overflow: hidden;
+}
+.help-panel-card {
+    background-color: var(--admin-bg-card);
+    border: 1px solid var(--admin-border-card);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 13.5px;
+    color: var(--admin-text-main);
+    box-shadow: var(--admin-shadow-card);
+    margin-top: 8px;
+}
+@media (prefers-reduced-motion: reduce) {
+    .help-panel-container,
+    .help-panel-toggle .toggle-chevron {
+        transition: none !important;
+    }
+}
+

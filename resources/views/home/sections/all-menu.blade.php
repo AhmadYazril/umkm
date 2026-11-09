@@ -1,3 +1,8 @@
+@php
+    $txSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
+    $isAnyOrderModeActive = (bool) ($txSettings['is_any_mode_active'] ?? true);
+@endphp
+
 <!-- SECTION 4: ALL MENU (CATALOG WITH HYBRID CATEGORIES & 8 EDITORIAL CARDS) -->
 <section class="py-20 lg:py-28 bg-pure-white border-b border-light-gray/60" id="all-menu-section">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
@@ -11,7 +16,7 @@
             </p>
         </div>
 
-        <!-- Hybrid Category Indicators (Visual + Tabs) -->
+        <!-- Hybrid Category Indicators (Visual + Dynamic Tabs from Admin) -->
         <div class="flex justify-start md:justify-center items-center space-x-4 sm:space-x-8 overflow-x-auto no-scrollbar pb-6 mb-12 border-b border-light-gray/50 reveal-on-scroll">
             
             <button type="button" 
@@ -20,31 +25,48 @@
                 <span class="text-xs uppercase tracking-editorial-widest">Semua Menu</span>
             </button>
 
-            <button type="button" 
-                    onclick="filterAllMenuCategory('coffee', this)"
-                    class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
-                <span class="text-xs uppercase tracking-editorial-widest">Coffee</span>
-            </button>
+            @if(isset($dbCategories) && $dbCategories->isNotEmpty())
+                @foreach($dbCategories as $catItem)
+                    <button type="button" 
+                            onclick="filterAllMenuCategory('{{ $catItem->slug }}', this)"
+                            class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
+                        <span class="text-xs uppercase tracking-editorial-widest">{{ $catItem->name }}</span>
+                    </button>
+                @endforeach
+            @else
+                <button type="button" 
+                        onclick="filterAllMenuCategory('coffee', this)"
+                        class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
+                    <span class="text-xs uppercase tracking-editorial-widest">Coffee</span>
+                </button>
 
-            <button type="button" 
-                    onclick="filterAllMenuCategory('non-coffee', this)"
-                    class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
-                <span class="text-xs uppercase tracking-editorial-widest">Non-Coffee</span>
-            </button>
+                <button type="button" 
+                        onclick="filterAllMenuCategory('non-coffee', this)"
+                        class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
+                    <span class="text-xs uppercase tracking-editorial-widest">Non-Coffee</span>
+                </button>
 
-            <button type="button" 
-                    onclick="filterAllMenuCategory('dessert', this)"
-                    class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
-                <span class="text-xs uppercase tracking-editorial-widest">Dessert</span>
-            </button>
+                <button type="button" 
+                        onclick="filterAllMenuCategory('dessert', this)"
+                        class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
+                    <span class="text-xs uppercase tracking-editorial-widest">Dessert</span>
+                </button>
 
-            <button type="button" 
-                    onclick="filterAllMenuCategory('snacks', this)"
-                    class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
-                <span class="text-xs uppercase tracking-editorial-widest">Food & Snacks</span>
-            </button>
+                <button type="button" 
+                        onclick="filterAllMenuCategory('snacks', this)"
+                        class="all-menu-cat-btn flex flex-col items-center group pb-2 border-b-2 border-transparent text-neutral-500 hover:text-neutral-900 focus:outline-none transition-all shrink-0">
+                    <span class="text-xs uppercase tracking-editorial-widest">Food & Snacks</span>
+                </button>
+            @endif
 
         </div>
+
+        @if(! $isAnyOrderModeActive)
+            <div class="max-w-2xl mx-auto mb-8 p-4 rounded-2xl bg-warm-ivory/60 border border-soft-beige text-charcoal/80 text-center text-xs sm:text-sm reveal-on-scroll">
+                <i class="fa-solid fa-circle-info mr-1.5 text-ink-black"></i>
+                Pemesanan online sedang tidak tersedia saat ini. Silakan berkunjung langsung ke kafe kami.
+            </div>
+        @endif
 
         <!-- 8 Product Editorial Grid (Clean, concise info, name and price, no long description on cards) -->
         <div id="all-menu-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 transition-opacity duration-300">
@@ -73,13 +95,15 @@
 
                     <div class="pt-3 border-t border-light-gray/60 flex items-center justify-between mt-3">
                         <span class="font-editorial text-base sm:text-lg font-bold text-ink-black">{{ $item['price_formatted'] }}</span>
-                        <button type="button" 
-                                onclick="addToCart('{{ $item['id'] }}', '{{ addslashes($item['name']) }}', {{ $item['price'] }}, null, '{{ $item['image'] }}')" 
-                                class="w-8 h-8 rounded-full bg-ink-black text-warm-ivory hover:bg-neutral-800 active:scale-95 flex items-center justify-center text-xs transition-all cursor-pointer shadow-xs"
-                                aria-label="Tambah {{ $item['name'] }} ke Keranjang"
-                                title="Tambah ke Keranjang">
-                            <span class="material-symbols-outlined text-sm">add</span>
-                        </button>
+                        @if($isAnyOrderModeActive)
+                            <button type="button" 
+                                    onclick="addToCart('{{ $item['id'] }}', '{{ addslashes($item['name']) }}', {{ $item['price'] }}, null, '{{ $item['image'] }}')" 
+                                    class="w-8 h-8 rounded-full bg-ink-black text-warm-ivory hover:bg-neutral-800 active:scale-95 flex items-center justify-center text-xs transition-all cursor-pointer shadow-xs"
+                                    aria-label="Tambah {{ $item['name'] }} ke Keranjang"
+                                    title="Tambah ke Keranjang">
+                                <span class="material-symbols-outlined text-sm">add</span>
+                            </button>
+                        @endif
                     </div>
                 </div>
             @endforeach

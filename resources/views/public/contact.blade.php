@@ -2,6 +2,15 @@
 @section('title', 'Kontak & Lokasi — Nucomu Cafe')
 
 @section('content')
+@php
+    $contact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
+    $mapsEmbedSrc = !empty($contact['maps_embed']) 
+        ? $contact['maps_embed'] 
+        : 'https://maps.google.com/maps?q=' . urlencode($contact['address'] ?? 'Nucomu Cafe Plosokandang Kedungwaru Tulungagung') . '&t=&z=16&ie=UTF8&iwloc=&output=embed';
+    $mapsDirectUrl = !empty($contact['maps_url']) 
+        ? $contact['maps_url'] 
+        : config('nucomu.contact.google_maps_url', 'https://maps.google.com/?q=Nucomu+Cafe+Tulungagung');
+@endphp
 <section class="py-16 min-h-screen text-zinc-900 dark:text-white relative">
     <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -32,8 +41,16 @@
                         <h3 class="font-bold text-base uppercase text-zinc-950 dark:text-white">Alamat Cafe</h3>
                     </div>
                     <p class="text-zinc-600 dark:text-zinc-400 text-xs leading-relaxed">
-                        {{ $settings['address'] ?? 'Jl. Panglima Sudirman No. 45, Kebonsari, Kec. Tulungagung, Kabupaten Tulungagung, Jawa Timur 66212' }}
+                        {{ $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221') }}
                     </p>
+                    @if(!empty($mapsDirectUrl))
+                        <div class="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+                            <a href="{{ $mapsDirectUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-800 dark:text-zinc-200 hover:text-amber-600">
+                                <span>Buka di Google Maps</span>
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- WhatsApp / Telepon Card --}}
@@ -47,8 +64,8 @@
                         <h3 class="font-bold text-base uppercase text-zinc-950 dark:text-white">WhatsApp & CS</h3>
                     </div>
                     <p class="text-zinc-600 dark:text-zinc-400 text-xs mb-2">Respon cepat via WhatsApp:</p>
-                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $settings['phone'] ?? '6281234567890') }}" target="_blank" class="inline-flex items-center space-x-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
-                        <span>{{ $settings['phone'] ?? '+62 812-3456-7890' }}</span>
+                    <a href="https://wa.me/{{ $contact['whatsapp_clean'] ?? '6281234567890' }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                        <span>{{ $contact['whatsapp_display'] ?? '+62 812-3456-7890' }}</span>
                     </a>
                 </div>
 
@@ -64,6 +81,11 @@
                     </div>
                     
                     <div class="space-y-2 text-xs">
+                        @if(!empty($contact['opening_hours']))
+                            <div class="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200/60 dark:border-zinc-800/60 font-medium text-zinc-800 dark:text-zinc-200">
+                                {{ $contact['opening_hours'] }}
+                            </div>
+                        @endif
                         @foreach($operatingHours as $oh)
                             <div class="flex justify-between py-1 border-b border-zinc-200/80 dark:border-zinc-800/50">
                                 <span class="text-zinc-600 dark:text-zinc-400 font-medium">{{ $oh->day_name }}</span>
@@ -83,16 +105,21 @@
             <div class="reveal lg:col-span-7 bg-white/80 dark:bg-zinc-900/60 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl overflow-hidden min-h-[400px] flex flex-col justify-between p-2 shadow-sm">
                 <div class="w-full h-full min-h-[450px] bg-zinc-100 dark:bg-zinc-950 rounded-2xl relative overflow-hidden flex flex-col items-center justify-center p-6 text-center">
                     {{-- Embed Google Maps --}}
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15794.137887556094!2d111.902!3d-8.064!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOMKwMDMnNTAuNCJTIDExM8KwNTQnMDcuMiJF!5e0!3m2!1sid!2sid!4v1600000000000!5m2!1sid!2sid" 
+                    <iframe src="{{ $mapsEmbedSrc }}" 
                         class="w-full h-full absolute inset-0 grayscale opacity-80 hover:opacity-100 hover:grayscale-0 transition-all duration-500 border-0" 
-                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Peta Lokasi Nucomu Cafe Tulungagung"></iframe>
 
                     <div class="absolute bottom-4 left-4 right-4 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800 p-4 rounded-xl text-left pointer-events-none shadow-md">
                         <span class="text-xs font-bold text-zinc-950 dark:text-white block">Nucomu Cafe — Tulungagung</span>
-                        <span class="text-[11px] text-zinc-600 dark:text-zinc-400 block">Jalan Panglima Sudirman, Kebonsari</span>
+                        <span class="text-[11px] text-zinc-600 dark:text-zinc-400 block">{{ $contact['address'] ?? 'Jalan Mayor Sujadi, Plosokandang, Kedungwaru' }}</span>
                     </div>
                 </div>
             </div>
+
+        </div>
+
+    </div>
+</section>
 
         </div>
 

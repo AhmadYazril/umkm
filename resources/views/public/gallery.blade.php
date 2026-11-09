@@ -19,16 +19,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($gallery as $item)
                     <div class="reveal-scale group relative bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden aspect-square hover:border-zinc-400 dark:hover:border-zinc-600 transition-all duration-300 shadow-sm">
-                        @if($item->image && file_exists(public_path('storage/' . $item->image)))
-                            <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->caption }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        @else
-                            <div class="w-full h-full flex flex-col items-center justify-center bg-zinc-100 dark:bg-zinc-900 text-zinc-400 dark:text-zinc-600 p-4 text-center">
-                                <svg class="w-10 h-10 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <span class="text-[11px] font-mono text-zinc-500 uppercase tracking-widest">{{ $item->category ?? 'Galeri' }}</span>
-                            </div>
-                        @endif
+                        <img src="{{ $item->image_url }}" alt="{{ $item->caption }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
 
                         {{-- Hover Overlay --}}
                         <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-5 flex flex-col justify-end">
@@ -38,6 +29,11 @@
                             <h3 class="text-sm font-bold text-white line-clamp-2">
                                 {{ $item->caption ?? 'Suasana Nucomu Cafe Tulungagung' }}
                             </h3>
+                            @if($item->description)
+                                <p class="text-[11px] text-zinc-300 line-clamp-1 mt-1 font-light">
+                                    {{ $item->description }}
+                                </p>
+                            @endif
                         </div>
                     </div>
                 @endforeach

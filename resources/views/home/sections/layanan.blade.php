@@ -131,13 +131,18 @@
                 </div>
             </div>
 
-            <!-- KARTU 3 (03 / ONLINE ORDER) - WHITE CARD DENGAN FOTO ARCH LATTE DI KANAN -->
+            @php
+                $layananGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
+            @endphp
+
+            @if(!empty($layananGrabfoodUrl))
+            <!-- KARTU 3 (03 / LINK MITRA) - INFORMASI KONTAK MITRA GRABFOOD -->
             <div class="layanan-anim-card-3 bg-white rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-4 md:col-span-1 lg:order-3">
                 <div class="h-full flex flex-col justify-between">
-                    <!-- Header Kartu: Label Nomor (Tanpa Badge) -->
+                    <!-- Header Kartu: Label Nomor -->
                     <div class="mb-3">
                         <span class="text-[10px] sm:text-[10.5px] font-semibold text-[#8A8A8A] uppercase tracking-[0.16em] font-body block">
-                            03 / ONLINE ORDER
+                            03 / LINK MITRA
                         </span>
                     </div>
 
@@ -152,20 +157,20 @@
                                     </svg>
                                 </div>
                                 <h4 class="font-body text-lg sm:text-xl font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-2">
-                                    Pesan Menu Favoritmu di GrabFood
+                                    Menu Nucomu di GrabFood
                                 </h4>
                                 <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    Dapatkan menu Nucomu favoritmu melalui aplikasi GrabFood dengan proses yang praktis dan cepat.
+                                    Dapatkan menu Nucomu favoritmu melalui tautan resto resmi di aplikasi GrabFood.
                                 </p>
                             </div>
 
-                            <!-- Tombol Pesan Sekarang (Pill Gray di Kiri Bawah) -->
+                            <!-- Tombol Kunjungi GrabFood (Informasi Tautan Kontak) -->
                             <div class="pt-4 mt-auto">
-                                <a href="https://food.grab.com" 
+                                <a href="{{ $layananGrabfoodUrl }}" 
                                    target="_blank" 
-                                   rel="noopener"
+                                   rel="noopener noreferrer"
                                    class="inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
-                                    <span>Pesan Sekarang</span>
+                                    <span>Kunjungi GrabFood</span>
                                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
@@ -173,7 +178,7 @@
                             </div>
                         </div>
 
-                        <!-- Visual Kanan: Foto Arch/Dome Kopi Latte (Sesuai Referensi Pengguna) -->
+                        <!-- Visual Kanan: Foto Arch/Dome Kopi Latte -->
                         <div class="w-[95px] h-[135px] sm:w-[110px] sm:h-[155px] rounded-l-full overflow-hidden shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-500 self-center">
                             <img src="{{ asset('images/nucomu/latte_grabfood.jpg') }}" 
                                  alt="Kopi Latte Nucomu di GrabFood" 
@@ -183,6 +188,7 @@
                     </div>
                 </div>
             </div>
+            @endif
 
             <!-- PANEL DETAIL RESERVASI (TERBUKA DI BAWAH KARTU 1 / BARIS 2) -->
             <!-- Tablet: Tepat di bawah Kartu 1 (order-2) -->

@@ -24,15 +24,25 @@
             </div>
         @endif
 
-        @if($errors->any())
+        @if($errors->any() || session('error'))
             <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-2xl mb-6 text-xs space-y-1">
-                @foreach($errors->all() as $err)
-                    <div>• {{ $err }}</div>
-                @endforeach
+                <div class="font-bold flex items-center gap-1.5 text-red-800 mb-1">
+                    <span class="material-symbols-outlined text-sm">error</span>
+                    <span>{{ session('error') ? 'Terjadi kesalahan unggah:' : 'Terdapat kesalahan pada formulir:' }}</span>
+                </div>
+                @if(session('error'))
+                    <p class="leading-relaxed">{{ session('error') }}</p>
+                @endif
+                @if($errors->any())
+                    @foreach($errors->all() as $err)
+                        <div>• {{ $err }}</div>
+                    @endforeach
+                @endif
             </div>
         @endif
 
         @php
+            $formFields = $fields ?? $reservationFields ?? \App\Models\ReservationField::active()->get();
             $packageOptions = [
                 [
                     'code' => 'A',
@@ -65,66 +75,133 @@
         @endphp
 
         <div class="bg-pure-white border border-soft-beige rounded-3xl p-6 sm:p-10 shadow-xl">
-            <form action="{{ route('reservation.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('reservation.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label for="page-fullName" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
-                            Nama Lengkap <span class="text-red-600">*</span>
-                        </label>
-                        <input type="text" name="fullName" id="page-fullName" required placeholder="Masukkan nama Anda"
-                            class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
-                    </div>
-
-                    <div>
-                        <label for="page-phone" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
-                            Nomor WhatsApp <span class="text-red-600">*</span>
-                        </label>
-                        <input type="tel" name="phone" id="page-phone" required placeholder="08xxxxxxxxxx"
-                            class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
-                    </div>
+                {{-- Dynamic Form Builder Fields --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    @forelse($formFields as $field)
+                        @if($field->type === 'photo')
+                            @php
+                                $resPhotoLimits = \App\Support\FileUploadHelper::getEffectiveLimit(2048 * 1024, 'foto reservasi');
+                            @endphp
+                            <div class="col-span-full">
+                                <label for="field-{{ $field->field_key }}" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-red-600">*</span>@endif
+                                </label>
+                                <div class="p-4 bg-warm-ivory/60 border border-soft-beige rounded-2xl space-y-2.5">
+                                    <input type="file"
+                                           name="{{ $field->field_key }}"
+                                           id="field-{{ $field->field_key }}"
+                                           accept=".jpg,.jpeg,.png,.webp"
+                                           data-max-bytes="{{ $resPhotoLimits['effective_bytes'] ?? $resPhotoLimits['limit_bytes'] ?? 2097152 }}"
+                                           data-allowed-ext="jpg,jpeg,png,webp"
+                                           data-feedback-target="#field-{{ $field->field_key }}-feedback"
+                                           {{ $field->is_required ? 'required' : '' }}
+                                           class="block w-full text-xs text-charcoal file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-ink-black file:text-warm-ivory hover:file:bg-neutral-800 cursor-pointer">
+                                    <div id="field-{{ $field->field_key }}-feedback" class="text-left"></div>
+                                    <p class="text-[11px] text-muted-text font-medium">
+                                        <span class="inline-block font-semibold text-charcoal">Panduan Ukuran:</span> Format JPG, PNG, atau WebP (Maksimal {{ $resPhotoLimits['formatted'] ?? $resPhotoLimits['limit_formatted'] ?? '2 MB' }}).
+                                    </p>
+                                    @if(!empty($resPhotoLimits['is_throttled'] ?? $resPhotoLimits['is_limited_by_server']))
+                                        <p class="text-[10.5px] text-amber-800 font-medium">
+                                            ⚠️ Batas server PHP saat ini ({{ $resPhotoLimits['server_limit_formatted'] ?? '2 MB' }}) lebih kecil dari batas aplikasi (2 MB).
+                                        </p>
+                                    @endif
+                                    <p class="text-[11px] text-charcoal/80 bg-warm-stone/80 border border-hairline rounded-lg p-2.5 leading-relaxed">
+                                        💡 <strong>Catatan:</strong> Foto akan tersimpan di sistem kami dan tautan link disertakan pada pesan WhatsApp. Anda juga dapat melampirkan foto secara langsung di obrolan chat WhatsApp saat percakapan terbuka.
+                                    </p>
+                                </div>
+                            </div>
+                        @elseif($field->type === 'checkbox')
+                            <div class="col-span-full">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-red-600">*</span>@endif
+                                </label>
+                                @if(!empty($field->options) && is_array($field->options))
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-4 bg-warm-ivory/60 border border-soft-beige rounded-2xl">
+                                        @foreach($field->options as $optVal)
+                                            <label class="flex items-center gap-2.5 p-2.5 bg-white rounded-xl border border-soft-beige hover:border-charcoal/40 cursor-pointer transition-colors text-xs text-charcoal font-medium">
+                                                <input type="checkbox"
+                                                       name="{{ $field->field_key }}[]"
+                                                       value="{{ $optVal }}"
+                                                       {{ is_array(old($field->field_key)) && in_array($optVal, old($field->field_key)) ? 'checked' : '' }}
+                                                       class="w-4 h-4 rounded text-ink-black border-stone-300 focus:ring-ink-black">
+                                                <span>{{ $optVal }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="text-xs text-muted-text italic">Belum ada pilihan opsi yang dikonfigurasi.</p>
+                                @endif
+                            </div>
+                        @elseif($field->type === 'textarea')
+                            <div class="col-span-full">
+                                <label for="field-{{ $field->field_key }}" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-red-600">*</span>@endif
+                                </label>
+                                <textarea name="{{ $field->field_key }}"
+                                          id="field-{{ $field->field_key }}"
+                                          rows="3"
+                                          placeholder="{{ $field->placeholder ?: 'Tuliskan ' . strtolower($field->label) . '...' }}"
+                                          {{ $field->is_required ? 'required' : '' }}
+                                          class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">{{ old($field->field_key) }}</textarea>
+                            </div>
+                        @elseif($field->type === 'date')
+                            <div>
+                                <label for="field-{{ $field->field_key }}" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-red-600">*</span>@endif
+                                </label>
+                                <input type="date"
+                                       name="{{ $field->field_key }}"
+                                       id="field-{{ $field->field_key }}"
+                                       min="{{ date('Y-m-d') }}"
+                                       value="{{ old($field->field_key, date('Y-m-d')) }}"
+                                       {{ $field->is_required ? 'required' : '' }}
+                                       class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
+                            </div>
+                        @elseif($field->type === 'time')
+                            <div>
+                                <label for="field-{{ $field->field_key }}" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-red-600">*</span>@endif
+                                </label>
+                                <input type="time"
+                                       name="{{ $field->field_key }}"
+                                       id="field-{{ $field->field_key }}"
+                                       value="{{ old($field->field_key, '15:00') }}"
+                                       {{ $field->is_required ? 'required' : '' }}
+                                       class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
+                            </div>
+                        @else
+                            {{-- text, tel, number --}}
+                            <div>
+                                <label for="field-{{ $field->field_key }}" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-red-600">*</span>@endif
+                                </label>
+                                <input type="{{ $field->type === 'number' ? 'number' : ($field->type === 'tel' ? 'tel' : 'text') }}"
+                                       name="{{ $field->field_key }}"
+                                       id="field-{{ $field->field_key }}"
+                                       value="{{ old($field->field_key) }}"
+                                       placeholder="{{ $field->placeholder ?: ($field->type === 'number' ? 'Contoh: 4' : ($field->type === 'tel' ? '08xxxxxxxxxx' : 'Masukkan ' . strtolower($field->label))) }}"
+                                       {{ $field->is_required ? 'required' : '' }}
+                                       class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
+                            </div>
+                        @endif
+                    @empty
+                        <div class="col-span-full text-center py-6 text-muted-text text-sm">
+                            Belum ada kolom formulir reservasi yang diaktifkan oleh admin.
+                        </div>
+                    @endforelse
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                    <div>
-                        <label for="page-date" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
-                            Tanggal Reservasi <span class="text-red-600">*</span>
-                        </label>
-                        <input type="date" name="date" id="page-date" required min="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}"
-                            class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
-                    </div>
-
-                    <div>
-                        <label for="page-time" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
-                            Jam Kedatangan <span class="text-red-600">*</span>
-                        </label>
-                        <input type="time" name="time" id="page-time" required value="15:00"
-                            class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
-                    </div>
-
-                    <div>
-                        <label for="page-guestCount" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
-                            Jumlah Tamu <span class="text-red-600">*</span>
-                        </label>
-                        <select name="guestCount" id="page-guestCount" required
-                            class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
-                            <option value="1 - 2 Orang">1 – 2 Orang (Meja Intim)</option>
-                            <option value="3 - 5 Orang" selected>3 – 5 Orang (Meja Reguler)</option>
-                            <option value="6 - 10 Orang">6 – 10 Orang (Meja Komunal)</option>
-                            <option value="10+ Orang">10+ Orang (Group Gathering)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- PAKET ACARA: BRIDAL & BIRTHDAY (2-STEP SELECTION) -->
+                <!-- PAKET ACARA: BRIDAL & BIRTHDAY (OPSIONAL TAMBAHAN) -->
                 <div class="rounded-2xl bg-warm-ivory/60 border border-soft-beige p-5 space-y-5">
                     <div>
                         <h3 class="text-sm font-bold uppercase tracking-wider text-ink-black">
-                            1. Pilih Kategori Paket Acara Terlebih Dahulu <span class="text-red-600">*</span>
+                            Paket Dekorasi Acara Spesial (Opsional)
                         </h3>
                         <p class="text-xs text-charcoal/70 mt-0.5">
-                            Pilih <strong>Paket Acara Bridal</strong> atau <strong>Paket Acara Birthday</strong> di bawah ini untuk menampilkan pilihan paket dekorasinya:
+                            Jika Anda ingin merayakan momen spesial (Bridal Shower atau Ulang Tahun), silakan pilih paket dekorasi di bawah ini:
                         </p>
                     </div>
 
@@ -171,10 +248,7 @@
                     <div id="page-empty-cat-prompt" class="rounded-xl border border-dashed border-stone-300 bg-white/80 px-4 py-4 text-center">
                         <span class="material-symbols-outlined text-[#E06D24] text-xl mb-1 block">touch_app</span>
                         <p class="text-xs font-semibold text-ink-black">
-                            Silakan pilih kategori acara di atas (<strong>Bridal</strong> atau <strong>Birthday</strong>) terlebih dahulu
-                        </p>
-                        <p class="text-[11px] text-charcoal/70 mt-0.5">
-                            Pilihan Paket Dekorasi A (35K), B (60K), dan C (100K) akan muncul setelah kategori dipilih.
+                            Klik salah satu kategori di atas jika Anda menginginkan paket dekorasi (opsional)
                         </p>
                     </div>
 
@@ -185,8 +259,8 @@
                                 <span class="material-symbols-outlined text-lg">favorite</span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-rose-600 block">2. Pilih Paket Dekorasi Bridal</span>
-                                <h4 class="font-editorial text-xl font-bold text-ink-black">Pilihan Paket Acara Bridal</h4>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-rose-600 block">Pilihan Paket Dekorasi Bridal</span>
+                                <h4 class="font-editorial text-xl font-bold text-ink-black">Paket Acara Bridal</h4>
                             </div>
                         </div>
 
@@ -221,8 +295,8 @@
                                 <span class="material-symbols-outlined text-lg">cake</span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">2. Pilih Paket Dekorasi Birthday</span>
-                                <h4 class="font-editorial text-xl font-bold text-ink-black">Pilihan Paket Acara Birthday</h4>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">Pilihan Paket Dekorasi Birthday</span>
+                                <h4 class="font-editorial text-xl font-bold text-ink-black">Paket Acara Birthday</h4>
                             </div>
                         </div>
 
@@ -256,28 +330,6 @@
                             <strong id="page-selected-summary" class="text-amber-300 ml-1">Belum dipilih</strong>
                         </div>
                         <span id="page-selected-desc" class="text-[11px] text-warm-ivory/70 italic"></span>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div>
-                        <label for="page-area" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
-                            Pilihan Area <span class="text-red-600">*</span>
-                        </label>
-                        <select name="area" id="page-area" required
-                            class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
-                            <option value="Indoor (AC & Working Space)">Indoor (AC &amp; Working Space)</option>
-                            <option value="Outdoor (Smoking Area & Garden)">Outdoor (Smoking Area &amp; Garden)</option>
-                            <option value="Fleksibel (Sesuai Ketersediaan)">Fleksibel (Sesuai Ketersediaan)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="page-notes" class="block text-xs font-bold uppercase tracking-wider text-charcoal mb-1.5">
-                            Catatan Khusus / Tulisan Lettering
-                        </label>
-                        <input type="text" name="notes" id="page-notes" placeholder="Contoh: Lettering ucapan 'Happy Birthday Dinda'..."
-                            class="w-full bg-warm-ivory/60 border border-soft-beige rounded-xl px-4 py-3 text-sm text-ink-black focus:outline-none focus:border-ink-black transition-colors">
                     </div>
                 </div>
 

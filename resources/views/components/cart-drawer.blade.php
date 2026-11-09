@@ -7,6 +7,14 @@
 
 @php
     $txSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
+    $orderModeDineIn = (bool) ($txSettings['order_mode_dine_in'] ?? true);
+    $orderModeZendoTracking = (bool) ($txSettings['order_mode_zendo_tracking'] ?? false);
+    $orderModeZendoChat = (bool) ($txSettings['order_mode_zendo_chat'] ?? false);
+    $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
+    $isAnyOrderModeActive = (bool) ($txSettings['is_any_mode_active'] ?? ($orderModeDineIn || $orderModeZendo));
+    $orderDineInCash = (bool) ($txSettings['order_dine_in_cash'] ?? true);
+    $orderDineInQris = (bool) ($txSettings['order_dine_in_qris'] ?? true);
+    $qrisImage = $txSettings['qris_image'] ?? null;
     $transactionMode = $transactionMode ?? ($txSettings['transaction_mode'] ?? 'both');
     $zendoWhatsapp = $zendoWhatsapp ?? ($txSettings['zendo_whatsapp_clean'] ?? '6281234567890');
     $cafeLat = (float) ($txSettings['cafe_lat'] ?? -8.0765099);
@@ -22,7 +30,7 @@
     $zendoCouriers = $txSettings['zendo_couriers'] ?? [
         ['index' => 1, 'name' => 'Kurir Zendo 1', 'phone' => $zendoWhatsapp, 'clean_phone' => $zendoWhatsapp]
     ];
-    $initialProcessMethod = $transactionMode === 'zendo' ? 'zendo' : 'kasir';
+    $initialProcessMethod = ($orderModeDineIn) ? 'kasir' : ($orderModeZendo ? 'zendo' : 'kasir');
     $hideLiveTracking = (bool) ($txSettings['hide_live_tracking'] ?? false);
 @endphp
 
@@ -61,6 +69,7 @@
 <!-- =========================================================================
      1. FLOATING BOTTOM-RIGHT CAPSULE BUTTON (WARM MONOCHROME)
      ========================================================================= -->
+@if($isAnyOrderModeActive)
 <button type="button" 
         id="floating-cart-btn"
         onclick="openCartModal()" 
@@ -80,6 +89,7 @@
         </span>
     </div>
 </button>
+@endif
 
 <!-- =========================================================================
      2. FLOATING CENTERED MODAL BACKDROP & CARD (WARM MONOCHROME)
@@ -134,22 +144,34 @@
                             <i class="fa-solid fa-sliders text-[#2c2825]"></i>
                             <span>1. Metode Proses Transaksi</span>
                         </h4>
-                        @if($transactionMode === 'both')
+                        @if($orderModeDineIn && $orderModeZendo)
                             <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white text-[#2c2825] border border-[#ded8ce]">
                                 Kasir / Zendo
                             </span>
-                        @elseif($transactionMode === 'zendo')
+                        @elseif($orderModeZendo)
                             <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white text-[#2c2825] border border-[#ded8ce]">
                                 Zendo Aktif
                             </span>
-                        @else
+                        @elseif($orderModeDineIn)
                             <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white text-[#2c2825] border border-[#ded8ce]">
                                 Kasir Aktif
+                            </span>
+                        @else
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white text-rose-700 border border-rose-200">
+                                Nonaktif
                             </span>
                         @endif
                     </div>
 
-                    @if($transactionMode === 'both')
+                    @if(! $orderModeDineIn && ! $orderModeZendo)
+                        <div class="p-3.5 rounded-xl bg-amber-50/90 border border-amber-200 text-amber-900 text-xs flex items-start gap-2.5">
+                            <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 shrink-0 text-sm"></i>
+                            <div class="leading-relaxed">
+                                <p class="font-bold text-[11px] uppercase tracking-wider text-amber-950 mb-0.5">Pemesanan Online Sedang Nonaktif</p>
+                                <p>Layanan pemesanan online saat ini sedang tidak menerima pesanan baru. Anda tetap dapat menjelajahi menu dan berkunjung langsung ke Nucomu Cafe.</p>
+                            </div>
+                        </div>
+                    @elseif($orderModeDineIn && $orderModeZendo)
                         <div class="grid grid-cols-2 gap-2.5">
                             <!-- Option Kasir -->
                             <button type="button" 
@@ -161,7 +183,7 @@
                                     <span class="w-2.5 h-2.5 rounded-full {{ $initialProcessMethod === 'kasir' ? 'bg-[#2c2825]' : 'bg-[#ded8ce]' }}" id="modalDotKasir"></span>
                                 </div>
                                 <span class="text-xs sm:text-sm font-extrabold block leading-tight text-[#2c2825]">Proses Kasir</span>
-                                <span class="text-[10px] text-[#78726b] mt-0.5 block">Slip & QR Kasir</span>
+                                <span class="text-[10px] text-[#78726b] mt-0.5 block">Slip &amp; QR Kasir</span>
                             </button>
 
                             <!-- Option Kurir Zendo -->
@@ -174,17 +196,17 @@
                                     <span class="w-2.5 h-2.5 rounded-full {{ $initialProcessMethod === 'zendo' ? 'bg-[#2c2825]' : 'bg-[#ded8ce]' }}" id="modalDotZendo"></span>
                                 </div>
                                 <span class="text-xs sm:text-sm font-extrabold block leading-tight text-[#2c2825]">Kurir Zendo</span>
-                                <span class="text-[10px] text-[#78726b] mt-0.5 block">Peta & Kirim Otomatis</span>
+                                <span class="text-[10px] text-[#78726b] mt-0.5 block">{{ $hideLiveTracking ? 'Kirim via WhatsApp' : 'Peta &amp; Lacak Kurir' }}</span>
                             </button>
                         </div>
-                    @elseif($transactionMode === 'zendo')
+                    @elseif($orderModeZendo)
                         <div class="p-3.5 rounded-xl border border-[#ded8ce] bg-white flex items-center gap-3">
                             <div class="w-9 h-9 rounded-xl bg-[#faf8f5] text-[#2c2825] border border-[#ded8ce] flex items-center justify-center shrink-0">
                                 <i class="fa-solid fa-motorcycle text-base"></i>
                             </div>
                             <div>
                                 <p class="text-xs font-extrabold text-[#2c2825]">Delivery Kurir Zendo</p>
-                                <p class="text-[11px] text-[#78726b]">Pilih titik alamat di peta, ongkir dihitung otomatis & pesanan dikirim ke Kurir Zendo.</p>
+                                <p class="text-[11px] text-[#78726b]">{{ $hideLiveTracking ? 'Pesanan langsung dikirim ke WhatsApp kurir Zendo dengan draf pesan otomatis.' : 'Pilih titik alamat di peta, ongkir dihitung otomatis &amp; pesanan dipantau langsung.' }}</p>
                             </div>
                         </div>
                     @else
@@ -194,7 +216,7 @@
                             </div>
                             <div>
                                 <p class="text-xs font-extrabold text-[#2c2825]">Transaksi Kasir (QR Slip)</p>
-                                <p class="text-[11px] text-[#78726b]">Pilih menu favorit Anda lalu tunjukkan slip QR ke kasir untuk pembayaran.</p>
+                                <p class="text-[11px] text-[#78726b]">Pilih menu favorit Anda lalu tunjukkan slip QR ke kasir untuk proses pembayaran.</p>
                             </div>
                         </div>
                     @endif
@@ -231,7 +253,7 @@
                         <div id="modalZendoFeeRow" class="hidden justify-between text-[#2c2825] font-semibold">
                             <span class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-motorcycle text-[10px]"></i>
-                                <span>Ongkir Zendo (<span id="modalCartDistanceText">1,5 km</span>)</span>
+                                <span id="modalDeliveryFeeLabel">Ongkir Zendo (<span id="modalCartDistanceText">1,5 km</span>)</span>
                             </span>
                             <span id="modalDeliveryFeeAmount" class="font-mono font-bold">Rp 10.000</span>
                         </div>
@@ -265,8 +287,8 @@
                                class="w-full bg-white border border-[#ded8ce] rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-[#2c2825] placeholder-[#9c968f] focus:outline-none focus:border-[#2c2825] transition-colors">
                     </div>
 
-                    <!-- KASIR SPECIFIC: Dine In vs Take Away -->
-                    <div id="modalKasirFields" class="space-y-2.5 pt-2 border-t border-[#ece7de]">
+                    <!-- KASIR SPECIFIC: Dine In vs Take Away & Metode Bayar -->
+                    <div id="modalKasirFields" class="space-y-3 pt-2 border-t border-[#ece7de]">
                         <label class="block text-[11px] font-semibold text-[#2c2825]">
                             Tipe Pesanan
                         </label>
@@ -285,6 +307,50 @@
                                    id="modalTableNo" 
                                    placeholder="Nomor Meja (Contoh: Meja 04)" 
                                    class="w-full bg-white border border-[#ded8ce] rounded-xl px-3.5 py-2 text-xs text-[#2c2825] placeholder-[#9c968f] focus:outline-none focus:border-[#2c2825] transition-colors">
+                        </div>
+
+                        <!-- Pilihan Bayar Tunai vs QRIS di Kasir -->
+                        @if($orderDineInCash && $orderDineInQris)
+                        <div class="pt-2 border-t border-[#ece7de] space-y-1.5">
+                            <label class="block text-[11px] font-semibold text-[#2c2825]">
+                                Cara Pembayaran di Kasir
+                            </label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center space-x-2 p-2.5 rounded-xl bg-white border border-[#ded8ce] cursor-pointer text-xs select-none hover:border-[#2c2825] transition-colors">
+                                    <input type="radio" name="modal_payment_method" value="cash" checked onchange="togglePaymentMethodChoice('cash')" class="accent-[#2c2825]">
+                                    <span class="font-semibold text-[#2c2825]">Tunai (Cash)</span>
+                                </label>
+                                <label class="flex items-center space-x-2 p-2.5 rounded-xl bg-white border border-[#ded8ce] cursor-pointer text-xs select-none hover:border-[#2c2825] transition-colors">
+                                    <input type="radio" name="modal_payment_method" value="qris" onchange="togglePaymentMethodChoice('qris')" class="accent-[#2c2825]">
+                                    <span class="font-semibold text-[#2c2825]">QRIS</span>
+                                </label>
+                            </div>
+                        </div>
+                        @elseif($orderDineInQris)
+                            <input type="hidden" name="modal_payment_method" id="modalPaymentMethodSingle" value="qris">
+                        @else
+                            <input type="hidden" name="modal_payment_method" id="modalPaymentMethodSingle" value="cash">
+                        @endif
+
+                        <!-- QRIS Live Preview Box -->
+                        <div id="modalQrisPreviewBox" class="{{ ($orderDineInQris && !$orderDineInCash) ? '' : 'hidden' }} p-3 rounded-2xl bg-white border border-[#ded8ce] text-center space-y-2">
+                            <div class="flex items-center justify-between text-xs font-bold text-[#2c2825]">
+                                <span>Total Tagihan QRIS:</span>
+                                <div class="flex items-center gap-1.5">
+                                    <span id="modalQrisTotalText" class="font-mono text-sm font-black text-[#2c2825]">Rp 0</span>
+                                    <button type="button" onclick="copyQrisTotalAmount()" class="px-2 py-0.5 rounded-md bg-[#faf8f5] hover:bg-[#ded8ce] border border-[#ded8ce] text-[10px] font-bold text-[#2c2825] transition cursor-pointer" title="Salin Total">
+                                        <i class="fa-regular fa-copy"></i> Salin
+                                    </button>
+                                </div>
+                            </div>
+                            @if(!empty($qrisImage) && file_exists(public_path($qrisImage)))
+                                <div class="p-2 bg-[#faf8f5] rounded-xl border border-[#ded8ce] inline-block">
+                                    <img src="{{ asset($qrisImage) }}" alt="QRIS Kafe" class="w-36 h-36 object-contain rounded mx-auto">
+                                </div>
+                            @endif
+                            <p class="text-[10px] text-[#78726b] m-0 italic">
+                                *Scan QRIS dan tunjukkan bukti bayar ke kasir saat scan slip pesanan.
+                            </p>
                         </div>
                     </div>
 
@@ -595,6 +661,10 @@
      ========================================================================= -->
 <script>
     // Configuration from PHP
+    const CART_ORDER_MODE_DINE_IN = {{ $orderModeDineIn ? 'true' : 'false' }};
+    const CART_ORDER_MODE_ZENDO_TRACKING = {{ $orderModeZendoTracking ? 'true' : 'false' }};
+    const CART_ORDER_MODE_ZENDO_CHAT = {{ $orderModeZendoChat ? 'true' : 'false' }};
+    const CART_ORDER_MODE_ZENDO = {{ $orderModeZendo ? 'true' : 'false' }};
     const CART_ADMIN_MODE = '{{ $transactionMode }}';
     const CART_CAFE_LAT = {{ $cafeLat }};
     const CART_CAFE_LNG = {{ $cafeLng }};
@@ -683,6 +753,10 @@
         }
 
         const isZendo = modalCurrentMethod === 'zendo';
+        if (isZendo && !CART_ORDER_MODE_ZENDO) {
+            showCartError('Layanan pemesanan via Kurir Zendo sedang dinonaktifkan sementara.');
+            return;
+        }
         const btnKasir = document.getElementById('modalMethodBtnKasir');
         const btnZendo = document.getElementById('modalMethodBtnZendo');
         const iconKasir = document.getElementById('modalIconKasir');
@@ -707,7 +781,17 @@
 
         if (kasirFields) kasirFields.classList.toggle('hidden', isZendo);
         if (zendoFields) zendoFields.classList.toggle('hidden', !isZendo);
-        if (zendoFeeRow) zendoFeeRow.classList.toggle('hidden', !isZendo || CART_HIDE_LIVE_TRACKING);
+        if (zendoFeeRow) {
+            zendoFeeRow.classList.toggle('hidden', !isZendo);
+            const feeLabel = document.getElementById('modalDeliveryFeeLabel');
+            if (feeLabel) {
+                if (CART_HIDE_LIVE_TRACKING) {
+                    feeLabel.innerText = 'Ongkir (perkiraan, final dikonfirmasi kurir)';
+                } else {
+                    feeLabel.innerHTML = `Ongkir Zendo (<span id="modalCartDistanceText">${(Math.round(modalDistanceKm * 10) / 10).toLocaleString('id-ID')} km</span>)`;
+                }
+            }
+        }
 
         if (paymentHint) {
             paymentHint.innerText = isZendo
@@ -735,6 +819,39 @@
         }
     };
 
+    window.togglePaymentMethodChoice = function(method) {
+        const previewBox = document.getElementById('modalQrisPreviewBox');
+        const paymentHint = document.getElementById('modalCartPaymentHint');
+        if (previewBox) {
+            previewBox.classList.toggle('hidden', method !== 'qris');
+        }
+        if (paymentHint) {
+            paymentHint.innerText = method === 'qris'
+                ? '*Scan QRIS dan tunjukkan bukti bayar ke kasir saat scan slip pesanan.'
+                : '*Bayar di kasir setelah menunjukkan slip QR.';
+        }
+        updateQrisTotalText();
+    };
+
+    window.copyQrisTotalAmount = function() {
+        const totalEl = document.getElementById('modalTotalAmount');
+        if (!totalEl) return;
+        const cleanText = totalEl.innerText.replace(/[^0-9]/g, '');
+        navigator.clipboard.writeText(cleanText).then(() => {
+            alert('Total tagihan QRIS berhasil disalin: Rp ' + parseInt(cleanText).toLocaleString('id-ID'));
+        }).catch(() => {
+            alert('Silakan salin manual jumlah total tagihan.');
+        });
+    };
+
+    function updateQrisTotalText() {
+        const qrisTotalEl = document.getElementById('modalQrisTotalText');
+        const totalEl = document.getElementById('modalTotalAmount');
+        if (qrisTotalEl && totalEl) {
+            qrisTotalEl.innerText = totalEl.innerText;
+        }
+    }
+
     function resetModalSubmitButton() {
         const btn = document.getElementById('modalSubmitBtn');
         const text = document.getElementById('modalSubmitText');
@@ -746,7 +863,9 @@
 
         if (modalCurrentMethod === 'zendo') {
             btn.className = 'w-full py-3.5 sm:py-4 rounded-2xl bg-[#2c2825] hover:bg-[#3a3632] text-[#faf8f5] font-extrabold text-xs sm:text-sm uppercase tracking-wider active:scale-98 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer';
-            text.innerHTML = '<i class="fa-solid fa-motorcycle mr-1"></i> Kirim Pesanan ke Kurir Zendo';
+            text.innerHTML = CART_HIDE_LIVE_TRACKING
+                ? '<i class="fa-brands fa-whatsapp mr-1 text-emerald-400"></i> Kirim Pesanan via WhatsApp'
+                : '<i class="fa-solid fa-motorcycle mr-1"></i> Kirim Pesanan ke Kurir Zendo';
         } else {
             btn.className = 'w-full py-3.5 sm:py-4 rounded-2xl bg-[#2c2825] hover:bg-[#3a3632] text-[#faf8f5] font-extrabold text-xs sm:text-sm uppercase tracking-wider active:scale-98 transition-all shadow-md disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer';
             text.innerHTML = '<i class="fa-solid fa-qrcode mr-1"></i> Buat Slip Pesanan (Kasir)';
@@ -941,7 +1060,7 @@
         if (itemsContainer) itemsContainer.innerHTML = html;
 
         const isZendo = modalCurrentMethod === 'zendo';
-        const activeDeliveryFee = (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalDeliveryFee : 0;
+        const activeDeliveryFee = isZendo ? modalDeliveryFee : 0;
         const grandTotal = subtotal + activeDeliveryFee;
 
         if (subtotalEl) subtotalEl.innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
@@ -955,6 +1074,8 @@
             navBadge.innerText = totalQty;
             navBadge.classList.remove('hidden');
         }
+
+        updateQrisTotalText();
     };
 
     function showNucomuAddedToast(itemName) {
@@ -1216,6 +1337,10 @@
         }
 
         const isZendo = modalCurrentMethod === 'zendo';
+        if (isZendo && !CART_ORDER_MODE_ZENDO) {
+            showCartError('Layanan pemesanan via Kurir Zendo sedang dinonaktifkan sementara.');
+            return;
+        }
         let customerPhone = '';
         let deliveryAddress = '';
         let tableNo = '';
@@ -1243,17 +1368,40 @@
             tableNo = (tableInput && isDineIn) ? tableInput.value.trim() : (isDineIn ? 'Makan di Tempat' : 'Bawa Pulang');
         }
 
+        let paymentMethod = 'cash';
+        if (!isZendo) {
+            const paymentRadio = document.querySelector('input[name="modal_payment_method"]:checked');
+            const paymentSingle = document.getElementById('modalPaymentMethodSingle');
+            paymentMethod = paymentRadio ? paymentRadio.value : (paymentSingle ? paymentSingle.value : 'cash');
+        }
+
         const notesInput = document.getElementById('modalOrderNotes');
         const notes = notesInput ? notesInput.value.trim() : '';
 
-        // Prepare order payload
-        const items = keys.map(k => ({
-            id: window.nucomuCart[k].id,
-            name: window.nucomuCart[k].name,
-            price: window.nucomuCart[k].price,
-            qty: window.nucomuCart[k].qty,
-            options: window.nucomuCart[k].optionsStr || ''
-        }));
+        // Prepare order payload with complete fields and total
+        let subtotal = 0;
+        const items = keys.map(k => {
+            const item = window.nucomuCart[k];
+            const unitPrice = parseInt(item.price, 10) || 0;
+            const qty = Math.max(1, parseInt(item.qty, 10) || 1);
+            const lineTotal = unitPrice * qty;
+            subtotal += lineTotal;
+
+            return {
+                id: item.id,
+                menu_id: item.id,
+                name: item.name,
+                menu_name: item.name,
+                price: unitPrice,
+                unit_price: unitPrice,
+                qty: qty,
+                line_total: lineTotal,
+                options: item.optionsStr || ''
+            };
+        });
+
+        const activeDeliveryFee = (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalDeliveryFee : 0;
+        const grandTotal = subtotal + activeDeliveryFee;
 
         const submitBtn = document.getElementById('modalSubmitBtn');
         const spinner = document.getElementById('modalSubmitSpinner');
@@ -1266,13 +1414,17 @@
             customer_name: customerName,
             customer_phone: customerPhone,
             process_method: modalCurrentMethod,
+            payment_method: paymentMethod,
             delivery_address: deliveryAddress,
+            customer_lat: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalSelectedLat : null,
+            customer_lng: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalSelectedLng : null,
             destination_lat: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalSelectedLat : null,
             destination_lng: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalSelectedLng : null,
             distance_km: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalDistanceKm : 0,
-            delivery_fee: (isZendo && !CART_HIDE_LIVE_TRACKING) ? modalDeliveryFee : 0,
+            delivery_fee: activeDeliveryFee,
             table_no: tableNo,
             notes: notes,
+            total: grandTotal,
             items: items
         };
 

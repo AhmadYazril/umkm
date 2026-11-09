@@ -24,29 +24,45 @@
             </p>
         </div>
 
-        <!-- Category Filter Tabs -->
+        <!-- Category Filter Tabs (Dinamis dari Admin) -->
         <div class="flex justify-center items-center flex-wrap gap-2.5 mb-14 border-b border-light-gray pb-4">
             <a href="{{ route('menu.all', ['category' => 'all']) }}" 
                class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'all' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
                 Semua Menu
             </a>
-            <a href="{{ route('menu.all', ['category' => 'coffee']) }}" 
-               class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'coffee' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                Coffee
-            </a>
-            <a href="{{ route('menu.all', ['category' => 'non-coffee']) }}" 
-               class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'non-coffee' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                Non-Coffee
-            </a>
-            <a href="{{ route('menu.all', ['category' => 'dessert']) }}" 
-               class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'dessert' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                Dessert
-            </a>
-            <a href="{{ route('menu.all', ['category' => 'snacks']) }}" 
-               class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'snacks' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
-                Food & Snacks
-            </a>
+            @if(isset($dbCategories) && $dbCategories->isNotEmpty())
+                @foreach($dbCategories as $cat)
+                    <a href="{{ route('menu.all', ['category' => $cat->slug]) }}" 
+                       class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === $cat->slug ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
+                        {{ $cat->name }}
+                    </a>
+                @endforeach
+            @else
+                <a href="{{ route('menu.all', ['category' => 'coffee']) }}" 
+                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'coffee' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
+                    Coffee
+                </a>
+                <a href="{{ route('menu.all', ['category' => 'non-coffee']) }}" 
+                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'non-coffee' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
+                    Non-Coffee
+                </a>
+                <a href="{{ route('menu.all', ['category' => 'dessert']) }}" 
+                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'dessert' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
+                    Dessert
+                </a>
+                <a href="{{ route('menu.all', ['category' => 'snacks']) }}" 
+                   class="px-5 py-2 rounded text-xs font-semibold uppercase tracking-wider transition-all {{ $selectedCategory === 'snacks' ? 'bg-neutral-900 text-white' : 'bg-white text-neutral-700 border border-neutral-200 hover:border-neutral-900' }}">
+                    Food & Snacks
+                </a>
+            @endif
         </div>
+
+        @if(! ($txSettings['is_any_mode_active'] ?? true))
+            <div class="max-w-2xl mx-auto mb-10 p-4 rounded-2xl bg-white/80 border border-soft-beige text-charcoal/80 text-center text-xs sm:text-sm">
+                <i class="fa-solid fa-circle-info mr-1.5 text-ink-black"></i>
+                Pemesanan online sedang tidak tersedia saat ini. Silakan berkunjung langsung ke kafe kami.
+            </div>
+        @endif
 
         <!-- Full Catalog Grid (Popular Dish Floating Plate Layout + Expandable Options / Add to Cart on Click) -->
         @if(count($filteredMenu) > 0)
@@ -155,6 +171,7 @@
                                 @endif
                             @endif
 
+                            @if($txSettings['is_any_mode_active'] ?? true)
                             <!-- Add to Cart Button (Muncul setelah kartu diklik) -->
                             <button type="button" 
                                     onclick="event.stopPropagation(); submitPopularDishOrder(this.closest('.popular-dish-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')" 
@@ -162,6 +179,7 @@
                                 <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
                                 <span>+ Add to Cart</span>
                             </button>
+                            @endif
                         </div>
                     </div>
                 @endforeach

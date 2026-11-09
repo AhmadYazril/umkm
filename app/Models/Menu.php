@@ -47,6 +47,11 @@ class Menu extends Model
         return $this->hasMany(MenuOption::class);
     }
 
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
     public function scopeAvailable($query)
     {
         return $query->where('is_available', true);
@@ -65,5 +70,53 @@ class Menu extends Model
     public function getFormattedPriceAttribute(): string
     {
         return 'Rp '.number_format($this->price, 0, ',', '.');
+    }
+
+    /**
+     * Resolves the full URL to the menu image with smart fallback.
+     */
+    public function getImageUrlAttribute(): string
+    {
+        if (empty($this->image)) {
+            return asset('images/nucomu-latte-hero.jpg');
+        }
+
+        if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+            return $this->image;
+        }
+
+        if (file_exists(public_path('uploads/menus/'.$this->image))) {
+            return asset('uploads/menus/'.$this->image);
+        }
+
+        if (file_exists(public_path('storage/'.$this->image))) {
+            return asset('storage/'.$this->image);
+        }
+
+        if (file_exists(public_path($this->image))) {
+            return asset($this->image);
+        }
+
+        return asset('uploads/menus/'.$this->image);
+    }
+
+    /**
+     * Delete physical image file from disk.
+     */
+    public function deleteImageFile(): void
+    {
+        if (empty($this->image)) {
+            return;
+        }
+
+        $uploadFile = public_path('uploads/menus/'.$this->image);
+        if (file_exists($uploadFile)) {
+            @unlink($uploadFile);
+        }
+
+        $storageFile = public_path('storage/'.$this->image);
+        if (file_exists($storageFile)) {
+            @unlink($storageFile);
+        }
     }
 }

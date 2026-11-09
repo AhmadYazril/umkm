@@ -118,10 +118,22 @@
     @include('components.cart-drawer')
 
     <!-- Global Client Script Config & Bundle -->
+    @php
+        $globalContact = \App\Http\Controllers\NucomuController::getContactSettings();
+    @endphp
     <script>
-        window.NUCOMU_WA_NUMBER = "{{ config('nucomu.contact.whatsapp_number', '6281234567890') }}";
+        window.NUCOMU_WA_NUMBER = "{{ $globalContact['whatsapp_clean'] ?? config('nucomu.contact.whatsapp_number', '6281234567890') }}";
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+    <script>
+        window.__SERVER_UPLOAD_LIMITS__ = {
+            uploadMaxBytes: {{ \App\Support\FileUploadHelper::getServerUploadLimits()['upload_max_filesize_bytes'] }},
+            uploadMaxRaw: '{{ \App\Support\FileUploadHelper::getServerUploadLimits()['upload_max_filesize_raw'] }}',
+            postMaxBytes: {{ \App\Support\FileUploadHelper::getServerUploadLimits()['post_max_size_bytes'] }},
+            postMaxRaw: '{{ \App\Support\FileUploadHelper::getServerUploadLimits()['post_max_size_raw'] }}'
+        };
+    </script>
+    <script src="{{ asset('js/file-upload-validator.js') }}" defer></script>
     <script src="{{ asset('js/nucomu.js') }}" defer></script>
 
     <!-- Page-specific scripts -->
