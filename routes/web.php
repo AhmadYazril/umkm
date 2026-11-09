@@ -15,7 +15,6 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\MenuController;
@@ -214,14 +213,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::patch('/{galleryItem}/toggle-active', [GalleryController::class, 'toggleActive'])->name('toggle-active');
         });
 
-        // 6. Testimoni / Ulasan
-        Route::prefix('testimoni')->name('testimonials.')->group(function () {
-            Route::get('/', [TestimonialController::class, 'index'])->name('index');
-            Route::patch('/{testimonial}/toggle-pin', [TestimonialController::class, 'togglePin'])->name('toggle-pin');
-            Route::patch('/{testimonial}/toggle-active', [TestimonialController::class, 'toggleActive'])->name('toggle-active');
-            Route::delete('/{testimonial}', [TestimonialController::class, 'destroy'])->name('destroy');
-            Route::post('/{testimonial}/toggle', [TestimonialController::class, 'toggleActive'])->name('toggle');
-        });
+        // Testimoni / Ulasan
+        Route::get('/testimoni', [SettingController::class, 'testimonials'])->name('testimonials.index');
+        Route::post('/testimoni', [SettingController::class, 'storeTestimonial'])->name('testimonials.store');
+        Route::delete('/testimoni/{testimonial}', [SettingController::class, 'destroyTestimonial'])->name('testimonials.destroy');
+        Route::post('/testimoni/hapus-data-contoh', [SettingController::class, 'deleteSampleTestimonials'])->name('testimonials.deleteSample');
+        Route::post('/testimoni/{testimonial}/toggle', [SettingController::class, 'toggleTestimonial'])->name('testimonials.toggle');
 
         // Event
         Route::get('/event', [SettingController::class, 'events'])->name('events.index');

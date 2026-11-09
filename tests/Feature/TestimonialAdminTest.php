@@ -26,51 +26,38 @@ class TestimonialAdminTest extends TestCase
             'name' => 'Fulan Pengulas',
             'content' => 'Kopi mantap dan tempat nyaman sekali.',
             'rating' => 5,
-            'is_pinned' => true,
             'is_active' => true,
         ]);
 
         $response = $this->actingAs($admin)->get(route('admin.testimonials.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Ulasan &amp; Reputasi Kafe', false);
-        $response->assertSee('Sedang Di-Pin');
+        $response->assertSee('Kelola Ulasan Pelanggan');
+        $response->assertSee('Tambah Ulasan Pelanggan Baru');
         $response->assertSee('Fulan Pengulas');
-        // Admin view is curation only: NO "+ Tambah Ulasan" form
-        $response->assertDontSee('Tambah Ulasan Pelanggan Baru');
     }
 
-    public function test_admin_can_toggle_pin_status(): void
+    public function test_admin_can_store_testimonial(): void
     {
         $admin = $this->getAdminUser();
 
-        $testi = Testimonial::create([
+        $response = $this->actingAs($admin)->post(route('admin.testimonials.store'), [
             'name' => 'Budi Santoso',
-            'content' => 'Rekomendasi tempat santai di sore hari.',
+            'handle' => 'budi_s',
+            'order_tag' => 'Palm Sugar Latte',
             'rating' => 5,
-            'is_pinned' => false,
+            'content' => 'Rekomendasi tempat santai di sore hari.',
+        ]);
+
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('testimonials', [
+            'name' => 'Budi Santoso',
+            'handle' => '@budi_s',
             'is_active' => true,
         ]);
-
-        // 1. Toggle Pin ON
-        $response = $this->actingAs($admin)->patch(route('admin.testimonials.toggle-pin', $testi->id));
-        $response->assertSessionHas('success');
-
-        $testi->refresh();
-        $this->assertTrue($testi->is_pinned);
-
-        // 2. Toggle Pin OFF via AJAX
-        $ajaxResponse = $this->actingAs($admin)->patchJson(route('admin.testimonials.toggle-pin', $testi->id));
-        $ajaxResponse->assertJson([
-            'success' => true,
-            'is_pinned' => false,
-        ]);
-
-        $testi->refresh();
-        $this->assertFalse($testi->is_pinned);
     }
 
-    public function test_admin_can_toggle_active_status_and_it_auto_unpins_if_deactivated(): void
+    public function test_admin_can_toggle_active_status(): void
     {
         $admin = $this->getAdminUser();
 
@@ -78,20 +65,16 @@ class TestimonialAdminTest extends TestCase
             'name' => 'Dewi Lestari',
             'content' => 'Pelayanan ramah sekali.',
             'rating' => 5,
-            'is_pinned' => true,
             'is_active' => true,
         ]);
 
-        // Deactivate (Hide)
-        $this->actingAs($admin)->patch(route('admin.testimonials.toggle-active', $testi->id));
+        $this->actingAs($admin)->post(route('admin.testimonials.toggle', $testi->id));
 
         $testi->refresh();
         $this->assertFalse($testi->is_active);
-        // Must automatically be unpinned when hidden
-        $this->assertFalse($testi->is_pinned);
     }
 
-    public function test_admin_can_delete_inappropriate_testimonial(): void
+    public function test_admin_can_delete_testimonial(): void
     {
         $admin = $this->getAdminUser();
 
@@ -99,7 +82,6 @@ class TestimonialAdminTest extends TestCase
             'name' => 'Spammer',
             'content' => 'Konten spam yang tidak pantas.',
             'rating' => 1,
-            'is_pinned' => false,
             'is_active' => true,
         ]);
 
@@ -109,7 +91,7 @@ class TestimonialAdminTest extends TestCase
         $this->assertDatabaseMissing('testimonials', ['id' => $testi->id]);
     }
 
-    public function test_customer_review_submission_defaults_to_unpinned(): void
+    public function test_customer_review_submission_appears_with_google_maps_reviews_on_web(): void
     {
         $payload = [
             'name' => 'Pelanggan Baru',
@@ -126,44 +108,10 @@ class TestimonialAdminTest extends TestCase
         $this->assertNotNull($saved);
         $this->assertSame(5, $saved->rating);
         $this->assertTrue($saved->is_active);
-        // Must be unpinned by default, waiting for admin curation
-        $this->assertFalse($saved->is_pinned);
-    }
 
-    public function test_customer_web_only_shows_pinned_reviews(): void
-    {
-        // 1 pinned review
-        Testimonial::create([
-            'name' => 'Pengulas Terbaik',
-            'content' => 'Banoffee terenak di Jawa Timur!',
-            'rating' => 5,
-            'is_pinned' => true,
-            'is_active' => true,
-        ]);
-
-        // 1 unpinned review
-        Testimonial::create([
-            'name' => 'Pengulas Biasa',
-            'content' => 'Tempatnya lumayan bagus.',
-            'rating' => 4,
-            'is_pinned' => false,
-            'is_active' => true,
-        ]);
-
-        $response = $this->get(route('home'));
-        $response->assertStatus(200);
-        $response->assertSee('Banoffee terenak di Jawa Timur!');
-        $response->assertDontSee('Tempatnya lumayan bagus.');
-    }
-
-    public function test_customer_web_renders_fallback_when_no_reviews_pinned(): void
-    {
-        // No pinned reviews in DB
-        Testimonial::query()->update(['is_pinned' => false]);
-
-        $response = $this->get(route('home'));
-        $response->assertStatus(200);
-        $response->assertSee('Belum Ada Ulasan yang Disematkan');
-        $response->assertSee('Tulis Ulasan Anda');
+        $homeResponse = $this->get(route('home'));
+        $homeResponse->assertStatus(200);
+        $homeResponse->assertSee('Pelanggan Baru');
+        $homeResponse->assertSee('Dya slma');
     }
 }
