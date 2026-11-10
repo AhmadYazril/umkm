@@ -196,10 +196,44 @@ class NucomuController extends Controller
         $dbCategories = collect();
         try {
             $dbCategories = Category::where('is_active', true)->orderBy('sort_order')->get();
-            $liveMenus = Menu::available()->with('category')->orderBy('sort_order')->get();
+            $liveMenus = Menu::available()->with(['category', 'options'])->orderBy('sort_order')->get();
             if ($liveMenus->isNotEmpty()) {
                 $mappedLiveMenus = $liveMenus->map(function ($m) {
                     $catSlug = $m->category ? ($m->category->slug ?: Str::slug($m->category->name)) : 'coffee';
+
+                    $opts = [];
+                    if ($m->options && $m->options->isNotEmpty()) {
+                        $variants = $m->options->where('type', 'variant')->values();
+                        $addons = $m->options->where('type', 'addon')->values();
+                        if ($variants->isNotEmpty()) {
+                            $opts[] = [
+                                'title' => 'Penyajian',
+                                'choices' => $variants->pluck('name')->all(),
+                            ];
+                        }
+                        if ($addons->isNotEmpty()) {
+                            $sugar = $addons->filter(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+                            $extra = $addons->reject(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+                            if ($sugar->isNotEmpty()) {
+                                $opts[] = [
+                                    'title' => 'Level Manis',
+                                    'choices' => $sugar->pluck('name')->all(),
+                                ];
+                            }
+                            if ($extra->isNotEmpty()) {
+                                $opts[] = [
+                                    'title' => 'Tambahan',
+                                    'choices' => array_merge(['Tanpa Tambahan'], $extra->pluck('name')->all()),
+                                ];
+                            }
+                            if ($sugar->isEmpty() && $extra->isEmpty()) {
+                                $opts[] = [
+                                    'title' => 'Pilihan Opsi',
+                                    'choices' => $addons->pluck('name')->all(),
+                                ];
+                            }
+                        }
+                    }
 
                     return [
                         'id' => $m->slug ?: 'menu-'.$m->id,
@@ -210,6 +244,7 @@ class NucomuController extends Controller
                         'price_formatted' => 'Rp '.number_format($m->price, 0, ',', '.'),
                         'short_info' => $m->description ?? 'Racikan pilihan Nucomu Cafe.',
                         'image' => $m->image_url,
+                        'options' => $opts,
                     ];
                 })->toArray();
 
@@ -223,6 +258,52 @@ class NucomuController extends Controller
                     }
                 }
                 $allMenu = $uniqueAllMenu;
+
+                // Sync live database options with recommendations where available
+                $dbMenuLookup = $liveMenus->keyBy(function ($m) {
+                    return strtolower(trim($m->name));
+                });
+                $recommendations = collect($recommendations)->map(function ($rec) use ($dbMenuLookup) {
+                    if (empty($rec['options'])) {
+                        return $rec;
+                    }
+                    $key = strtolower(trim($rec['name'] ?? ''));
+                    if ($dbMenuLookup->has($key)) {
+                        $dbM = $dbMenuLookup->get($key);
+                        if ($dbM->options && $dbM->options->isNotEmpty()) {
+                            $dbOpts = [];
+                            $variants = $dbM->options->where('type', 'variant')->values();
+                            $addons = $dbM->options->where('type', 'addon')->values();
+                            if ($variants->isNotEmpty()) {
+                                $dbOpts[] = [
+                                    'title' => 'Penyajian',
+                                    'choices' => $variants->pluck('name')->all(),
+                                ];
+                            }
+                            if ($addons->isNotEmpty()) {
+                                $sugar = $addons->filter(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+                                $extra = $addons->reject(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+                                if ($sugar->isNotEmpty()) {
+                                    $dbOpts[] = [
+                                        'title' => 'Level Manis',
+                                        'choices' => $sugar->pluck('name')->all(),
+                                    ];
+                                }
+                                if ($extra->isNotEmpty()) {
+                                    $dbOpts[] = [
+                                        'title' => 'Tambahan',
+                                        'choices' => array_merge(['Tanpa Tambahan'], $extra->pluck('name')->all()),
+                                    ];
+                                }
+                            }
+                            if (! empty($dbOpts)) {
+                                $rec['options'] = $dbOpts;
+                            }
+                        }
+                    }
+
+                    return $rec;
+                })->all();
             }
         } catch (\Throwable $e) {
             // Graceful fallback
@@ -395,11 +476,24 @@ class NucomuController extends Controller
         $brand = config('nucomu.brand');
         $contact = config('nucomu.contact');
 
-        $configMenu = collect(config('nucomu.all_menu', []));
+        $recOptions = collect(config('nucomu.recommendations', []))->keyBy(function ($r) {
+            return strtolower(trim($r['name'] ?? ''));
+        });
+
+        $configMenu = collect(config('nucomu.all_menu', []))->map(function ($item) use ($recOptions) {
+            if (empty($item['options'])) {
+                $key = strtolower(trim($item['name'] ?? ''));
+                if ($recOptions->has($key) && ! empty($recOptions->get($key)['options'])) {
+                    $item['options'] = $recOptions->get($key)['options'];
+                }
+            }
+
+            return $item;
+        });
 
         // Attempt to load from database and merge
         try {
-            $dbMenus = Menu::available()->with('category')->get()->map(function ($m) {
+            $dbMenus = Menu::available()->with(['category', 'options'])->get()->map(function ($m) {
                 $catSlug = $m->category ? strtolower($m->category->slug ?? $m->category->name) : 'coffee';
                 if (str_contains($catSlug, 'non') || str_contains($catSlug, 'tea') || str_contains($catSlug, 'beverage')) {
                     $normCat = 'non-coffee';
@@ -418,6 +512,40 @@ class NucomuController extends Controller
                     $img = $m->image;
                 }
 
+                $opts = [];
+                if ($m->options && $m->options->isNotEmpty()) {
+                    $variants = $m->options->where('type', 'variant')->values();
+                    $addons = $m->options->where('type', 'addon')->values();
+                    if ($variants->isNotEmpty()) {
+                        $opts[] = [
+                            'title' => 'Penyajian',
+                            'choices' => $variants->pluck('name')->all(),
+                        ];
+                    }
+                    if ($addons->isNotEmpty()) {
+                        $sugar = $addons->filter(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+                        $extra = $addons->reject(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+                        if ($sugar->isNotEmpty()) {
+                            $opts[] = [
+                                'title' => 'Level Manis',
+                                'choices' => $sugar->pluck('name')->all(),
+                            ];
+                        }
+                        if ($extra->isNotEmpty()) {
+                            $opts[] = [
+                                'title' => 'Tambahan',
+                                'choices' => array_merge(['Tanpa Tambahan'], $extra->pluck('name')->all()),
+                            ];
+                        }
+                        if ($sugar->isEmpty() && $extra->isEmpty()) {
+                            $opts[] = [
+                                'title' => 'Pilihan Opsi',
+                                'choices' => $addons->pluck('name')->all(),
+                            ];
+                        }
+                    }
+                }
+
                 return [
                     'id' => $m->slug ?: 'menu-'.$m->id,
                     'name' => $m->name,
@@ -427,6 +555,7 @@ class NucomuController extends Controller
                     'price_formatted' => 'Rp '.number_format($m->price, 0, ',', '.'),
                     'short_info' => $m->description ?? 'Racikan pilihan Nucomu Cafe.',
                     'image' => $img ?: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=800',
+                    'options' => $opts,
                 ];
             });
 

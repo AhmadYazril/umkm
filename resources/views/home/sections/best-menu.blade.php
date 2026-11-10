@@ -175,109 +175,164 @@
             <div class="flex-grow h-px bg-gradient-to-l from-transparent via-neutral-300 to-transparent"></div>
         </div>
 
-        <!-- 10 Menu Cards Grid (1 Baris 5: 5 Columns per Row + Animated Expandable Options on Click) -->
-        <div id="recommendations-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-start gap-x-5 gap-y-20 pt-16 transition-all duration-300 mb-2 mt-6">
+        <!-- 10 Menu Cards N-Column Layout (5 Kolom Desktop, 3 Kolom Tablet, 2 Kolom Mobile) -->
+        <div id="recommendations-cards-pool" style="display: none;" aria-hidden="true">
             @foreach($recommendations as $index => $item)
                 @php
+                    $itemSlug = \Illuminate\Support\Str::slug($item['id'] ?? $item['name']);
+                    $cat = $item['category'] ?? 'coffee';
+                    $unit = $item['unit'] ?? match(strtolower($cat)) {
+                        'coffee', 'kopi', 'non-coffee', 'non-kopi', 'beverages' => '/cup',
+                        'dessert' => '/slice',
+                        'snack', 'snacks', 'makanan', 'meals' => '/porsi',
+                        default => '/porsi'
+                    };
                     $hasOptions = !empty($item['options']);
                     $opt1 = $hasOptions ? ($item['options'][0] ?? null) : null;
                     $opt2 = $hasOptions ? ($item['options'][1] ?? null) : null;
+                    $isAvailable = $item['is_available'] ?? true;
                 @endphp
-                <div class="rec-card popular-dish-card group relative rounded-[2rem] p-4 sm:p-5 pt-16 sm:pt-20 pb-5 bg-white border border-stone-200/80 shadow-md hover:shadow-xl hover:border-neutral-400 transition-all duration-300 cursor-pointer h-fit self-start"
-                     data-category="{{ $item['category'] }}"
-                     data-item-id="{{ $item['id'] }}"
-                     data-price="{{ $item['price'] ?? 0 }}"
-                     onclick="togglePopularDishOptions(this)">
+                <div class="menu-card-wrapper rec-card" 
+                     data-index="{{ $index }}"
+                     data-category="{{ $item['category'] ?? '' }}"
+                     data-id="{{ $item['id'] ?? $itemSlug }}"
+                     data-name="{{ $item['name'] }}"
+                     data-price="{{ $item['price'] }}">
                     
-                    <!-- Floating Circular Plate (Overflows top of card) -->
-                    <div class="dish-plate-wrap absolute -top-12 sm:-top-16 left-1/2 -translate-x-1/2 w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-32 lg:h-32 xl:w-36 xl:h-36 rounded-full overflow-hidden p-1.5 bg-white shadow-xl border border-stone-200/90 transition-transform duration-300 group-hover:scale-105 z-10 flex items-center justify-center">
-                        <img src="{{ $item['image'] }}" 
-                             alt="{{ $item['name'] }}" 
-                             class="w-full h-full object-cover rounded-full">
-                    </div>
-
-                    <!-- Card Body: Name & Price -->
-                    <div class="text-center pt-2">
-                        <h4 class="card-title font-editorial text-base sm:text-lg font-bold leading-snug line-clamp-1 text-neutral-900 group-hover:text-black transition-colors" title="{{ $item['name'] }}">
-                            {{ $item['name'] }}
-                        </h4>
-                        <div class="mt-1 flex items-baseline justify-center space-x-1">
-                            <span class="card-price font-editorial text-base sm:text-lg font-bold text-neutral-900">
-                                {{ $item['price_formatted'] }}
-                            </span>
-                            <span class="text-xs text-neutral-400 font-normal">
-                                {{ $item['unit'] ?? '/porsi' }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Expandable Panel (Animasi halus muncul ketika kartu diklik) -->
-                    <div class="product-options-panel border-stone-150/80"
-                         onclick="event.stopPropagation()">
+                    <article class="menu-card {{ !$isAvailable ? 'opacity-65 grayscale-[30%]' : '' }}"
+                             data-card-id="rec-{{ $itemSlug }}-{{ $index }}"
+                             data-id="{{ $item['id'] ?? $itemSlug }}"
+                             data-name="{{ $item['name'] }}"
+                             data-price="{{ $item['price'] }}">
                         
-                        @if($hasOptions)
-                            <!-- 2 Columns of Options matching reference screenshot -->
-                            <div class="grid grid-cols-2 gap-2 mb-3.5 text-left">
-                                @if($opt1)
-                                <div>
-                                    <span class="text-[11px] sm:text-xs font-bold text-neutral-800 block mb-1.5 tracking-tight">
-                                        {{ $opt1['title'] }}
+                        <!-- Header Trigger: Klik bagian atas kartu (avatar, nama, harga) untuk buka/tutup -->
+                        <button type="button" 
+                                class="menu-card-header-btn" 
+                                onclick="toggleMenuCard(this.closest('.menu-card'))"
+                                aria-expanded="false"
+                                aria-controls="drawer-rec-{{ $itemSlug }}-{{ $index }}"
+                                title="Klik untuk membuka detail menu {{ $item['name'] }}">
+                            
+                            <!-- Foto Bulat Menembus Tepi Atas Kartu -->
+                            <div class="menu-card-avatar">
+                                <img src="{{ $item['image'] }}" 
+                                     alt="{{ $item['name'] }}" 
+                                     loading="lazy" 
+                                     width="130" 
+                                     height="130"
+                                     class="w-full h-full object-cover">
+                                @if(!$isAvailable)
+                                    <span class="absolute inset-0 bg-black/60 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center">
+                                        Habis
                                     </span>
-                                    <div class="space-y-1">
-                                        @foreach($opt1['choices'] as $cIdx => $choice)
-                                            <label class="flex items-center space-x-1.5 text-[10px] sm:text-[11px] text-neutral-600 cursor-pointer hover:text-neutral-900 select-none group">
-                                                <input type="radio" 
-                                                       name="opt1_{{ $item['id'] }}" 
-                                                       value="{{ $choice }}" 
-                                                       {{ $cIdx === 0 ? 'checked' : '' }}
-                                                       class="accent-neutral-900 w-3 h-3 cursor-pointer shrink-0">
-                                                <span class="group-hover:text-neutral-900 leading-tight truncate">{{ $choice }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                @endif
-
-                                @if($opt2)
-                                <div>
-                                    <span class="text-[11px] sm:text-xs font-bold text-neutral-800 block mb-1.5 tracking-tight">
-                                        {{ $opt2['title'] }}
-                                    </span>
-                                    <div class="space-y-1">
-                                        @foreach($opt2['choices'] as $cIdx => $choice)
-                                            <label class="flex items-center space-x-1.5 text-[10px] sm:text-[11px] text-neutral-600 cursor-pointer hover:text-neutral-900 select-none group">
-                                                <input type="radio" 
-                                                       name="opt2_{{ $item['id'] }}" 
-                                                       value="{{ $choice }}" 
-                                                       {{ $cIdx === 0 ? 'checked' : '' }}
-                                                       class="accent-neutral-900 w-3 h-3 cursor-pointer shrink-0">
-                                                <span class="group-hover:text-neutral-900 leading-tight truncate">{{ $choice }}</span>
-                                            </label>
-                                        @endforeach
-                                    </div>
-                                </div>
                                 @endif
                             </div>
-                        @else
-                            <!-- Menu Tanpa Varian: Keterangan singkat deskripsi rasa -->
-                            @if(!empty($item['short_info']))
-                                <p class="text-[11px] text-neutral-500 text-center mb-2.5 leading-snug line-clamp-2">
-                                    {{ $item['short_info'] }}
-                                </p>
-                            @endif
-                        @endif
 
-                        <!-- Add to Cart Button (Muncul dengan animasi saat diklik) -->
-                        <button type="button" 
-                                onclick="event.stopPropagation(); submitPopularDishOrder(this.closest('.popular-dish-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')" 
-                                class="w-full py-2.5 px-3 rounded-xl bg-neutral-900 hover:bg-black text-white text-xs sm:text-sm font-bold tracking-wide shadow-md shadow-neutral-900/15 active:scale-95 transition-all flex items-center justify-center space-x-1.5 cursor-pointer mt-2">
-                            <span class="material-symbols-outlined text-sm">add_shopping_cart</span>
-                            <span>+ Add to Cart</span>
+                            <!-- Judul Menu Serif -->
+                            <h4 class="menu-card-name" title="{{ $item['name'] }}">
+                                {{ $item['name'] }}
+                            </h4>
+
+                            <!-- Baris Harga & Satuan (font-variant-numeric: lining-nums) -->
+                            <div class="menu-card-price-row">
+                                <span class="font-editorial-num">{{ $item['price_formatted'] }}</span>
+                                <span class="menu-card-unit">{{ $unit }}</span>
+                            </div>
                         </button>
-                    </div>
+
+                        <!-- Drawer yang Mengintip Saat Hover (18px) dan Terbuka Penuh Saat Klik -->
+                        <div id="drawer-rec-{{ $itemSlug }}-{{ $index }}" 
+                             class="menu-card-drawer" 
+                             onclick="event.stopPropagation()">
+                            
+                            <!-- Garis Pemisah Tipis (Mengintip saat Hover) -->
+                            <div class="menu-card-divider"></div>
+
+                            <!-- Isi Menu (Opsi Varian / Deskripsi Singkat + Tombol Add to Cart) -->
+                            <div class="menu-card-drawer-content">
+                                @if($hasOptions)
+                                    <div class="options-columns mb-3">
+                                        @if($opt1)
+                                        <div>
+                                            <span class="option-group-title">{{ $opt1['title'] }}</span>
+                                            <div class="space-y-0.5">
+                                                @foreach($opt1['choices'] as $cIdx => $choice)
+                                                    <label class="radio-pill-label">
+                                                        <input type="radio" 
+                                                               name="opt1_rec_{{ $itemSlug }}_{{ $index }}" 
+                                                               value="{{ $choice }}" 
+                                                               {{ $cIdx === 0 ? 'checked' : '' }}>
+                                                        <span class="truncate">{{ $choice }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        @endif
+
+                                        @if($opt2)
+                                        <div>
+                                            <span class="option-group-title">{{ $opt2['title'] }}</span>
+                                            <div class="space-y-0.5">
+                                                @foreach($opt2['choices'] as $cIdx => $choice)
+                                                    <label class="radio-pill-label">
+                                                        <input type="radio" 
+                                                               name="opt2_rec_{{ $itemSlug }}_{{ $index }}" 
+                                                               value="{{ $choice }}" 
+                                                               {{ $cIdx === 0 ? 'checked' : '' }}>
+                                                        <span class="truncate">{{ $choice }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+                                @else
+                                    <!-- Menu Tanpa Varian: Deskripsi singkat maks 2 baris -->
+                                    <p class="menu-card-desc">
+                                        {{ $item['short_info'] ?? 'Sajian autentik barista pilihan Nucomu Cafe.' }}
+                                    </p>
+                                @endif
+
+                                @if($txSettings['is_any_mode_active'] ?? true)
+                                    @if($isAvailable)
+                                        <button type="button" 
+                                                onclick="submitMenuCardOrder(this.closest('.menu-card'), '{{ addslashes($item['name']) }}', '{{ $item['price_formatted'] }}')"
+                                                class="btn-add-cart"
+                                                aria-label="Tambah {{ $item['name'] }} ke Keranjang">
+                                            <span class="material-symbols-outlined text-sm">shopping_cart</span>
+                                            <span>+ Add to Cart</span>
+                                        </button>
+                                    @else
+                                        <button type="button" disabled class="btn-add-cart disabled">
+                                            <span>Menu Habis</span>
+                                        </button>
+                                    @endif
+                                @endif
+                            </div>
+                        </div>
+
+                    </article>
                 </div>
             @endforeach
         </div>
+
+        <!-- Dynamic N-Column Container -->
+        <div id="recommendations-columns-container" class="menu-columns-container pt-16 pb-16 transition-all duration-300 mb-2 mt-6">
+            <!-- Distributed into N columns by script -->
+        </div>
+
+        <!-- Inline Distribution Trigger -->
+        <script>
+            if (typeof window.distributeMenuCards === 'function') {
+                window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container');
+            } else {
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof window.distributeMenuCards === 'function') {
+                        window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container');
+                    }
+                });
+            }
+        </script>
 
         <!-- Empty State Fallback -->
         <div id="recommendations-empty-state" class="hidden text-center py-12 bg-white rounded-2xl border border-neutral-100 mb-12 p-8">
