@@ -95,23 +95,89 @@
             'theme' => 'light',
             'has_ambient_glow' => false,
             'floaters' => [
+                // 1. Kiri atas (jauh)
                 [
                     'src' => 'images/hero/bean-1.png',
+                    'wrapper_class' => 'absolute -left-16 sm:-left-28 lg:-left-36 top-4 sm:top-8 w-9 sm:w-12 lg:w-14 z-25 hero-bean-anim-1 drop-shadow-[0_8px_16px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-35',
+                    'depth' => 24,
+                ],
+                // 2. Kiri atas (sedang)
+                [
+                    'src' => 'images/hero/bean-2.png',
                     'wrapper_class' => 'absolute -left-10 sm:-left-16 lg:-left-20 top-12 sm:top-16 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-3 drop-shadow-[0_6px_12px_rgba(0,0,0,0.25)]',
                     'img_class' => 'w-full h-auto object-contain transform -rotate-20',
                     'depth' => 18,
                 ],
+                // 3. Atas kiri gelas
+                [
+                    'src' => 'images/hero/bean-4.png',
+                    'wrapper_class' => 'absolute -left-2 sm:-left-4 -top-6 sm:-top-8 w-6 sm:w-8 lg:w-9 z-30 hero-bean-anim-2 drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-45',
+                    'depth' => 28,
+                ],
+                // 4. Atas tengah-kanan melayang tinggi
+                [
+                    'src' => 'images/hero/bean-5.png',
+                    'wrapper_class' => 'absolute left-1/2 translate-x-8 sm:translate-x-12 -top-10 sm:-top-14 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-4 drop-shadow-[0_8px_14px_rgba(0,0,0,0.2)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-15',
+                    'depth' => 22,
+                ],
+                // 5. Kanan atas
                 [
                     'src' => 'images/hero/bean-2.png',
-                    'wrapper_class' => 'absolute -right-8 sm:-right-14 lg:-right-18 top-20 sm:top-24 w-9 sm:w-11 lg:w-13 z-25 hero-bean-anim-1 drop-shadow-[0_8px_14px_rgba(0,0,0,0.25)]',
+                    'wrapper_class' => 'absolute -right-8 sm:-right-14 lg:-right-18 top-16 sm:top-20 w-9 sm:w-11 lg:w-13 z-25 hero-bean-anim-1 drop-shadow-[0_8px_14px_rgba(0,0,0,0.25)]',
                     'img_class' => 'w-full h-auto object-contain transform rotate-35',
                     'depth' => 20,
                 ],
+                // 6. Kanan jauh memancar keluar
+                [
+                    'src' => 'images/hero/bean-6.png',
+                    'wrapper_class' => 'absolute -right-16 sm:-right-26 lg:-right-34 top-28 sm:top-36 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-3 drop-shadow-[0_6px_12px_rgba(0,0,0,0.2)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-25',
+                    'depth' => 16,
+                ],
+                // 7. Kanan tengah
+                [
+                    'src' => 'images/hero/bean-1.png',
+                    'wrapper_class' => 'absolute -right-10 sm:-right-16 lg:-right-22 top-1/2 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-2 drop-shadow-[0_6px_12px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-60',
+                    'depth' => 25,
+                ],
+                // 8. Kanan bawah
                 [
                     'src' => 'images/hero/bean-3.png',
-                    'wrapper_class' => 'absolute right-2 sm:right-6 -bottom-2 sm:-bottom-4 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-2 drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)]',
+                    'wrapper_class' => 'absolute right-2 sm:right-6 -bottom-3 sm:-bottom-5 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-2 drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)]',
                     'img_class' => 'w-full h-auto object-contain transform rotate-15',
                     'depth' => 14,
+                ],
+                // 9. Kanan bawah melayang keluar
+                [
+                    'src' => 'images/hero/bean-4.png',
+                    'wrapper_class' => 'absolute -right-12 sm:-right-20 lg:-right-28 -bottom-10 sm:-bottom-14 w-9 sm:w-12 lg:w-14 z-20 hero-bean-anim-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-40',
+                    'depth' => 19,
+                ],
+                // 10. Kiri tengah-bawah
+                [
+                    'src' => 'images/hero/bean-3.png',
+                    'wrapper_class' => 'absolute -left-12 sm:-left-20 lg:-left-26 bottom-24 sm:bottom-32 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-1 drop-shadow-[0_8px_14px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-50',
+                    'depth' => 22,
+                ],
+                // 11. Kiri bawah
+                [
+                    'src' => 'images/hero/bean-5.png',
+                    'wrapper_class' => 'absolute -left-6 sm:-left-12 lg:-left-16 -bottom-4 sm:-bottom-7 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-3 drop-shadow-[0_6px_12px_rgba(0,0,0,0.25)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-20',
+                    'depth' => 17,
+                ],
+                // 12. Depan bokeh (besar di depan kiri bawah)
+                [
+                    'src' => 'images/hero/bean-6.png',
+                    'wrapper_class' => 'absolute -left-20 sm:-left-36 lg:-left-44 bottom-6 sm:bottom-10 w-11 sm:w-14 lg:w-16 z-30 hero-bean-anim-4 drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)] filter blur-[0.6px] opacity-90',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-15',
+                    'depth' => 32,
                 ],
             ],
             'has_float_rotate' => false,
