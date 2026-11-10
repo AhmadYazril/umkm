@@ -417,17 +417,6 @@ class SettingController extends Controller
             }
         }
 
-        // Synchronize dashboard financial chart visibility settings (hide_dashboard_chart & show_dashboard_chart)
-        if ($request->has('hide_dashboard_chart')) {
-            $isHidden = in_array((string) $request->input('hide_dashboard_chart'), ['1', 'true', 'yes'], true);
-            Setting::set('hide_dashboard_chart', $isHidden ? '1' : '0');
-            Setting::set('show_dashboard_chart', $isHidden ? '0' : '1');
-        } elseif ($request->has('show_dashboard_chart')) {
-            $isShown = in_array((string) $request->input('show_dashboard_chart'), ['1', 'true', 'yes'], true);
-            Setting::set('show_dashboard_chart', $isShown ? '1' : '0');
-            Setting::set('hide_dashboard_chart', $isShown ? '0' : '1');
-        }
-
         return back()->with('success', 'Tarif jarak Zendo & pengaturan pengiriman berhasil disimpan.');
     }
 
@@ -454,6 +443,7 @@ class SettingController extends Controller
             'cafe_logo' => 'nullable|image|mimes:png,jpg,jpeg,webp,svg|max:2048',
             'cafe_favicon' => 'nullable|mimes:ico,png,webp,jpg,jpeg,svg|max:1024',
             'transaction_mode' => 'nullable|in:kasir,zendo,both',
+            'order_mode_zendo' => 'nullable|in:0,1',
             'hide_live_tracking' => 'nullable|in:0,1',
             'hide_dashboard_chart' => 'nullable|in:0,1',
             'show_dashboard_chart' => 'nullable|in:0,1',
@@ -529,6 +519,23 @@ class SettingController extends Controller
             if ($request->has($key)) {
                 Setting::set($key, $request->input($key));
             }
+        }
+
+        // Synchronize transaction_mode & hide_live_tracking with order_mode_* keys when updated from General Settings
+        if ($request->has('transaction_mode') || $request->has('hide_live_tracking') || $request->has('order_mode_zendo')) {
+            $txMode = (string) ($request->input('transaction_mode') ?? Setting::get('transaction_mode', 'both'));
+            $hideTracking = in_array((string) ($request->input('hide_live_tracking') ?? Setting::get('hide_live_tracking', '0')), ['1', 'true', 'yes'], true);
+            if ($request->has('order_mode_zendo')) {
+                $zendoOn = in_array((string) $request->input('order_mode_zendo'), ['1', 'true', 'yes'], true);
+                $txMode = $zendoOn ? 'both' : 'kasir';
+                Setting::set('transaction_mode', $txMode);
+            }
+            $dineInOn = in_array($txMode, ['kasir', 'both'], true);
+            $zendoOn = in_array($txMode, ['zendo', 'both'], true);
+            Setting::set('order_mode_dine_in', $dineInOn ? '1' : '0');
+            Setting::set('order_mode_zendo', $zendoOn ? '1' : '0');
+            Setting::set('order_mode_zendo_tracking', ($zendoOn && ! $hideTracking) ? '1' : '0');
+            Setting::set('order_mode_zendo_chat', ($zendoOn && $hideTracking) ? '1' : '0');
         }
 
         // Synchronize dashboard financial chart visibility settings (hide_dashboard_chart & show_dashboard_chart)

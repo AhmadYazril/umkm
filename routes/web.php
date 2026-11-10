@@ -105,7 +105,7 @@ Route::prefix('kasir')->name('kasir.')->group(function () {
         Route::post('/pesanan/{order}/status', [KasirController::class, 'updateOrderStatus'])->name('orders.status');
         Route::get('/pesanan/{order}/struk', [KasirController::class, 'receipt'])->name('orders.receipt');
     });
-});
+});     
 
 // ─────────────────────────────────────────────
 //  ADMIN ROUTES

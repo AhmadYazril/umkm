@@ -321,6 +321,50 @@
                     </button>
                 </form>
             </div>
+
+            {{-- Quick Toggle Card: Layanan Delivery Kurir Zendo (Hanya Zendo yang di-Hide, GrabFood Tetap Aktif) --}}
+            @php
+                $txSettingsCard = app(\App\Http\Controllers\NucomuController::class)->getTransactionSettings();
+                $isZendoActive = (bool) ($txSettingsCard['order_mode_zendo'] ?? true);
+            @endphp
+            <div class="bg-pure-white rounded-2xl border border-hairline p-5 shadow-xs space-y-4">
+                <div class="flex items-start justify-between gap-3 border-b border-hairline pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl {{ $isZendoActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-warm-stone text-muted-text border border-hairline' }} flex items-center justify-center shrink-0 text-sm">
+                            <i class="fa-solid {{ $isZendoActive ? 'fa-motorcycle' : 'fa-eye-slash' }}"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-ink-black uppercase tracking-wider">
+                                Layanan Delivery Zendo
+                            </h3>
+                            <p class="text-[11px] text-muted-text mt-0.5">
+                                Status saat ini:
+                                <strong class="{{ $isZendoActive ? 'text-emerald-700' : 'text-rose-700' }}">
+                                    {{ $isZendoActive ? 'AKTIF (Ditampilkan)' : 'HIDE (Zendo Disembunyikan)' }}
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[11.5px] text-muted-text leading-relaxed">
+                    @if(!$isZendoActive)
+                        Fitur <strong>Delivery via WhatsApp (Zendo)</strong> sedang dalam posisi <strong>Hide</strong> di beranda dan modal keranjang. Kartu <strong>GrabFood</strong> dan <strong>Reservasi Meja</strong> tetap tampil normal.
+                    @else
+                        Fitur <strong>Delivery via WhatsApp (Zendo)</strong> sedang <strong>Aktif</strong> bersama <strong>GrabFood</strong> dan <strong>Reservasi Meja</strong> di halaman depan.
+                    @endif
+                </p>
+
+                <form action="{{ route('admin.settings.update') }}" method="POST" class="flex items-center justify-between gap-3 pt-1">
+                    @csrf
+                    <input type="hidden" name="order_mode_zendo" value="{{ $isZendoActive ? '0' : '1' }}">
+                    <button type="submit"
+                            class="w-full py-2.5 px-4 rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-2xs flex items-center justify-center gap-2 btn-press cursor-pointer {{ !$isZendoActive ? 'bg-[#2F6B4F] hover:bg-[#24563E] text-white' : 'bg-warm-stone hover:bg-rose-50 text-ink-black hover:text-rose-800 border border-hairline hover:border-rose-300' }}">
+                        <i class="fa-solid {{ !$isZendoActive ? 'fa-eye' : 'fa-eye-slash' }}"></i>
+                        <span>{{ !$isZendoActive ? 'Tampilkan Layanan Zendo' : 'Sembunyikan (Hide) Layanan Zendo' }}</span>
+                    </button>
+                </form>
+            </div>
             
             <div class="bg-pure-white rounded-2xl border border-hairline p-5 shadow-xs space-y-4">
                 <div class="border-b border-hairline pb-3">

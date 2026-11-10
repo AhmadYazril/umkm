@@ -348,7 +348,9 @@ class NucomuController extends Controller
         try {
             $sampleNames = ['rina s.', 'bagas p.', 'dewi a.', 'fajar m.', 'siti n.', 'reza k.', 'anisa t.', 'budi r.'];
             $websiteReviews = Testimonial::where('is_active', true)
-                ->where('is_sample', false)
+                ->where(function ($q) {
+                    $q->where('is_sample', false)->orWhereNull('is_sample');
+                })
                 ->latest()
                 ->get()
                 ->reject(function (Testimonial $t) use ($sampleNames) {

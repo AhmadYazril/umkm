@@ -1,4 +1,10 @@
 <!-- SECTION 7: LAYANAN & PEMESANAN (MODERN ELEGANT MONOCHROME EDITORIAL) -->
+@php
+    $txSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
+    $orderModeZendo = (bool) ($txSettings['order_mode_zendo'] ?? (($txSettings['order_mode_zendo_tracking'] ?? false) || ($txSettings['order_mode_zendo_chat'] ?? false)));
+    $rawGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
+    $layananGrabfoodUrl = !empty(trim((string) $rawGrabfoodUrl)) ? trim((string) $rawGrabfoodUrl) : 'https://food.grab.com';
+@endphp
 <section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FAFAFA] border-b border-[#E5E5E5] overflow-hidden">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
@@ -21,11 +27,11 @@
         <!-- Desktop: 3 kolom sejajar (Kartu 1, 2, 3), Baris 2 Panel Detail full-width -->
         <!-- Tablet: Kartu 1 (full), Panel Detail (di bawah Kartu 1), Kartu 2 & 3 berdampingan -->
         <!-- Mobile: 1 kolom terurut: Kartu 1 -> Panel Detail -> Kartu 2 -> Kartu 3 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 items-stretch relative">
+        <div class="grid grid-cols-1 md:grid-cols-2 {{ $orderModeZendo ? 'lg:grid-cols-3' : 'lg:grid-cols-2' }} gap-5 lg:gap-6 items-stretch relative">
             
             <!-- KARTU 1 (01 / RESERVASI) - WHITE CARD DENGAN FOTO ORGANIK BLOB DI KANAN -->
             <div id="layanan-card-reservasi" 
-                 class="layanan-card-reservasi layanan-anim-card-1 relative bg-white text-[#1C1C1C] rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-1 md:col-span-2 lg:col-span-1 lg:order-1">
+                 class="layanan-card-reservasi layanan-anim-card-1 relative bg-white text-[#1C1C1C] rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-1 {{ $orderModeZendo ? 'md:col-span-2 lg:col-span-1' : 'md:col-span-1 lg:col-span-1' }} lg:order-1">
                 
                 <div class="h-full flex flex-col justify-between">
                     <!-- Header Kartu: Label Nomor (Tanpa Badge) -->
@@ -47,6 +53,7 @@
                                 </div>
                                 <h3 class="font-body text-lg sm:text-xl font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-2">
                                     Reservasi Meja &amp; Acara Privat
+                                    <span class="sr-only">Reservasi Tempat &amp; Acara</span>
                                 </h3>
                                 <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
                                     Pesan meja khusus untuk kebutuhan acara spesial, mulai dari pertemuan, ulang tahun, hingga acara privat lainnya.
@@ -80,6 +87,7 @@
                 </div>
             </div>
 
+            @if($orderModeZendo)
             <!-- KARTU 2 (02 / DELIVERY) - WHITE CARD DENGAN LOGO KURIR ZENDO DI KANAN -->
             <div class="layanan-anim-card-2 bg-white rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-3 md:col-span-1 lg:order-2">
                 <div class="h-full flex flex-col justify-between">
@@ -130,19 +138,15 @@
                     </div>
                 </div>
             </div>
+            @endif
 
-            @php
-                $layananGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
-            @endphp
-
-            @if(!empty($layananGrabfoodUrl))
-            <!-- KARTU 3 (03 / LINK MITRA) - INFORMASI KONTAK MITRA GRABFOOD -->
+            <!-- KARTU 3 (03 / ONLINE ORDER) - WHITE CARD DENGAN FOTO ARCH LATTE DI KANAN -->
             <div class="layanan-anim-card-3 bg-white rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-4 md:col-span-1 lg:order-3">
                 <div class="h-full flex flex-col justify-between">
-                    <!-- Header Kartu: Label Nomor -->
+                    <!-- Header Kartu: Label Nomor (Tanpa Badge) -->
                     <div class="mb-3">
                         <span class="text-[10px] sm:text-[10.5px] font-semibold text-[#8A8A8A] uppercase tracking-[0.16em] font-body block">
-                            03 / LINK MITRA
+                            {{ $orderModeZendo ? '03 / ONLINE ORDER' : '02 / ONLINE ORDER' }}
                         </span>
                     </div>
 
@@ -157,20 +161,20 @@
                                     </svg>
                                 </div>
                                 <h4 class="font-body text-lg sm:text-xl font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-2">
-                                    Menu Nucomu di GrabFood
+                                    Pesan Menu Favoritmu di GrabFood
                                 </h4>
                                 <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    Dapatkan menu Nucomu favoritmu melalui tautan resto resmi di aplikasi GrabFood.
+                                    Dapatkan menu Nucomu favoritmu melalui aplikasi GrabFood dengan proses yang praktis dan cepat.
                                 </p>
                             </div>
 
-                            <!-- Tombol Kunjungi GrabFood (Informasi Tautan Kontak) -->
+                            <!-- Tombol Pesan Sekarang (Pill Gray di Kiri Bawah) -->
                             <div class="pt-4 mt-auto">
                                 <a href="{{ $layananGrabfoodUrl }}" 
                                    target="_blank" 
                                    rel="noopener noreferrer"
                                    class="inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
-                                    <span>Kunjungi GrabFood</span>
+                                    <span>Pesan Sekarang</span>
                                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
@@ -178,7 +182,7 @@
                             </div>
                         </div>
 
-                        <!-- Visual Kanan: Foto Arch/Dome Kopi Latte -->
+                        <!-- Visual Kanan: Foto Arch/Dome Kopi Latte (Sesuai Referensi Pengguna) -->
                         <div class="w-[95px] h-[135px] sm:w-[110px] sm:h-[155px] rounded-l-full overflow-hidden shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-500 self-center">
                             <img src="{{ asset('images/nucomu/latte_grabfood.jpg') }}" 
                                  alt="Kopi Latte Nucomu di GrabFood" 
@@ -188,7 +192,6 @@
                     </div>
                 </div>
             </div>
-            @endif
 
             <!-- PANEL DETAIL RESERVASI (TERBUKA DI BAWAH KARTU 1 / BARIS 2) -->
             <!-- Tablet: Tepat di bawah Kartu 1 (order-2) -->
@@ -198,7 +201,7 @@
                  role="region" 
                  aria-labelledby="layanan-detail-title"
                  aria-hidden="true"
-                 class="layanan-detail-wrapper hidden col-span-1 md:col-span-2 lg:col-span-3 order-2 lg:order-4 transition-all duration-400 ease-out overflow-hidden">
+                 class="layanan-detail-wrapper hidden col-span-1 md:col-span-2 {{ $orderModeZendo ? 'lg:col-span-3' : 'lg:col-span-2' }} order-2 lg:order-4 transition-all duration-400 ease-out overflow-hidden">
                 
                 <div id="layanan-detail-card" 
                      class="relative bg-white rounded-[20px] p-6 sm:p-7 lg:p-7 border border-[#E5E5E5] shadow-sm">
