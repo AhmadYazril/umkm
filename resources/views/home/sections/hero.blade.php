@@ -657,6 +657,36 @@
                                          loading="lazy"
                                          decoding="async"
                                          class="{{ $slide['img_class'] ?? 'w-full h-auto object-contain relative z-20 hero-float-idle' }}">
+
+                                    @if($slide['id'] === 'sweet-moment')
+                                        <!-- Animasi Tetesan Slay (Strawberry Jam Drip) yang Menetes Jatuh -->
+                                        <div class="hero-jam-drip-wrapper absolute pointer-events-none select-none z-25"
+                                             style="left: 31%; top: 60%; width: 22px; height: 32px;"
+                                             aria-hidden="true">
+                                            <!-- Tetesan Utama Selai Stroberi Berkilap -->
+                                            <svg class="hero-jam-drop-main w-full h-full" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <defs>
+                                                    <radialGradient id="jamGradHero" cx="35%" cy="30%" r="65%">
+                                                        <stop offset="0%" stop-color="#FF3848" />
+                                                        <stop offset="40%" stop-color="#D11224" />
+                                                        <stop offset="85%" stop-color="#880816" />
+                                                        <stop offset="100%" stop-color="#55030D" />
+                                                    </radialGradient>
+                                                    <linearGradient id="jamGlossHero" x1="0" y1="0" x2="1" y2="1">
+                                                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
+                                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                                                    </linearGradient>
+                                                </defs>
+                                                <path d="M12 0 C12 4, 2 15, 2 23 C2 29.5 6.5 35 12 35 C17.5 35 22 29.5 22 23 C22 15, 12 4, 12 0 Z" fill="url(#jamGradHero)" filter="drop-shadow(0 3px 6px rgba(130, 10, 20, 0.45))" />
+                                                <ellipse cx="8" cy="18" rx="2" ry="5.5" transform="rotate(-18 8 18)" fill="url(#jamGlossHero)" />
+                                                <circle cx="14" cy="27" r="1.3" fill="#FFFFFF" opacity="0.5" />
+                                            </svg>
+
+                                            <!-- Tetesan Tambahan Kecil (Trailing Micro Drip) -->
+                                            <div class="hero-jam-drop-trail absolute left-1/2 -translate-x-1/2 -top-2 w-2 h-2.5 rounded-full bg-[#C51224] opacity-0" aria-hidden="true"></div>
+                                        </div>
+                                    @endif
+
                                     <div class="hero-product-shadow {{ $slide['id'] === 'sweet-moment' ? 'hero-product-shadow-wide' : '' }} {{ $slide['theme'] === 'dark' ? 'opacity-40' : 'opacity-25' }}" aria-hidden="true"></div>
                                 </div>
                             @endif
