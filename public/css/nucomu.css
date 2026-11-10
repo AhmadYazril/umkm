@@ -912,14 +912,112 @@ body {
     100% { transform: translateY(-8px); }
 }
 
-/* Product Floating + Rotation (Slide 3: gentle ±8px float, max 3 deg rotation) */
+/* Product Floating + Rotation with Strawberry Jam ("Slay") Falling Choreography (Slide 3) */
 .hero-float-rotate {
-    animation: hero-float-rotate 6s ease-in-out infinite alternate;
+    animation: hero-cake-sway-recede 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
     will-change: transform;
+    transform-origin: center 65%;
 }
-@keyframes hero-float-rotate {
-    0% { transform: translateY(0) rotate(-2.5deg); }
-    100% { transform: translateY(-8px) rotate(2.5deg); }
+
+@keyframes hero-cake-sway-recede {
+    0% {
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+    /* 1. Cake bergoyang ke bawah */
+    22% {
+        transform: translateY(14px) rotate(-3.5deg) scale(1.02);
+    }
+    /* 2. Slay bersiap jatuh, cake mulai menarik diri */
+    34% {
+        transform: translateY(6px) rotate(-1deg) scale(0.98);
+    }
+    /* 3. Saat slay jatuh, cake mundur ke belakang */
+    48% {
+        transform: translateY(-10px) rotate(2.8deg) scale(0.91);
+    }
+    /* 4. Cake perlahan maju dan kembali tenang */
+    64% {
+        transform: translateY(2px) rotate(0.5deg) scale(0.96);
+    }
+    78% {
+        transform: translateY(-5px) rotate(-1.5deg) scale(0.99);
+    }
+    100% {
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+}
+
+/* Animasi Slay (Strawberry Jam) Menetes Jatuh */
+.hero-jam-drop-main {
+    animation: hero-jam-drip-fall 5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    will-change: transform, opacity;
+    transform-origin: top center;
+}
+
+@keyframes hero-jam-drip-fall {
+    0%, 12% {
+        opacity: 0;
+        transform: translateY(0) scale(0.25);
+    }
+    /* Slay mengumpul dan memanjang di tepi cake */
+    22% {
+        opacity: 0.95;
+        transform: translateY(3px) scaleY(1.2) scaleX(0.85);
+    }
+    32% {
+        opacity: 1;
+        transform: translateY(8px) scaleY(1.45) scaleX(0.78);
+    }
+    /* Saat cake mundur ke belakang, tetesan slay terlepas dan meluncur jatuh */
+    40% {
+        opacity: 1;
+        transform: translateY(35px) scaleY(1.35) scaleX(0.8);
+    }
+    50% {
+        opacity: 0.95;
+        transform: translateY(105px) scaleY(1.5) scaleX(0.7);
+    }
+    58% {
+        opacity: 0.8;
+        transform: translateY(155px) scaleY(1.1) scaleX(0.9);
+    }
+    64% {
+        opacity: 0;
+        transform: translateY(190px) scale(0.35);
+    }
+    65%, 100% {
+        opacity: 0;
+        transform: translateY(0) scale(0.25);
+    }
+}
+
+/* Tetesan Mikro Pendamping */
+.hero-jam-drop-trail {
+    animation: hero-jam-trail-fall 5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    will-change: transform, opacity;
+}
+
+@keyframes hero-jam-trail-fall {
+    0%, 34% {
+        opacity: 0;
+        transform: translateY(0) scale(0.2);
+    }
+    40% {
+        opacity: 0.85;
+        transform: translateY(15px) scale(0.9);
+    }
+    48% {
+        opacity: 0.85;
+        transform: translateY(70px) scale(0.8);
+    }
+    56% {
+        opacity: 0;
+        transform: translateY(125px) scale(0.4);
+    }
+    57%, 100% {
+        opacity: 0;
+        transform: translateY(0) scale(0.2);
+    }
 }
 
 /* Soft Product Shadow */
@@ -940,6 +1038,14 @@ body {
     width: 84%;
     height: 28px;
     filter: blur(10px);
+    animation: hero-cake-shadow-pulse 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+@keyframes hero-cake-shadow-pulse {
+    0% { transform: scale(1); opacity: 0.28; }
+    22% { transform: scale(1.08); opacity: 0.38; }
+    48% { transform: scale(0.82); opacity: 0.16; }
+    78% { transform: scale(0.98); opacity: 0.26; }
+    100% { transform: scale(1); opacity: 0.28; }
 }
 @keyframes hero-shadow-pulse {
     0% { transform: scale(1); opacity: 0.4; }
@@ -979,7 +1085,9 @@ body {
     .hero-bean-orbit-3,
     .hero-bean-orbit-4,
     .vortex-bean-node,
-    .vortex-bean-img {
+    .vortex-bean-img,
+    .hero-jam-drop-main,
+    .hero-jam-drop-trail {
         animation: none !important;
         transform: none !important;
     }
