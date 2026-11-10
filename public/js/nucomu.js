@@ -169,13 +169,13 @@ const SLIDE_INTERVAL = 7000;
 /**
  * PALET WARNA BACKGROUND HERO
  * [0] Slide 0 (Welcome Latte)    -> #140E0A (Dark Coffee)
- * [1] Slide 1 (Fresh Beans)      -> #D7A461 (Honey Golden Canvas)
+ * [1] Slide 1 (Fresh Beans)      -> #242424 (Dark Charcoal Canvas)
  * [2] Slide 2 (Fresh Brew)       -> #EDEDED (Light Warm Gray)
  * [3] Slide 3 (Sweet Moment)     -> #FAFAFA (Off-White)
  */
 const HERO_BG_COLORS = [
     '#140E0A',
-    '#D7A461',
+    '#242424',
     '#EDEDED',
     '#FAFAFA'
 ];

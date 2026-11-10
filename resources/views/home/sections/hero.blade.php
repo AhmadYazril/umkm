@@ -3,80 +3,34 @@
     $activeBanners = $activeBanners ?? ($banners ?? collect());
     $activeBanners = $activeBanners ?? ($banners ?? collect());
 
-    // Generate 3D Vortex Beans for Slide 1 (Fresh Beans) matching screen recording exactly
-    $vortexBeans = [];
-    $numSpiral = 24;
-    for ($i = 0; $i < $numSpiral; $i++) {
-        $t = $i / ($numSpiral - 1);
-        $angle = -2.3 + $t * 5.0;
-        $rx = 85 + pow($t, 1.15) * 230;
-        $ry = 55 + pow($t, 1.15) * 160;
-        $cx = 30 + $t * 40;
-        $cy = -15;
-        $x = (int) round($cx + $rx * cos($angle));
-        $y = (int) round($cy + $ry * sin($angle) * 0.92);
-        $depthCurve = sin($angle);
-        $z = (int) round($depthCurve * 45 + ($t - 0.3) * 45);
-        $scale = max(0.32, round(0.35 + ($z + 60) / 150 * 0.75, 2));
-        $tangentDeg = (int) round(($angle * 180 / M_PI) + 90);
-        $rot = $tangentDeg + ($i % 5) * 18 - 25;
-        $beanId = ($i % 3) + 1;
-        $zIndex = $z < 0 ? 15 : 25;
-        $blur = $z < -35 ? 1.0 : ($z > 70 ? 1.2 : 0);
-        $opacity = $z < -40 ? 0.75 : 1.0;
-        $animType = ($i % 4) + 1;
-        $animDur = round(4.2 + ($i % 3) * 0.7, 1);
-        $animDelay = round(-($i * 0.22), 2);
-        $entranceDelay = round($t * 0.42, 2);
-        $depth = (int) round(14 + ($z + 60) / 150 * 22);
+    // 3D Coffee Beans for Slide 1 (Fresh Beans) matching reference recording exactly
+    $vortexBeans = [
+        // Bokeh foreground (large & depth-of-field blurred)
+        ['src' => 'images/hero/bean-1.webp', 'x' => -330, 'y' => 175, 'z' => 95, 'w' => 140, 'rot' => -24, 'blur' => 3.8, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 1, 'animDur' => 6.4, 'animDelay' => 0.0, 'entranceDelay' => 0.15, 'depth' => 46, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 310, 'y' => 145, 'z' => 90, 'w' => 135, 'rot' => 32, 'blur' => 3.4, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 2, 'animDur' => 6.0, 'animDelay' => -1.2, 'entranceDelay' => 0.25, 'depth' => 42, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 340, 'y' => -160, 'z' => 80, 'w' => 95, 'rot' => 28, 'blur' => 2.6, 'opacity' => 0.92, 'zIndex' => 35, 'animType' => 3, 'animDur' => 5.4, 'animDelay' => -2.0, 'entranceDelay' => 0.35, 'depth' => 36, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 175, 'y' => 220, 'z' => 75, 'w' => 85, 'rot' => 42, 'blur' => 2.0, 'opacity' => 0.90, 'zIndex' => 32, 'animType' => 4, 'animDur' => 5.8, 'animDelay' => -0.8, 'entranceDelay' => 0.2, 'depth' => 32, 'extraClass' => 'max-sm:hidden'],
 
-        $vortexBeans[] = [
-            'src' => "images/hero/bean-{$beanId}.webp",
-            'x' => $x,
-            'y' => $y,
-            'z' => $z,
-            'w' => (int) round(48 * $scale),
-            'rot' => $rot,
-            'blur' => $blur,
-            'opacity' => $opacity,
-            'zIndex' => $zIndex,
-            'animType' => $animType,
-            'animDur' => $animDur,
-            'animDelay' => $animDelay,
-            'entranceDelay' => $entranceDelay,
-            'depth' => $depth,
-            'extraClass' => 'max-sm:scale-75',
-        ];
-    }
+        // Midground sharp swirl along pack bottom & spiral curving up-right
+        ['src' => 'images/hero/bean-2.webp', 'x' => -155, 'y' => 110, 'z' => 35, 'w' => 56, 'rot' => 32, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 25, 'animType' => 1, 'animDur' => 5.0, 'animDelay' => -0.5, 'entranceDelay' => 0.1, 'depth' => 22, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => -75, 'y' => 140, 'z' => 45, 'w' => 60, 'rot' => 25, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 26, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -1.0, 'entranceDelay' => 0.15, 'depth' => 24, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 15, 'y' => 145, 'z' => 50, 'w' => 60, 'rot' => 30, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 26, 'animType' => 3, 'animDur' => 4.8, 'animDelay' => -1.5, 'entranceDelay' => 0.2, 'depth' => 25, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 95, 'y' => 125, 'z' => 45, 'w' => 54, 'rot' => 28, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 25, 'animType' => 4, 'animDur' => 5.1, 'animDelay' => -2.0, 'entranceDelay' => 0.25, 'depth' => 23, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 165, 'y' => 95, 'z' => 35, 'w' => 52, 'rot' => 22, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 1, 'animDur' => 4.9, 'animDelay' => -2.5, 'entranceDelay' => 0.3, 'depth' => 20, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 195, 'y' => 45, 'z' => 25, 'w' => 48, 'rot' => 15, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 2, 'animDur' => 5.2, 'animDelay' => -3.0, 'entranceDelay' => 0.35, 'depth' => 18, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 195, 'y' => -10, 'z' => 15, 'w' => 44, 'rot' => 5, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 23, 'animType' => 3, 'animDur' => 5.5, 'animDelay' => -3.5, 'entranceDelay' => 0.4, 'depth' => 16, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 170, 'y' => -60, 'z' => 5, 'w' => 40, 'rot' => -10, 'blur' => 0, 'opacity' => 0.95, 'zIndex' => 22, 'animType' => 4, 'animDur' => 5.0, 'animDelay' => -4.0, 'entranceDelay' => 0.45, 'depth' => 14, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 135, 'y' => -95, 'z' => -10, 'w' => 36, 'rot' => -25, 'blur' => 0.4, 'opacity' => 0.9, 'zIndex' => 18, 'animType' => 1, 'animDur' => 4.7, 'animDelay' => -4.5, 'entranceDelay' => 0.5, 'depth' => 12, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 90, 'y' => -120, 'z' => -25, 'w' => 32, 'rot' => -40, 'blur' => 0.8, 'opacity' => 0.85, 'zIndex' => 16, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -5.0, 'entranceDelay' => 0.55, 'depth' => 10, 'extraClass' => 'max-sm:scale-75'],
 
-    $cinematicFg = [
-        ['beanId' => 1, 'x' => -410, 'y' => 220, 'z' => 95, 'w' => 135, 'rot' => -26, 'blur' => 3.8, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 1, 'animDur' => 6.4, 'animDelay' => 0.0, 'entranceDelay' => 0.15, 'depth' => 46, 'class' => 'max-md:hidden'],
-        ['beanId' => 1, 'x' => -290, 'y' => -210, 'z' => 55, 'w' => 84, 'rot' => 18, 'blur' => 0.4, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 2, 'animDur' => 5.8, 'animDelay' => -1.2, 'entranceDelay' => 0.2, 'depth' => 32, 'class' => 'max-md:hidden'],
-        ['beanId' => 3, 'x' => 80, 'y' => -210, 'z' => 40, 'w' => 55, 'rot' => 50, 'blur' => 1.2, 'opacity' => 0.88, 'zIndex' => 25, 'animType' => 3, 'animDur' => 4.9, 'animDelay' => -2.8, 'entranceDelay' => 0.35, 'depth' => 26, 'class' => 'max-sm:scale-75'],
-        ['beanId' => 2, 'x' => 275, 'y' => -185, 'z' => 80, 'w' => 100, 'rot' => -18, 'blur' => 2.4, 'opacity' => 0.92, 'zIndex' => 35, 'animType' => 4, 'animDur' => 5.9, 'animDelay' => -0.8, 'entranceDelay' => 0.4, 'depth' => 38, 'class' => 'max-sm:scale-75'],
-        ['beanId' => 1, 'x' => 410, 'y' => 35, 'z' => 85, 'w' => 115, 'rot' => 36, 'blur' => 2.8, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 1, 'animDur' => 6.8, 'animDelay' => -3.2, 'entranceDelay' => 0.45, 'depth' => 42, 'class' => 'max-md:hidden'],
-        ['beanId' => 3, 'x' => 250, 'y' => 195, 'z' => 75, 'w' => 95, 'rot' => 52, 'blur' => 2.6, 'opacity' => 0.9, 'zIndex' => 32, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -1.9, 'entranceDelay' => 0.3, 'depth' => 36, 'class' => 'max-sm:scale-75'],
-        ['beanId' => 2, 'x' => 5, 'y' => 220, 'z' => 70, 'w' => 75, 'rot' => -12, 'blur' => 2.0, 'opacity' => 0.88, 'zIndex' => 30, 'animType' => 3, 'animDur' => 5.7, 'animDelay' => -2.3, 'entranceDelay' => 0.2, 'depth' => 32, 'class' => 'max-sm:scale-75 max-md:hidden'],
+        // Beans along lower-left curve
+        ['src' => 'images/hero/bean-3.webp', 'x' => -240, 'y' => 80, 'z' => 30, 'w' => 54, 'rot' => 40, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 3, 'animDur' => 5.6, 'animDelay' => -1.8, 'entranceDelay' => 0.2, 'depth' => 20, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => -300, 'y' => 60, 'z' => 20, 'w' => 48, 'rot' => 35, 'blur' => 0.2, 'opacity' => 0.95, 'zIndex' => 23, 'animType' => 4, 'animDur' => 4.9, 'animDelay' => -2.3, 'entranceDelay' => 0.25, 'depth' => 18, 'extraClass' => 'max-sm:scale-75'],
+
+        // Background floating beans (behind pack)
+        ['src' => 'images/hero/bean-2.webp', 'x' => -190, 'y' => -160, 'z' => -40, 'w' => 68, 'rot' => 22, 'blur' => 1.6, 'opacity' => 0.85, 'zIndex' => 14, 'animType' => 1, 'animDur' => 6.2, 'animDelay' => -0.7, 'entranceDelay' => 0.3, 'depth' => 14, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 105, 'y' => -185, 'z' => -35, 'w' => 52, 'rot' => 45, 'blur' => 1.2, 'opacity' => 0.85, 'zIndex' => 14, 'animType' => 2, 'animDur' => 5.7, 'animDelay' => -1.4, 'entranceDelay' => 0.35, 'depth' => 12, 'extraClass' => 'max-sm:scale-75'],
     ];
-    foreach ($cinematicFg as $cfg) {
-        $vortexBeans[] = [
-            'src' => "images/hero/bean-{$cfg['beanId']}.webp",
-            'x' => $cfg['x'],
-            'y' => $cfg['y'],
-            'z' => $cfg['z'],
-            'w' => $cfg['w'],
-            'rot' => $cfg['rot'],
-            'blur' => $cfg['blur'],
-            'opacity' => $cfg['opacity'],
-            'zIndex' => $cfg['zIndex'],
-            'animType' => $cfg['animType'],
-            'animDur' => $cfg['animDur'],
-            'animDelay' => $cfg['animDelay'],
-            'entranceDelay' => $cfg['entranceDelay'],
-            'depth' => $cfg['depth'],
-            'extraClass' => $cfg['class'],
-        ];
-    }
 
     $rawSlides = [
         [
@@ -103,11 +57,10 @@
         [
             'id' => 'fresh-beans',
             'type' => 'product',
-            'label' => 'ULTRA AROMA',
-            'giant_headline' => 'PARTNER',
-            'headline_line1' => 'RICH',
-            'headline_line2' => 'AROMA',
-            'subtext' => 'Nikmati keistimewaan biji kopi pilihan dengan aroma khas dan cita rasa istimewa dalam setiap seduhan.',
+            'label' => '01 / SPECIALTY ROASTERY',
+            'giant_headline' => 'FRESH BEANS',
+            'giant_headline_class' => 'text-white/18',
+            'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
                 'url' => route('home') . '#menu',
@@ -117,8 +70,8 @@
             'img_width' => 900,
             'img_height' => 1389,
             'aspect_ratio' => '2/3',
-            'bg_color' => '#D7A461',
-            'theme' => 'gold',
+            'bg_color' => '#242424',
+            'theme' => 'dark',
             'floaters' => [],
         ],
         [
@@ -490,94 +443,67 @@
 
             @elseif($slide['id'] === 'fresh-beans')
                 <!-- -----------------------------------------------------------------
-                     SLIDE 1: HONEY GOLDEN THEME + 3D COFFEE BEAN VORTEX ANIMATION
+                     SLIDE 1: SPECIALTY ROASTERY - FRESH BEANS (DARK EDITORIAL POSTER + 3D ORBIT)
                      ----------------------------------------------------------------- -->
-                <div class="relative w-full h-full flex flex-col md:block items-center justify-center overflow-hidden hero-gold-canvas max-md:pt-4 max-md:pb-16 max-md:px-4">
+                <div class="relative w-full h-full flex items-center justify-center overflow-hidden hero-coffee-pack-canvas select-none">
 
-                    <!-- Silk Light Wave Ribbons (1 Thick Glowing Wave 40-60px + Thin Swirling Ribbons) -->
-                    <svg class="hero-silk-ribbons absolute inset-0 w-full h-full pointer-events-none z-10 select-none" viewBox="0 0 1440 640" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <!-- 1. Gelombang Tebal Berkilau (Visual Width 40-60px: stroke-width 50, blur) -->
-                        <path class="hero-silk-wave-thick" d="M-80 570 C 300 520, 560 620, 860 410 C 1140 220, 1340 160, 1640 90" stroke="url(#silkGradThick)" stroke-width="50" stroke-linecap="round" />
-                        <!-- 2 & 3. Garis Tipis Sutra Menyilang Ke Kanan Atas -->
-                        <path class="hero-silk-wave-thin" d="M-120 540 C 280 490, 520 600, 820 420 C 1120 240, 1320 170, 1620 110" stroke="url(#silkGrad1)" stroke-width="3.5" />
-                        <path class="hero-silk-wave-thin" d="M-40 590 C 360 530, 580 640, 890 440 C 1180 260, 1380 190, 1680 130" stroke="url(#silkGrad2)" stroke-width="2" opacity="0.75" />
-                        <!-- 4. Garis Sutra Melengkung di Bawah Kiri (Sesuai Referensi Layar) -->
-                        <path class="hero-silk-wave-thin" d="M-60 420 C 80 460, 200 540, 420 580" stroke="url(#silkGrad1)" stroke-width="2.5" opacity="0.65" />
+                    <!-- Warm Amber Spotlight Glow behind center coffee pack -->
+                    <div class="hero-glow-amber-center absolute inset-0 pointer-events-none z-10" aria-hidden="true"></div>
+
+                    <!-- 1. Giant Headline Behind Product: FRESH BEANS (z-10) -->
+                    <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
+                        <span class="font-body font-black uppercase text-[clamp(4.2rem,13.8vw,11.5rem)] leading-none tracking-tighter text-center whitespace-nowrap text-white/18 select-none">
+                            FRESH BEANS
+                        </span>
+                    </div>
+
+                    <!-- 2. Golden Swoosh Trajectory Curve Lines (z-15) -->
+                    <svg class="hero-golden-swoosh absolute inset-0 w-full h-full pointer-events-none z-15 select-none" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="none">
+                        <!-- Primary Golden Swoosh Line -->
+                        <path d="M -80 470 C 250 465, 480 445, 740 395 C 1000 345, 1220 230, 1520 120" 
+                              stroke="url(#goldSwooshGrad1)" stroke-width="2.2" stroke-linecap="round" />
+                        
+                        <!-- Secondary Parallel Golden Swoosh Line -->
+                        <path d="M -80 500 C 270 495, 510 475, 770 425 C 1030 375, 1250 260, 1520 155" 
+                              stroke="url(#goldSwooshGrad2)" stroke-width="1.5" opacity="0.7" stroke-linecap="round" />
+
+                        <!-- Upper Delicate Filament Curve -->
+                        <path d="M 520 380 C 820 310, 1140 210, 1520 90" 
+                              stroke="url(#goldSwooshGrad1)" stroke-width="1.2" opacity="0.5" stroke-linecap="round" />
+
                         <defs>
-                            <linearGradient id="silkGradThick" x1="0" y1="0.8" x2="1" y2="0.2">
-                                <stop offset="0%" stop-color="#FFF1CC" stop-opacity="0" />
-                                <stop offset="25%" stop-color="#FFF1CC" stop-opacity="0.4" />
-                                <stop offset="55%" stop-color="#FFE099" stop-opacity="0.55" />
-                                <stop offset="80%" stop-color="#FFF5DE" stop-opacity="0.35" />
-                                <stop offset="100%" stop-color="#FFF1CC" stop-opacity="0" />
+                            <linearGradient id="goldSwooshGrad1" x1="0" y1="0.8" x2="1" y2="0.2">
+                                <stop offset="0%" stop-color="#C8A97E" stop-opacity="0" />
+                                <stop offset="15%" stop-color="#E5C595" stop-opacity="0.85" />
+                                <stop offset="50%" stop-color="#D4AF37" stop-opacity="0.9" />
+                                <stop offset="85%" stop-color="#E5C595" stop-opacity="0.8" />
+                                <stop offset="100%" stop-color="#A88555" stop-opacity="0" />
                             </linearGradient>
-                            <linearGradient id="silkGrad1" x1="0" y1="0.5" x2="1" y2="0.5">
-                                <stop offset="0%" stop-color="#FFF1CC" stop-opacity="0" />
-                                <stop offset="25%" stop-color="#FFF1CC" stop-opacity="0.85" />
-                                <stop offset="60%" stop-color="#FFE099" stop-opacity="0.9" />
-                                <stop offset="100%" stop-color="#FFF1CC" stop-opacity="0" />
-                            </linearGradient>
-                            <linearGradient id="silkGrad2" x1="0" y1="0.5" x2="1" y2="0.5">
-                                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
-                                <stop offset="35%" stop-color="#FFF5DE" stop-opacity="0.8" />
-                                <stop offset="70%" stop-color="#FAD68A" stop-opacity="0.85" />
-                                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                            <linearGradient id="goldSwooshGrad2" x1="0" y1="0.8" x2="1" y2="0.2">
+                                <stop offset="0%" stop-color="#C8A97E" stop-opacity="0" />
+                                <stop offset="20%" stop-color="#E5C595" stop-opacity="0.6" />
+                                <stop offset="60%" stop-color="#D4AF37" stop-opacity="0.75" />
+                                <stop offset="100%" stop-color="#A88555" stop-opacity="0" />
                             </linearGradient>
                         </defs>
                     </svg>
 
-                    <!-- Left Composition: Pill Badge + Stacked Headline + Description + CTA Button -->
-                    <div class="hero-slide1-left-col relative max-md:mt-1 max-md:mb-3 md:absolute md:left-20 lg:left-24 xl:left-[6%] md:top-1/2 md:-translate-y-1/2 z-30 flex flex-col items-center md:items-start text-center md:text-left select-none max-md:w-full max-w-[92%] md:max-w-[34%] lg:max-w-[32%]">
-                        <!-- Dark Chocolate Pill Badge with Protruding Coffee Bean -->
-                        <div class="relative inline-flex items-center pl-3.5 pr-7 py-1.5 rounded-full hero-pill-badge text-[10px] sm:text-xs font-bold tracking-widest uppercase shadow-sm mb-3 sm:mb-4 select-none">
-                            <span>{{ $slide['label'] }}</span>
-                            <img src="{{ asset('images/hero/bean-1.webp') }}" alt="" class="absolute -right-2.5 top-1/2 -translate-y-1/2 w-[22px] h-[22px] object-contain rotate-12 drop-shadow-sm pointer-events-none" aria-hidden="true">
-                        </div>
-
-                        <!-- Stacked Pure White Headline: RICH / AROMA (Matching Reference Video) -->
-                        <h1 class="font-body font-black uppercase text-white text-[clamp(36px,4.5vw,72px)] leading-[0.95] tracking-tight drop-shadow-[0_4px_16px_rgba(70,35,10,0.35)] pointer-events-none">
-                            RICH<br>
-                            <span class="whitespace-nowrap">AROMA</span>
-                        </h1>
-
-                        <!-- Description in Soft Cream/White (#FFF5EA/90) for High Contrast on Gold -->
-                        <p class="font-body font-normal text-[#FFF5EA]/90 text-[clamp(14px,1.1vw,16px)] leading-[1.6] max-w-[34ch] mt-4 mb-6 drop-shadow-sm line-clamp-4 md:line-clamp-3 lg:line-clamp-none">
-                            {{ $slide['subtext'] }}
-                        </p>
-
-                        <!-- Dark Pill Button: Lihat Menu -->
-                        <div class="z-30 max-md:w-full">
-                            <a href="{{ $slide['cta_primary']['url'] }}" 
-                               class="inline-flex items-center justify-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-7 py-3.5 rounded-full bg-[#2A1A10] text-[#EDDAC1] hover:bg-[#150d08] transition-all duration-200 active:scale-95 shadow-lg group/btn cursor-pointer min-h-[44px] max-md:w-full">
-                                <span>{{ $slide['cta_primary']['text'] }}</span>
-                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Behind Coffee Pack: PARTNER (Bold Dark Chocolate Typography, Behind Vortex, Hidden on Mobile/Tablet) -->
-                    <div class="hero-partner-text hidden lg:block absolute left-[49%] top-1/2 -translate-y-1/2 z-10 select-none pointer-events-none text-left whitespace-nowrap">
-                        <span class="font-body font-black uppercase text-[#2A1A10] text-[clamp(68px,8.6vw,144px)] leading-[0.9] tracking-tighter drop-shadow-[0_2px_12px_rgba(255,240,210,0.15)] opacity-90 block">
-                            PARTNER
-                        </span>
-                    </div>
-
-                    <!-- 3D Vortex Scene Container (z-20) -->
-                    <div class="hero-vortex-scene relative z-20 flex flex-col items-center justify-center pointer-events-none max-md:order-first max-md:mt-1 max-md:mb-2 md:absolute md:left-[53%] lg:left-[50%] md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2" style="z-index: 20;">
+                    <!-- 3. Central Coffee Pack with 3D Float + Orbiting Beans (z-20) -->
+                    <div class="hero-vortex-scene relative z-20 flex flex-col items-center justify-center pointer-events-none">
                         <div class="relative flex items-center justify-center">
                             
-                            <!-- Central Coffee Pack with 3D Float (z-20, in front of PARTNER text) -->
+                            <!-- Central Coffee Pack with 3D Float (z-20) -->
                             <img src="{{ asset($slide['product_image']) }}"
                                  alt="{{ $slide['product_name'] }}"
                                  width="{{ $slide['img_width'] ?? 900 }}"
                                  height="{{ $slide['img_height'] ?? 1389 }}"
                                  loading="eager"
                                  decoding="async"
-                                 class="w-auto h-auto max-h-[175px] sm:max-h-[260px] md:max-h-[380px] lg:max-h-[440px] xl:max-h-[490px] object-contain hero-pack-3d relative z-20 select-none">
+                                 class="w-auto h-auto max-h-[220px] sm:max-h-[290px] md:max-h-[340px] lg:max-h-[370px] xl:max-h-[395px] object-contain hero-pack-3d relative z-20 select-none">
                             <div class="hero-pack-shadow-warm" aria-hidden="true"></div>
 
-                            <!-- 3D Vortex Orbiting Coffee Beans Container with Proportional Responsive Scaling -->
-                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none max-md:scale-[0.65] max-sm:scale-[0.44] origin-center" style="transform-style: preserve-3d;">
+                            <!-- 3D Orbiting Coffee Beans Container with Proportional Responsive Scaling -->
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none max-md:scale-[0.68] max-sm:scale-[0.46] origin-center" style="transform-style: preserve-3d;">
                                 @foreach($vortexBeans as $vIdx => $vBean)
                                     <div class="vortex-bean-node {{ $vBean['extraClass'] ?? '' }}"
                                          data-depth="{{ $vBean['depth'] }}"
@@ -588,11 +514,31 @@
                                              loading="eager"
                                              decoding="async"
                                              class="vortex-bean-img hero-bean-orbit-{{ $vBean['animType'] }}"
-                                             style="{{ !empty($vBean['blur']) ? 'filter: blur('.$vBean['blur'].'px) drop-shadow(0 10px 20px rgba(70,35,10,0.55));' : 'filter: drop-shadow(0 10px 20px rgba(70,35,10,0.55));' }} animation-duration: {{ $vBean['animDur'] }}s; animation-delay: {{ $vBean['animDelay'] }}s;">
+                                             style="{{ !empty($vBean['blur']) ? 'filter: blur('.$vBean['blur'].'px) drop-shadow(0 12px 24px rgba(0,0,0,0.65));' : 'filter: drop-shadow(0 8px 18px rgba(0,0,0,0.55));' }} animation-duration: {{ $vBean['animDur'] }}s; animation-delay: {{ $vBean['animDelay'] }}s;">
                                     </div>
                                 @endforeach
                             </div>
 
+                        </div>
+                    </div>
+
+                    <!-- 4. Left Product Information & CTA in Bottom Left (z-30) -->
+                    <div class="hero-product-info absolute max-sm:bottom-[80px] bottom-10 lg:bottom-14 left-5 sm:left-8 lg:left-14 z-30 text-left max-w-xs sm:max-w-sm pointer-events-auto">
+                        <!-- Label with baseline divider -->
+                        <div class="flex items-center gap-2.5 sm:gap-3 mb-2.5 sm:mb-3.5">
+                            <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.22em] sm:tracking-[0.25em] text-white/70">
+                                {{ $slide['label'] }}
+                            </p>
+                            <span class="hidden sm:block w-16 lg:w-24 h-[1px] bg-white/20"></span>
+                        </div>
+
+                        <!-- CTA Button (White Pill with Right Arrow) -->
+                        <div>
+                            <a href="{{ $slide['cta_primary']['url'] }}" 
+                               class="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white text-[#1C1C1C] hover:bg-neutral-100 transition-all duration-200 active:scale-95 shadow-lg group/btn cursor-pointer">
+                                <span>{{ $slide['cta_primary']['text'] }}</span>
+                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1" aria-hidden="true">arrow_forward</span>
+                            </a>
                         </div>
                     </div>
 
