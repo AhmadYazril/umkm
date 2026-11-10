@@ -267,8 +267,8 @@
         let isManuallyPaused = false;
         let typingStarted = false;
         let typingTimeouts = [];
-        const headSpeed = 35; // Ketik headline cepat (35ms)
-        const typingSpeed = 14; // Ketik paragraf agak cepat (14ms)
+        const headSpeed = 18; // Ketik headline sangat cepat (18ms)
+        const typingSpeed = 7; // Ketik paragraf dipercepat lagi (7ms)
 
         function clearTypingTimers() {
             typingTimeouts.forEach(function(t) { clearTimeout(t); });
@@ -323,7 +323,7 @@
                     typingTimeouts.push(setTimeout(typeHead, headSpeed));
                 } else {
                     if (headCur) headCur.classList.add('hidden');
-                    typingTimeouts.push(setTimeout(typeP1, 100));
+                    typingTimeouts.push(setTimeout(typeP1, 60));
                 }
             }
 
@@ -352,11 +352,11 @@
                             }, 3500));
                         }
                     }
-                    typingTimeouts.push(setTimeout(typeP2, 80));
+                    typingTimeouts.push(setTimeout(typeP2, 50));
                 }
             }
 
-            typingTimeouts.push(setTimeout(typeHead, 120));
+            typingTimeouts.push(setTimeout(typeHead, 60));
         }
 
         function updateUI(isPlaying) {
