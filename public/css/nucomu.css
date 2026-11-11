@@ -5,14 +5,57 @@
 
 :root {
     --ink-black: #191919;
-    --charcoal: #30302D;
+    --charcoal: #252525;
     --pure-white: #FFFFFF;
-    --warm-ivory: #F5F2EC;
-    --light-gray: #E5E4E0;
-    --medium-gray: #8A8A86;
-    --soft-beige: #E7DED1;
-    --warm-stone: #DAD7CF;
-    --accent-gold: #C2A378;
+    --warm-ivory: #F9F9F9;
+    --light-gray: #E5E5E5;
+    --medium-gray: #737373;
+    --soft-beige: #E5E5E5;
+    --warm-stone: #D4D4D4;
+    --accent-gold: #555555;
+    --espresso-brown: #252525;
+    --espresso-dark: #1A1A1A;
+    --quote-bg: #F1F1F1;
+    --quote-border: #E0E0E0;
+    --backplate-gray: #9E9E9E;
+
+    /* Hero Theme Color & Navbar Dynamic Frosted Glass Variables */
+    --hero-bg-color: #140E0A;
+
+    /* ======================================================================
+       Navbar Dynamic Monochrome Color Variables
+       ====================================================================== */
+    /* Condition 1: Di atas hero gelap (.navbar--over-hero) */
+    --navbar-hero-bg: rgba(20, 14, 10, 0.50);
+    --navbar-hero-blur: 12px;
+    --navbar-hero-border: rgba(255, 255, 255, 0.12);
+    --navbar-hero-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+    --navbar-hero-text: rgba(255, 255, 255, 0.72);
+    --navbar-hero-text-hover: #FFFFFF;
+    --navbar-hero-text-active: #FFFFFF;
+    --navbar-hero-underline: #FFFFFF;
+    --navbar-hero-logo-filter: brightness(0) invert(1);
+    --navbar-hero-cart-bg: #FFFFFF;
+    --navbar-hero-cart-text: #111111;
+    --navbar-hero-cart-border: rgba(255, 255, 255, 0.30);
+    --navbar-hero-badge-bg: #111111;
+    --navbar-hero-badge-text: #FFFFFF;
+
+    /* Condition 2: Melewati hero / Section terang (.navbar--scrolled) */
+    --navbar-scrolled-bg: rgba(255, 255, 255, 0.78);
+    --navbar-scrolled-blur: 14px;
+    --navbar-scrolled-border: rgba(0, 0, 0, 0.08);
+    --navbar-scrolled-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+    --navbar-scrolled-text: #4A4A4A;
+    --navbar-scrolled-text-hover: #111111;
+    --navbar-scrolled-text-active: #111111;
+    --navbar-scrolled-underline: #111111;
+    --navbar-scrolled-logo-filter: none;
+    --navbar-scrolled-cart-bg: #111111;
+    --navbar-scrolled-cart-text: #FFFFFF;
+    --navbar-scrolled-cart-border: rgba(0, 0, 0, 0.15);
+    --navbar-scrolled-badge-bg: #FFFFFF;
+    --navbar-scrolled-badge-text: #111111;
 }
 
 html {
@@ -77,11 +120,228 @@ body {
     border: 1px solid rgba(231, 222, 209, 0.65);
 }
 
-/* Navbar Scroll Transition */
+/* ==========================================================================
+   Navbar Adaptive Frosted Glass & Section-Based State Transitions
+   - Base / Default & Condition 2 (.navbar--scrolled): Clean white frosted glass
+   - Condition 1 (.navbar--over-hero): Dark frosted glass over dark hero/section
+   - Visibility (.navbar-visible / .navbar-hidden): Hide on scroll down, show on scroll up
+   ========================================================================== */
 #main-navbar {
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, border-color 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    background-color: var(--navbar-scrolled-bg);
+    backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    border-bottom: 1px solid var(--navbar-scrolled-border);
+    box-shadow: var(--navbar-scrolled-shadow);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.3s ease,
+                backdrop-filter 0.3s ease,
+                -webkit-backdrop-filter 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
 }
 
+/* Base link & element defaults within navbar */
+#main-navbar .desktop-nav-link {
+    color: var(--navbar-scrolled-text);
+    transition: color 0.3s ease;
+}
+
+#main-navbar .desktop-nav-link:hover {
+    color: var(--navbar-scrolled-text-hover);
+}
+
+#main-navbar .desktop-nav-link.active {
+    color: var(--navbar-scrolled-text-active);
+    font-weight: 700;
+}
+
+#main-navbar #navbar-brand-logo,
+#main-navbar a[aria-label="Nucomu Cafe"] img {
+    filter: var(--navbar-scrolled-logo-filter);
+    transition: filter 0.3s ease, transform 0.2s ease;
+}
+
+#main-navbar .mobile-hamburger-btn,
+#main-navbar button[aria-label="Buka Menu Navigasi"] {
+    color: var(--navbar-scrolled-text);
+    transition: color 0.3s ease;
+}
+
+#main-navbar .mobile-hamburger-btn:hover,
+#main-navbar button[aria-label="Buka Menu Navigasi"]:hover {
+    color: var(--navbar-scrolled-text-hover);
+}
+
+/* Base Cart Button Defaults */
+#main-navbar .nav-cart-btn {
+    background-color: var(--navbar-scrolled-cart-bg);
+    color: var(--navbar-scrolled-cart-text);
+    border: 1px solid var(--navbar-scrolled-cart-border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+
+#main-navbar .nav-cart-btn:hover {
+    filter: brightness(1.1);
+}
+
+#main-navbar .nav-cart-btn #nav-cart-badge {
+    background-color: var(--navbar-scrolled-badge-bg);
+    color: var(--navbar-scrolled-badge-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ==========================================================================
+   Kondisi 1: Di atas section / hero bertema GELAP (.navbar--over-hero)
+   ========================================================================== */
+#main-navbar.navbar--over-hero {
+    background-color: var(--navbar-hero-bg);
+    backdrop-filter: blur(var(--navbar-hero-blur, 12px));
+    -webkit-backdrop-filter: blur(var(--navbar-hero-blur, 12px));
+    border-bottom: 1px solid var(--navbar-hero-border);
+    box-shadow: var(--navbar-hero-shadow);
+}
+
+#main-navbar.navbar--over-hero #navbar-brand-logo,
+#main-navbar.navbar--over-hero a[aria-label="Nucomu Cafe"] img {
+    filter: var(--navbar-hero-logo-filter);
+}
+
+#main-navbar.navbar--over-hero .desktop-nav-link {
+    color: var(--navbar-hero-text); /* rgba(255, 255, 255, 0.72) */
+}
+
+#main-navbar.navbar--over-hero .desktop-nav-link:hover {
+    color: var(--navbar-hero-text-hover); /* #FFFFFF */
+}
+
+#main-navbar.navbar--over-hero .desktop-nav-link.active {
+    color: var(--navbar-hero-text-active); /* #FFFFFF */
+    font-weight: 700;
+}
+
+#main-navbar.navbar--over-hero .nav-link::after {
+    background-color: var(--navbar-hero-underline); /* #FFFFFF */
+}
+
+#main-navbar.navbar--over-hero .mobile-hamburger-btn,
+#main-navbar.navbar--over-hero button[aria-label="Buka Menu Navigasi"] {
+    color: var(--navbar-hero-text);
+}
+
+#main-navbar.navbar--over-hero .mobile-hamburger-btn:hover,
+#main-navbar.navbar--over-hero button[aria-label="Buka Menu Navigasi"]:hover {
+    color: var(--navbar-hero-text-hover);
+}
+
+#main-navbar.navbar--over-hero .nav-cart-btn {
+    background-color: var(--navbar-hero-cart-bg); /* #FFFFFF */
+    color: var(--navbar-hero-cart-text); /* #111111 */
+    border: 1px solid var(--navbar-hero-cart-border);
+}
+
+#main-navbar.navbar--over-hero .nav-cart-btn:hover {
+    background-color: #F0F0F0;
+    color: #111111;
+}
+
+#main-navbar.navbar--over-hero .nav-cart-btn #nav-cart-badge {
+    background-color: var(--navbar-hero-badge-bg); /* #111111 */
+    color: var(--navbar-hero-badge-text); /* #FFFFFF */
+}
+
+/* ==========================================================================
+   Kondisi 2: Di atas section TERANG (.navbar--scrolled, .navbar-scrolled, .navbar--past-hero)
+   ========================================================================== */
+#main-navbar.navbar--scrolled,
+#main-navbar.navbar-scrolled,
+#main-navbar.navbar--past-hero {
+    background-color: var(--navbar-scrolled-bg);
+    backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    border-bottom: 1px solid var(--navbar-scrolled-border);
+    box-shadow: var(--navbar-scrolled-shadow);
+}
+
+#main-navbar.navbar--scrolled #navbar-brand-logo,
+#main-navbar.navbar-scrolled #navbar-brand-logo,
+#main-navbar.navbar--past-hero #navbar-brand-logo,
+#main-navbar.navbar--scrolled a[aria-label="Nucomu Cafe"] img,
+#main-navbar.navbar-scrolled a[aria-label="Nucomu Cafe"] img,
+#main-navbar.navbar--past-hero a[aria-label="Nucomu Cafe"] img {
+    filter: var(--navbar-scrolled-logo-filter);
+}
+
+#main-navbar.navbar--scrolled .desktop-nav-link,
+#main-navbar.navbar-scrolled .desktop-nav-link,
+#main-navbar.navbar--past-hero .desktop-nav-link {
+    color: var(--navbar-scrolled-text); /* #4A4A4A */
+}
+
+#main-navbar.navbar--scrolled .desktop-nav-link:hover,
+#main-navbar.navbar-scrolled .desktop-nav-link:hover,
+#main-navbar.navbar--past-hero .desktop-nav-link:hover {
+    color: var(--navbar-scrolled-text-hover); /* #111111 */
+}
+
+#main-navbar.navbar--scrolled .desktop-nav-link.active,
+#main-navbar.navbar-scrolled .desktop-nav-link.active,
+#main-navbar.navbar--past-hero .desktop-nav-link.active {
+    color: var(--navbar-scrolled-text-active); /* #111111 */
+    font-weight: 700;
+}
+
+#main-navbar.navbar--scrolled .nav-link::after,
+#main-navbar.navbar-scrolled .nav-link::after,
+#main-navbar.navbar--past-hero .nav-link::after {
+    background-color: var(--navbar-scrolled-underline); /* #111111 */
+}
+
+#main-navbar.navbar--scrolled .mobile-hamburger-btn,
+#main-navbar.navbar-scrolled .mobile-hamburger-btn,
+#main-navbar.navbar--past-hero .mobile-hamburger-btn,
+#main-navbar.navbar--scrolled button[aria-label="Buka Menu Navigasi"],
+#main-navbar.navbar-scrolled button[aria-label="Buka Menu Navigasi"],
+#main-navbar.navbar--past-hero button[aria-label="Buka Menu Navigasi"] {
+    color: var(--navbar-scrolled-text);
+}
+
+#main-navbar.navbar--scrolled .mobile-hamburger-btn:hover,
+#main-navbar.navbar-scrolled .mobile-hamburger-btn:hover,
+#main-navbar.navbar--past-hero .mobile-hamburger-btn:hover,
+#main-navbar.navbar--scrolled button[aria-label="Buka Menu Navigasi"]:hover,
+#main-navbar.navbar-scrolled button[aria-label="Buka Menu Navigasi"]:hover,
+#main-navbar.navbar--past-hero button[aria-label="Buka Menu Navigasi"]:hover {
+    color: var(--navbar-scrolled-text-hover);
+}
+
+#main-navbar.navbar--scrolled .nav-cart-btn,
+#main-navbar.navbar-scrolled .nav-cart-btn,
+#main-navbar.navbar--past-hero .nav-cart-btn {
+    background-color: var(--navbar-scrolled-cart-bg); /* #111111 */
+    color: var(--navbar-scrolled-cart-text); /* #FFFFFF */
+    border: 1px solid var(--navbar-scrolled-cart-border);
+}
+
+#main-navbar.navbar--scrolled .nav-cart-btn:hover,
+#main-navbar.navbar-scrolled .nav-cart-btn:hover,
+#main-navbar.navbar--past-hero .nav-cart-btn:hover {
+    background-color: #222222;
+    color: #FFFFFF;
+}
+
+#main-navbar.navbar--scrolled .nav-cart-btn #nav-cart-badge,
+#main-navbar.navbar-scrolled .nav-cart-btn #nav-cart-badge,
+#main-navbar.navbar--past-hero .nav-cart-btn #nav-cart-badge {
+    background-color: var(--navbar-scrolled-badge-bg); /* #FFFFFF */
+    color: var(--navbar-scrolled-badge-text); /* #111111 */
+}
+
+/* Perilaku Hide/Show saat scroll (translateY independen dari warna) */
 #main-navbar.navbar-hidden {
     transform: translateY(-100%);
 }
@@ -104,8 +364,8 @@ body {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: #E06D24;
-    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    background-color: currentColor;
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
 }
 
 .nav-link:hover::after,
@@ -114,8 +374,21 @@ body {
 }
 
 .nav-link.active {
-    color: #E06D24;
     font-weight: 700;
+}
+
+/* Accessible Monochrome Focus Visible States */
+#main-navbar a:focus-visible,
+#main-navbar button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+#main-navbar .nav-cart-btn:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 9999px;
 }
 
 /* Image Zoom & Editorial Crop */
@@ -354,15 +627,38 @@ body {
 .hero-slide-item.active .hero-product-info > *:nth-child(3) { transition-delay: 360ms; }
 
 /* ==========================================================================
-   SLIDE 1: HONEY GOLDEN THEME + 3D VORTEX COFFEE BEAN ENGINE
+   SLIDE 1: SPECIALTY ROASTERY - FRESH BEANS (DARK EDITORIAL POSTER + 3D ORBIT)
    ========================================================================== */
 
-/* Latar Gradien Emas Madu */
+/* Latar Canvas Dark Charcoal */
+.hero-coffee-pack-canvas {
+    background-color: #242424;
+}
+
+/* Garis Lintasan Emas (Golden Swoosh Curves) */
+.hero-golden-swoosh {
+    filter: drop-shadow(0 0 6px rgba(220, 175, 100, 0.3));
+    animation: heroGoldenSwooshDrift 7.5s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+}
+@keyframes heroGoldenSwooshDrift {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0.85;
+    }
+    50% {
+        transform: translate3d(8px, -6px, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate3d(-6px, 8px, 0);
+        opacity: 0.85;
+    }
+}
+
+/* Latar Gradien Emas Madu (Legacy fallback) */
 .hero-gold-canvas {
-    background: radial-gradient(circle at 80% 10%, #F9DAA9 0%, transparent 60%),
-                radial-gradient(circle at 15% 85%, #C48A45 0%, transparent 55%),
-                #D7A461;
-    box-shadow: inset 0 0 120px rgba(100, 60, 20, 0.22);
+    background-color: #242424;
 }
 
 /* Garis Cahaya Sutra (Silk Light Ribbons) */
@@ -437,8 +733,9 @@ body {
 }
 
 /* Ambient Warm Glow behind coffee pack */
+.hero-glow-amber-center,
 .hero-glow-amber-vortex {
-    background: radial-gradient(circle 540px at 50% 50%, rgba(228, 160, 90, 0.32) 0%, rgba(180, 110, 50, 0.14) 45%, rgba(36, 36, 36, 0) 75%);
+    background: radial-gradient(circle 540px at 50% 50%, rgba(220, 160, 100, 0.22) 0%, rgba(140, 85, 45, 0.10) 45%, transparent 75%);
 }
 
 /* Golden Light Silk Ribbons */
@@ -620,14 +917,112 @@ body {
     100% { transform: translateY(-8px); }
 }
 
-/* Product Floating + Rotation (Slide 3: gentle ±8px float, max 3 deg rotation) */
+/* Product Floating + Rotation with Strawberry Jam ("Slay") Falling Choreography (Slide 3) */
 .hero-float-rotate {
-    animation: hero-float-rotate 6s ease-in-out infinite alternate;
+    animation: hero-cake-sway-recede 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
     will-change: transform;
+    transform-origin: center 65%;
 }
-@keyframes hero-float-rotate {
-    0% { transform: translateY(0) rotate(-2.5deg); }
-    100% { transform: translateY(-8px) rotate(2.5deg); }
+
+@keyframes hero-cake-sway-recede {
+    0% {
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+    /* 1. Cake bergoyang ke bawah */
+    22% {
+        transform: translateY(14px) rotate(-3.5deg) scale(1.02);
+    }
+    /* 2. Slay bersiap jatuh, cake mulai menarik diri */
+    34% {
+        transform: translateY(6px) rotate(-1deg) scale(0.98);
+    }
+    /* 3. Saat slay jatuh, cake mundur ke belakang */
+    48% {
+        transform: translateY(-10px) rotate(2.8deg) scale(0.91);
+    }
+    /* 4. Cake perlahan maju dan kembali tenang */
+    64% {
+        transform: translateY(2px) rotate(0.5deg) scale(0.96);
+    }
+    78% {
+        transform: translateY(-5px) rotate(-1.5deg) scale(0.99);
+    }
+    100% {
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+}
+
+/* Animasi Slay (Strawberry Jam) Menetes Jatuh */
+.hero-jam-drop-main {
+    animation: hero-jam-drip-fall 5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    will-change: transform, opacity;
+    transform-origin: top center;
+}
+
+@keyframes hero-jam-drip-fall {
+    0%, 12% {
+        opacity: 0;
+        transform: translateY(0) scale(0.25);
+    }
+    /* Slay mengumpul dan memanjang di tepi cake */
+    22% {
+        opacity: 0.95;
+        transform: translateY(3px) scaleY(1.2) scaleX(0.85);
+    }
+    32% {
+        opacity: 1;
+        transform: translateY(8px) scaleY(1.45) scaleX(0.78);
+    }
+    /* Saat cake mundur ke belakang, tetesan slay terlepas dan meluncur jatuh */
+    40% {
+        opacity: 1;
+        transform: translateY(35px) scaleY(1.35) scaleX(0.8);
+    }
+    50% {
+        opacity: 0.95;
+        transform: translateY(105px) scaleY(1.5) scaleX(0.7);
+    }
+    58% {
+        opacity: 0.8;
+        transform: translateY(155px) scaleY(1.1) scaleX(0.9);
+    }
+    64% {
+        opacity: 0;
+        transform: translateY(190px) scale(0.35);
+    }
+    65%, 100% {
+        opacity: 0;
+        transform: translateY(0) scale(0.25);
+    }
+}
+
+/* Tetesan Mikro Pendamping */
+.hero-jam-drop-trail {
+    animation: hero-jam-trail-fall 5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+    will-change: transform, opacity;
+}
+
+@keyframes hero-jam-trail-fall {
+    0%, 34% {
+        opacity: 0;
+        transform: translateY(0) scale(0.2);
+    }
+    40% {
+        opacity: 0.85;
+        transform: translateY(15px) scale(0.9);
+    }
+    48% {
+        opacity: 0.85;
+        transform: translateY(70px) scale(0.8);
+    }
+    56% {
+        opacity: 0;
+        transform: translateY(125px) scale(0.4);
+    }
+    57%, 100% {
+        opacity: 0;
+        transform: translateY(0) scale(0.2);
+    }
 }
 
 /* Soft Product Shadow */
@@ -648,6 +1043,14 @@ body {
     width: 84%;
     height: 28px;
     filter: blur(10px);
+    animation: hero-cake-shadow-pulse 5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+@keyframes hero-cake-shadow-pulse {
+    0% { transform: scale(1); opacity: 0.28; }
+    22% { transform: scale(1.08); opacity: 0.38; }
+    48% { transform: scale(0.82); opacity: 0.16; }
+    78% { transform: scale(0.98); opacity: 0.26; }
+    100% { transform: scale(1); opacity: 0.28; }
 }
 @keyframes hero-shadow-pulse {
     0% { transform: scale(1); opacity: 0.4; }
@@ -673,6 +1076,7 @@ body {
     .hero-pack-3d,
     .hero-product-shadow,
     .hero-pack-shadow-warm,
+    .hero-golden-swoosh,
     .hero-silk-ribbons,
     .hero-silk-wave-thick,
     .hero-silk-wave-thin,
@@ -686,12 +1090,130 @@ body {
     .hero-bean-orbit-3,
     .hero-bean-orbit-4,
     .vortex-bean-node,
-    .vortex-bean-img {
+    .vortex-bean-img,
+    .hero-jam-drop-main,
+    .hero-jam-drop-trail {
         animation: none !important;
         transform: none !important;
     }
     .hero-steam-container {
         display: none !important;
+    }
+}
+
+/* ==========================================================================
+   Hero Slider Controls (Arrows & Bottom Pill Pagination)
+   - Default: Hidden (opacity: 0, pointer-events: none)
+   - Visible strictly on #home:hover (when mouse is inside hero area)
+   - Subtle slide offset: translateX(±8px) for arrows, translateY(8px) for pill
+   - Accessible: Keyboard navigation (:focus-visible) reveals controls
+   - Touch devices (@media (hover: none) and (pointer: coarse)): Always visible
+   ========================================================================== */
+
+/* Panah Navigasi Kiri & Kanan (Default: Sembunyi) */
+#home .hero-nav-arrow {
+    opacity: 0;
+    pointer-events: none;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: opacity 0.3s ease,
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+#home .hero-prev-arrow {
+    transform: translate(-8px, -50%);
+}
+
+#home .hero-next-arrow {
+    transform: translate(8px, -50%);
+}
+
+/* Bottom Controls Pill Bar (Dots & Pause/Play) (Default: Sembunyi) */
+#home .hero-controls-bar,
+#home #desktop-hero-dots,
+#home #mobile-hero-dots {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 8px);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    transition: opacity 0.3s ease,
+                transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+/* State Muncul: HANYA saat kursor berada di dalam area container hero (#home:hover) */
+#home:hover .hero-nav-arrow {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#home:hover .hero-prev-arrow {
+    transform: translate(0, -50%);
+}
+
+#home:hover .hero-next-arrow {
+    transform: translate(0, -50%);
+}
+
+#home:hover .hero-controls-bar,
+#home:hover #desktop-hero-dots,
+#home:hover #mobile-hero-dots {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+
+/* Aksesibilitas Keyboard: Tampil HANYA saat kontrol menerima fokus keyboard (:focus-visible) */
+#home .hero-nav-arrow:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0, -50%);
+    outline: 2px solid #1C1C1C;
+    outline-offset: 2px;
+}
+
+#home .hero-controls-bar:has(:focus-visible),
+#home .hero-controls-bar:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, 0);
+}
+
+#home .hero-dot-btn:focus-visible,
+#home #hero-pause-btn:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+/* Interaksi hover khusus saat kursor tepat di atas tombol panah */
+#home .hero-nav-arrow:hover {
+    transform: translate(0, -50%) scale(1.08);
+}
+
+#home .hero-nav-arrow:active {
+    transform: translate(0, -50%) scale(0.95);
+}
+
+/* Layar Sentuh murni tanpa cursor hover (@media (hover: none) and (pointer: coarse)) */
+@media (hover: none) and (pointer: coarse) {
+    #home .hero-nav-arrow {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(0, -50%);
+    }
+
+    #home .hero-controls-bar,
+    #home #desktop-hero-dots,
+    #home #mobile-hero-dots {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translate(-50%, 0);
     }
 }
 
@@ -824,9 +1346,16 @@ body {
     pointer-events: auto;
 }
 
-/* Blinking Cursor for Typewriter */
+/* Blinking Cursor for Quote Typewriter (1.5px, 1em, #666666, 1s steps blink) */
 .story-typing-cursor {
-    animation: story-cursor-blink 0.75s step-start infinite;
+    display: inline-block;
+    width: 1.5px;
+    height: 1em;
+    background-color: #666666;
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: story-cursor-blink 1s steps(2, start) infinite;
+    will-change: opacity;
 }
 
 @keyframes story-cursor-blink {

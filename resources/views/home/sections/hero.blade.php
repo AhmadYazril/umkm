@@ -3,80 +3,34 @@
     $activeBanners = $activeBanners ?? ($banners ?? collect());
     $activeBanners = $activeBanners ?? ($banners ?? collect());
 
-    // Generate 3D Vortex Beans for Slide 1 (Fresh Beans) matching screen recording exactly
-    $vortexBeans = [];
-    $numSpiral = 24;
-    for ($i = 0; $i < $numSpiral; $i++) {
-        $t = $i / ($numSpiral - 1);
-        $angle = -2.3 + $t * 5.0;
-        $rx = 85 + pow($t, 1.15) * 230;
-        $ry = 55 + pow($t, 1.15) * 160;
-        $cx = 30 + $t * 40;
-        $cy = -15;
-        $x = (int) round($cx + $rx * cos($angle));
-        $y = (int) round($cy + $ry * sin($angle) * 0.92);
-        $depthCurve = sin($angle);
-        $z = (int) round($depthCurve * 45 + ($t - 0.3) * 45);
-        $scale = max(0.32, round(0.35 + ($z + 60) / 150 * 0.75, 2));
-        $tangentDeg = (int) round(($angle * 180 / M_PI) + 90);
-        $rot = $tangentDeg + ($i % 5) * 18 - 25;
-        $beanId = ($i % 3) + 1;
-        $zIndex = $z < 0 ? 15 : 25;
-        $blur = $z < -35 ? 1.0 : ($z > 70 ? 1.2 : 0);
-        $opacity = $z < -40 ? 0.75 : 1.0;
-        $animType = ($i % 4) + 1;
-        $animDur = round(4.2 + ($i % 3) * 0.7, 1);
-        $animDelay = round(-($i * 0.22), 2);
-        $entranceDelay = round($t * 0.42, 2);
-        $depth = (int) round(14 + ($z + 60) / 150 * 22);
+    // 3D Coffee Beans for Slide 1 (Fresh Beans) matching reference recording exactly
+    $vortexBeans = [
+        // Bokeh foreground (large & depth-of-field blurred)
+        ['src' => 'images/hero/bean-1.webp', 'x' => -330, 'y' => 175, 'z' => 95, 'w' => 140, 'rot' => -24, 'blur' => 3.8, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 1, 'animDur' => 6.4, 'animDelay' => 0.0, 'entranceDelay' => 0.15, 'depth' => 46, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 310, 'y' => 145, 'z' => 90, 'w' => 135, 'rot' => 32, 'blur' => 3.4, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 2, 'animDur' => 6.0, 'animDelay' => -1.2, 'entranceDelay' => 0.25, 'depth' => 42, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 340, 'y' => -160, 'z' => 80, 'w' => 95, 'rot' => 28, 'blur' => 2.6, 'opacity' => 0.92, 'zIndex' => 35, 'animType' => 3, 'animDur' => 5.4, 'animDelay' => -2.0, 'entranceDelay' => 0.35, 'depth' => 36, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 175, 'y' => 220, 'z' => 75, 'w' => 85, 'rot' => 42, 'blur' => 2.0, 'opacity' => 0.90, 'zIndex' => 32, 'animType' => 4, 'animDur' => 5.8, 'animDelay' => -0.8, 'entranceDelay' => 0.2, 'depth' => 32, 'extraClass' => 'max-sm:hidden'],
 
-        $vortexBeans[] = [
-            'src' => "images/hero/bean-{$beanId}.webp",
-            'x' => $x,
-            'y' => $y,
-            'z' => $z,
-            'w' => (int) round(48 * $scale),
-            'rot' => $rot,
-            'blur' => $blur,
-            'opacity' => $opacity,
-            'zIndex' => $zIndex,
-            'animType' => $animType,
-            'animDur' => $animDur,
-            'animDelay' => $animDelay,
-            'entranceDelay' => $entranceDelay,
-            'depth' => $depth,
-            'extraClass' => 'max-sm:scale-75',
-        ];
-    }
+        // Midground sharp swirl along pack bottom & spiral curving up-right
+        ['src' => 'images/hero/bean-2.webp', 'x' => -155, 'y' => 110, 'z' => 35, 'w' => 56, 'rot' => 32, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 25, 'animType' => 1, 'animDur' => 5.0, 'animDelay' => -0.5, 'entranceDelay' => 0.1, 'depth' => 22, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => -75, 'y' => 140, 'z' => 45, 'w' => 60, 'rot' => 25, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 26, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -1.0, 'entranceDelay' => 0.15, 'depth' => 24, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 15, 'y' => 145, 'z' => 50, 'w' => 60, 'rot' => 30, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 26, 'animType' => 3, 'animDur' => 4.8, 'animDelay' => -1.5, 'entranceDelay' => 0.2, 'depth' => 25, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 95, 'y' => 125, 'z' => 45, 'w' => 54, 'rot' => 28, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 25, 'animType' => 4, 'animDur' => 5.1, 'animDelay' => -2.0, 'entranceDelay' => 0.25, 'depth' => 23, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 165, 'y' => 95, 'z' => 35, 'w' => 52, 'rot' => 22, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 1, 'animDur' => 4.9, 'animDelay' => -2.5, 'entranceDelay' => 0.3, 'depth' => 20, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 195, 'y' => 45, 'z' => 25, 'w' => 48, 'rot' => 15, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 2, 'animDur' => 5.2, 'animDelay' => -3.0, 'entranceDelay' => 0.35, 'depth' => 18, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 195, 'y' => -10, 'z' => 15, 'w' => 44, 'rot' => 5, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 23, 'animType' => 3, 'animDur' => 5.5, 'animDelay' => -3.5, 'entranceDelay' => 0.4, 'depth' => 16, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 170, 'y' => -60, 'z' => 5, 'w' => 40, 'rot' => -10, 'blur' => 0, 'opacity' => 0.95, 'zIndex' => 22, 'animType' => 4, 'animDur' => 5.0, 'animDelay' => -4.0, 'entranceDelay' => 0.45, 'depth' => 14, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => 135, 'y' => -95, 'z' => -10, 'w' => 36, 'rot' => -25, 'blur' => 0.4, 'opacity' => 0.9, 'zIndex' => 18, 'animType' => 1, 'animDur' => 4.7, 'animDelay' => -4.5, 'entranceDelay' => 0.5, 'depth' => 12, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-2.webp', 'x' => 90, 'y' => -120, 'z' => -25, 'w' => 32, 'rot' => -40, 'blur' => 0.8, 'opacity' => 0.85, 'zIndex' => 16, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -5.0, 'entranceDelay' => 0.55, 'depth' => 10, 'extraClass' => 'max-sm:scale-75'],
 
-    $cinematicFg = [
-        ['beanId' => 1, 'x' => -410, 'y' => 220, 'z' => 95, 'w' => 135, 'rot' => -26, 'blur' => 3.8, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 1, 'animDur' => 6.4, 'animDelay' => 0.0, 'entranceDelay' => 0.15, 'depth' => 46, 'class' => 'max-md:hidden'],
-        ['beanId' => 1, 'x' => -290, 'y' => -210, 'z' => 55, 'w' => 84, 'rot' => 18, 'blur' => 0.4, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 2, 'animDur' => 5.8, 'animDelay' => -1.2, 'entranceDelay' => 0.2, 'depth' => 32, 'class' => 'max-md:hidden'],
-        ['beanId' => 3, 'x' => 80, 'y' => -210, 'z' => 40, 'w' => 55, 'rot' => 50, 'blur' => 1.2, 'opacity' => 0.88, 'zIndex' => 25, 'animType' => 3, 'animDur' => 4.9, 'animDelay' => -2.8, 'entranceDelay' => 0.35, 'depth' => 26, 'class' => 'max-sm:scale-75'],
-        ['beanId' => 2, 'x' => 275, 'y' => -185, 'z' => 80, 'w' => 100, 'rot' => -18, 'blur' => 2.4, 'opacity' => 0.92, 'zIndex' => 35, 'animType' => 4, 'animDur' => 5.9, 'animDelay' => -0.8, 'entranceDelay' => 0.4, 'depth' => 38, 'class' => 'max-sm:scale-75'],
-        ['beanId' => 1, 'x' => 410, 'y' => 35, 'z' => 85, 'w' => 115, 'rot' => 36, 'blur' => 2.8, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 1, 'animDur' => 6.8, 'animDelay' => -3.2, 'entranceDelay' => 0.45, 'depth' => 42, 'class' => 'max-md:hidden'],
-        ['beanId' => 3, 'x' => 250, 'y' => 195, 'z' => 75, 'w' => 95, 'rot' => 52, 'blur' => 2.6, 'opacity' => 0.9, 'zIndex' => 32, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -1.9, 'entranceDelay' => 0.3, 'depth' => 36, 'class' => 'max-sm:scale-75'],
-        ['beanId' => 2, 'x' => 5, 'y' => 220, 'z' => 70, 'w' => 75, 'rot' => -12, 'blur' => 2.0, 'opacity' => 0.88, 'zIndex' => 30, 'animType' => 3, 'animDur' => 5.7, 'animDelay' => -2.3, 'entranceDelay' => 0.2, 'depth' => 32, 'class' => 'max-sm:scale-75 max-md:hidden'],
+        // Beans along lower-left curve
+        ['src' => 'images/hero/bean-3.webp', 'x' => -240, 'y' => 80, 'z' => 30, 'w' => 54, 'rot' => 40, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 3, 'animDur' => 5.6, 'animDelay' => -1.8, 'entranceDelay' => 0.2, 'depth' => 20, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-1.webp', 'x' => -300, 'y' => 60, 'z' => 20, 'w' => 48, 'rot' => 35, 'blur' => 0.2, 'opacity' => 0.95, 'zIndex' => 23, 'animType' => 4, 'animDur' => 4.9, 'animDelay' => -2.3, 'entranceDelay' => 0.25, 'depth' => 18, 'extraClass' => 'max-sm:scale-75'],
+
+        // Background floating beans (behind pack)
+        ['src' => 'images/hero/bean-2.webp', 'x' => -190, 'y' => -160, 'z' => -40, 'w' => 68, 'rot' => 22, 'blur' => 1.6, 'opacity' => 0.85, 'zIndex' => 14, 'animType' => 1, 'animDur' => 6.2, 'animDelay' => -0.7, 'entranceDelay' => 0.3, 'depth' => 14, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/bean-3.webp', 'x' => 105, 'y' => -185, 'z' => -35, 'w' => 52, 'rot' => 45, 'blur' => 1.2, 'opacity' => 0.85, 'zIndex' => 14, 'animType' => 2, 'animDur' => 5.7, 'animDelay' => -1.4, 'entranceDelay' => 0.35, 'depth' => 12, 'extraClass' => 'max-sm:scale-75'],
     ];
-    foreach ($cinematicFg as $cfg) {
-        $vortexBeans[] = [
-            'src' => "images/hero/bean-{$cfg['beanId']}.webp",
-            'x' => $cfg['x'],
-            'y' => $cfg['y'],
-            'z' => $cfg['z'],
-            'w' => $cfg['w'],
-            'rot' => $cfg['rot'],
-            'blur' => $cfg['blur'],
-            'opacity' => $cfg['opacity'],
-            'zIndex' => $cfg['zIndex'],
-            'animType' => $cfg['animType'],
-            'animDur' => $cfg['animDur'],
-            'animDelay' => $cfg['animDelay'],
-            'entranceDelay' => $cfg['entranceDelay'],
-            'depth' => $cfg['depth'],
-            'extraClass' => $cfg['class'],
-        ];
-    }
 
     $rawSlides = [
         [
@@ -103,11 +57,10 @@
         [
             'id' => 'fresh-beans',
             'type' => 'product',
-            'label' => 'ULTRA AROMA',
-            'giant_headline' => 'PARTNER',
-            'headline_line1' => 'RICH',
-            'headline_line2' => 'AROMA',
-            'subtext' => 'Nikmati keistimewaan biji kopi pilihan dengan aroma khas dan cita rasa istimewa dalam setiap seduhan.',
+            'label' => '01 / SPECIALTY ROASTERY',
+            'giant_headline' => 'FRESH BEANS',
+            'giant_headline_class' => 'text-white/18',
+            'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
                 'url' => route('home') . '#menu',
@@ -117,8 +70,8 @@
             'img_width' => 900,
             'img_height' => 1389,
             'aspect_ratio' => '2/3',
-            'bg_color' => '#D7A461',
-            'theme' => 'gold',
+            'bg_color' => '#242424',
+            'theme' => 'dark',
             'floaters' => [],
         ],
         [
@@ -142,23 +95,89 @@
             'theme' => 'light',
             'has_ambient_glow' => false,
             'floaters' => [
+                // 1. Kiri atas (jauh)
                 [
                     'src' => 'images/hero/bean-1.png',
+                    'wrapper_class' => 'absolute -left-16 sm:-left-28 lg:-left-36 top-4 sm:top-8 w-9 sm:w-12 lg:w-14 z-25 hero-bean-anim-1 drop-shadow-[0_8px_16px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-35',
+                    'depth' => 24,
+                ],
+                // 2. Kiri atas (sedang)
+                [
+                    'src' => 'images/hero/bean-2.png',
                     'wrapper_class' => 'absolute -left-10 sm:-left-16 lg:-left-20 top-12 sm:top-16 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-3 drop-shadow-[0_6px_12px_rgba(0,0,0,0.25)]',
                     'img_class' => 'w-full h-auto object-contain transform -rotate-20',
                     'depth' => 18,
                 ],
+                // 3. Atas kiri gelas
+                [
+                    'src' => 'images/hero/bean-4.png',
+                    'wrapper_class' => 'absolute -left-2 sm:-left-4 -top-6 sm:-top-8 w-6 sm:w-8 lg:w-9 z-30 hero-bean-anim-2 drop-shadow-[0_6px_10px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-45',
+                    'depth' => 28,
+                ],
+                // 4. Atas tengah-kanan melayang tinggi
+                [
+                    'src' => 'images/hero/bean-5.png',
+                    'wrapper_class' => 'absolute left-1/2 translate-x-8 sm:translate-x-12 -top-10 sm:-top-14 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-4 drop-shadow-[0_8px_14px_rgba(0,0,0,0.2)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-15',
+                    'depth' => 22,
+                ],
+                // 5. Kanan atas
                 [
                     'src' => 'images/hero/bean-2.png',
-                    'wrapper_class' => 'absolute -right-8 sm:-right-14 lg:-right-18 top-20 sm:top-24 w-9 sm:w-11 lg:w-13 z-25 hero-bean-anim-1 drop-shadow-[0_8px_14px_rgba(0,0,0,0.25)]',
+                    'wrapper_class' => 'absolute -right-8 sm:-right-14 lg:-right-18 top-16 sm:top-20 w-9 sm:w-11 lg:w-13 z-25 hero-bean-anim-1 drop-shadow-[0_8px_14px_rgba(0,0,0,0.25)]',
                     'img_class' => 'w-full h-auto object-contain transform rotate-35',
                     'depth' => 20,
                 ],
+                // 6. Kanan jauh memancar keluar
+                [
+                    'src' => 'images/hero/bean-6.png',
+                    'wrapper_class' => 'absolute -right-16 sm:-right-26 lg:-right-34 top-28 sm:top-36 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-3 drop-shadow-[0_6px_12px_rgba(0,0,0,0.2)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-25',
+                    'depth' => 16,
+                ],
+                // 7. Kanan tengah
+                [
+                    'src' => 'images/hero/bean-1.png',
+                    'wrapper_class' => 'absolute -right-10 sm:-right-16 lg:-right-22 top-1/2 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-2 drop-shadow-[0_6px_12px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-60',
+                    'depth' => 25,
+                ],
+                // 8. Kanan bawah
                 [
                     'src' => 'images/hero/bean-3.png',
-                    'wrapper_class' => 'absolute right-2 sm:right-6 -bottom-2 sm:-bottom-4 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-2 drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)]',
+                    'wrapper_class' => 'absolute right-2 sm:right-6 -bottom-3 sm:-bottom-5 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-2 drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)]',
                     'img_class' => 'w-full h-auto object-contain transform rotate-15',
                     'depth' => 14,
+                ],
+                // 9. Kanan bawah melayang keluar
+                [
+                    'src' => 'images/hero/bean-4.png',
+                    'wrapper_class' => 'absolute -right-12 sm:-right-20 lg:-right-28 -bottom-10 sm:-bottom-14 w-9 sm:w-12 lg:w-14 z-20 hero-bean-anim-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-40',
+                    'depth' => 19,
+                ],
+                // 10. Kiri tengah-bawah
+                [
+                    'src' => 'images/hero/bean-3.png',
+                    'wrapper_class' => 'absolute -left-12 sm:-left-20 lg:-left-26 bottom-24 sm:bottom-32 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-1 drop-shadow-[0_8px_14px_rgba(0,0,0,0.22)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-50',
+                    'depth' => 22,
+                ],
+                // 11. Kiri bawah
+                [
+                    'src' => 'images/hero/bean-5.png',
+                    'wrapper_class' => 'absolute -left-6 sm:-left-12 lg:-left-16 -bottom-4 sm:-bottom-7 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-3 drop-shadow-[0_6px_12px_rgba(0,0,0,0.25)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-20',
+                    'depth' => 17,
+                ],
+                // 12. Depan bokeh (besar di depan kiri bawah)
+                [
+                    'src' => 'images/hero/bean-6.png',
+                    'wrapper_class' => 'absolute -left-20 sm:-left-36 lg:-left-44 bottom-6 sm:bottom-10 w-11 sm:w-14 lg:w-16 z-30 hero-bean-anim-4 drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)] filter blur-[0.6px] opacity-90',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-15',
+                    'depth' => 32,
                 ],
             ],
             'has_float_rotate' => false,
@@ -205,8 +224,9 @@
 
 
 <section id="home" 
-         class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero"
-         style="background-color: #EADBC8; transition: background-color 0.8s ease;">
+         data-navbar-theme="dark"
+         class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero pt-16 sm:pt-20"
+         style="background-color: #F9F9F9; transition: background-color 0.8s ease;">
 
     <!-- Soft feathered ambient glow for warmth and depth -->
     <div class="absolute inset-0 pointer-events-none z-1" 
@@ -223,7 +243,7 @@
                 <div class="hero-slide-item hero-banner-slide absolute inset-0 w-full h-full flex items-center justify-center {{ $loop->first ? 'active z-10' : 'opacity-0 pointer-events-none z-0' }}"
                      data-slide-index="{{ $loop->index }}"
                      data-layout-mode="{{ $banner->layout_mode ?: 'poster' }}"
-                     data-bg-color="#FAF8F5">
+                     data-bg-color="#F9F9F9">
                     
                     @if(($banner->layout_mode ?: 'poster') === 'poster')
                         <!-- -----------------------------------------------------------------
@@ -279,7 +299,7 @@
                             <!-- Text Content on Top -->
                             <div class="relative z-20 max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 py-12 lg:py-16 w-full text-left hero-text-content">
                                 @if($banner->subtitle)
-                                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#F6DFD2] mb-1.5 leading-tight">
+                                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-stone-300 mb-1.5 leading-tight">
                                         {{ $banner->subtitle }}
                                     </p>
                                 @endif
@@ -289,11 +309,11 @@
                                 </h1>
 
                                 <div class="inline-flex items-center space-x-2 mb-3 bg-white/15 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/25 shadow-2xs">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                     <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-white">
                                         Nucomu Promo • Tulungagung
                                     </span>
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                 </div>
 
                                 @if($banner->description)
@@ -304,11 +324,11 @@
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                       class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
+                                       class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                         {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                     </a>
                                     <a href="#menu" 
-                                       class="inline-flex items-center justify-center bg-white/20 hover:bg-white text-white hover:text-[#54392B] border border-white/40 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
+                                       class="inline-flex items-center justify-center bg-white/20 hover:bg-white text-white hover:text-[#1F1F1F] border border-white/40 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
                                         DAFTAR MENU
                                     </a>
                                 </div>
@@ -326,36 +346,36 @@
                                 <!-- Text Column (Left) -->
                                 <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
                                     @if($banner->subtitle)
-                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#3C281E] mb-1.5 leading-tight">
+                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#555555] mb-1.5 leading-tight">
                                             {{ $banner->subtitle }}
                                         </p>
                                     @endif
 
-                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight" style="font-variant-numeric: lining-nums;">
+                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#1F1F1F] leading-[1.08] mb-3 tracking-tight" style="font-variant-numeric: lining-nums;">
                                         {{ $banner->title }}
                                     </h1>
 
-                                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-[#54392B]/15 shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
+                                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-neutral-200 shadow-2xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
+                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#555555]">
                                             Nucomu Promo • Tulungagung
                                         </span>
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                     </div>
 
                                     @if($banner->description)
-                                        <p class="font-body text-xs sm:text-sm text-[#4A3B32] max-w-lg leading-relaxed mb-6 font-normal">
+                                        <p class="font-body text-xs sm:text-sm text-[#555555] max-w-lg leading-relaxed mb-6 font-normal">
                                             {{ $banner->description }}
                                         </p>
                                     @endif
 
                                     <div class="flex flex-wrap items-center gap-3">
                                         <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
+                                           class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                             {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                         </a>
                                         <a href="#menu" 
-                                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#1F1F1F] border border-neutral-300 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                                             DAFTAR MENU
                                         </a>
                                     </div>
@@ -376,8 +396,8 @@
                                                  alt="{{ $banner->title }}"
                                                  class="w-full h-full object-cover rounded-[24px] desktop-banner-img">
                                         @endif
-                                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#252525] border border-white/60 shadow-sm flex items-center space-x-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                             <span>{{ $banner->subtitle ?: 'Special Banner' }}</span>
                                         </div>
                                     </div>
@@ -490,94 +510,67 @@
 
             @elseif($slide['id'] === 'fresh-beans')
                 <!-- -----------------------------------------------------------------
-                     SLIDE 1: HONEY GOLDEN THEME + 3D COFFEE BEAN VORTEX ANIMATION
+                     SLIDE 1: SPECIALTY ROASTERY - FRESH BEANS (DARK EDITORIAL POSTER + 3D ORBIT)
                      ----------------------------------------------------------------- -->
-                <div class="relative w-full h-full flex flex-col md:block items-center justify-center overflow-hidden hero-gold-canvas max-md:pt-4 max-md:pb-16 max-md:px-4">
+                <div class="relative w-full h-full flex items-center justify-center overflow-hidden hero-coffee-pack-canvas select-none">
 
-                    <!-- Silk Light Wave Ribbons (1 Thick Glowing Wave 40-60px + Thin Swirling Ribbons) -->
-                    <svg class="hero-silk-ribbons absolute inset-0 w-full h-full pointer-events-none z-10 select-none" viewBox="0 0 1440 640" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <!-- 1. Gelombang Tebal Berkilau (Visual Width 40-60px: stroke-width 50, blur) -->
-                        <path class="hero-silk-wave-thick" d="M-80 570 C 300 520, 560 620, 860 410 C 1140 220, 1340 160, 1640 90" stroke="url(#silkGradThick)" stroke-width="50" stroke-linecap="round" />
-                        <!-- 2 & 3. Garis Tipis Sutra Menyilang Ke Kanan Atas -->
-                        <path class="hero-silk-wave-thin" d="M-120 540 C 280 490, 520 600, 820 420 C 1120 240, 1320 170, 1620 110" stroke="url(#silkGrad1)" stroke-width="3.5" />
-                        <path class="hero-silk-wave-thin" d="M-40 590 C 360 530, 580 640, 890 440 C 1180 260, 1380 190, 1680 130" stroke="url(#silkGrad2)" stroke-width="2" opacity="0.75" />
-                        <!-- 4. Garis Sutra Melengkung di Bawah Kiri (Sesuai Referensi Layar) -->
-                        <path class="hero-silk-wave-thin" d="M-60 420 C 80 460, 200 540, 420 580" stroke="url(#silkGrad1)" stroke-width="2.5" opacity="0.65" />
+                    <!-- Warm Amber Spotlight Glow behind center coffee pack -->
+                    <div class="hero-glow-amber-center absolute inset-0 pointer-events-none z-10" aria-hidden="true"></div>
+
+                    <!-- 1. Giant Headline Behind Product: FRESH BEANS (z-10) -->
+                    <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
+                        <span class="font-body font-black uppercase text-[clamp(4.2rem,13.8vw,11.5rem)] leading-none tracking-tighter text-center whitespace-nowrap text-white/18 select-none">
+                            FRESH BEANS
+                        </span>
+                    </div>
+
+                    <!-- 2. Golden Swoosh Trajectory Curve Lines (z-15) -->
+                    <svg class="hero-golden-swoosh absolute inset-0 w-full h-full pointer-events-none z-15 select-none" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="none">
+                        <!-- Primary Golden Swoosh Line -->
+                        <path d="M -80 470 C 250 465, 480 445, 740 395 C 1000 345, 1220 230, 1520 120" 
+                              stroke="url(#goldSwooshGrad1)" stroke-width="2.2" stroke-linecap="round" />
+                        
+                        <!-- Secondary Parallel Golden Swoosh Line -->
+                        <path d="M -80 500 C 270 495, 510 475, 770 425 C 1030 375, 1250 260, 1520 155" 
+                              stroke="url(#goldSwooshGrad2)" stroke-width="1.5" opacity="0.7" stroke-linecap="round" />
+
+                        <!-- Upper Delicate Filament Curve -->
+                        <path d="M 520 380 C 820 310, 1140 210, 1520 90" 
+                              stroke="url(#goldSwooshGrad1)" stroke-width="1.2" opacity="0.5" stroke-linecap="round" />
+
                         <defs>
-                            <linearGradient id="silkGradThick" x1="0" y1="0.8" x2="1" y2="0.2">
-                                <stop offset="0%" stop-color="#FFF1CC" stop-opacity="0" />
-                                <stop offset="25%" stop-color="#FFF1CC" stop-opacity="0.4" />
-                                <stop offset="55%" stop-color="#FFE099" stop-opacity="0.55" />
-                                <stop offset="80%" stop-color="#FFF5DE" stop-opacity="0.35" />
-                                <stop offset="100%" stop-color="#FFF1CC" stop-opacity="0" />
+                            <linearGradient id="goldSwooshGrad1" x1="0" y1="0.8" x2="1" y2="0.2">
+                                <stop offset="0%" stop-color="#C8A97E" stop-opacity="0" />
+                                <stop offset="15%" stop-color="#E5C595" stop-opacity="0.85" />
+                                <stop offset="50%" stop-color="#D4AF37" stop-opacity="0.9" />
+                                <stop offset="85%" stop-color="#E5C595" stop-opacity="0.8" />
+                                <stop offset="100%" stop-color="#A88555" stop-opacity="0" />
                             </linearGradient>
-                            <linearGradient id="silkGrad1" x1="0" y1="0.5" x2="1" y2="0.5">
-                                <stop offset="0%" stop-color="#FFF1CC" stop-opacity="0" />
-                                <stop offset="25%" stop-color="#FFF1CC" stop-opacity="0.85" />
-                                <stop offset="60%" stop-color="#FFE099" stop-opacity="0.9" />
-                                <stop offset="100%" stop-color="#FFF1CC" stop-opacity="0" />
-                            </linearGradient>
-                            <linearGradient id="silkGrad2" x1="0" y1="0.5" x2="1" y2="0.5">
-                                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
-                                <stop offset="35%" stop-color="#FFF5DE" stop-opacity="0.8" />
-                                <stop offset="70%" stop-color="#FAD68A" stop-opacity="0.85" />
-                                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                            <linearGradient id="goldSwooshGrad2" x1="0" y1="0.8" x2="1" y2="0.2">
+                                <stop offset="0%" stop-color="#C8A97E" stop-opacity="0" />
+                                <stop offset="20%" stop-color="#E5C595" stop-opacity="0.6" />
+                                <stop offset="60%" stop-color="#D4AF37" stop-opacity="0.75" />
+                                <stop offset="100%" stop-color="#A88555" stop-opacity="0" />
                             </linearGradient>
                         </defs>
                     </svg>
 
-                    <!-- Left Composition: Pill Badge + Stacked Headline + Description + CTA Button -->
-                    <div class="hero-slide1-left-col relative max-md:mt-1 max-md:mb-3 md:absolute md:left-20 lg:left-24 xl:left-[6%] md:top-1/2 md:-translate-y-1/2 z-30 flex flex-col items-center md:items-start text-center md:text-left select-none max-md:w-full max-w-[92%] md:max-w-[34%] lg:max-w-[32%]">
-                        <!-- Dark Chocolate Pill Badge with Protruding Coffee Bean -->
-                        <div class="relative inline-flex items-center pl-3.5 pr-7 py-1.5 rounded-full hero-pill-badge text-[10px] sm:text-xs font-bold tracking-widest uppercase shadow-sm mb-3 sm:mb-4 select-none">
-                            <span>{{ $slide['label'] }}</span>
-                            <img src="{{ asset('images/hero/bean-1.webp') }}" alt="" class="absolute -right-2.5 top-1/2 -translate-y-1/2 w-[22px] h-[22px] object-contain rotate-12 drop-shadow-sm pointer-events-none" aria-hidden="true">
-                        </div>
-
-                        <!-- Stacked Pure White Headline: RICH / AROMA (Matching Reference Video) -->
-                        <h1 class="font-body font-black uppercase text-white text-[clamp(36px,4.5vw,72px)] leading-[0.95] tracking-tight drop-shadow-[0_4px_16px_rgba(70,35,10,0.35)] pointer-events-none">
-                            RICH<br>
-                            <span class="whitespace-nowrap">AROMA</span>
-                        </h1>
-
-                        <!-- Description in Soft Cream/White (#FFF5EA/90) for High Contrast on Gold -->
-                        <p class="font-body font-normal text-[#FFF5EA]/90 text-[clamp(14px,1.1vw,16px)] leading-[1.6] max-w-[34ch] mt-4 mb-6 drop-shadow-sm line-clamp-4 md:line-clamp-3 lg:line-clamp-none">
-                            {{ $slide['subtext'] }}
-                        </p>
-
-                        <!-- Dark Pill Button: Lihat Menu -->
-                        <div class="z-30 max-md:w-full">
-                            <a href="{{ $slide['cta_primary']['url'] }}" 
-                               class="inline-flex items-center justify-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-7 py-3.5 rounded-full bg-[#2A1A10] text-[#EDDAC1] hover:bg-[#150d08] transition-all duration-200 active:scale-95 shadow-lg group/btn cursor-pointer min-h-[44px] max-md:w-full">
-                                <span>{{ $slide['cta_primary']['text'] }}</span>
-                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Behind Coffee Pack: PARTNER (Bold Dark Chocolate Typography, Behind Vortex, Hidden on Mobile/Tablet) -->
-                    <div class="hero-partner-text hidden lg:block absolute left-[49%] top-1/2 -translate-y-1/2 z-10 select-none pointer-events-none text-left whitespace-nowrap">
-                        <span class="font-body font-black uppercase text-[#2A1A10] text-[clamp(68px,8.6vw,144px)] leading-[0.9] tracking-tighter drop-shadow-[0_2px_12px_rgba(255,240,210,0.15)] opacity-90 block">
-                            PARTNER
-                        </span>
-                    </div>
-
-                    <!-- 3D Vortex Scene Container (z-20) -->
-                    <div class="hero-vortex-scene relative z-20 flex flex-col items-center justify-center pointer-events-none max-md:order-first max-md:mt-1 max-md:mb-2 md:absolute md:left-[53%] lg:left-[50%] md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2" style="z-index: 20;">
+                    <!-- 3. Central Coffee Pack with 3D Float + Orbiting Beans (z-20) -->
+                    <div class="hero-vortex-scene relative z-20 flex flex-col items-center justify-center pointer-events-none">
                         <div class="relative flex items-center justify-center">
                             
-                            <!-- Central Coffee Pack with 3D Float (z-20, in front of PARTNER text) -->
+                            <!-- Central Coffee Pack with 3D Float (z-20) -->
                             <img src="{{ asset($slide['product_image']) }}"
                                  alt="{{ $slide['product_name'] }}"
                                  width="{{ $slide['img_width'] ?? 900 }}"
                                  height="{{ $slide['img_height'] ?? 1389 }}"
                                  loading="eager"
                                  decoding="async"
-                                 class="w-auto h-auto max-h-[175px] sm:max-h-[260px] md:max-h-[380px] lg:max-h-[440px] xl:max-h-[490px] object-contain hero-pack-3d relative z-20 select-none">
+                                 class="w-auto h-auto max-h-[220px] sm:max-h-[290px] md:max-h-[340px] lg:max-h-[370px] xl:max-h-[395px] object-contain hero-pack-3d relative z-20 select-none">
                             <div class="hero-pack-shadow-warm" aria-hidden="true"></div>
 
-                            <!-- 3D Vortex Orbiting Coffee Beans Container with Proportional Responsive Scaling -->
-                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none max-md:scale-[0.65] max-sm:scale-[0.44] origin-center" style="transform-style: preserve-3d;">
+                            <!-- 3D Orbiting Coffee Beans Container with Proportional Responsive Scaling -->
+                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none max-md:scale-[0.68] max-sm:scale-[0.46] origin-center" style="transform-style: preserve-3d;">
                                 @foreach($vortexBeans as $vIdx => $vBean)
                                     <div class="vortex-bean-node {{ $vBean['extraClass'] ?? '' }}"
                                          data-depth="{{ $vBean['depth'] }}"
@@ -588,11 +581,31 @@
                                              loading="eager"
                                              decoding="async"
                                              class="vortex-bean-img hero-bean-orbit-{{ $vBean['animType'] }}"
-                                             style="{{ !empty($vBean['blur']) ? 'filter: blur('.$vBean['blur'].'px) drop-shadow(0 10px 20px rgba(70,35,10,0.55));' : 'filter: drop-shadow(0 10px 20px rgba(70,35,10,0.55));' }} animation-duration: {{ $vBean['animDur'] }}s; animation-delay: {{ $vBean['animDelay'] }}s;">
+                                             style="{{ !empty($vBean['blur']) ? 'filter: blur('.$vBean['blur'].'px) drop-shadow(0 12px 24px rgba(0,0,0,0.65));' : 'filter: drop-shadow(0 8px 18px rgba(0,0,0,0.55));' }} animation-duration: {{ $vBean['animDur'] }}s; animation-delay: {{ $vBean['animDelay'] }}s;">
                                     </div>
                                 @endforeach
                             </div>
 
+                        </div>
+                    </div>
+
+                    <!-- 4. Left Product Information & CTA in Bottom Left (z-30) -->
+                    <div class="hero-product-info absolute max-sm:bottom-[80px] bottom-10 lg:bottom-14 left-5 sm:left-8 lg:left-14 z-30 text-left max-w-xs sm:max-w-sm pointer-events-auto">
+                        <!-- Label with baseline divider -->
+                        <div class="flex items-center gap-2.5 sm:gap-3 mb-2.5 sm:mb-3.5">
+                            <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.22em] sm:tracking-[0.25em] text-white/70">
+                                {{ $slide['label'] }}
+                            </p>
+                            <span class="hidden sm:block w-16 lg:w-24 h-[1px] bg-white/20"></span>
+                        </div>
+
+                        <!-- CTA Button (White Pill with Right Arrow) -->
+                        <div>
+                            <a href="{{ $slide['cta_primary']['url'] }}" 
+                               class="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white text-[#1C1C1C] hover:bg-neutral-100 transition-all duration-200 active:scale-95 shadow-lg group/btn cursor-pointer">
+                                <span>{{ $slide['cta_primary']['text'] }}</span>
+                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1" aria-hidden="true">arrow_forward</span>
+                            </a>
                         </div>
                     </div>
 
@@ -644,6 +657,36 @@
                                          loading="lazy"
                                          decoding="async"
                                          class="{{ $slide['img_class'] ?? 'w-full h-auto object-contain relative z-20 hero-float-idle' }}">
+
+                                    @if($slide['id'] === 'sweet-moment')
+                                        <!-- Animasi Tetesan Slay (Strawberry Jam Drip) yang Menetes Jatuh -->
+                                        <div class="hero-jam-drip-wrapper absolute pointer-events-none select-none z-25"
+                                             style="left: 31%; top: 60%; width: 22px; height: 32px;"
+                                             aria-hidden="true">
+                                            <!-- Tetesan Utama Selai Stroberi Berkilap -->
+                                            <svg class="hero-jam-drop-main w-full h-full" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <defs>
+                                                    <radialGradient id="jamGradHero" cx="35%" cy="30%" r="65%">
+                                                        <stop offset="0%" stop-color="#FF3848" />
+                                                        <stop offset="40%" stop-color="#D11224" />
+                                                        <stop offset="85%" stop-color="#880816" />
+                                                        <stop offset="100%" stop-color="#55030D" />
+                                                    </radialGradient>
+                                                    <linearGradient id="jamGlossHero" x1="0" y1="0" x2="1" y2="1">
+                                                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
+                                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                                                    </linearGradient>
+                                                </defs>
+                                                <path d="M12 0 C12 4, 2 15, 2 23 C2 29.5 6.5 35 12 35 C17.5 35 22 29.5 22 23 C22 15, 12 4, 12 0 Z" fill="url(#jamGradHero)" filter="drop-shadow(0 3px 6px rgba(130, 10, 20, 0.45))" />
+                                                <ellipse cx="8" cy="18" rx="2" ry="5.5" transform="rotate(-18 8 18)" fill="url(#jamGlossHero)" />
+                                                <circle cx="14" cy="27" r="1.3" fill="#FFFFFF" opacity="0.5" />
+                                            </svg>
+
+                                            <!-- Tetesan Tambahan Kecil (Trailing Micro Drip) -->
+                                            <div class="hero-jam-drop-trail absolute left-1/2 -translate-x-1/2 -top-2 w-2 h-2.5 rounded-full bg-[#C51224] opacity-0" aria-hidden="true"></div>
+                                        </div>
+                                    @endif
+
                                     <div class="hero-product-shadow {{ $slide['id'] === 'sweet-moment' ? 'hero-product-shadow-wide' : '' }} {{ $slide['theme'] === 'dark' ? 'opacity-40' : 'opacity-25' }}" aria-hidden="true"></div>
                                 </div>
                             @endif
@@ -689,13 +732,13 @@
         @if($activeBanners->count() > 1)
             <button type="button" 
                     onclick="prevHeroSlide()" 
-                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    class="hero-nav-arrow hero-prev-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                     aria-label="Slide Sebelumnya">
                 <span class="material-symbols-outlined text-xl">chevron_left</span>
             </button>
             <button type="button" 
                     onclick="nextHeroSlide()" 
-                    class="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/85 hover:bg-white text-neutral-900 border border-stone-200/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 shadow-md"
+                    class="hero-nav-arrow hero-next-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                     aria-label="Slide Berikutnya">
                 <span class="material-symbols-outlined text-xl">chevron_right</span>
             </button>
@@ -703,16 +746,16 @@
 
         <!-- Desktop Indicator Dots -->
         @if($activeBanners->count() > 1)
-            <div class="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="desktop-hero-dots">
+            <div class="hero-controls-bar hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="desktop-hero-dots">
                 @foreach($activeBanners as $b)
-                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#E06D24]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
+                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#1F1F1F]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
                 @endforeach
             </div>
         @endif
 
         <!-- Mobile Indicator Dots (4 Slide Hero Bawaan) -->
-        <div class="flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-black/5" id="mobile-hero-dots">
-            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1"></button>
+        <div class="hero-controls-bar flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="mobile-hero-dots">
+            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#1F1F1F] transition-all duration-300" aria-label="Slide 1"></button>
             <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
             <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
             <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4"></button>
@@ -722,7 +765,7 @@
         <!-- Left Carousel Arrow -->
         <button type="button" 
                 onclick="prevHeroSlide()" 
-                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/85 hover:bg-white text-[#1C1C1C] border border-stone-200/80 backdrop-blur-md shadow-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                 aria-label="Slide Sebelumnya">
             <span class="material-symbols-outlined text-xl">chevron_left</span>
         </button>
@@ -730,20 +773,13 @@
         <!-- Right Carousel Arrow -->
         <button type="button" 
                 onclick="nextHeroSlide()" 
-                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/85 hover:bg-white text-[#1C1C1C] border border-stone-200/80 backdrop-blur-md shadow-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
                 aria-label="Slide Berikutnya">
             <span class="material-symbols-outlined text-xl">chevron_right</span>
         </button>
 
-        <!-- Bottom Controls Bar: Counter, Dots, Pause/Play -->
-        <div class="hero-controls-bar absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-black/40 hover:bg-black/55 backdrop-blur-md px-4 py-1.5 sm:py-2 rounded-full border border-white/15 transition-all text-white select-none shadow-sm">
-            <!-- Counter "01 / 04" -->
-            <span class="hero-counter-text font-mono text-xs tracking-widest font-semibold">
-                <span id="hero-current-num">01</span> / <span id="hero-total-num">{{ sprintf('%02d', $totalSlides) }}</span>
-            </span>
-
-            <span class="w-px h-3.5 bg-white/25" aria-hidden="true"></span>
-
+        <!-- Bottom Controls Bar: Dots, Pause/Play (Clean Balanced Pill without Counter) -->
+        <div class="hero-controls-bar absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 sm:gap-3 bg-black/45 hover:bg-black/60 backdrop-blur-md pl-3.5 pr-2.5 py-1.5 sm:py-2 rounded-full border border-white/20 text-white select-none shadow-md">
             <!-- Slide Indicator Dots -->
             <div class="flex items-center gap-1.5" role="tablist" aria-label="Indikator Slide Hero">
                 @foreach($slides as $idx => $s)
@@ -758,13 +794,14 @@
                 @endforeach
             </div>
 
+            <!-- Divider -->
             <span class="w-px h-3.5 bg-white/25" aria-hidden="true"></span>
 
             <!-- Pause / Play Button -->
             <button type="button"
                     id="hero-pause-btn"
                     onclick="toggleHeroAutoplay()"
-                    class="w-6 h-6 flex items-center justify-center text-white/80 hover:text-white transition-colors focus:outline-none cursor-pointer"
+                    class="w-6 h-6 flex items-center justify-center text-white/80 hover:text-white transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white/50 rounded-full cursor-pointer"
                     aria-label="Jeda tayangan slide otomatis"
                     title="Jeda / Putar tayangan otomatis">
                 <span id="hero-pause-icon" class="material-symbols-outlined text-base">pause</span>

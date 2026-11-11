@@ -169,13 +169,13 @@ const SLIDE_INTERVAL = 7000;
 /**
  * PALET WARNA BACKGROUND HERO
  * [0] Slide 0 (Welcome Latte)    -> #140E0A (Dark Coffee)
- * [1] Slide 1 (Fresh Beans)      -> #D7A461 (Honey Golden Canvas)
+ * [1] Slide 1 (Fresh Beans)      -> #242424 (Dark Charcoal Canvas)
  * [2] Slide 2 (Fresh Brew)       -> #EDEDED (Light Warm Gray)
  * [3] Slide 3 (Sweet Moment)     -> #FAFAFA (Off-White)
  */
 const HERO_BG_COLORS = [
     '#140E0A',
-    '#D7A461',
+    '#242424',
     '#EDEDED',
     '#FAFAFA'
 ];
@@ -319,6 +319,13 @@ function initHeroSlider() {
         if (!prefersReducedMotion && !heroIsPaused && heroIsVisibleOnScreen) {
             startHeroAutoSlide();
         }
+    });
+
+    // Pastikan klik mouse pada kontrol tidak meninggalkan fokus yang menempel
+    heroSection.querySelectorAll('.hero-nav-arrow, .hero-dot-btn, #hero-pause-btn').forEach(btn => {
+        btn.addEventListener('mouseup', function() {
+            this.blur();
+        });
     });
 
     // Pause when hero receives focus, resume on blur
@@ -552,7 +559,6 @@ function renderHeroSlide(index) {
     const heroSection = document.getElementById('home');
     const slides = getActiveHeroSlides();
     const dots = getActiveHeroDots();
-    const counterCurrent = document.getElementById('hero-current-num');
     if (!slides.length) return;
 
     if (index >= slides.length) {
@@ -564,14 +570,21 @@ function renderHeroSlide(index) {
     if (heroSection) {
         const bgColor = slides[index]?.getAttribute('data-bg-color') || HERO_BG_COLORS[index] || '#140E0A';
         heroSection.style.backgroundColor = bgColor;
+        document.documentElement.style.setProperty('--hero-bg-color', bgColor);
+
+        // Sinkronisasi data-navbar-theme pada hero section dengan tema slide aktif
+        const slideTheme = slides[index]?.getAttribute('data-theme');
+        // Hanya slide bertema 'dark' (Slide 0) yang mengaktifkan mode gelap navbar
+        // Slide bertema 'light' (seperti Slide 3 Strawberry Basque Cheesecake atau Slide 2) dan 'gold' menjadi 'light'
+        const isDarkSlide = (slideTheme === 'dark');
+        heroSection.setAttribute('data-navbar-theme', isDarkSlide ? 'dark' : 'light');
+
+        if (typeof window.updateNavbarTheme === 'function') {
+            window.updateNavbarTheme();
+        }
     }
 
-    // 2. Update Counter Text "01", "02", etc.
-    if (counterCurrent) {
-        counterCurrent.textContent = String(index + 1).padStart(2, '0');
-    }
-
-    // 3. Switch Slides & Update Accessibility
+    // 2. Switch Slides & Update Accessibility
     slides.forEach((slide, idx) => {
         if (idx === index) {
             slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
@@ -591,7 +604,7 @@ function renderHeroSlide(index) {
         const isBanner = slides[index]?.classList.contains('hero-banner-slide');
         if (idx === index) {
             dot.className = isBanner
-                ? 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300'
+                ? 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#1F1F1F] transition-all duration-300'
                 : 'hero-dot-btn h-1.5 rounded-full transition-all duration-300 w-6 bg-white';
             dot.setAttribute('aria-selected', 'true');
             dot.setAttribute('aria-current', 'true');
@@ -606,44 +619,112 @@ function renderHeroSlide(index) {
 }
 
 /* ==========================================================================
-   1. NAVBAR SCROLL BEHAVIOR (Hide on Scroll Down, Show on Scroll Up)
+   1. NAVBAR SCROLL & SECTION-BASED ADAPTIVE FROSTED GLASS
+   - Deteksi tema section yang berada tepat di bawah navbar (probe di titik tengah navbar)
+   - Section gelap (hero slide gelap, footer) -> .navbar--over-hero (kaca gelap, teks & logo terang)
+   - Section terang (hero slide kue strawberry/terang, about, menu, dll) -> .navbar--scrolled (putih transparan 78%, teks & logo gelap)
+   - Sembunyi saat scroll ke bawah (navbar-hidden), muncul saat scroll ke atas (navbar-visible)
+   - Update tema berjalan konsisten meskipun navbar sedang tersembunyi
    ========================================================================== */
 function initNavbarScroll() {
     const navbar = document.getElementById('main-navbar');
     if (!navbar) return;
 
-    let lastScrollY = window.scrollY;
+    let lastScrollY = Math.max(0, window.scrollY);
     let ticking = false;
     const scrollThreshold = 10;
+
+    /**
+     * Menentukan tema ('dark' atau 'light') berdasarkan section yang berada tepat di bawah navbar.
+     * Menggunakan titik uji vertikal (probeY) sebesar 50% tinggi navbar.
+     */
+    function detectSectionThemeAtNavbar() {
+        const navHeight = navbar.offsetHeight || 70;
+        const probeY = navHeight * 0.5;
+
+        // Ambil seluruh section dan footer di halaman
+        const candidateSections = document.querySelectorAll('section, footer, [data-navbar-theme]');
+        for (let i = 0; i < candidateSections.length; i++) {
+            const sec = candidateSections[i];
+            const rect = sec.getBoundingClientRect();
+            // Cek apakah probeY berada dalam rentang batas atas & bawah section
+            if (rect.top <= probeY && rect.bottom > probeY) {
+                const theme = sec.getAttribute('data-navbar-theme');
+                return theme === 'dark' ? 'dark' : 'light';
+            }
+        }
+
+        // Halaman tanpa hero atau tanpa section gelap default ke kondisi terang ('light')
+        return 'light';
+    }
+
+    /**
+     * Terapkan tema navbar secara eksklusif (hanya satu kondisi aktif pada satu waktu)
+     */
+    function applyNavbarTheme() {
+        const theme = detectSectionThemeAtNavbar();
+
+        if (theme === 'dark') {
+            navbar.classList.add('navbar--over-hero');
+            navbar.classList.remove('navbar--scrolled', 'navbar-scrolled', 'navbar--past-hero');
+        } else {
+            navbar.classList.add('navbar--scrolled');
+            navbar.classList.remove('navbar--over-hero');
+        }
+    }
+
+    // Ekspor fungsi agar dapat dipanggil oleh slider hero atau event lain
+    window.updateNavbarTheme = applyNavbarTheme;
+
+    function updateNavbar() {
+        const currentScrollY = Math.max(0, window.scrollY);
+        const scrollDifference = currentScrollY - lastScrollY;
+
+        // 1. Selalu perbarui tema navbar (tetap sinkron meskipun navbar sedang tersembunyi)
+        applyNavbarTheme();
+
+        // 2. Perilaku Sembunyi/Muncul saat Scroll (Hide on Scroll Down, Show on Scroll Up)
+        if (currentScrollY < 80) {
+            // Dekat puncak halaman: selalu tampilkan navbar
+            navbar.classList.remove('navbar-hidden');
+            navbar.classList.add('navbar-visible');
+        } else if (scrollDifference > scrollThreshold) {
+            // Scrolling ke BAWAH: sembunyikan navbar dengan transisi translateY
+            navbar.classList.add('navbar-hidden');
+            navbar.classList.remove('navbar-visible');
+        } else if (scrollDifference < -scrollThreshold) {
+            // Scrolling ke ATAS: tampilkan navbar kembali dengan transisi translateY
+            navbar.classList.remove('navbar-hidden');
+            navbar.classList.add('navbar-visible');
+        }
+
+        lastScrollY = currentScrollY;
+    }
 
     window.addEventListener('scroll', () => {
         if (!ticking) {
             window.requestAnimationFrame(() => {
-                const currentScrollY = window.scrollY;
-                const scrollDifference = currentScrollY - lastScrollY;
-
-                // Always show navbar near top of page
-                if (currentScrollY < 80) {
-                    navbar.classList.remove('navbar-hidden');
-                    navbar.classList.add('navbar-visible');
-                    navbar.classList.remove('shadow-md');
-                } else if (scrollDifference > scrollThreshold) {
-                    // Scrolling DOWN -> Hide navbar smoothly
-                    navbar.classList.add('navbar-hidden');
-                    navbar.classList.remove('navbar-visible');
-                } else if (scrollDifference < -scrollThreshold) {
-                    // Scrolling UP -> Show navbar smoothly
-                    navbar.classList.remove('navbar-hidden');
-                    navbar.classList.add('navbar-visible');
-                    navbar.classList.add('shadow-md');
-                }
-
-                lastScrollY = currentScrollY;
+                updateNavbar();
                 ticking = false;
             });
             ticking = true;
         }
     }, { passive: true });
+
+    window.addEventListener('resize', () => {
+        updateNavbar();
+    }, { passive: true });
+
+    window.addEventListener('nucomu:intro-done', () => {
+        updateNavbar();
+    }, { passive: true });
+
+    window.addEventListener('load', () => {
+        updateNavbar();
+    }, { passive: true });
+
+    // Set status awal saat fungsi dijalankan
+    updateNavbar();
 }
 
 /* ==========================================================================
@@ -779,61 +860,106 @@ function initOurStory() {
     // 2. Automatic Image Carousel with Smooth Crossfade & Manual Controls
     initStoryCarousel(prefersReducedMotion);
 
-    // 3. Typewriter animation for Quote
+    // 3. Typewriter animation for Quote (Single timer, layout shift free, threshold 0.4, 28-34ms)
     if (!quoteWrapper || !typewriterTextEl) return;
 
-    const quoteFullText = '“Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.”';
+    const quoteFullText = typewriterTextEl.getAttribute('data-quote') ||
+                          typewriterTextEl.textContent.trim() ||
+                          '“Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.”';
 
+    // Reduced Motion: Teks tampil utuh langsung, kursor dihapus
     if (prefersReducedMotion) {
         typewriterTextEl.textContent = quoteFullText;
-        if (typewriterCursor) typewriterCursor.classList.add('hidden');
+        if (typewriterCursor && typewriterCursor.parentNode) {
+            typewriterCursor.remove();
+        }
         return;
     }
 
-    // Reset text initially so it types character by character on view
+    // Reset teks target saat JS aktif (tinggi kartu tetap terjaga penuh oleh phantom element)
     typewriterTextEl.textContent = '';
-    if (typewriterCursor) typewriterCursor.classList.remove('hidden');
+    if (typewriterCursor) {
+        typewriterCursor.classList.remove('hidden');
+        typewriterCursor.style.opacity = '1';
+    }
 
-    let isTypingStarted = false;
+    let quoteTimer = null;
+    let charIndex = 0;
+    let isTyping = false;
+    let hasFinished = false;
+    let hasStarted = false;
 
-    const quoteObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting && !isTypingStarted) {
-                isTypingStarted = true;
-                quoteObserver.unobserve(quoteWrapper);
+    function clearQuoteTimer() {
+        if (quoteTimer) {
+            clearTimeout(quoteTimer);
+            quoteTimer = null;
+        }
+    }
 
-                let charIndex = 0;
-                const typingSpeed = 26; // 26ms per char (within 20–35ms spec)
+    function typeNextChar() {
+        if (document.hidden) return; // Tab tidak aktif, tunda sampai visibilitychange aktif kembali
 
-                function typeNextChar() {
-                    if (charIndex < quoteFullText.length) {
-                        typewriterTextEl.textContent = quoteFullText.slice(0, charIndex + 1);
-                        charIndex++;
-                        setTimeout(typeNextChar, typingSpeed);
-                    } else {
-                        // Typing complete: hold cursor briefly then smoothly fade it out
-                        setTimeout(() => {
-                            if (typewriterCursor) {
-                                typewriterCursor.style.transition = 'opacity 0.4s ease-out';
-                                typewriterCursor.style.opacity = '0';
-                                setTimeout(() => {
-                                    typewriterCursor.classList.add('hidden');
-                                }, 400);
-                            }
-                        }, 700);
-                    }
+        if (charIndex < quoteFullText.length) {
+            typewriterTextEl.textContent = quoteFullText.slice(0, charIndex + 1);
+            charIndex++;
+            // Kecepatan 30ms per karakter (spesifikasi: 28-34 ms per karakter)
+            quoteTimer = setTimeout(typeNextChar, 30);
+        } else {
+            // Pengetikan selesai utuh (termasuk tanda kutip dan tanda baca)
+            isTyping = false;
+            hasFinished = true;
+            clearQuoteTimer();
+
+            // Kursor tampil sesaat setelahnya (±1.2 detik), lalu memudar dan dihapus dari DOM
+            setTimeout(() => {
+                if (typewriterCursor && typewriterCursor.parentNode) {
+                    typewriterCursor.style.transition = 'opacity 0.35s ease-out';
+                    typewriterCursor.style.opacity = '0';
+                    setTimeout(() => {
+                        if (typewriterCursor && typewriterCursor.parentNode) {
+                            typewriterCursor.remove();
+                        }
+                    }, 350);
                 }
+            }, 1200);
+        }
+    }
 
-                // Brief delay after entering view before typing starts
-                setTimeout(typeNextChar, 200);
-            }
+    // Trigger IntersectionObserver saat kartu kutipan masuk viewport (threshold ±0.4)
+    if ('IntersectionObserver' in window) {
+        const quoteObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                // Ketik SEKALI saja per kunjungan halaman (statis, tidak mengulang saat scroll naik-turun)
+                if (entry.isIntersecting && !hasStarted) {
+                    hasStarted = true;
+                    isTyping = true;
+                    quoteObserver.unobserve(quoteWrapper);
+                    typeNextChar();
+                }
+            });
+        }, {
+            threshold: 0.4
         });
-    }, {
-        threshold: 0.2,
-        rootMargin: '0px 0px -30px 0px'
-    });
 
-    quoteObserver.observe(quoteWrapper);
+        quoteObserver.observe(quoteWrapper);
+    } else {
+        typewriterTextEl.textContent = quoteFullText;
+        if (typewriterCursor && typewriterCursor.parentNode) {
+            typewriterCursor.remove();
+        }
+    }
+
+    // Pause saat tab browser tidak aktif, lanjutkan saat aktif lagi (cegah timer ganda)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            clearQuoteTimer();
+        } else {
+            if (isTyping && !hasFinished) {
+                clearQuoteTimer();
+                typeNextChar();
+            }
+        }
+    });
 }
 
 /**
@@ -1602,22 +1728,22 @@ window.switchBestMenuItem = function(index) {
         const priceSpan = pill.querySelector('.pill-price');
         
         if (idx === index) {
-            pill.className = 'best-menu-pill active bg-[#E06D24] text-white shadow-lg shadow-orange-500/20 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
+            pill.className = 'best-menu-pill active bg-[#242424] text-white shadow-md flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
             if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-white';
             if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-bold block mt-0.5 text-white';
         } else {
             pill.className = 'best-menu-pill bg-white text-neutral-800 shadow-md hover:shadow-lg hover:-translate-x-1 border border-stone-100 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
             if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-neutral-800';
-            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-bold block mt-0.5 text-[#E06D24]';
+            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-medium block mt-0.5 text-neutral-600';
         }
     });
 
     // Update dots
     document.querySelectorAll('.best-menu-dot').forEach((dot, idx) => {
         if (idx === index) {
-            dot.className = 'best-menu-dot w-6 h-2 bg-[#E06D24] rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-5 h-1.5 bg-[#242424] rounded-full transition-all duration-300';
         } else {
-            dot.className = 'best-menu-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
         }
     });
 };
@@ -1641,10 +1767,23 @@ window.filterRecommendations = function(category, buttonEl) {
         if (indicator) indicator.classList.remove('hidden');
     }
 
-    // 2. Filter the 8 recommendation cards with smooth opacity transition
+    // 2. Filter recommendation cards with smooth opacity transition
+    window.activeRecommendationCategory = category;
+    const container = document.getElementById('recommendations-columns-container');
     const grid = document.getElementById('recommendations-grid');
     const emptyState = document.getElementById('recommendations-empty-state');
     const cards = document.querySelectorAll('.rec-card');
+
+    if (container && typeof window.distributeMenuCards === 'function') {
+        container.style.opacity = '0.2';
+        container.style.transform = 'translateY(4px)';
+        setTimeout(() => {
+            window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container', category);
+            container.style.opacity = '1';
+            container.style.transform = 'translateY(0)';
+        }, 180);
+        return;
+    }
 
     if (grid) {
         grid.style.opacity = '0.2';
@@ -1685,9 +1824,9 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
 
     document.querySelectorAll('.cat-circle-btn').forEach(btn => {
         btn.classList.remove('active-cat');
-        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-[#E06D24]', 'ring-2', 'ring-[#E06D24]/30', 'scale-105');
+        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-neutral-900', 'ring-2', 'ring-neutral-900/20', 'scale-105');
         btn.querySelector('.cat-circle-img-wrap')?.classList.add('border-neutral-200/90');
-        btn.querySelector('.cat-circle-label')?.classList.remove('text-[#E06D24]', 'font-bold');
+        btn.querySelector('.cat-circle-label')?.classList.remove('text-neutral-900', 'font-bold');
         btn.querySelector('.cat-circle-label')?.classList.add('text-neutral-800');
     });
 
@@ -1696,9 +1835,9 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
         targetCategory = 'all';
     } else if (buttonEl) {
         buttonEl.classList.add('active-cat');
-        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-[#E06D24]', 'ring-2', 'ring-[#E06D24]/30', 'scale-105');
+        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-neutral-900', 'ring-2', 'ring-neutral-900/20', 'scale-105');
         buttonEl.querySelector('.cat-circle-img-wrap')?.classList.remove('border-neutral-200/90');
-        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-[#E06D24]', 'font-bold');
+        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-neutral-900', 'font-bold');
         buttonEl.querySelector('.cat-circle-label')?.classList.remove('text-neutral-800');
     }
 
@@ -2821,7 +2960,7 @@ window.switchReviewSlide = function(slideIndex) {
 
     dots.forEach((dot, idx) => {
         if (idx === slideIndex) {
-            dot.className = 'review-dot w-6 h-2 bg-[#E06D24] rounded-full transition-all duration-300';
+            dot.className = 'review-dot w-6 h-2 bg-[#1F1F1F] rounded-full transition-all duration-300';
         } else {
             dot.className = 'review-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
         }

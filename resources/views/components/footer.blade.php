@@ -35,6 +35,7 @@
 @endphp
 
 <footer id="global-footer" 
+        data-navbar-theme="dark"
         class="relative bg-[#111113] text-zinc-300 pt-16 pb-8 border-t border-white/10 overflow-hidden font-body select-none-bg"
         style="background-color: #111113;">
 

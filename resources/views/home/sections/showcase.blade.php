@@ -2,7 +2,7 @@
      PRODUCT SHOWCASE SEQUENCE (SCROLL-TRIGGERED FLOATING INGREDIENTS & CRAFT STORY)
      Theme: Luxury Editorial Monochrome (Putih, Hitam, Abu-abu)
      ========================================================================= -->
-<section id="product-showcase" class="relative bg-[#FAF8F5] text-neutral-900 overflow-hidden border-b border-neutral-200/80">
+<section id="product-showcase" class="relative bg-[#F9F9F9] text-neutral-900 overflow-hidden border-b border-neutral-200/80">
 
     <!-- MASTER PINNED STAGE -->
     <div id="product-showcase-pin" class="showcase-pinned-stage relative flex flex-col justify-center items-center py-12 lg:py-16">
@@ -250,7 +250,7 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             
             <!-- Card 1: Nucomu Coffee (Signature) -->
-            <div class="showcase-thumb-item showcase-thumb-card bg-[#FAF8F5] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
+            <div class="showcase-thumb-item showcase-thumb-card bg-[#F9F9F9] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
                 <div>
                     <div class="relative aspect-square rounded-xl overflow-hidden bg-neutral-100 mb-3 border border-neutral-200/60">
                         <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=800" 
@@ -276,7 +276,7 @@
             </div>
 
             <!-- Card 2: Banoffee -->
-            <div class="showcase-thumb-item showcase-thumb-card bg-[#FAF8F5] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
+            <div class="showcase-thumb-item showcase-thumb-card bg-[#F9F9F9] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
                 <div>
                     <div class="relative aspect-square rounded-xl overflow-hidden bg-neutral-100 mb-3 border border-neutral-200/60">
                         <img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?auto=format&fit=crop&q=80&w=800" 
@@ -302,7 +302,7 @@
             </div>
 
             <!-- Card 3: Basque Burnt Cheesecake -->
-            <div class="showcase-thumb-item showcase-thumb-card bg-[#FAF8F5] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
+            <div class="showcase-thumb-item showcase-thumb-card bg-[#F9F9F9] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
                 <div>
                     <div class="relative aspect-square rounded-xl overflow-hidden bg-neutral-100 mb-3 border border-neutral-200/60">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtV8I5EXKu32uYEfKT4WGrWx_ff9JizVDKZYhlBHCpPLkHuYNRdUSoSHGp-Zc4SAAiAjs61tKPWurUmdfI68at-x7a_kiGj4N31Jq8H5rp694k2LcQxExxSptiRnuOudGmFpYVd0rs5YGiZHpPTj5bT-jbZZn5e5gO1l-yYRPKTtp38UzHxVvuLIeBro1FMw5JE-8LnB_Tud6NaQV-TeSFgc40dMGLJpGB2IhhyKBoPCsN5mKB4yZW" 
@@ -328,7 +328,7 @@
             </div>
 
             <!-- Card 4: Mix Platter -->
-            <div class="showcase-thumb-item showcase-thumb-card bg-[#FAF8F5] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
+            <div class="showcase-thumb-item showcase-thumb-card bg-[#F9F9F9] border border-neutral-200/80 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between group">
                 <div>
                     <div class="relative aspect-square rounded-xl overflow-hidden bg-neutral-100 mb-3 border border-neutral-200/60">
                         <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrJGwSp9FdrUg5ecAwMNOJZoazn41-puOe_9mywfUHGU9KA0tvEZ_gxjN7rPKwWbzzsWr3vAnXUdOewdaBPJlg_66Q1r1l760AYrH5ghVC_MAhoLOcRD9qJdqh5BZcy4SQXWGljA3RgwWhhXLE44h168Wu4DLSjhLnj0casL29Hhq9J6FCkxb4csnVw4oR6V6DdQpF8I6HUvt15GL_tX4p9fGsrPFZer8U1qRqsiOAlMwXjNI-6FRB" 

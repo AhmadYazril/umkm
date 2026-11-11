@@ -13,7 +13,7 @@
                 extend: {
                     colors: {
                         'ink-black': '#191919',
-                        'warm-ivory': '#FAF8F5',
+                        'warm-ivory': '#F9F9F9',
                         'warm-stone': '#F5F2EC',
                         'hairline': '#E5E5E5',
                     },

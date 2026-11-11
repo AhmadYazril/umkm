@@ -15,10 +15,10 @@
             theme: {
                 extend: {
                     colors: {
-                        warmIvory: '#FAF8F5',
+                        warmIvory: '#F9F9F9',
                         pureWhite: '#FFFFFF',
                         inkBlack: '#191919',
-                        charcoal: '#30302D',
+                        charcoal: '#252525',
                         warmStone: '#E5E5E5'
                     },
                     fontFamily: {
@@ -36,8 +36,8 @@
     </script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #FAF8F5; }
-        ::-webkit-scrollbar-thumb { background: #DAD7CF; border-radius: 9999px; }
+        ::-webkit-scrollbar-track { background: #F9F9F9; }
+        ::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 9999px; }
 
         .glass-card {
             background: #FFFFFF;
@@ -57,10 +57,10 @@
         }
     </style>
 </head>
-<body class="bg-[#FAF8F5] text-[#1C1C1C] font-sans selection:bg-[#1C1C1C] selection:text-white min-h-screen relative overflow-x-hidden">
+<body class="bg-[#F9F9F9] text-[#1C1C1C] font-sans selection:bg-[#1C1C1C] selection:text-white min-h-screen relative overflow-x-hidden">
 
     {{-- HEADER / NAVIGATION --}}
-    <header class="sticky top-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E5E5E5] px-6 py-4">
+    <header class="sticky top-0 z-50 bg-[#F9F9F9]/95 backdrop-blur-md border-b border-[#E5E5E5] px-6 py-4">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-300">
@@ -124,124 +124,8 @@
         </div>
     </section>
 
-    {{-- 2. REVIEWS --}}
-    <section id="reviews" class="py-12 px-4 relative z-10">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-8 space-y-2">
-                <div class="flex items-center justify-center gap-3">
-                    <span class="text-xs sm:text-[13px] font-bold text-[#666666] uppercase tracking-[0.22em] font-body">05 / ULASAN PENGUNJUNG</span>
-                    <div class="w-10 h-px bg-[#DDDDDD]" aria-hidden="true"></div>
-                </div>
-                <h2 class="text-2xl sm:text-3xl font-semibold text-[#1C1C1C] font-editorial">Kata Mereka Tentang Nucomu</h2>
-                <p class="text-xs text-[#666666] font-body">Pengalaman langsung dari para pengunjung Nucomu Cafe Tulungagung.</p>
-            </div>
-
-            <div class="max-w-3xl mx-auto mb-8">
-                <div id="reviewContainer"
-                     class="w-full bg-white rounded-story p-6 sm:p-10 relative overflow-hidden border border-[#E5E5E5] shadow-sm transition-all duration-500 font-body"
-                     onmouseenter="pauseReview()" onmouseleave="resumeReview()">
-
-                    <div class="space-y-6 relative z-10">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <img id="reviewAvatar" src="" class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-[#E5E5E5] shadow-xs bg-neutral-100">
-                                <div>
-                                    <h4 id="reviewName" class="text-base sm:text-lg font-bold text-[#1C1C1C]">Loading...</h4>
-                                    <p id="reviewHandle" class="text-xs text-[#8A8A8A] font-medium">Local Guide</p>
-                                </div>
-                            </div>
-                            <div id="reviewStars" class="flex text-[#1C1C1C] text-sm sm:text-base gap-1 bg-[#F5F5F5] px-3.5 py-1.5 rounded-full border border-[#E5E5E5]"></div>
-                        </div>
-
-                        <div class="relative py-2">
-                            <i class="fa-solid fa-quote-left text-3xl sm:text-4xl text-[#E5E5E5] absolute -top-4 -left-2"></i>
-                            <p id="reviewText" class="text-sm sm:text-base text-[#1C1C1C] leading-relaxed italic relative z-10 pl-3 sm:pl-4">"Ulasan..."</p>
-                        </div>
-
-                        <div id="reviewPhotoWrap" class="hidden rounded-2xl overflow-hidden border border-[#E5E5E5] max-h-52 bg-neutral-100">
-                            <img id="reviewPhotoImg" src="" alt="Foto Ulasan" class="w-full h-52 object-cover">
-                        </div>
-
-                        <div class="pt-4 border-t border-[#E5E5E5] flex items-center justify-between text-xs sm:text-sm">
-                            <span class="text-[#8A8A8A] text-xs">Pesanan Favorit:</span>
-                            <span id="reviewOrderTag" class="font-semibold text-[#1C1C1C] bg-[#F5F5F5] border border-[#E5E5E5] px-3.5 py-1.5 rounded-full text-xs sm:text-sm">
-                                <i class="fa-solid fa-mug-saucer mr-1.5 text-[#1C1C1C]"></i> Special Coffee
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center mt-5">
-                    <button onclick="openReviewModal()" class="text-xs sm:text-sm font-semibold text-[#1C1C1C] hover:text-black transition-colors inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-[#E5E5E5] hover:border-[#1C1C1C] shadow-2xs font-body">
-                        <i class="fa-solid fa-plus-circle text-[#1C1C1C]"></i> Tambah ulasan pengalaman Anda
-                    </button>
-                </div>
-            </div>
-
-            <div id="nucomuReviewsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 font-body">
-                @foreach($reviews as $rev)
-                    @php
-                        $cardImages = !empty($rev['review_images']) && is_array($rev['review_images'])
-                            ? array_slice($rev['review_images'], 0, 4)
-                            : (!empty($rev['review_image']) ? [$rev['review_image']] : []);
-                        $isHiddenInitially = $loop->index >= 3;
-                    @endphp
-                    <div class="bg-white rounded-2xl p-5 border border-[#E5E5E5] shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between {{ $isHiddenInitially ? 'extra-nucomu-review hidden' : '' }}">
-                        <div>
-                            <div class="flex items-start justify-between gap-2 mb-3">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ $rev['avatar_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' }}" referrerpolicy="no-referrer" class="w-10 h-10 rounded-full object-cover border border-[#E5E5E5] bg-neutral-100">
-                                    <div>
-                                        <h5 class="text-sm font-bold text-[#1C1C1C]">{{ $rev['name'] }}</h5>
-                                        <span class="text-[11px] text-[#8A8A8A] block">{{ $rev['handle'] ?? 'Pengunjung Nucomu' }}</span>
-                                    </div>
-                                </div>
-                                <span class="text-[10px] text-[#8A8A8A]">{{ $rev['time_ago'] ?? '' }}</span>
-                            </div>
-                            <div class="flex items-center gap-1 text-[#1C1C1C] text-xs mb-2">
-                                @for($i = 0; $i < ($rev['rating'] ?? 5); $i++)
-                                    <i class="fa-solid fa-star"></i>
-                                @endfor
-                            </div>
-                            <p class="text-xs text-[#555555] leading-relaxed mb-3 whitespace-pre-line">{{ $rev['content'] }}</p>
-                            @if(count($cardImages) > 1)
-                                <div class="grid grid-cols-2 gap-1.5 mb-3 rounded-xl overflow-hidden border border-[#E5E5E5]">
-                                    @foreach($cardImages as $imgUrl)
-                                        <div class="aspect-[4/3] bg-neutral-100 overflow-hidden">
-                                            <img src="{{ $imgUrl }}" alt="Foto ulasan {{ $rev['name'] }}" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover">
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @elseif(count($cardImages) === 1)
-                                <div class="mb-3 rounded-xl overflow-hidden border border-[#E5E5E5] h-36 bg-neutral-100">
-                                    <img src="{{ $cardImages[0] }}" alt="Foto ulasan {{ $rev['name'] }}" referrerpolicy="no-referrer" loading="lazy" class="w-full h-full object-cover">
-                                </div>
-                            @endif
-                        </div>
-                        <div class="pt-2.5 border-t border-[#E5E5E5] flex items-center justify-between text-[11px]">
-                            <span class="text-[#8A8A8A]">Favorit:</span>
-                            <span class="text-[#1C1C1C] font-medium bg-[#F5F5F5] border border-[#E5E5E5] px-2.5 py-0.5 rounded-full">
-                                <i class="fa-solid fa-mug-saucer mr-1 text-[10px] text-[#1C1C1C]"></i> {{ $rev['order_tag'] ?? 'Menu Nucomu' }}
-                            </span>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            @if(count($reviews) > 3)
-                <div class="text-center mt-6">
-                    <button type="button"
-                            id="toggleNucomuReviewsBtn"
-                            onclick="toggleNucomuReviews()"
-                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white hover:bg-[#1C1C1C] hover:text-white border border-[#1C1C1C] text-xs sm:text-sm font-bold text-[#1C1C1C] shadow-2xs hover:shadow-xs transition-all font-body">
-                        <i class="fa-solid fa-layer-group"></i>
-                        <span id="toggleNucomuReviewsText">View All Ulasan ({{ count($reviews) }} Ulasan)</span>
-                        <i id="toggleNucomuReviewsChevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-300"></i>
-                    </button>
-                </div>
-            @endif
-        </div>
-    </section>
+    {{-- 2. REVIEWS (UNIFIED MIXED-MONOCHROME INTERACTIVE ANIMATIONS) --}}
+    @include('home.sections.reviews', ['dynamicReviews' => $reviews])
 
     {{-- MODAL ULASAN (MONOCHROME) --}}
     <div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1C1C]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeReviewModal()">
@@ -378,7 +262,7 @@
         let isReviewPaused = false;
 
         function updateReviewUI() {
-            if (!reviews.length) return;
+            if (!reviews.length || !document.getElementById('reviewName')) return;
             const r = reviews[reviewIndex];
             document.getElementById('reviewName').innerText = r.name;
             document.getElementById('reviewHandle').innerText = r.handle || 'Pengunjung Nucomu';

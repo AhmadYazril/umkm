@@ -361,7 +361,7 @@
                                 <h3 id="mockTitle" class="text-lg font-bold text-white leading-tight max-w-md drop-shadow">Judul Banner</h3>
                                 <p id="mockDesc" class="text-[11px] text-stone-200 mt-1 max-w-sm line-clamp-2">Keterangan promo akan tampil di sini...</p>
                                 <div class="mt-3">
-                                    <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold text-white bg-[#E06D24]">PESAN SEKARANG</span>
+                                    <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold text-white bg-[#1F1F1F]">PESAN SEKARANG</span>
                                 </div>
                             </div>
                         </div>
