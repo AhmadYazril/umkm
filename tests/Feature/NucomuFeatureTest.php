@@ -133,6 +133,12 @@ class NucomuFeatureTest extends TestCase
         $response->assertSee('Muhammad Kaisi');
         $response->assertSee('Tani Kopi');
         $response->assertSee('Aulia Rahma');
+        $response->assertSee('data-anim-mode="stacked-3d"', false);
+        $response->assertSee('openSingleReviewModal(', false);
+        $response->assertSee('id="singleReviewModal"', false);
+        $response->assertSee('const HOME_REVIEW_INTERVAL = 5000;', false);
+        $response->assertDontSee('id="allReviewsGrid"', false);
+        $response->assertDontSee('Mode Animasi:', false);
     }
 
     public function test_reservation_form_displays_bridal_and_birthday_decoration_packages(): void
