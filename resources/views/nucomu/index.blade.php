@@ -15,10 +15,10 @@
             theme: {
                 extend: {
                     colors: {
-                        warmIvory: '#FAF8F5',
+                        warmIvory: '#F9F9F9',
                         pureWhite: '#FFFFFF',
                         inkBlack: '#191919',
-                        charcoal: '#30302D',
+                        charcoal: '#252525',
                         warmStone: '#E5E5E5'
                     },
                     fontFamily: {
@@ -36,8 +36,8 @@
     </script>
     <style>
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #FAF8F5; }
-        ::-webkit-scrollbar-thumb { background: #DAD7CF; border-radius: 9999px; }
+        ::-webkit-scrollbar-track { background: #F9F9F9; }
+        ::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 9999px; }
 
         .glass-card {
             background: #FFFFFF;
@@ -57,10 +57,10 @@
         }
     </style>
 </head>
-<body class="bg-[#FAF8F5] text-[#1C1C1C] font-sans selection:bg-[#1C1C1C] selection:text-white min-h-screen relative overflow-x-hidden">
+<body class="bg-[#F9F9F9] text-[#1C1C1C] font-sans selection:bg-[#1C1C1C] selection:text-white min-h-screen relative overflow-x-hidden">
 
     {{-- HEADER / NAVIGATION --}}
-    <header class="sticky top-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E5E5E5] px-6 py-4">
+    <header class="sticky top-0 z-50 bg-[#F9F9F9]/95 backdrop-blur-md border-b border-[#E5E5E5] px-6 py-4">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-3 group">
                 <div class="w-10 h-10 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-300">

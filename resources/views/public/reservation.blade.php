@@ -6,7 +6,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div class="text-center max-w-2xl mx-auto mb-10">
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E06D24]/10 border border-[#E06D24]/20 text-[#E06D24] text-xs font-bold uppercase tracking-widest mb-2">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/10 border border-neutral-900/20 text-neutral-900 text-xs font-bold uppercase tracking-widest mb-2">
                 <span class="material-symbols-outlined text-sm">celebration</span>
                 <span>Formulir Kunjungan &amp; Paket Acara</span>
             </div>
@@ -67,7 +67,7 @@
                     'name' => 'Paket Dekorasi C',
                     'price' => '100K',
                     'badge' => 'Best Value',
-                    'badge_style' => 'bg-[#E06D24]/10 text-[#E06D24] border-[#E06D24]/25',
+                    'badge_style' => 'bg-neutral-900/10 text-neutral-900 border-neutral-900/25',
                     'desc' => 'Paket 35K + 1 whole cheesecake diameter 10cm + 1 minuman nucomu coffee',
                     'highlights' => ['Semua Paket 35K', '+ 1 Whole Cheesecake Ø 10cm', '+ 1 Minuman Nucomu Coffee'],
                 ],
@@ -246,20 +246,20 @@
                     <input type="hidden" id="page-eventPackage" name="eventPackage" value="">
 
                     <div id="page-empty-cat-prompt" class="rounded-xl border border-dashed border-stone-300 bg-white/80 px-4 py-4 text-center">
-                        <span class="material-symbols-outlined text-[#E06D24] text-xl mb-1 block">touch_app</span>
+                        <span class="material-symbols-outlined text-neutral-900 text-xl mb-1 block">touch_app</span>
                         <p class="text-xs font-semibold text-ink-black">
                             Klik salah satu kategori di atas jika Anda menginginkan paket dekorasi (opsional)
                         </p>
                     </div>
 
                     <!-- SECTION 1: BRIDAL -->
-                    <div id="page-sec-bridal" class="hidden rounded-2xl bg-white border-2 border-[#E06D24]/30 p-4 sm:p-5">
+                    <div id="page-sec-bridal" class="hidden rounded-2xl bg-white border-2 border-neutral-900/30 p-4 sm:p-5">
                         <div class="flex items-center gap-2.5 mb-3.5">
-                            <div class="w-9 h-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 flex items-center justify-center">
+                            <div class="w-9 h-9 rounded-xl bg-neutral-900/10 border border-neutral-900/20 text-neutral-900 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-lg">favorite</span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-rose-600 block">Pilihan Paket Dekorasi Bridal</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-700 block">Pilihan Paket Dekorasi Bridal</span>
                                 <h4 class="font-editorial text-xl font-bold text-ink-black">Paket Acara Bridal</h4>
                             </div>
                         </div>
@@ -269,11 +269,11 @@
                                 <div onclick="selectPagePackage('Bridal', '{{ $pkg['name'] }}', '{{ $pkg['price'] }}', '{{ $pkg['desc'] }}', this)"
                                      data-page-sec="Bridal"
                                      data-page-code="{{ $pkg['code'] }}"
-                                     class="page-pkg-card cursor-pointer rounded-xl p-4 border border-stone-200 bg-white hover:border-[#E06D24]/50 transition-all duration-200 flex flex-col justify-between">
+                                     class="page-pkg-card cursor-pointer rounded-xl p-4 border border-stone-200 bg-white hover:border-neutral-900/50 transition-all duration-200 flex flex-col justify-between">
                                     <div>
                                         <div class="flex items-center justify-between mb-2">
                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $pkg['badge_style'] }}">{{ $pkg['badge'] }}</span>
-                                            <span class="text-sm font-extrabold text-[#E06D24]">{{ $pkg['price'] }}</span>
+                                            <span class="text-sm font-extrabold text-neutral-900">{{ $pkg['price'] }}</span>
                                         </div>
                                         <h5 class="text-xs font-bold text-ink-black mb-1">{{ $pkg['name'] }}</h5>
                                         <p class="text-[11px] text-charcoal/80 leading-snug mb-3">{{ $pkg['desc'] }}</p>
@@ -289,13 +289,13 @@
                     </div>
 
                     <!-- SECTION 2: BIRTHDAY -->
-                    <div id="page-sec-birthday" class="hidden rounded-2xl bg-white border-2 border-[#E06D24]/30 p-4 sm:p-5">
+                    <div id="page-sec-birthday" class="hidden rounded-2xl bg-white border-2 border-neutral-900/30 p-4 sm:p-5">
                         <div class="flex items-center gap-2.5 mb-3.5">
-                            <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 flex items-center justify-center">
+                            <div class="w-9 h-9 rounded-xl bg-neutral-900/10 border border-neutral-900/20 text-neutral-900 flex items-center justify-center">
                                 <span class="material-symbols-outlined text-lg">cake</span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700 block">Pilihan Paket Dekorasi Birthday</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-neutral-700 block">Pilihan Paket Dekorasi Birthday</span>
                                 <h4 class="font-editorial text-xl font-bold text-ink-black">Paket Acara Birthday</h4>
                             </div>
                         </div>
@@ -305,11 +305,11 @@
                                 <div onclick="selectPagePackage('Birthday', '{{ $pkg['name'] }}', '{{ $pkg['price'] }}', '{{ $pkg['desc'] }}', this)"
                                      data-page-sec="Birthday"
                                      data-page-code="{{ $pkg['code'] }}"
-                                     class="page-pkg-card cursor-pointer rounded-xl p-4 border border-stone-200 bg-white hover:border-[#E06D24]/50 transition-all duration-200 flex flex-col justify-between">
+                                     class="page-pkg-card cursor-pointer rounded-xl p-4 border border-stone-200 bg-white hover:border-neutral-900/50 transition-all duration-200 flex flex-col justify-between">
                                     <div>
                                         <div class="flex items-center justify-between mb-2">
                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $pkg['badge_style'] }}">{{ $pkg['badge'] }}</span>
-                                            <span class="text-sm font-extrabold text-[#E06D24]">{{ $pkg['price'] }}</span>
+                                            <span class="text-sm font-extrabold text-neutral-900">{{ $pkg['price'] }}</span>
                                         </div>
                                         <h5 class="text-xs font-bold text-ink-black mb-1">{{ $pkg['name'] }}</h5>
                                         <p class="text-[11px] text-charcoal/80 leading-snug mb-3">{{ $pkg['desc'] }}</p>
@@ -366,9 +366,9 @@
         if (key === 'bridal') {
             if (secBridal) secBridal.classList.remove('hidden');
             if (secBirthday) secBirthday.classList.add('hidden');
-            if (btnBridal) btnBridal.className = 'text-left rounded-2xl p-4 border-2 border-[#E06D24] ring-2 ring-[#E06D24]/20 bg-[#FFFDFB] transition-all flex items-center justify-between gap-3 shadow-md';
-            if (btnBirthday) btnBirthday.className = 'text-left rounded-2xl p-4 border-2 border-stone-200 hover:border-amber-400 bg-white transition-all flex items-center justify-between gap-3 shadow-2xs';
-            if (checkBridal) checkBridal.className = 'w-6 h-6 rounded-full bg-[#E06D24] text-white flex items-center justify-center text-xs font-bold shrink-0';
+            if (btnBridal) btnBridal.className = 'text-left rounded-2xl p-4 border-2 border-[#1F1F1F] ring-2 ring-black/10 bg-neutral-50 transition-all flex items-center justify-between gap-3 shadow-md';
+            if (btnBirthday) btnBirthday.className = 'text-left rounded-2xl p-4 border-2 border-stone-200 hover:border-neutral-400 bg-white transition-all flex items-center justify-between gap-3 shadow-2xs';
+            if (checkBridal) checkBridal.className = 'w-6 h-6 rounded-full bg-[#1F1F1F] text-white flex items-center justify-center text-xs font-bold shrink-0';
             if (checkBirthday) checkBirthday.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent shrink-0';
 
             const firstCard = document.querySelector('.page-pkg-card[data-page-sec="Bridal"][data-page-code="A"]');
@@ -376,9 +376,9 @@
         } else {
             if (secBirthday) secBirthday.classList.remove('hidden');
             if (secBridal) secBridal.classList.add('hidden');
-            if (btnBirthday) btnBirthday.className = 'text-left rounded-2xl p-4 border-2 border-[#E06D24] ring-2 ring-[#E06D24]/20 bg-[#FFFDFB] transition-all flex items-center justify-between gap-3 shadow-md';
-            if (btnBridal) btnBridal.className = 'text-left rounded-2xl p-4 border-2 border-stone-200 hover:border-rose-400 bg-white transition-all flex items-center justify-between gap-3 shadow-2xs';
-            if (checkBirthday) checkBirthday.className = 'w-6 h-6 rounded-full bg-[#E06D24] text-white flex items-center justify-center text-xs font-bold shrink-0';
+            if (btnBirthday) btnBirthday.className = 'text-left rounded-2xl p-4 border-2 border-[#1F1F1F] ring-2 ring-black/10 bg-neutral-50 transition-all flex items-center justify-between gap-3 shadow-md';
+            if (btnBridal) btnBridal.className = 'text-left rounded-2xl p-4 border-2 border-stone-200 hover:border-neutral-400 bg-white transition-all flex items-center justify-between gap-3 shadow-2xs';
+            if (checkBirthday) checkBirthday.className = 'w-6 h-6 rounded-full bg-[#1F1F1F] text-white flex items-center justify-center text-xs font-bold shrink-0';
             if (checkBridal) checkBridal.className = 'w-6 h-6 rounded-full border border-stone-300 bg-white flex items-center justify-center text-xs font-bold text-transparent shrink-0';
 
             const firstCard = document.querySelector('.page-pkg-card[data-page-sec="Birthday"][data-page-code="A"]');
@@ -394,11 +394,11 @@
         document.getElementById('page-selected-desc').innerText = desc;
 
         document.querySelectorAll('.page-pkg-card').forEach(c => {
-            c.className = 'page-pkg-card cursor-pointer rounded-xl p-4 border border-stone-200 bg-white hover:border-[#E06D24]/50 transition-all duration-200 flex flex-col justify-between';
+            c.className = 'page-pkg-card cursor-pointer rounded-xl p-4 border border-stone-200 bg-white hover:border-neutral-900/50 transition-all duration-200 flex flex-col justify-between';
         });
 
         if (cardEl) {
-            cardEl.className = 'page-pkg-card cursor-pointer rounded-xl p-4 border border-[#E06D24] bg-[#FFFDFB] ring-2 ring-[#E06D24]/20 shadow-md transition-all duration-200 flex flex-col justify-between';
+            cardEl.className = 'page-pkg-card cursor-pointer rounded-xl p-4 border border-[#1F1F1F] bg-neutral-50 ring-2 ring-black/10 shadow-md transition-all duration-200 flex flex-col justify-between';
         }
     }
 </script>

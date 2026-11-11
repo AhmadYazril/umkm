@@ -4,7 +4,7 @@
 @section('meta_description', 'Jelajahi seluruh daftar menu minuman kopi, non-kopi, dessert artisanal, dan makanan ringan di Nucomu Cafe Tulungagung.')
 
 @section('content')
-<div class="pt-28 pb-24 bg-[#FAF8F5] min-h-screen border-b border-light-gray/60">
+<div class="pt-28 pb-24 bg-[#F9F9F9] min-h-screen border-b border-light-gray/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Breadcrumbs & Back Link -->

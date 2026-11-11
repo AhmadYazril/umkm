@@ -24,7 +24,6 @@
     }
     $reviewsArray = $allReviewsCollection->values()->all();
 @endphp
-
 <style>
     /* ======================================================================
        REVIEWS FULL-WIDTH 3D STAGE (2 FRONT CARDS + 1 STACKED LEFT & RIGHT)
@@ -521,10 +520,16 @@
             </div>
         </div>
 
+<<<<<<< HEAD
         <!-- Filter Sub-header -->
         <div class="px-5 sm:px-6 py-3 border-b border-[#E5E5E5] bg-[#FAF8F5] flex items-center justify-between gap-3 flex-wrap">
             <span class="text-xs font-semibold text-[#666666]">Filter Ulasan:</span>
             <div class="flex items-center gap-2">
+=======
+        <!-- Filter Bar inside Modal -->
+        <div class="px-5 sm:px-6 py-3 bg-[#F9F9F9] border-b border-[#E5E5E5] flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-2">
+>>>>>>> b4fbea5c3f222a33e673a257341a179e8c5794f9
                 <button type="button"
                         id="filterReviewsAllBtn"
                         onclick="filterModalReviews('all')"

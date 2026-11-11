@@ -1,5 +1,5 @@
 <!-- SECTION 3: MENU SHOWCASE (BEST MENU HERO SWITCHER & MENU CATEGORIES) -->
-<section id="menu" class="pt-16 sm:pt-20 lg:pt-28 pb-6 sm:pb-8 lg:pb-10 bg-[#FAF8F5] border-b border-light-gray/60 relative">
+<section id="menu" class="pt-16 sm:pt-20 lg:pt-28 pb-6 sm:pb-8 lg:pb-10 bg-[#F9F9F9] border-b border-light-gray/60 relative">
     
     <!-- =========================================================================
          PART 0: BEST MENU INTERACTIVE SHOWCASE (MATCHING USER REFERENCE DESIGN)
@@ -67,12 +67,12 @@
                              class="w-full h-full object-cover rounded-full shadow-inner transition-all duration-500">
                     </div>
 
-                    <!-- Gray Taupe Pill Order Button Underneath (Matching User Screenshot) -->
+                    <!-- Charcoal Pill Order Button Underneath -->
                     <div class="mt-6 sm:-mt-5 relative z-20">
                         <button id="best-hero-order-btn" 
-                                type="button"
+                                type="button" 
                                 onclick="orderCurrentBestMenuItem()" 
-                                class="px-7 sm:px-8 py-2.5 rounded-full bg-[#B5ACA5] hover:bg-[#9E958E] text-white font-medium text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer">
+                                class="px-7 sm:px-8 py-2.5 rounded-full bg-[#242424] hover:bg-[#383838] text-white font-medium text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer">
                             <span id="best-hero-price" class="font-bold">{{ $bestMenu[0]['price_formatted'] }}</span>
                             <span class="font-bold">ORDER</span>
                             <span class="material-symbols-outlined text-sm">chevron_right</span>
@@ -84,7 +84,7 @@
                         @foreach($bestMenu as $idx => $m)
                             <button type="button" 
                                     onclick="switchBestMenuItem({{ $idx }})" 
-                                    class="best-menu-dot {{ $idx === 0 ? 'w-5 h-1.5 bg-[#B5ACA5]' : 'w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-400' }} rounded-full transition-all duration-300"
+                                    class="best-menu-dot {{ $idx === 0 ? 'w-5 h-1.5 bg-[#242424]' : 'w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-400' }} rounded-full transition-all duration-300" 
                                     aria-label="Menu {{ $idx + 1 }}">
                             </button>
                         @endforeach
@@ -95,7 +95,7 @@
                 <div class="lg:col-span-3 flex flex-col space-y-3 lg:-mr-14">
                     @foreach($bestMenu as $idx => $m)
                         <div onclick="switchBestMenuItem({{ $idx }})" 
-                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#E5E2DE] text-neutral-900 shadow-xs' : 'bg-white hover:bg-neutral-50 text-neutral-800 border-b border-stone-100/90' }} flex items-center justify-between p-2.5 pl-3 sm:pl-4 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
+                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#242424] text-white shadow-md' : 'bg-white hover:bg-neutral-50 text-neutral-800 border-b border-stone-100/90' }} flex items-center justify-between p-2.5 pl-3 sm:pl-4 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
                             
                             <!-- Left: Thumbnail in white circle -->
                             <div class="w-11 h-11 rounded-full overflow-hidden p-0.5 bg-white border border-stone-200 shadow-xs shrink-0">

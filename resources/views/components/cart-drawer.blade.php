@@ -251,11 +251,11 @@
         z-index: 30;
     }
 
-    /* Keadaan 2: KLIK (Kartu terbuka penuh: border peach tipis #E7CDBF, bayangan lembut, foto TETAP membesar selama kartu terbuka) */
+    /* Keadaan 2: KLIK (Kartu terbuka penuh: border hitam arang tipis #242424, bayangan netral lembut, foto TETAP membesar selama kartu terbuka) */
     .menu-card.is-open {
         z-index: 35;
-        border-color: #E7CDBF !important;
-        box-shadow: 0 16px 36px rgba(231, 205, 191, 0.35) !important;
+        border-color: #242424 !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12) !important;
     }
     .menu-card.is-open .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
@@ -375,8 +375,8 @@
     }
     .floating-cart-pill:hover {
         transform: translateY(-2px);
-        border-color: #e8b49a;
-        box-shadow: 0 14px 38px rgba(44, 40, 37, 0.16);
+        border-color: #242424;
+        box-shadow: 0 14px 38px rgba(0, 0, 0, 0.14);
     }
     .floating-cart-pill:active {
         transform: scale(0.97);
@@ -395,11 +395,11 @@
     /* Drawer Scrollbar */
     .drawer-scroll {
         scrollbar-width: thin;
-        scrollbar-color: rgba(44, 40, 37, 0.25) #faf8f5;
+        scrollbar-color: rgba(0, 0, 0, 0.25) #F9F9F9;
     }
     .drawer-scroll::-webkit-scrollbar { width: 5px; }
-    .drawer-scroll::-webkit-scrollbar-track { background: #faf8f5; }
-    .drawer-scroll::-webkit-scrollbar-thumb { background: #ded8ce; border-radius: 9999px; }
+    .drawer-scroll::-webkit-scrollbar-track { background: #F9F9F9; }
+    .drawer-scroll::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 9999px; }
 
     /* Reduced Motion: matikan zoom dan gerak naik, ganti dengan perubahan garis tepi dan bayangan saja */
     @media (prefers-reduced-motion: reduce) {
