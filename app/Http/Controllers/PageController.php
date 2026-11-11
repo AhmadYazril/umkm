@@ -17,6 +17,23 @@ class PageController extends Controller
     {
         $gallery = GalleryItem::where('is_active', true)->orderBy('sort_order')->get();
 
+        if ($gallery->isEmpty()) {
+            $configGallery = config('nucomu.gallery', []);
+            $gallery = collect($configGallery)->map(function ($item) {
+                return (object) [
+                    'id' => $item['id'] ?? 1,
+                    'image' => $item['image'] ?? '',
+                    'image_url' => $item['image'] ?? '',
+                    'caption' => $item['title'] ?? 'Nucomu Cafe',
+                    'title' => $item['title'] ?? 'Nucomu Cafe',
+                    'description' => $item['description'] ?? 'Detail sudut arsitektur monokrom dan suasana hangat di Nucomu Cafe Tulungagung.',
+                    'category' => $item['category'] ?? 'Interior',
+                    'category_badge' => strtoupper($item['category'] ?? 'Interior'),
+                    'is_active' => true,
+                ];
+            });
+        }
+
         return view('public.gallery', compact('gallery'));
     }
 
