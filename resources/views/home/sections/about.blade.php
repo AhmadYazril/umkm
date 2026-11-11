@@ -125,16 +125,16 @@
                         <div class="w-12 h-px bg-[#54392B]/25" aria-hidden="true"></div>
                     </div>
 
-                    {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) dengan Animasi Mengetik Cepat --}}
+                    {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) (Statis tanpa animasi mengetik) --}}
                     <div class="story-anim-right story-delay-2 mb-5 min-h-[44px] sm:min-h-[52px] flex items-center">
                         <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight">
-                            <span id="about-typing-headline">{{ $brand['story_headline'] ?? ($brand['cafe_story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.') }}</span><span id="about-headline-cursor" class="inline-block w-[3px] h-[0.9em] bg-[#1C1C1C] align-middle ml-1 animate-pulse" aria-hidden="true"></span>
+                            <span id="about-typing-headline">Nucomu Cafe</span>
                         </h2>
                         <noscript>
-                            <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight">{{ $brand['story_headline'] ?? ($brand['cafe_story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.') }}</h2>
+                            <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[#1C1C1C] leading-[1.18] tracking-tight">Nucomu Cafe</h2>
                         </noscript>
                         <div class="sr-only">
-                            <h2>{{ $brand['story_headline'] ?? ($brand['cafe_story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.') }}</h2>
+                            <h2>Nucomu Cafe</h2>
                             <p>Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.</p>
                             <p>Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.</p>
                             <p>Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.</p>
@@ -275,8 +275,7 @@
         let isManuallyPaused = false;
         let typingStarted = false;
         let typingTimeouts = [];
-        const headSpeed = 18; // Ketik headline sangat cepat (18ms)
-        const typingSpeed = 7; // Ketik paragraf dipercepat lagi (7ms)
+        const typingSpeed = 4; // Ketik paragraf teks bawah dipercepat (4ms)
 
         function clearTypingTimers() {
             typingTimeouts.forEach(function(t) { clearTimeout(t); });
@@ -286,8 +285,8 @@
         function resetTyping() {
             clearTypingTimers();
             typingStarted = false;
-            if (headEl) headEl.textContent = '';
-            if (headCur) headCur.classList.remove('hidden');
+            if (headEl) headEl.textContent = headText;
+            if (headCur) headCur.classList.add('hidden');
             if (p1El) p1El.textContent = '';
             if (p2El) p2El.textContent = '';
             if (cur1) cur1.classList.remove('hidden');
@@ -309,33 +308,15 @@
                 return;
             }
 
-            // Bersihkan teks sebelum mengetik ulang
-            if (headEl) headEl.textContent = '';
-            if (headCur) headCur.classList.remove('hidden');
+            // Headline "Nucomu Cafe" langsung tampil statis tanpa animasi mengetik
+            if (headEl) headEl.textContent = headText;
+            if (headCur) headCur.classList.add('hidden');
             if (p1El) p1El.textContent = '';
             if (p2El) p2El.textContent = '';
             if (cur1) cur1.classList.remove('hidden');
             if (cur2) cur2.classList.add('hidden');
 
-            // 1. Ketik headline "Nucomu Cafe"
-            let h = 0;
-            function typeHead() {
-                if (!isVisible) return;
-                if (!headEl) {
-                    typeP1();
-                    return;
-                }
-                if (h < headText.length) {
-                    headEl.textContent = headText.slice(0, h + 1);
-                    h++;
-                    typingTimeouts.push(setTimeout(typeHead, headSpeed));
-                } else {
-                    if (headCur) headCur.classList.add('hidden');
-                    typingTimeouts.push(setTimeout(typeP1, 60));
-                }
-            }
-
-            // 2. Ketik Paragraf 1
+            // 1. Ketik Paragraf 1 (animasi mengetik dipercepat)
             let i = 0;
             function typeP1() {
                 if (!isVisible || !p1El) return;
@@ -346,7 +327,7 @@
                 } else {
                     if (cur1) cur1.classList.add('hidden');
                     if (cur2) cur2.classList.remove('hidden');
-                    // 3. Ketik Paragraf 2
+                    // 2. Ketik Paragraf 2 (animasi mengetik dipercepat)
                     let j = 0;
                     function typeP2() {
                         if (!isVisible || !p2El) return;
@@ -360,11 +341,11 @@
                             }, 3500));
                         }
                     }
-                    typingTimeouts.push(setTimeout(typeP2, 50));
+                    typingTimeouts.push(setTimeout(typeP2, 35));
                 }
             }
 
-            typingTimeouts.push(setTimeout(typeHead, 60));
+            typingTimeouts.push(setTimeout(typeP1, 40));
         }
 
         function updateUI(isPlaying) {
