@@ -72,7 +72,7 @@
     <div class="absolute inset-0" onclick="toggleMobileDrawer()"></div>
 
     <!-- Slide-in Drawer Panel (Monochrome Minimalist) -->
-    <div id="mobile-drawer-panel" class="absolute top-0 right-0 w-4/5 max-w-sm h-full bg-[#FAF8F5] shadow-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-black/10">
+    <div id="mobile-drawer-panel" class="absolute top-0 right-0 w-4/5 max-w-sm h-full bg-[#F9F9F9] shadow-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-black/10">
         <div>
             <!-- Drawer Header -->
             <div class="flex items-center justify-between pb-5 border-b border-black/10">

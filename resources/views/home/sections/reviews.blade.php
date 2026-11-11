@@ -23,7 +23,7 @@
         });
     }
 @endphp
-<section id="reviews" class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 relative z-10 bg-[#FAF8F5] text-[#1C1C1C] overflow-hidden border-b border-[#E5E5E5]">
+<section id="reviews" class="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 relative z-10 bg-[#F9F9F9] text-[#1C1C1C] overflow-hidden border-b border-[#E5E5E5]">
 
     <div class="max-w-6xl mx-auto relative z-10">
         
@@ -301,7 +301,7 @@
         </div>
 
         <!-- Filter Bar inside Modal -->
-        <div class="px-5 sm:px-6 py-3 bg-[#FAF8F5] border-b border-[#E5E5E5] flex flex-wrap items-center justify-between gap-3">
+        <div class="px-5 sm:px-6 py-3 bg-[#F9F9F9] border-b border-[#E5E5E5] flex flex-wrap items-center justify-between gap-3">
             <div class="flex flex-wrap items-center gap-2">
                 <button type="button"
                         id="filterReviewsAllBtn"

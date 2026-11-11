@@ -5,14 +5,19 @@
 
 :root {
     --ink-black: #191919;
-    --charcoal: #30302D;
+    --charcoal: #252525;
     --pure-white: #FFFFFF;
-    --warm-ivory: #F5F2EC;
-    --light-gray: #E5E4E0;
-    --medium-gray: #8A8A86;
-    --soft-beige: #E7DED1;
-    --warm-stone: #DAD7CF;
-    --accent-gold: #C2A378;
+    --warm-ivory: #F9F9F9;
+    --light-gray: #E5E5E5;
+    --medium-gray: #737373;
+    --soft-beige: #E5E5E5;
+    --warm-stone: #D4D4D4;
+    --accent-gold: #555555;
+    --espresso-brown: #252525;
+    --espresso-dark: #1A1A1A;
+    --quote-bg: #F1F1F1;
+    --quote-border: #E0E0E0;
+    --backplate-gray: #9E9E9E;
 
     /* Hero Theme Color & Navbar Dynamic Frosted Glass Variables */
     --hero-bg-color: #140E0A;
@@ -1233,9 +1238,16 @@ body {
     pointer-events: auto;
 }
 
-/* Blinking Cursor for Typewriter */
+/* Blinking Cursor for Quote Typewriter (1.5px, 1em, #666666, 1s steps blink) */
 .story-typing-cursor {
-    animation: story-cursor-blink 0.75s step-start infinite;
+    display: inline-block;
+    width: 1.5px;
+    height: 1em;
+    background-color: #666666;
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: story-cursor-blink 1s steps(2, start) infinite;
+    will-change: opacity;
 }
 
 @keyframes story-cursor-blink {

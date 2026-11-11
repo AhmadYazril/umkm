@@ -160,7 +160,7 @@
 <section id="home" 
          data-navbar-theme="dark"
          class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero pt-16 sm:pt-20"
-         style="background-color: #EADBC8; transition: background-color 0.8s ease;">
+         style="background-color: #F9F9F9; transition: background-color 0.8s ease;">
 
     <!-- Soft feathered ambient glow for warmth and depth -->
     <div class="absolute inset-0 pointer-events-none z-1" 
@@ -177,7 +177,7 @@
                 <div class="hero-slide-item hero-banner-slide absolute inset-0 w-full h-full flex items-center justify-center {{ $loop->first ? 'active z-10' : 'opacity-0 pointer-events-none z-0' }}"
                      data-slide-index="{{ $loop->index }}"
                      data-layout-mode="{{ $banner->layout_mode ?: 'poster' }}"
-                     data-bg-color="#FAF8F5">
+                     data-bg-color="#F9F9F9">
                     
                     @if(($banner->layout_mode ?: 'poster') === 'poster')
                         <!-- -----------------------------------------------------------------
@@ -233,7 +233,7 @@
                             <!-- Text Content on Top -->
                             <div class="relative z-20 max-w-6xl mx-auto px-6 sm:px-10 lg:px-14 py-12 lg:py-16 w-full text-left hero-text-content">
                                 @if($banner->subtitle)
-                                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#F6DFD2] mb-1.5 leading-tight">
+                                    <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-stone-300 mb-1.5 leading-tight">
                                         {{ $banner->subtitle }}
                                     </p>
                                 @endif
@@ -243,11 +243,11 @@
                                 </h1>
 
                                 <div class="inline-flex items-center space-x-2 mb-3 bg-white/15 backdrop-blur-md px-3.5 py-1 rounded-full border border-white/25 shadow-2xs">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                     <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-white">
                                         Nucomu Promo • Tulungagung
                                     </span>
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                    <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                 </div>
 
                                 @if($banner->description)
@@ -258,11 +258,11 @@
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                       class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
+                                       class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                         {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                     </a>
                                     <a href="#menu" 
-                                       class="inline-flex items-center justify-center bg-white/20 hover:bg-white text-white hover:text-[#54392B] border border-white/40 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
+                                       class="inline-flex items-center justify-center bg-white/20 hover:bg-white text-white hover:text-[#1F1F1F] border border-white/40 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
                                         DAFTAR MENU
                                     </a>
                                 </div>
@@ -280,36 +280,36 @@
                                 <!-- Text Column (Left) -->
                                 <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
                                     @if($banner->subtitle)
-                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#3C281E] mb-1.5 leading-tight">
+                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#555555] mb-1.5 leading-tight">
                                             {{ $banner->subtitle }}
                                         </p>
                                     @endif
 
-                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#2A1D17] leading-[1.08] mb-3 tracking-tight" style="font-variant-numeric: lining-nums;">
+                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#1F1F1F] leading-[1.08] mb-3 tracking-tight" style="font-variant-numeric: lining-nums;">
                                         {{ $banner->title }}
                                     </h1>
 
-                                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-[#54392B]/15 shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
-                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#54392B]">
+                                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-neutral-200 shadow-2xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
+                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#555555]">
                                             Nucomu Promo • Tulungagung
                                         </span>
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                     </div>
 
                                     @if($banner->description)
-                                        <p class="font-body text-xs sm:text-sm text-[#4A3B32] max-w-lg leading-relaxed mb-6 font-normal">
+                                        <p class="font-body text-xs sm:text-sm text-[#555555] max-w-lg leading-relaxed mb-6 font-normal">
                                             {{ $banner->description }}
                                         </p>
                                     @endif
 
                                     <div class="flex flex-wrap items-center gap-3">
                                         <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                           class="inline-flex items-center justify-center bg-[#E06D24] hover:bg-[#c95b17] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-95 cursor-pointer">
+                                           class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                             {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                         </a>
                                         <a href="#menu" 
-                                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#54392B] border border-[#54392B]/30 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#1F1F1F] border border-neutral-300 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                                             DAFTAR MENU
                                         </a>
                                     </div>
@@ -330,8 +330,8 @@
                                                  alt="{{ $banner->title }}"
                                                  class="w-full h-full object-cover rounded-[24px] desktop-banner-img">
                                         @endif
-                                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#54392B] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[#E06D24]"></span>
+                                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#252525] border border-white/60 shadow-sm flex items-center space-x-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
                                             <span>{{ $banner->subtitle ?: 'Special Banner' }}</span>
                                         </div>
                                     </div>
@@ -652,14 +652,14 @@
         @if($activeBanners->count() > 1)
             <div class="hero-controls-bar hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="desktop-hero-dots">
                 @foreach($activeBanners as $b)
-                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#E06D24]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
+                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#1F1F1F]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
                 @endforeach
             </div>
         @endif
 
         <!-- Mobile Indicator Dots (4 Slide Hero Bawaan) -->
         <div class="hero-controls-bar flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="mobile-hero-dots">
-            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300" aria-label="Slide 1"></button>
+            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#1F1F1F] transition-all duration-300" aria-label="Slide 1"></button>
             <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
             <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
             <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4"></button>

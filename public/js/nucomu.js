@@ -604,7 +604,7 @@ function renderHeroSlide(index) {
         const isBanner = slides[index]?.classList.contains('hero-banner-slide');
         if (idx === index) {
             dot.className = isBanner
-                ? 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#E06D24] transition-all duration-300'
+                ? 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#1F1F1F] transition-all duration-300'
                 : 'hero-dot-btn h-1.5 rounded-full transition-all duration-300 w-6 bg-white';
             dot.setAttribute('aria-selected', 'true');
             dot.setAttribute('aria-current', 'true');
@@ -860,61 +860,106 @@ function initOurStory() {
     // 2. Automatic Image Carousel with Smooth Crossfade & Manual Controls
     initStoryCarousel(prefersReducedMotion);
 
-    // 3. Typewriter animation for Quote
+    // 3. Typewriter animation for Quote (Single timer, layout shift free, threshold 0.4, 28-34ms)
     if (!quoteWrapper || !typewriterTextEl) return;
 
-    const quoteFullText = '“Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.”';
+    const quoteFullText = typewriterTextEl.getAttribute('data-quote') ||
+                          typewriterTextEl.textContent.trim() ||
+                          '“Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.”';
 
+    // Reduced Motion: Teks tampil utuh langsung, kursor dihapus
     if (prefersReducedMotion) {
         typewriterTextEl.textContent = quoteFullText;
-        if (typewriterCursor) typewriterCursor.classList.add('hidden');
+        if (typewriterCursor && typewriterCursor.parentNode) {
+            typewriterCursor.remove();
+        }
         return;
     }
 
-    // Reset text initially so it types character by character on view
+    // Reset teks target saat JS aktif (tinggi kartu tetap terjaga penuh oleh phantom element)
     typewriterTextEl.textContent = '';
-    if (typewriterCursor) typewriterCursor.classList.remove('hidden');
+    if (typewriterCursor) {
+        typewriterCursor.classList.remove('hidden');
+        typewriterCursor.style.opacity = '1';
+    }
 
-    let isTypingStarted = false;
+    let quoteTimer = null;
+    let charIndex = 0;
+    let isTyping = false;
+    let hasFinished = false;
+    let hasStarted = false;
 
-    const quoteObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting && !isTypingStarted) {
-                isTypingStarted = true;
-                quoteObserver.unobserve(quoteWrapper);
+    function clearQuoteTimer() {
+        if (quoteTimer) {
+            clearTimeout(quoteTimer);
+            quoteTimer = null;
+        }
+    }
 
-                let charIndex = 0;
-                const typingSpeed = 26; // 26ms per char (within 20–35ms spec)
+    function typeNextChar() {
+        if (document.hidden) return; // Tab tidak aktif, tunda sampai visibilitychange aktif kembali
 
-                function typeNextChar() {
-                    if (charIndex < quoteFullText.length) {
-                        typewriterTextEl.textContent = quoteFullText.slice(0, charIndex + 1);
-                        charIndex++;
-                        setTimeout(typeNextChar, typingSpeed);
-                    } else {
-                        // Typing complete: hold cursor briefly then smoothly fade it out
-                        setTimeout(() => {
-                            if (typewriterCursor) {
-                                typewriterCursor.style.transition = 'opacity 0.4s ease-out';
-                                typewriterCursor.style.opacity = '0';
-                                setTimeout(() => {
-                                    typewriterCursor.classList.add('hidden');
-                                }, 400);
-                            }
-                        }, 700);
-                    }
+        if (charIndex < quoteFullText.length) {
+            typewriterTextEl.textContent = quoteFullText.slice(0, charIndex + 1);
+            charIndex++;
+            // Kecepatan 30ms per karakter (spesifikasi: 28-34 ms per karakter)
+            quoteTimer = setTimeout(typeNextChar, 30);
+        } else {
+            // Pengetikan selesai utuh (termasuk tanda kutip dan tanda baca)
+            isTyping = false;
+            hasFinished = true;
+            clearQuoteTimer();
+
+            // Kursor tampil sesaat setelahnya (±1.2 detik), lalu memudar dan dihapus dari DOM
+            setTimeout(() => {
+                if (typewriterCursor && typewriterCursor.parentNode) {
+                    typewriterCursor.style.transition = 'opacity 0.35s ease-out';
+                    typewriterCursor.style.opacity = '0';
+                    setTimeout(() => {
+                        if (typewriterCursor && typewriterCursor.parentNode) {
+                            typewriterCursor.remove();
+                        }
+                    }, 350);
                 }
+            }, 1200);
+        }
+    }
 
-                // Brief delay after entering view before typing starts
-                setTimeout(typeNextChar, 200);
-            }
+    // Trigger IntersectionObserver saat kartu kutipan masuk viewport (threshold ±0.4)
+    if ('IntersectionObserver' in window) {
+        const quoteObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                // Ketik SEKALI saja per kunjungan halaman (statis, tidak mengulang saat scroll naik-turun)
+                if (entry.isIntersecting && !hasStarted) {
+                    hasStarted = true;
+                    isTyping = true;
+                    quoteObserver.unobserve(quoteWrapper);
+                    typeNextChar();
+                }
+            });
+        }, {
+            threshold: 0.4
         });
-    }, {
-        threshold: 0.2,
-        rootMargin: '0px 0px -30px 0px'
-    });
 
-    quoteObserver.observe(quoteWrapper);
+        quoteObserver.observe(quoteWrapper);
+    } else {
+        typewriterTextEl.textContent = quoteFullText;
+        if (typewriterCursor && typewriterCursor.parentNode) {
+            typewriterCursor.remove();
+        }
+    }
+
+    // Pause saat tab browser tidak aktif, lanjutkan saat aktif lagi (cegah timer ganda)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            clearQuoteTimer();
+        } else {
+            if (isTyping && !hasFinished) {
+                clearQuoteTimer();
+                typeNextChar();
+            }
+        }
+    });
 }
 
 /**
@@ -1683,22 +1728,22 @@ window.switchBestMenuItem = function(index) {
         const priceSpan = pill.querySelector('.pill-price');
         
         if (idx === index) {
-            pill.className = 'best-menu-pill active bg-[#E06D24] text-white shadow-lg shadow-orange-500/20 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
+            pill.className = 'best-menu-pill active bg-[#242424] text-white shadow-md flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
             if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-white';
             if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-bold block mt-0.5 text-white';
         } else {
             pill.className = 'best-menu-pill bg-white text-neutral-800 shadow-md hover:shadow-lg hover:-translate-x-1 border border-stone-100 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
             if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-neutral-800';
-            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-bold block mt-0.5 text-[#E06D24]';
+            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-medium block mt-0.5 text-neutral-600';
         }
     });
 
     // Update dots
     document.querySelectorAll('.best-menu-dot').forEach((dot, idx) => {
         if (idx === index) {
-            dot.className = 'best-menu-dot w-6 h-2 bg-[#E06D24] rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-5 h-1.5 bg-[#242424] rounded-full transition-all duration-300';
         } else {
-            dot.className = 'best-menu-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
         }
     });
 };
@@ -1779,9 +1824,9 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
 
     document.querySelectorAll('.cat-circle-btn').forEach(btn => {
         btn.classList.remove('active-cat');
-        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-[#E06D24]', 'ring-2', 'ring-[#E06D24]/30', 'scale-105');
+        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-neutral-900', 'ring-2', 'ring-neutral-900/20', 'scale-105');
         btn.querySelector('.cat-circle-img-wrap')?.classList.add('border-neutral-200/90');
-        btn.querySelector('.cat-circle-label')?.classList.remove('text-[#E06D24]', 'font-bold');
+        btn.querySelector('.cat-circle-label')?.classList.remove('text-neutral-900', 'font-bold');
         btn.querySelector('.cat-circle-label')?.classList.add('text-neutral-800');
     });
 
@@ -1790,9 +1835,9 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
         targetCategory = 'all';
     } else if (buttonEl) {
         buttonEl.classList.add('active-cat');
-        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-[#E06D24]', 'ring-2', 'ring-[#E06D24]/30', 'scale-105');
+        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-neutral-900', 'ring-2', 'ring-neutral-900/20', 'scale-105');
         buttonEl.querySelector('.cat-circle-img-wrap')?.classList.remove('border-neutral-200/90');
-        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-[#E06D24]', 'font-bold');
+        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-neutral-900', 'font-bold');
         buttonEl.querySelector('.cat-circle-label')?.classList.remove('text-neutral-800');
     }
 
@@ -2915,7 +2960,7 @@ window.switchReviewSlide = function(slideIndex) {
 
     dots.forEach((dot, idx) => {
         if (idx === slideIndex) {
-            dot.className = 'review-dot w-6 h-2 bg-[#E06D24] rounded-full transition-all duration-300';
+            dot.className = 'review-dot w-6 h-2 bg-[#1F1F1F] rounded-full transition-all duration-300';
         } else {
             dot.className = 'review-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
         }

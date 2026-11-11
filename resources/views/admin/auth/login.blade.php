@@ -19,8 +19,8 @@
                     colors: {
                         'ink-black': '#191919',
                         'charcoal': '#30302D',
-                        'warm-ivory': '#FAF8F5',
-                        'warm-stone': '#F5F2EC',
+                        'warm-ivory': '#F9F9F9',
+                        'warm-stone': '#E5E5E5',
                         'hairline': '#E5E5E5',
                         'muted-text': '#666666',
                     },
