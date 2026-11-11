@@ -66,9 +66,11 @@ class NucomuController extends Controller
             }
             if (! empty($dbSettings['cafe_story_headline'])) {
                 $brand['story_headline'] = $dbSettings['cafe_story_headline'];
+                $brand['cafe_story_headline'] = $dbSettings['cafe_story_headline'];
             }
             if (! empty($dbSettings['cafe_story_p1'])) {
                 $brand['story_p1'] = $dbSettings['cafe_story_p1'];
+                $brand['cafe_story_p1'] = $dbSettings['cafe_story_p1'];
             }
             $brand['story_p2'] = ! empty($dbSettings['cafe_story_p2'])
                 ? $dbSettings['cafe_story_p2']
