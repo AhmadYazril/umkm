@@ -60,6 +60,8 @@ return [
         'tiktok_url' => env('NUCOMU_TIKTOK_URL', 'https://www.tiktok.com/@nucomu.cafe'),
         'tiktok_handle' => '@nucomu.cafe',
         'google_maps_url' => env('NUCOMU_MAPS_URL', 'https://www.google.com/maps/place/Nucomu+Cafe/@-8.0765095,111.9002579,15z/data=!4m8!3m7!1s0x2e78e3a9244a4fe7:0x516fcae98c42d18!8m2!3d-8.0765099!4d111.918712!9m1!1b1!16s%2Fg%2F11ycy6lc94?entry=ttu&g_ep=EgoyMDI2MTAyMC4wIKXMDSoASAFQAw%3D%3D'),
+        'map_animation_video' => env('NUCOMU_MAP_ANIMATION_VIDEO', 'videos/nucomu_3d_map.mp4'),
+        'map_animation_poster' => env('NUCOMU_MAP_ANIMATION_POSTER', 'images/nucomu/nucomu_3d_map_poster.jpg'),
     ],
 
     'integrations' => [

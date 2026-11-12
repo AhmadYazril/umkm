@@ -6,10 +6,26 @@
         : 'https://maps.google.com/maps?q=' . urlencode($contact['address'] ?? 'Nucomu Cafe Plosokandang Kedungwaru Tulungagung') . '&t=&z=16&ie=UTF8&iwloc=&output=embed';
     $mapsDirectUrl = !empty($contact['maps_url']) 
         ? $contact['maps_url'] 
-        : config('nucomu.contact.google_maps_url', 'https://maps.google.com/?q=Nucomu+Cafe+Tulungagung');
+        : config('nucomu.contact.google_maps_url', 'https://www.google.com/maps/place/Nucomu+Cafe/@-8.0765095,111.9002579,15z/data=!4m8!3m7!1s0x2e78e3a9244a4fe7:0x516fcae98c42d18!8m2!3d-8.0765099!4d111.918712!9m1!1b1!16s%2Fg%2F11ycy6lc94');
+
+    // VIDEO ANIMASI 3D: Dapat diganti melalui database ($contact['map_video']), config nucomu.php, atau file public/videos/nucomu_3d_map.mp4
+    $mapVideoSrc = !empty($contact['map_video']) 
+        ? asset($contact['map_video']) 
+        : asset(config('nucomu.contact.map_animation_video', 'videos/nucomu_3d_map.mp4'));
+    $mapPosterSrc = !empty($contact['map_poster']) 
+        ? asset($contact['map_poster']) 
+        : asset(config('nucomu.contact.map_animation_poster', 'images/nucomu/nucomu_3d_map_poster.jpg'));
 @endphp
-<section id="contact" class="py-16 sm:py-20 lg:py-24 bg-[#FAFAFA] border-b border-[#E5E5E5] overflow-hidden">
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+<section id="contact" class="py-16 sm:py-20 lg:py-24 bg-[#FAFAFA] border-b border-[#E5E5E5] overflow-hidden relative">
+    
+    <!-- Subtle Elegant Watermark in Background (Matching Reference Mockup) -->
+    <div class="absolute inset-0 flex items-center justify-start pointer-events-none select-none overflow-hidden -z-0 opacity-[0.025]" aria-hidden="true">
+        <span class="text-[120px] sm:text-[180px] lg:text-[230px] font-serif font-black tracking-widest text-[#1C1C1C] uppercase leading-none whitespace-nowrap pl-4 sm:pl-8">
+            NUCOMU
+        </span>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
             
             <!-- Left Info Column (6 Cols) -->
@@ -208,91 +224,92 @@
 
             </div>
 
-            <!-- Right Visual Locator Frame (6 Cols - Interactive 3D Tilt Google Maps & Floating Badges) -->
+            <!-- Right Visual Locator Frame (6 Cols - Interactive 3D Animated Video & Direct Maps Integration) -->
             <div class="lg:col-span-6 reveal-on-scroll">
-                <div class="relative w-full max-w-[490px] sm:max-w-[530px] lg:max-w-[550px] mx-auto p-4 sm:p-5" 
-                     id="contact-map-perspective-wrap" 
+                <div class="relative w-full max-w-[560px] sm:max-w-[590px] lg:max-w-[620px] mx-auto select-none" 
+                     id="contact-3d-scene-container" 
                      style="perspective: 1200px;">
                     
-                    <!-- Backplate Plate (Tilted Soft Grey, 3D Tilt Interactive with Spring Return) -->
-                    <div id="contact-map-backplate" 
-                         class="absolute inset-0 bg-[#A8A8A8] rounded-[28px] sm:rounded-[36px] shadow-md origin-center pointer-events-none z-0 will-change-transform" 
-                         style="transform: rotate(-2deg); transform-style: preserve-3d;" 
-                         aria-hidden="true"></div>
+                    <!-- Ambient Glow Effect behind the Frame -->
+                    <div class="absolute -inset-4 sm:-inset-6 bg-gradient-to-tr from-amber-500/10 via-red-500/5 to-transparent rounded-[44px] filter blur-2xl opacity-70 pointer-events-none -z-10" aria-hidden="true"></div>
 
-                    <!-- Foreground Map Frame (White rounded card with border and shadow) -->
-                    <div id="contact-map-card" 
-                         class="relative z-10 w-full h-[320px] sm:h-[380px] lg:h-[400px] bg-white rounded-[24px] sm:rounded-[30px] p-2.5 sm:p-3 border border-[#E5E5E5] shadow-xl overflow-hidden flex flex-col group/map will-change-transform"
-                         style="transform-style: preserve-3d;">
+                    <!-- 3D Interactive Floating Card Wrapper (6s alternate float animation) -->
+                    <div id="contact-3d-float-wrapper" class="relative w-full transition-transform duration-500 will-change-transform">
                         
-                        <!-- Inner Container with Border Radius & Overflow Hidden (Ensures borders stay pristine during smooth zoom) -->
-                        <div class="w-full h-full relative rounded-[18px] sm:rounded-[22px] overflow-hidden bg-[#F0F0F0]">
-                            <!-- Zoomable Map Target (Smooth Zoom-in on Hover, Zoom-out on Leave) -->
-                            <div id="contact-map-zoom-target" class="w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] origin-center will-change-transform">
-                                <iframe src="{{ $mapsEmbedSrc }}" 
-                                        width="100%" 
-                                        height="100%" 
-                                        style="border:0;" 
-                                        allowfullscreen="" 
-                                        loading="lazy" 
-                                        referrerpolicy="no-referrer-when-downgrade" 
-                                        title="Peta Lokasi Nucomu Cafe Tulungagung"
-                                        class="w-full h-full object-cover">
-                                </iframe>
+                        <!-- Outer Frame with Border Design (Matching User Reference Image) -->
+                        <div id="contact-3d-interactive-card"
+                             class="group/card relative block w-full rounded-[28px] sm:rounded-[36px] lg:rounded-[40px] p-2 sm:p-2.5 bg-gradient-to-br from-[#F5F6F8] via-[#ECEEF2] to-[#E2E5E9] border border-[#D0D4DA] shadow-xl sm:shadow-2xl transition-all duration-300 ease-out will-change-transform cursor-pointer"
+                             onclick="openNucomuGoogleMaps(event)"
+                             title="Buka rute Nucomu Cafe di Google Maps">
+                            
+                            <!-- Video Inner Viewport with Rounded Corners -->
+                            <div class="relative w-full aspect-[16/9] rounded-[22px] sm:rounded-[30px] lg:rounded-[32px] overflow-hidden bg-[#EDEFF2] flex items-center justify-center shadow-inner cursor-pointer">
+                                
+                                <!-- 3D Animation Video (Easily replaceable via config or by replacing public/videos/nucomu_3d_map.mp4) -->
+                                <video 
+                                    id="contact-3d-video"
+                                    autoplay 
+                                    loop 
+                                    muted 
+                                    playsinline 
+                                    webkit-playsinline
+                                    preload="auto"
+                                    poster="{{ $mapPosterSrc }}"
+                                    class="w-full h-full object-cover object-center block pointer-events-none transform transition-transform duration-700 ease-out group-hover/card:scale-[1.02]"
+                                    aria-label="Animasi 3D Peta Lokasi Nucomu Cafe Jl. Mayor Sujadi Tulungagung">
+                                    <source src="{{ $mapVideoSrc }}" type="video/mp4">
+                                    Your browser does not support HTML5 video.
+                                </video>
+
+                                <!-- Top Gloss Sheen Reflection -->
+                                <div class="absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-white/30 to-transparent pointer-events-none" aria-hidden="true"></div>
+
+                                <!-- Glint Shimmer Sweep on Hover -->
+                                <span class="contact-card-shimmer absolute inset-0 -translate-x-full pointer-events-none bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-[-20deg] opacity-0 group-hover/card:opacity-100 transition-opacity" aria-hidden="true"></span>
                             </div>
+
+                            <!-- Prominent Interactive Pill Button: "Buka di Google Maps ↗" (Exact Match with Reference Image) -->
+                            <a href="{{ $mapsDirectUrl }}" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               id="btn-open-in-google-maps"
+                               onclick="openNucomuGoogleMaps(event)"
+                               class="absolute bottom-4 right-4 sm:bottom-5 sm:right-5 z-30 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full bg-[#1C1C1C] hover:bg-black text-white text-xs sm:text-[13px] font-semibold tracking-wide shadow-xl border border-white/20 transition-all duration-300 hover:scale-105 active:scale-95 group/pill focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1C1C1C] cursor-pointer"
+                               title="Buka rute Nucomu Cafe di Google Maps"
+                               aria-label="Buka di Google Maps">
+                                <!-- Pulsing Green Online/GPS Indicator Dot -->
+                                <span class="relative flex h-2 sm:h-2.5 w-2 sm:w-2.5">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 sm:h-2.5 w-2 sm:w-2.5 bg-emerald-400"></span>
+                                </span>
+                                <span class="font-body text-white">Buka di Google Maps</span>
+                                <svg class="w-3.5 h-3.5 text-white/90 group-hover/pill:translate-x-0.5 group-hover/pill:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+                            </a>
+
                         </div>
 
                     </div>
 
-                    <!-- Floating Badge 1 (Top-Left: Logo Badge) -->
-                    <div class="absolute -top-1 -left-1 sm:-top-2 sm:-left-2 z-20 bg-white/95 backdrop-blur-md rounded-2xl p-2.5 sm:p-3 shadow-lg border border-[#E5E5E5] flex flex-col items-center justify-center pointer-events-auto transition-transform duration-300 hover:scale-105">
-                        <img src="{{ asset('images/nucomu/footer_logo_monochrome.png') }}" 
-                             alt="Nucomu Cafe" 
-                             class="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-contain mb-1">
-                        <span class="text-[8.5px] sm:text-[9px] font-bold tracking-[0.2em] text-[#1C1C1C] uppercase font-body">NUCOMU</span>
-                    </div>
-
-                    <!-- Floating Badge 2 (Top-Right: Location Badge) -->
-                    <div class="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 z-20 bg-white/95 backdrop-blur-md rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 shadow-lg border border-[#E5E5E5] pointer-events-auto text-left transition-transform duration-300 hover:scale-105">
-                        <span class="text-[8.5px] sm:text-[9.5px] font-semibold text-[#8A8A8A] uppercase tracking-[0.18em] font-body block">
-                            LOKASI / TULUNGAGUNG
-                        </span>
-                        <p class="text-xs sm:text-[13px] font-bold text-[#1C1C1C] font-body mt-0.5">
-                            Plosokandang, Kedungwaru
-                        </p>
-                    </div>
-
-                    <!-- Floating Badge 3 (Bottom-Left: Rating & Direct Maps Link Badge) -->
-                    <div class="absolute -bottom-1 -left-1 sm:-bottom-2 sm:-left-2 z-20 bg-white/95 backdrop-blur-md rounded-2xl px-3.5 sm:px-4 py-2.5 sm:py-3 shadow-lg border border-[#E5E5E5] pointer-events-auto text-left transition-transform duration-300 hover:scale-105">
-                        <p class="text-xs sm:text-[13px] font-bold text-[#1C1C1C] font-body">
-                            Nucomu Cafe
-                        </p>
-                        <div class="flex items-center gap-1.5 text-[11px] text-[#666666] font-body font-medium mt-0.5">
-                            <span class="text-[#1C1C1C] font-bold">4.9</span>
-                            <span class="text-amber-500">★</span>
-                            <span>(74 ulasan)</span>
+                    <!-- Bottom Address & Directions Quick Bar (Exact Match with Reference Image) -->
+                    <div class="mt-3.5 px-3 flex items-center justify-between text-xs sm:text-[13px] text-[#555555] font-body">
+                        <div class="flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-red-600 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                            <span class="font-medium text-[#222222]">Jl. Mayor Sujadi, Plosokandang, Tulungagung</span>
                         </div>
                         <a href="{{ $mapsDirectUrl }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#1C1C1C] hover:text-[#555555] transition-colors mt-1 font-body group">
-                            <span class="group-hover:underline">Buka di Google Maps</span>
-                            <svg class="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                           class="inline-flex items-center gap-1 text-xs sm:text-[13px] font-semibold text-[#1C1C1C] hover:text-[#555555] transition-colors group/petunjuk shrink-0">
+                            <span class="group-hover/petunjuk:underline">Petunjuk Arah</span>
+                            <svg class="w-3.5 h-3.5 group-hover/petunjuk:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
                         </a>
                     </div>
-
-                    <!-- Floating Badge 4 (Bottom-Right: Circular Pin Button) -->
-                    <a href="{{ $mapsDirectUrl }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       aria-label="Buka Nucomu Cafe di Google Maps" 
-                       title="Buka Rute di Google Maps" 
-                       class="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 z-20 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#1C1C1C] hover:bg-black text-white flex items-center justify-center shadow-xl border-[3px] border-white transition-all duration-300 hover:scale-110 active:scale-95 group pointer-events-auto">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </a>
 
                 </div>
             </div>
@@ -357,6 +374,31 @@
     .contact-tab-btn.is-inactive:hover,
     .contact-tab-btn[aria-selected="false"]:hover {
         color: #1C1C1C !important;
+    }
+
+    /* 5. 3D Floating Tablet Animation (6s infinite alternate) */
+    @keyframes nucomu3DFloat {
+        0% {
+            transform: translateY(0px) rotateX(1deg) rotateY(-0.5deg);
+        }
+        50% {
+            transform: translateY(-8px) rotateX(-1.2deg) rotateY(0.6deg);
+        }
+        100% {
+            transform: translateY(0px) rotateX(1deg) rotateY(-0.5deg);
+        }
+    }
+    #contact-3d-float-wrapper {
+        animation: nucomu3DFloat 6s ease-in-out infinite alternate;
+        transform-style: preserve-3d;
+    }
+    #contact-3d-float-wrapper:hover {
+        animation-play-state: paused;
+    }
+
+    /* 6. Card Shimmer Glint Sweep on Hover */
+    #contact-3d-interactive-card:hover .contact-card-shimmer {
+        animation: contactGlintSwipe 0.9s ease-out forwards;
     }
 </style>
 
@@ -457,65 +499,93 @@
             });
         }
 
-        // --- 3D PERSPECTIVE TILT & MAP SMOOTH ZOOM ---
-        const wrap = document.getElementById('contact-map-perspective-wrap');
-        const backplate = document.getElementById('contact-map-backplate');
-        const card = document.getElementById('contact-map-card');
-        const zoomTarget = document.getElementById('contact-map-zoom-target');
+        // --- DIRECT GOOGLE MAPS OPEN CONTROLLER ---
+        let lastMapOpenTime = 0;
+        window.openNucomuGoogleMaps = function(e) {
+            const now = Date.now();
+            if (now - lastMapOpenTime < 600) return;
+            lastMapOpenTime = now;
+            if (e) {
+                if (typeof e.stopPropagation === 'function') e.stopPropagation();
+            }
+            const mapsUrl = @json($mapsDirectUrl);
+            window.open(mapsUrl, '_blank', 'noopener,noreferrer');
+        };
 
-        if (wrap && backplate && card) {
+        // --- 3D PERSPECTIVE INTERACTIVE TILT & CLICK FOR CONTACT 3D MAP ---
+        const sceneContainer = document.getElementById('contact-3d-scene-container');
+        const card3D = document.getElementById('contact-3d-interactive-card');
+        const video3D = document.getElementById('contact-3d-video');
+
+        if (sceneContainer && card3D) {
             let isHovering = false;
             let rafId = null;
-            const defaultBackplateDeg = -2;
+            let isPointerDown = false;
+            let pointerStartX = 0;
+            let pointerStartY = 0;
 
-            wrap.addEventListener('mouseenter', function() {
-                isHovering = true;
-                backplate.style.transition = 'transform 0.15s ease-out';
-                card.style.transition = 'transform 0.15s ease-out';
-                if (zoomTarget) {
-                    zoomTarget.style.transform = 'scale(1.08)';
+            card3D.addEventListener('pointerdown', function(e) {
+                if (e.button !== 0) return;
+                isPointerDown = true;
+                pointerStartX = e.clientX;
+                pointerStartY = e.clientY;
+            });
+
+            card3D.addEventListener('pointerup', function(e) {
+                if (!isPointerDown) return;
+                isPointerDown = false;
+                const moveDistance = Math.hypot(e.clientX - pointerStartX, e.clientY - pointerStartY);
+                // Klik / tap valid bila kursor bergerak kurang dari 14px (mencegah salah deteksi saat drag/scroll)
+                if (moveDistance < 14) {
+                    window.openNucomuGoogleMaps(e);
                 }
             });
 
-            wrap.addEventListener('mousemove', function(e) {
+            sceneContainer.addEventListener('mouseenter', function() {
+                isHovering = true;
+                card3D.style.transition = 'transform 0.15s ease-out, box-shadow 0.3s ease-out';
+            });
+
+            sceneContainer.addEventListener('mousemove', function(e) {
                 if (!isHovering) return;
-                const rect = wrap.getBoundingClientRect();
+                const rect = sceneContainer.getBoundingClientRect();
                 const normX = ((e.clientX - rect.left) / rect.width) - 0.5;
                 const normY = ((e.clientY - rect.top) / rect.height) - 0.5;
 
                 if (rafId) cancelAnimationFrame(rafId);
                 rafId = requestAnimationFrame(function() {
-                    const tiltMax = 9;
+                    const tiltMax = 7;
                     const rotateX = -normY * tiltMax;
                     const rotateY = normX * tiltMax;
-                    const dynamicZ = defaultBackplateDeg + (normX * 4);
-
-                    // 3D tilt on the grey background plate
-                    backplate.style.transform = 
-                        'perspective(1000px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) rotateZ(' + dynamicZ.toFixed(2) + 'deg) scale3d(1.03, 1.03, 1.03)';
-
-                    // Subtle parallax tilt on the foreground white card
-                    card.style.transform = 
-                        'perspective(1000px) rotateX(' + (rotateX * 0.35).toFixed(2) + 'deg) rotateY(' + (rotateY * 0.35).toFixed(2) + 'deg) translateZ(8px)';
+                    card3D.style.transform = 'perspective(1200px) rotateX(' + rotateX.toFixed(2) + 'deg) rotateY(' + rotateY.toFixed(2) + 'deg) scale3d(1.02, 1.02, 1.02)';
                 });
             });
 
-            wrap.addEventListener('mouseleave', function() {
+            sceneContainer.addEventListener('mouseleave', function() {
                 isHovering = false;
                 if (rafId) cancelAnimationFrame(rafId);
-
-                // Elastic bounce / spring back to resting angle
-                backplate.style.transition = 'transform 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                backplate.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(' + defaultBackplateDeg + 'deg) scale3d(1, 1, 1)';
-
-                card.style.transition = 'transform 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)';
-
-                // Smooth zoom out back to 1.0
-                if (zoomTarget) {
-                    zoomTarget.style.transform = 'scale(1)';
-                }
+                card3D.style.transition = 'transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease-out';
+                card3D.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
             });
+
+            // Ensure video keeps playing smoothly when scrolled into view
+            if (video3D) {
+                if ('IntersectionObserver' in window) {
+                    const videoObserver = new IntersectionObserver(function(entries) {
+                        entries.forEach(function(entry) {
+                            if (entry.isIntersecting) {
+                                const playPromise = video3D.play();
+                                if (playPromise !== undefined) {
+                                    playPromise.catch(function() {});
+                                }
+                            }
+                        });
+                    }, { threshold: 0.15 });
+                    videoObserver.observe(video3D);
+                } else {
+                    video3D.play().catch(function() {});
+                }
+            }
         }
 
         // Live Operational Hours Calculator

@@ -490,9 +490,9 @@
          onclick="event.stopPropagation()">
 
         <!-- Modal Header -->
-        <div class="p-5 sm:p-6 border-b border-[#E5E5E5] flex flex-wrap items-center justify-between gap-4 bg-white">
+        <div class="p-5 sm:p-6 border-b border-[#E5E5E5] flex flex-wrap items-center justify-between gap-4 bg-white shrink-0">
             <div class="flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] text-lg">
+                <div class="w-11 h-11 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] text-lg shrink-0">
                     <i class="fa-solid fa-star"></i>
                 </div>
                 <div>
@@ -514,22 +514,17 @@
                 </button>
                 <button type="button"
                         onclick="closeAllReviewsModal()"
+                        aria-label="Tutup ulasan"
                         class="w-9 h-9 rounded-full bg-white border border-[#E5E5E5] hover:bg-[#1C1C1C] hover:text-white flex items-center justify-center text-[#1C1C1C] transition-colors shadow-2xs">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
         </div>
 
-<<<<<<< HEAD
-        <!-- Filter Sub-header -->
-        <div class="px-5 sm:px-6 py-3 border-b border-[#E5E5E5] bg-[#FAF8F5] flex items-center justify-between gap-3 flex-wrap">
-            <span class="text-xs font-semibold text-[#666666]">Filter Ulasan:</span>
-            <div class="flex items-center gap-2">
-=======
         <!-- Filter Bar inside Modal -->
-        <div class="px-5 sm:px-6 py-3 bg-[#F9F9F9] border-b border-[#E5E5E5] flex flex-wrap items-center justify-between gap-3">
+        <div class="px-5 sm:px-6 py-3 bg-[#F9F9F9] border-b border-[#E5E5E5] flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <span class="text-xs font-semibold text-[#666666]">Filter Ulasan:</span>
             <div class="flex flex-wrap items-center gap-2">
->>>>>>> b4fbea5c3f222a33e673a257341a179e8c5794f9
                 <button type="button"
                         id="filterReviewsAllBtn"
                         onclick="filterModalReviews('all')"
@@ -598,6 +593,11 @@
                         </div>
                     </div>
                 @endforeach
+                <!-- Empty State Message when Filter has no results -->
+                <div id="allReviewsEmptyState" class="hidden col-span-full py-12 text-center font-body text-sm text-[#888888]">
+                    <i class="fa-regular fa-image text-2xl text-[#CCCCCC] block mb-2"></i>
+                    Belum ada ulasan dengan foto.
+                </div>
             </div>
         </div>
     </div>
@@ -722,7 +722,7 @@
 
 <!-- LIGHTBOX FOTO ULASAN -->
 <div id="reviewImageLightbox"
-     class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"
+     class="fixed inset-0 z-[70] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"
      onclick="closeReviewImagePreview()">
     <div class="relative max-w-3xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
         <button type="button"
@@ -943,6 +943,7 @@
 
         if (modal && content) {
             pauseHomeReview();
+            document.body.style.overflow = 'hidden';
             modal.classList.remove('opacity-0', 'pointer-events-none');
             content.classList.remove('scale-95');
             content.classList.add('scale-100');
@@ -956,7 +957,11 @@
             modal.classList.add('opacity-0', 'pointer-events-none');
             content.classList.remove('scale-100');
             content.classList.add('scale-95');
-            resumeHomeReview();
+            const allModal = document.getElementById('allReviewsModal');
+            if (!allModal || allModal.classList.contains('pointer-events-none')) {
+                document.body.style.overflow = '';
+                resumeHomeReview();
+            }
         }
     }
 
@@ -1024,6 +1029,8 @@
         const modal = document.getElementById('homeReviewModal');
         const modalContent = document.getElementById('homeModalContent');
         if (modal && modalContent) {
+            pauseHomeReview();
+            document.body.style.overflow = 'hidden';
             modal.classList.remove('opacity-0', 'pointer-events-none');
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
@@ -1038,6 +1045,11 @@
             modal.classList.add('opacity-0', 'pointer-events-none');
             modalContent.classList.remove('scale-100');
             modalContent.classList.add('scale-95');
+            const allModal = document.getElementById('allReviewsModal');
+            if (!allModal || allModal.classList.contains('pointer-events-none')) {
+                document.body.style.overflow = '';
+                resumeHomeReview();
+            }
         }
     }
 
@@ -1061,6 +1073,8 @@
         const modal = document.getElementById('allReviewsModal');
         const content = document.getElementById('allReviewsModalContent');
         if (modal && content) {
+            pauseHomeReview();
+            document.body.style.overflow = 'hidden';
             modal.classList.remove('opacity-0', 'pointer-events-none');
             content.classList.remove('scale-95');
             content.classList.add('scale-100');
@@ -1074,6 +1088,8 @@
             modal.classList.add('opacity-0', 'pointer-events-none');
             content.classList.remove('scale-100');
             content.classList.add('scale-95');
+            document.body.style.overflow = '';
+            resumeHomeReview();
         }
     }
 
@@ -1081,18 +1097,30 @@
         const items = document.querySelectorAll('#allReviewsModal .modal-review-item');
         const allBtn = document.getElementById('filterReviewsAllBtn');
         const photoBtn = document.getElementById('filterReviewsPhotoBtn');
+        const emptyState = document.getElementById('allReviewsEmptyState');
+        let visibleCount = 0;
 
         items.forEach(item => {
             if (mode === 'with-photo') {
                 if (item.getAttribute('data-has-photo') === '1') {
                     item.classList.remove('hidden');
+                    visibleCount++;
                 } else {
                     item.classList.add('hidden');
                 }
             } else {
                 item.classList.remove('hidden');
+                visibleCount++;
             }
         });
+
+        if (emptyState) {
+            if (visibleCount === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
 
         if (allBtn && photoBtn) {
             if (mode === 'with-photo') {
@@ -1111,6 +1139,8 @@
             closeSingleReviewModal();
             closeAllReviewsModal();
             closeHomeReviewModal();
+            document.body.style.overflow = '';
+            resumeHomeReview();
         }
     });
 
