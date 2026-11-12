@@ -1,7 +1,7 @@
 <!-- SECTION 2: ABOUT NUCOMU CAFE -->
 <section id="about" 
-         class="relative pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 overflow-hidden border-b border-[#DDDDDD]/80"
-         style="background-color: #EADBC8; transition: background-color 0.8s ease;">
+         class="relative pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 border-b border-[#DDDDDD]/80"
+         style="background-color: #EADBC8; transition: background-color 0.8s ease; overflow: hidden;">
 
     {{-- NoScript Accessibility Fallback: Ensures content is visible if JS is disabled --}}
     <noscript>
@@ -31,6 +31,8 @@
         </style>
     </noscript>
 
+
+
     {{-- Perimeter Decorative Element 1: Vertical Marginal Text on Left (Desktop Editorial Accent) --}}
     <div class="hidden xl:flex absolute left-5 2xl:left-8 top-1/3 -translate-y-1/2 flex-col items-center gap-6 pointer-events-none select-none z-10" aria-hidden="true">
         <span class="vertical-lr-editorial text-[10px] font-semibold tracking-[0.3em] uppercase text-[#7A6B60] font-body">
@@ -51,7 +53,11 @@
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
         <!-- SUBSECTION 2A: OUR STORY / ABOUT NUCOMU (3D ROOM TOUR VIDEO & CAFE PROFILE) -->
-        <div id="our-story-section" class="mb-20 sm:mb-24 lg:mb-28">
+        <div id="our-story-section" class="relative overflow-hidden mb-20 sm:mb-24 lg:mb-28">
+            {{-- Faded Watermark Background Text --}}
+            <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
+                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(100px, 18vw, 300px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; color: #54392B; opacity: 0.08; white-space: nowrap; display: block;">NUCOMU</span>
+            </div>
             {{-- TWO-COLUMN MAIN CONTENT --}}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
 
@@ -224,7 +230,12 @@
         </div>
 
         <!-- SUBSECTION 2B: FASILITAS CAFE (MODERN ELEGANT MONOCHROME — FLOATING GALLERY) -->
-        <div id="facilities" class="pt-14 sm:pt-18 lg:pt-22 border-t border-[#54392B]/15">
+        <div id="facilities" class="relative overflow-hidden pt-14 sm:pt-18 lg:pt-22 border-t border-[#54392B]/15">
+
+            {{-- Faded Watermark Background Text --}}
+            <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
+                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(100px, 18vw, 300px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; color: #54392B; opacity: 0.06; white-space: nowrap; display: block;">NUCOMU</span>
+            </div>
             
             <!-- 1. Introduction Header (Minimal Editorial Split) -->
             <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#54392B]/15 gap-4 reveal-fade-up">
