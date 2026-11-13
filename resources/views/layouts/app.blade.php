@@ -38,10 +38,11 @@
     <link rel="preload" as="image" href="{{ asset('images/hero/hero-welcome.webp') }}" type="image/webp" fetchpriority="high">
     @endif
 
-    <!-- Google Fonts: Cormorant Garamond, Manrope, Alex Brush & Plus Jakarta Sans -->
+    <!-- Google Fonts: Cormorant Garamond, Manrope, Alex Brush, Plus Jakarta Sans & Fraunces -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

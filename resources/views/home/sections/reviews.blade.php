@@ -1,4 +1,4 @@
-<!-- SECTION 6: UNIFIED REVIEWS SECTION (MIXED MONOCHROME INTERACTIVE ANIMATIONS) -->
+<!-- SECTION 6: UNIFIED REVIEWS SECTION (3D STAGE ANIMATION WITH GOOGLE MAPS CARDS STYLE) -->
 @php
     $allReviewsCollection = collect($dynamicReviews ?? []);
     if ($allReviewsCollection->isEmpty()) {
@@ -9,9 +9,10 @@
             })->values()->all();
 
             return [
+                'id' => $review['id'] ?? null,
                 'name' => $review['name'] ?? 'Pengunjung Nucomu',
                 'handle' => $review['handle'] ?? 'Local Guide · Ulasan',
-                'avatar_url' => $review['avatar'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
+                'avatar_url' => $review['avatar'] ?? null,
                 'rating' => (int) ($review['rating'] ?? 5),
                 'content' => $review['comment'] ?? '',
                 'order_tag' => $review['order_tag'] ?? 'Menu Nucomu',
@@ -23,85 +24,187 @@
         });
     }
     $reviewsArray = $allReviewsCollection->values()->all();
+
+    // Mapping avatar letter background colors matching Google Reviews
+    $avatarPalette = [
+        'D' => '#C2185B', // Dya slma (magenta/crimson)
+        'K' => '#7B1FA2', // Karina Wulan Cahyani (purple)
+        'T' => '#00897B', // Tani Kopi (teal)
+        'R' => '#1E88E5', // Rizky Pratama (blue)
+        'M' => '#43A047', // Muhammad Kaisi
+        'A' => '#E53935',
+        'F' => '#3949AB',
+        'B' => '#FB8C00',
+        'N' => '#00ACC1',
+    ];
 @endphp
+
 <style>
     /* ======================================================================
-       REVIEWS FULL-WIDTH 3D STAGE (2 FRONT CARDS + 1 STACKED LEFT & RIGHT)
-       Tanpa kotak background hitam, mentok full screen samping kanan kiri
+       PALET WARNA SECTION REVIEWS (CSS VARIABLES TERPUSAT)
+       ====================================================================== */
+    #reviews {
+        --nucomu-bg-page: #FFFFFF;
+        --nucomu-bg-container: #FFFFFF;
+        --nucomu-bg-container-fade: rgba(255, 255, 255, 0.75);
+        --nucomu-bg-container-transparent: rgba(255, 255, 255, 0);
+        --nucomu-border: rgba(43, 29, 22, 0.06);
+        --nucomu-container-shadow: 0 2px 10px rgba(43, 29, 22, 0.03);
+        --nucomu-text: #2B1D16;
+        --nucomu-accent: #54392B;
+        --nucomu-star: #E0A030;
+        --nucomu-card-bg: #FFFFFF;
+        --nucomu-card-border: #EEE8DE;
+        --nucomu-card-shadow: 0 3px 10px rgba(43, 29, 22, 0.08), 0 12px 28px -4px rgba(43, 29, 22, 0.16), 0 20px 38px -8px rgba(43, 29, 22, 0.14);
+        --nucomu-card-shadow-active: 0 2px 8px rgba(43, 29, 22, 0.08), 0 14px 30px -4px rgba(43, 29, 22, 0.22), 0 26px 50px -10px rgba(43, 29, 22, 0.22);
+        --nucomu-card-shadow-hover: 0 6px 14px rgba(43, 29, 22, 0.10), 0 20px 38px -4px rgba(43, 29, 22, 0.26), 0 32px 60px -10px rgba(43, 29, 22, 0.25);
+        --nucomu-btn-secondary-bg: #FFFFFF;
+        --nucomu-btn-secondary-border: #D8CBB8;
+        --nucomu-btn-secondary-hover: #F7F1E8;
+        --nucomu-btn-primary-bg: #2B1D16;
+        --nucomu-btn-primary-text: #F5EFE6;
+        --nucomu-btn-primary-hover: #3A2A21;
+
+        background-color: var(--nucomu-bg-page);
+        color: var(--nucomu-text);
+    }
+
+    /* ======================================================================
+       STAGE CONTAINER & EDGE FADES (BORDER SAMAR AGAR KARTU TERASA LEGA)
+       ====================================================================== */
+    #reviews .nucomu-reviews-stage {
+        background-color: var(--nucomu-bg-container);
+        border: 1px solid var(--nucomu-border);
+        padding-top: 18px;
+        padding-bottom: 18px;
+        box-shadow: var(--nucomu-container-shadow);
+    }
+
+    #reviews .nucomu-reviews-fade-left {
+        background: linear-gradient(
+            to right,
+            var(--nucomu-bg-container) 0%,
+            var(--nucomu-bg-container-fade) 48%,
+            var(--nucomu-bg-container-transparent) 100%
+        );
+    }
+
+    #reviews .nucomu-reviews-fade-right {
+        background: linear-gradient(
+            to left,
+            var(--nucomu-bg-container) 0%,
+            var(--nucomu-bg-container-fade) 48%,
+            var(--nucomu-bg-container-transparent) 100%
+        );
+    }
+
+    @media (min-width: 640px) {
+        #reviews .nucomu-reviews-stage {
+            padding-top: 18px;
+            padding-bottom: 20px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        #reviews .nucomu-reviews-stage {
+            padding-top: 20px;
+            padding-bottom: 22px;
+        }
+    }
+
+    /* ======================================================================
+       REVIEWS CAROUSEL STAGE (1 KARTU AKTIF TENGAH + KARTU SAMPING RINGAN)
        ====================================================================== */
     #reviews .nucomu-3d-viewport {
-        perspective: 1600px;
-        transform-style: preserve-3d;
+        perspective: none;
     }
 
     #reviews .nucomu-stage-card {
+        background-color: var(--nucomu-card-bg);
+        border: 1px solid var(--nucomu-card-border);
+        box-shadow: var(--nucomu-card-shadow);
         transition:
-            transform 0.68s cubic-bezier(0.22, 1, 0.36, 1),
-            opacity 0.68s cubic-bezier(0.22, 1, 0.36, 1),
-            filter 0.68s cubic-bezier(0.22, 1, 0.36, 1),
-            box-shadow 0.45s ease;
-        will-change: transform, opacity, filter;
+            transform 300ms ease,
+            opacity 300ms ease,
+            filter 300ms ease,
+            box-shadow 300ms ease;
+        will-change: transform, opacity;
         backface-visibility: hidden;
     }
 
-    /* 1. FRONT LEFT CARD (Tampil 2 card di depan - Kiri) */
+    #reviews .nucomu-stage-card:only-child {
+        transform: translate3d(0%, 0px, 0px) !important;
+    }
+
+    /* 1. ACTIVE CENTER CARD (Kartu Aktif Utama) */
+    #reviews .nucomu-stage-card.is-front-center {
+        z-index: 32;
+        opacity: 1;
+        filter: none;
+        transform: translate3d(0%, 0px, 0px) scale(1);
+        box-shadow: var(--nucomu-card-shadow-active);
+    }
+
+    /* 2. FRONT LEFT CARD (Kartu Tidak Aktif Kiri - Opacity 0.55, Scale 0.94, Tanpa Blur) */
     #reviews .nucomu-stage-card.is-front-left {
-        z-index: 30;
-        opacity: 1;
-        filter: blur(0px);
-        transform: translate3d(calc(-50% - 15px), -6px, 40px) rotateY(-3deg) scale(1.02);
-        box-shadow:
-            0 24px 60px -15px rgba(0, 0, 0, 0.16),
-            0 0 0 1px rgba(0, 0, 0, 0.08);
-    }
-    #reviews .nucomu-stage-card.is-front-left:hover {
-        transform: translate3d(calc(-50% - 15px), -10px, 48px) rotateY(-3deg) scale(1.04) !important;
-        box-shadow:
-            0 30px 70px -12px rgba(0, 0, 0, 0.22),
-            0 0 0 1.5px rgba(0, 0, 0, 0.12);
+        z-index: 25;
+        opacity: 0.55;
+        filter: none;
+        transform: translate3d(calc(-100% - 20px), 0px, 0px) scale(0.94);
+        box-shadow: var(--nucomu-card-shadow);
     }
 
-    /* 2. FRONT RIGHT CARD (Tampil 2 card di depan - Kanan) */
+    /* 3. FRONT RIGHT CARD (Kartu Tidak Aktif Kanan - Opacity 0.55, Scale 0.94, Tanpa Blur) */
     #reviews .nucomu-stage-card.is-front-right {
-        z-index: 30;
-        opacity: 1;
-        filter: blur(0px);
-        transform: translate3d(calc(50% + 15px), -6px, 40px) rotateY(3deg) scale(1.02);
-        box-shadow:
-            0 24px 60px -15px rgba(0, 0, 0, 0.16),
-            0 0 0 1px rgba(0, 0, 0, 0.08);
-    }
-    #reviews .nucomu-stage-card.is-front-right:hover {
-        transform: translate3d(calc(50% + 15px), -10px, 48px) rotateY(3deg) scale(1.04) !important;
-        box-shadow:
-            0 30px 70px -12px rgba(0, 0, 0, 0.22),
-            0 0 0 1.5px rgba(0, 0, 0, 0.12);
+        z-index: 25;
+        opacity: 0.55;
+        filter: none;
+        transform: translate3d(calc(100% + 20px), 0px, 0px) scale(0.94);
+        box-shadow: var(--nucomu-card-shadow);
     }
 
-    /* 3. STACKED LEFT CARD (Di belakangnya ditumpuk 1 di kiri) */
+    /* 4. STACKED LEFT CARD (Kartu Tepi Kiri - Tanpa Blur) */
     #reviews .nucomu-stage-card.is-stack-left {
         z-index: 15;
-        opacity: 0.72;
-        filter: blur(0.4px);
-        transform: translate3d(-148%, 8px, -70px) rotateY(15deg) scale(0.88);
-        box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.12);
-    }
-    #reviews .nucomu-stage-card.is-stack-left:hover {
-        opacity: 0.95;
-        filter: blur(0px);
+        opacity: 0.35;
+        filter: none;
+        transform: translate3d(calc(-193% - 36px), 0px, 0px) scale(0.86);
+        box-shadow: var(--nucomu-card-shadow);
     }
 
-    /* 4. STACKED RIGHT CARD (Di belakangnya ditumpuk 1 di kanan) */
+    /* 5. STACKED RIGHT CARD (Kartu Tepi Kanan - Tanpa Blur) */
     #reviews .nucomu-stage-card.is-stack-right {
         z-index: 15;
-        opacity: 0.72;
-        filter: blur(0.4px);
-        transform: translate3d(148%, 8px, -70px) rotateY(-15deg) scale(0.88);
-        box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.12);
+        opacity: 0.35;
+        filter: none;
+        transform: translate3d(calc(193% + 36px), 0px, 0px) scale(0.86);
+        box-shadow: var(--nucomu-card-shadow);
     }
-    #reviews .nucomu-stage-card.is-stack-right:hover {
-        opacity: 0.95;
-        filter: blur(0px);
+
+    /* HOVER INTERACTION ON DESKTOP ONLY */
+    @media (hover: hover) and (min-width: 1024px) {
+        #reviews .nucomu-stage-card.is-front-center:hover {
+            transform: translate3d(0%, -4px, 0px) scale(1.01);
+            box-shadow: var(--nucomu-card-shadow-hover);
+        }
+        #reviews .nucomu-stage-card.is-front-left:hover {
+            opacity: 0.85;
+            transform: translate3d(calc(-100% - 20px), -3px, 0px) scale(0.96);
+            box-shadow: var(--nucomu-card-shadow-active);
+        }
+        #reviews .nucomu-stage-card.is-front-right:hover {
+            opacity: 0.85;
+            transform: translate3d(calc(100% + 20px), -3px, 0px) scale(0.96);
+            box-shadow: var(--nucomu-card-shadow-active);
+        }
+        #reviews .nucomu-stage-card.is-stack-left:hover {
+            opacity: 0.65;
+            transform: translate3d(calc(-193% - 36px), -3px, 0px) scale(0.88);
+        }
+        #reviews .nucomu-stage-card.is-stack-right:hover {
+            opacity: 0.65;
+            transform: translate3d(calc(193% + 36px), -3px, 0px) scale(0.88);
+        }
     }
 
     /* ALL OTHER CARDS HIDDEN IN BACKGROUND */
@@ -110,45 +213,346 @@
         z-index: 1;
         opacity: 0;
         pointer-events: none;
-        transform: translate3d(0%, 25px, -240px) scale(0.7);
+        transform: translate3d(0%, 15px, 0px) scale(0.7);
     }
 
-    /* RESPONSIVE ON TABLET & MOBILE */
+    /* RESPONSIVE ON TABLET */
     @media (max-width: 1023px) {
+        #reviews .nucomu-stage-card.is-front-center {
+            transform: translate3d(0%, 0px, 0px) scale(1);
+            z-index: 32;
+            opacity: 1;
+            filter: none;
+        }
         #reviews .nucomu-stage-card.is-front-left {
-            transform: translate3d(-46%, -4px, 30px) rotateY(-2.5deg) scale(0.96);
+            transform: translate3d(calc(-96% - 14px), 0px, 0px) scale(0.94);
+            z-index: 25;
+            opacity: 0.55;
+            filter: none;
         }
         #reviews .nucomu-stage-card.is-front-right {
-            transform: translate3d(46%, -4px, 30px) rotateY(2.5deg) scale(0.96);
+            transform: translate3d(calc(96% + 14px), 0px, 0px) scale(0.94);
+            z-index: 25;
+            opacity: 0.55;
+            filter: none;
         }
-        #reviews .nucomu-stage-card.is-stack-left {
-            transform: translate3d(-122%, 8px, -70px) rotateY(12deg) scale(0.80);
-            opacity: 0.45;
-        }
+        #reviews .nucomu-stage-card.is-stack-left,
         #reviews .nucomu-stage-card.is-stack-right {
-            transform: translate3d(122%, 8px, -70px) rotateY(-12deg) scale(0.80);
-            opacity: 0.45;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate3d(0%, 15px, 0px) scale(0.7);
         }
     }
 
+    /* RESPONSIVE ON MOBILE (1 KARTU UTAMA RAPI DI TENGAH + PEEK KIRI KANAN) */
     @media (max-width: 767px) {
-        #reviews .nucomu-stage-card.is-front-left {
-            transform: translate3d(-24%, 0px, 20px) rotateY(-3deg) scale(0.88);
+        #reviews .nucomu-stage-card.is-front-center {
+            transform: translate3d(0%, 0px, 0px) scale(1);
             z-index: 30;
+            opacity: 1;
+            filter: none;
         }
         #reviews .nucomu-stage-card.is-front-right {
-            transform: translate3d(24%, 0px, 20px) rotateY(3deg) scale(0.88);
-            z-index: 29;
+            transform: translate3d(calc(100% + 14px), 0px, 0px) scale(0.94);
+            z-index: 20;
+            opacity: 0.55;
+            filter: none;
         }
-        #reviews .nucomu-stage-card.is-stack-left {
-            transform: translate3d(-78%, 10px, -60px) rotateY(10deg) scale(0.72);
-            opacity: 0.35;
-            z-index: 10;
+        #reviews .nucomu-stage-card.is-front-left {
+            transform: translate3d(calc(-100% - 14px), 0px, 0px) scale(0.94);
+            z-index: 20;
+            opacity: 0.55;
+            filter: none;
         }
+        #reviews .nucomu-stage-card.is-stack-left,
         #reviews .nucomu-stage-card.is-stack-right {
-            transform: translate3d(78%, 10px, -60px) rotateY(-10deg) scale(0.72);
-            opacity: 0.35;
-            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate3d(0%, 15px, 0px) scale(0.7);
+        }
+    }
+
+    /* ======================================================================
+       SECTION HEADER EDITORIAL (SPLIT DESKTOP 1 BARIS, STACK RATA KIRI MOBILE)
+       ====================================================================== */
+    #reviews .nucomu-reviews-header {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 16px;
+        margin-bottom: 24px;
+        padding: 0;
+        position: relative;
+        z-index: 10;
+        opacity: 1;
+        filter: none;
+    }
+
+    #reviews .nucomu-reviews-header-left {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    #reviews .nucomu-reviews-eyebrow {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        line-height: 1.2;
+        color: var(--nucomu-accent);
+        margin-bottom: 8px;
+    }
+
+    #reviews .nucomu-reviews-header-title {
+        font-family: "Fraunces", Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        font-weight: 500;
+        font-style: normal;
+        line-height: 1.05;
+        letter-spacing: -0.01em;
+        color: var(--nucomu-text);
+        opacity: 1;
+        filter: none;
+        margin: 0;
+    }
+
+    #reviews .nucomu-reviews-header-title-accent {
+        font-style: italic;
+        font-weight: 500;
+        color: var(--nucomu-accent);
+    }
+
+    #reviews .nucomu-reviews-header-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        gap: 12px;
+        width: 100%;
+    }
+
+    #reviews .nucomu-review-stars {
+        color: var(--nucomu-star);
+    }
+
+    #reviews .nucomu-reviews-header-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    #reviews .nucomu-reviews-btn-secondary,
+    #reviews .nucomu-reviews-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: auto;
+        min-height: 40px;
+        padding: 8px 14px;
+        border-radius: 9999px;
+        font-size: 13px;
+        line-height: 1.25;
+        text-decoration: none;
+        white-space: nowrap;
+        cursor: pointer;
+        transition:
+            background-color 180ms ease,
+            border-color 180ms ease,
+            color 180ms ease,
+            transform 180ms ease,
+            box-shadow 180ms ease;
+    }
+
+    #reviews .nucomu-reviews-btn-secondary {
+        background-color: var(--nucomu-btn-secondary-bg);
+        border: 1px solid var(--nucomu-btn-secondary-border);
+        color: var(--nucomu-text);
+        font-weight: 500;
+    }
+
+    #reviews .nucomu-reviews-btn-secondary:hover {
+        background-color: var(--nucomu-btn-secondary-hover);
+        border-color: var(--nucomu-btn-secondary-border);
+    }
+
+    #reviews .nucomu-reviews-btn-primary {
+        background-color: var(--nucomu-btn-primary-bg);
+        border: 1px solid var(--nucomu-btn-primary-bg);
+        color: var(--nucomu-btn-primary-text);
+        font-weight: 600;
+        box-shadow: 0 4px 14px -4px rgba(43, 29, 22, 0.25);
+    }
+
+    #reviews .nucomu-reviews-btn-primary:hover {
+        background-color: var(--nucomu-btn-primary-hover);
+        border-color: var(--nucomu-btn-primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 22px -6px rgba(43, 29, 22, 0.32);
+    }
+
+    #reviews .nucomu-reviews-btn-primary:active {
+        transform: translateY(0);
+    }
+
+    #reviews .nucomu-reviews-btn-secondary:focus-visible,
+    #reviews .nucomu-reviews-btn-primary:focus-visible,
+    #reviews .nucomu-reviews-nav-arrow:focus-visible,
+    #reviews .nucomu-reviews-dot:focus-visible,
+    #reviews .nucomu-review-readmore:focus-visible {
+        outline: 2px solid var(--nucomu-accent);
+        outline-offset: 2px;
+    }
+
+    #reviews .nucomu-review-readmore {
+        color: var(--nucomu-accent);
+        background: transparent;
+        border: 0;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        border-radius: 3px;
+        transition: color 180ms ease;
+    }
+
+    #reviews .nucomu-review-readmore:hover {
+        color: var(--nucomu-text);
+    }
+
+    /* ======================================================================
+       KONTROL NAVIGASI CAROUSEL (PANAH OUTLINE + DOTS)
+       ====================================================================== */
+    #reviews .nucomu-reviews-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 12px;
+        padding: 0 16px;
+        position: relative;
+        z-index: 45;
+    }
+
+    #reviews .nucomu-reviews-nav-arrow {
+        width: 36px;
+        height: 36px;
+        border-radius: 9999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        background-color: var(--nucomu-btn-secondary-bg);
+        border: 1px solid var(--nucomu-btn-secondary-border);
+        color: var(--nucomu-text);
+        cursor: pointer;
+        transition:
+            background-color 180ms ease,
+            border-color 180ms ease,
+            color 180ms ease,
+            transform 180ms ease;
+    }
+
+    #reviews .nucomu-reviews-nav-arrow:hover {
+        background-color: var(--nucomu-btn-secondary-hover);
+        border-color: var(--nucomu-text);
+    }
+
+    #reviews .nucomu-reviews-nav-arrow:active {
+        transform: scale(0.95);
+    }
+
+    #reviews .nucomu-reviews-dots {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2px;
+    }
+
+    #reviews .nucomu-reviews-dot {
+        width: 20px;
+        height: 24px;
+        padding: 0;
+        border: 0;
+        border-radius: 9999px;
+        background: transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    #reviews .nucomu-reviews-dot::before {
+        content: "";
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background-color: var(--nucomu-btn-secondary-border);
+        transition: width 220ms ease, background-color 220ms ease;
+    }
+
+    #reviews .nucomu-reviews-dot:hover::before {
+        background-color: var(--nucomu-text);
+    }
+
+    #reviews .nucomu-reviews-dot.is-active {
+        width: 28px;
+    }
+
+    #reviews .nucomu-reviews-dot.is-active::before {
+        width: 18px;
+        background-color: var(--nucomu-accent);
+    }
+
+    @media (min-width: 640px) {
+        #reviews .nucomu-reviews-btn-secondary,
+        #reviews .nucomu-reviews-btn-primary {
+            min-height: 42px;
+            padding: 9px 18px;
+            font-size: 13.5px;
+        }
+    }
+
+    @media (min-width: 768px) {
+        #reviews .nucomu-reviews-header {
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px 28px;
+            margin-bottom: 32px;
+        }
+
+        #reviews .nucomu-reviews-header-right {
+            align-items: flex-end;
+            text-align: right;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        #reviews .nucomu-reviews-header-actions {
+            width: auto;
+            justify-content: flex-end;
+            flex-wrap: nowrap;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        #reviews .nucomu-reviews-header {
+            margin-bottom: 36px;
+        }
+
+        #reviews .nucomu-reviews-header-title {
+            white-space: nowrap;
         }
     }
 
@@ -156,247 +560,287 @@
         #reviews .nucomu-stage-card {
             transition: opacity 0.25s ease;
         }
+        #reviews .nucomu-reviews-btn-secondary,
+        #reviews .nucomu-reviews-btn-primary,
+        #reviews .nucomu-reviews-nav-arrow,
+        #reviews .nucomu-reviews-dot::before {
+            transition: background-color 180ms ease, border-color 180ms ease;
+        }
+        #reviews .nucomu-reviews-btn-primary:hover,
+        #reviews .nucomu-reviews-nav-arrow:active {
+            transform: none;
+        }
     }
 </style>
 
 <section id="reviews"
          data-anim-mode="stacked-3d"
-         class="py-16 sm:py-20 lg:py-24 relative z-10 bg-[#FAF8F5] text-[#1C1C1C] overflow-hidden border-b border-[#E5E5E5] select-none">
+         class="pt-6 sm:pt-8 lg:pt-10 pb-16 sm:pb-20 lg:pb-24 relative z-10 overflow-hidden border-b border-[#E5E5E5] select-none">
 
-    <!-- Header Container (Centered Content) -->
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <!-- =========================================================================
+         SECTION HEADER (SPLIT 1 BARIS DESKTOP) & STAGE CONTAINER
+         ========================================================================= -->
+    <div class="w-full max-w-[1840px] mx-auto px-3 sm:px-4 lg:px-5 relative z-10">
 
-        <!-- Section Header (Monochrome Editorial + 5-Star Showcase Badge) -->
-        <div class="text-center mb-10 space-y-3">
-            <div class="flex items-center justify-center gap-3">
-                <span class="text-xs sm:text-[13px] font-bold text-[#666666] uppercase tracking-[0.22em] font-body">
-                    05 / ULASAN PENGUNJUNG
-                </span>
-                <div class="w-12 h-px bg-[#DDDDDD]" aria-hidden="true"></div>
+        <!-- Section Header (Kiri: Eyebrow & Judul 1 Baris Desktop | Kanan: Aksi) -->
+        <div class="nucomu-reviews-header">
+            <div class="nucomu-reviews-header-left">
+                <span class="nucomu-reviews-eyebrow font-body">ULASAN PELANGGAN</span>
+                <h2 class="nucomu-reviews-header-title">
+                    Kata Mereka Tentang <span class="nucomu-reviews-header-title-accent">Nucomu</span>
+                </h2>
             </div>
 
-            <!-- 5-Star Row Above Title -->
-            <div class="flex items-center justify-center gap-1.5 text-lg sm:text-xl text-[#1C1C1C] pt-1" aria-hidden="true">
-                <i class="fa-solid fa-star drop-shadow-2xs"></i>
-                <i class="fa-solid fa-star drop-shadow-2xs"></i>
-                <i class="fa-solid fa-star drop-shadow-2xs"></i>
-                <i class="fa-solid fa-star drop-shadow-2xs"></i>
-                <i class="fa-solid fa-star drop-shadow-2xs"></i>
-            </div>
+            <div class="nucomu-reviews-header-right">
+                <div class="nucomu-reviews-header-actions font-body">
+                    <a href="{{ config('nucomu.contact.google_maps_url') }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       aria-label="Lihat semua ulasan Nucomu Cafe di Google Maps (buka di tab baru)"
+                       class="nucomu-reviews-btn-secondary">
+                        <span>Lihat semua ulasan</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+                            <path d="M7 17L17 7"/>
+                            <path d="M7 7h10v10"/>
+                        </svg>
+                    </a>
 
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-semibold text-[#1C1C1C] tracking-tight font-editorial leading-tight">
-                Kata Mereka Tentang Nucomu
-            </h2>
-
-            <p class="text-[#666666] text-xs sm:text-sm max-w-xl mx-auto font-body leading-relaxed font-normal">
-                Pengalaman langsung dari para pengunjung yang menikmati kopi, dessert artisanal, dan suasana hangat di Nucomu Cafe Tulungagung.
-            </p>
-
-            <!-- Rating Summary & Maps Link (Mixed Monochrome Pills) -->
-            <div class="pt-2 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 font-body">
-                <!-- Google Rating Capsule -->
-                <div class="inline-flex items-center gap-2.5 bg-white border border-[#E5E5E5] px-4 py-2 rounded-full shadow-2xs">
-                    <span class="w-6 h-6 rounded-full bg-[#1C1C1C] flex items-center justify-center text-white text-[10px]">
-                        <i class="fa-brands fa-google"></i>
-                    </span>
-                    <div class="flex items-center gap-1.5 text-xs">
-                        <span class="font-bold text-[#1C1C1C]">4.9 / 5.0</span>
-                        <span class="text-[#1C1C1C] flex text-[10px] tracking-tight">
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                        </span>
-                        <span class="text-[#8A8A8A]">• 74+ Ulasan</span>
-                    </div>
+                    <button type="button"
+                            onclick="openHomeReviewModal()"
+                            aria-label="Tulis ulasan baru tentang Nucomu Cafe"
+                            class="nucomu-reviews-btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="shrink-0" aria-hidden="true">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                            <path d="m15 5 4 4"/>
+                        </svg>
+                        <span>Tulis Ulasan</span>
+                    </button>
                 </div>
-
-                <button type="button"
-                        onclick="openAllReviewsModal()"
-                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1C1C1C] bg-white hover:bg-[#F5F5F5] border border-[#E5E5E5] px-4 py-2 rounded-full transition-colors shadow-2xs">
-                    <i class="fa-solid fa-comments text-[#1C1C1C]"></i>
-                    <span>View All ({{ $allReviewsCollection->count() }} Ulasan)</span>
-                </button>
-
-                <a href="{{ config('nucomu.contact.google_maps_url') }}"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#1C1C1C] hover:text-black bg-white hover:bg-[#F5F5F5] border border-[#E5E5E5] px-4 py-2 rounded-full transition-colors shadow-2xs">
-                    <i class="fa-solid fa-location-dot text-[#1C1C1C]"></i>
-                    <span>Lihat di Google Maps</span>
-                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-[#8A8A8A]"></i>
-                </a>
-
-                <button type="button"
-                        onclick="openHomeReviewModal()"
-                        class="text-xs font-bold text-white bg-[#1C1C1C] hover:bg-black active:scale-95 transition-all inline-flex items-center gap-1.5 px-5 py-2 rounded-full shadow-xs">
-                    <i class="fa-solid fa-plus-circle text-white"></i>
-                    <span>Tulis Ulasan Anda</span>
-                </button>
             </div>
         </div>
 
         @if(session('review_success'))
             <div class="max-w-3xl mx-auto mb-6 p-4 rounded-2xl bg-white border border-[#E5E5E5] text-[#1C1C1C] text-xs sm:text-sm flex items-center justify-between gap-3 shadow-xs font-body">
                 <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-circle-check text-[#1C1C1C] text-base"></i>
+                    <i class="fa-solid fa-circle-check text-[#1C1C1C] text-base" aria-hidden="true"></i>
                     <span>{{ session('review_success') }}</span>
                 </div>
             </div>
         @endif
-    </div>
 
-    <!-- ==============================================================
-         FULL-WIDTH 3D STAGE (MENTOK FULL SCREEN SAMPAI SAMPING KANAN KIRI)
-         Komposisi: 2 Card di Depan + 1 Ditumpuk di Belakang Kiri & Kanan
-         Tanpa background kotak hitam & tanpa marquee ribbon di bawah
-         ============================================================== -->
-    <div id="homeReviewStageWrapper" class="w-full relative py-6 sm:py-8 overflow-hidden select-none">
-        
-        <!-- Left Navigation Floating Button -->
-        <button type="button"
-                onclick="prevHomeReview()"
-                aria-label="Ulasan Sebelumnya"
-                class="absolute left-3 sm:left-6 lg:left-12 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-[#1C1C1C] text-[#1C1C1C] hover:text-white border border-neutral-200/90 shadow-xl backdrop-blur-md flex items-center justify-center transition-all duration-300 active:scale-95">
-            <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i>
-        </button>
+        <div id="homeReviewStageWrapper"
+             role="region"
+             aria-roledescription="carousel"
+             aria-label="Ulasan pelanggan Nucomu Cafe"
+             class="nucomu-reviews-stage relative rounded-[20px] sm:rounded-[26px] overflow-hidden select-none">
 
-        <!-- Right Navigation Floating Button -->
-        <button type="button"
-                onclick="nextHomeReview()"
-                aria-label="Ulasan Selanjutnya"
-                class="absolute right-3 sm:right-6 lg:right-12 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/90 hover:bg-[#1C1C1C] text-[#1C1C1C] hover:text-white border border-neutral-200/90 shadow-xl backdrop-blur-md flex items-center justify-center transition-all duration-300 active:scale-95">
-            <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
-        </button>
+            <!-- Soft Edge Fades di tepi dalam kontainer agar kartu samping menyatu halus dengan warna #FFFFFF -->
+            <div class="nucomu-reviews-fade-left pointer-events-none hidden md:block absolute inset-y-0 left-0 w-8 lg:w-10 xl:w-14 z-40" aria-hidden="true"></div>
+            <div class="nucomu-reviews-fade-right pointer-events-none hidden md:block absolute inset-y-0 right-0 w-8 lg:w-10 xl:w-14 z-40" aria-hidden="true"></div>
 
-        <!-- 3D Full-Width Viewport: Menampung 4 Kartu Aktif (2 Depan, 1 Belakang Kiri, 1 Belakang Kanan) -->
-        <div id="nucomuStageViewport"
-             class="nucomu-3d-viewport relative h-[360px] sm:h-[350px] flex items-center justify-center mx-auto w-full">
-            @foreach($reviewsArray as $idx => $rev)
-                @php
-                    $stageImages = !empty($rev['review_images']) && is_array($rev['review_images'])
-                        ? array_slice($rev['review_images'], 0, 4)
-                        : (!empty($rev['review_image']) ? [$rev['review_image']] : []);
-                    $firstPhoto = $stageImages[0] ?? null;
-                    // Alternate Mixed Monochrome Card Themes:
-                    // Even cards: Crisp Alabaster/White Card (#FFFFFF)
-                    // Odd cards: Obsidian Charcoal Card (#242424 / #1A1A1A)
-                    $isLightCard = $idx % 2 === 0;
-                @endphp
-                <article data-stage-index="{{ $idx }}"
-                         onclick="focusStageCard({{ $idx }})"
-                         class="nucomu-stage-card absolute w-[86%] sm:w-[350px] md:w-[390px] lg:w-[420px] rounded-3xl p-5 sm:p-6 cursor-pointer flex flex-col justify-between min-h-[290px] sm:min-h-[285px] {{ $isLightCard ? 'bg-white text-[#181818] border border-neutral-200/90 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.12)]' : 'bg-gradient-to-br from-[#242424] via-[#1A1A1A] to-[#121212] text-white border border-white/20 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.25)]' }}">
+            <!-- Viewport: Menampung Kartu Aktif Utama + Kartu Samping -->
+            <div id="nucomuStageViewport"
+                 class="nucomu-3d-viewport relative h-[448px] sm:h-[468px] flex items-center justify-center mx-auto w-full">
+                @foreach($reviewsArray as $idx => $rev)
+                    @php
+                        $cardImages = !empty($rev['review_images']) && is_array($rev['review_images'])
+                            ? array_slice($rev['review_images'], 0, 4)
+                            : (!empty($rev['review_image']) ? [$rev['review_image']] : []);
+
+                        // Avatar determination matching Google Reviews
+                        $nameClean = trim($rev['name'] ?? 'Pengunjung');
+                        $initial = strtoupper(substr($nameClean, 0, 1));
+                        $avatarBg = $avatarPalette[$initial] ?? '#1C1C1C';
+
+                        // Specific checks: Dya slma (idx 0) and Karina (idx 2) use colored letter circle, Febry has photo
+                        $isLetterAvatar = in_array($idx, [0, 2]) || empty($rev['avatar_url']) || str_contains($rev['avatar_url'] ?? '', 'placeholder') || str_contains($rev['avatar_url'] ?? '', 'unsplash');
+                    @endphp
+
+                    <!-- 1 Stage Card Article (Tampilan Google Reviews Card Bersih) -->
+                    <article data-stage-index="{{ $idx }}"
+                             data-order-tag="{{ $rev['order_tag'] ?? 'Menu Nucomu' }}"
+                             onclick="focusStageCard({{ $idx }})"
+                             class="nucomu-stage-card absolute w-[82%] max-w-[285px] sm:max-w-none sm:w-[275px] md:w-[270px] lg:w-[295px] xl:w-[320px] 2xl:w-[330px] rounded-[18px] sm:rounded-[20px] p-4 sm:p-5 cursor-pointer flex flex-col justify-between min-h-[416px] sm:min-h-[436px] bg-white text-[#1C1C1C] border border-[#EEE8DE] shadow-[0_8px_28px_rgba(43,29,22,0.10)]">
 
                     <div>
-                        <!-- Card Header: Avatar + Name + Rating Stars -->
-                        <div class="flex items-center justify-between gap-3 mb-3.5">
-                            <div class="flex items-center gap-3">
-                                <div class="relative shrink-0">
-                                    <img src="{{ $rev['avatar_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' }}"
-                                         alt="{{ $rev['name'] }}"
-                                         referrerpolicy="no-referrer"
-                                         class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover {{ $isLightCard ? 'border-2 border-[#1C1C1C]/15 bg-neutral-100' : 'border-2 border-white/30 bg-neutral-800' }} shadow-md">
-                                    <span class="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full {{ $isLightCard ? 'bg-[#181818] text-white' : 'bg-white text-[#181818]' }} flex items-center justify-center text-[9px] shadow-xs">
-                                        <i class="fa-solid fa-check"></i>
-                                    </span>
+                        <!-- 1. Reviewer Header (Avatar + Name + Subtitle) -->
+                        <div class="flex items-center gap-2.5 mb-2">
+                            @if($isLetterAvatar)
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-sm shadow-xs select-none"
+                                     style="background-color: {{ $avatarBg }};">
+                                    {{ $initial }}
                                 </div>
+                            @else
+                                <img src="{{ $rev['avatar_url'] }}"
+                                     alt="{{ $rev['name'] }}"
+                                     referrerpolicy="no-referrer"
+                                     loading="lazy"
+                                     class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-[#E5E5E5] bg-neutral-100 shadow-xs select-none"
+                                     onerror="this.outerHTML='<div class=\'w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-sm shadow-xs select-none\' style=\'background-color: {{ $avatarBg }};\'>{{ $initial }}</div>'">
+                            @endif
 
-                                <div>
-                                    <h4 class="text-sm sm:text-base font-bold leading-snug font-body {{ $isLightCard ? 'text-[#141414]' : 'text-white' }}">
-                                        {{ $rev['name'] }}
-                                    </h4>
-                                    <span class="text-[11px] font-medium block font-body {{ $isLightCard ? 'text-[#666666]' : 'text-neutral-400' }}">
-                                        {{ $rev['handle'] ?? 'Pengunjung Nucomu' }}
-                                    </span>
-                                </div>
+                            <div class="min-w-0 flex-1">
+                                <h4 class="text-sm sm:text-[15px] font-bold text-[#1C1C1C] leading-snug font-body truncate">
+                                    {{ $rev['name'] }}
+                                </h4>
+                                <p class="text-[11px] text-[#71717A] mt-0.5 font-body truncate">
+                                    {{ $rev['handle'] ?? 'Pengunjung Google Maps' }}
+                                </p>
                             </div>
+                        </div>
 
-                            <!-- 5 Stars Pill -->
-                            <div class="flex items-center gap-0.5 text-xs sm:text-sm px-2.5 py-1 rounded-full {{ $isLightCard ? 'bg-[#181818] text-white' : 'bg-white/12 text-white border border-white/15' }}">
-                                @for($i = 0; $i < ($rev['rating'] ?? 5); $i++)
-                                    <i class="fa-solid fa-star text-[11px]"></i>
+                        <!-- 2. 5 Gold Rating Stars & Relative Time Ago -->
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="nucomu-review-stars flex items-center gap-0.5 text-xs"
+                                 aria-label="Rating {{ $rev['rating'] ?? 5 }} dari 5 bintang">
+                                @for($s = 0; $s < ($rev['rating'] ?? 5); $s++)
+                                    <i class="fa-solid fa-star text-[10px]" aria-hidden="true"></i>
                                 @endfor
                             </div>
+                            <span class="text-[11px] text-[#71717A] font-body">{{ $rev['time_ago'] ?? 'Baru-baru ini' }}</span>
                         </div>
 
-                        <!-- Review Comment + Optional Thumbnail -->
-                        <div class="flex items-start gap-3">
-                            <p class="text-xs sm:text-[13.5px] leading-relaxed line-clamp-3 font-body {{ $isLightCard ? 'text-[#333333]' : 'text-neutral-200' }} flex-1">
-                                "{{ $rev['content'] }}"
-                            </p>
-                            @if($firstPhoto)
-                                <div onclick="event.stopPropagation(); openReviewImagePreview('{{ $firstPhoto }}', '{{ addslashes($rev['name']) }}')"
-                                     title="Perbesar foto ulasan"
-                                     class="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border {{ $isLightCard ? 'border-[#1C1C1C]/15' : 'border-white/20' }} relative group">
-                                    <img src="{{ $firstPhoto }}"
-                                         alt="Foto {{ $rev['name'] }}"
+                        <!-- 3. Review Comment Text + Link Baca Selengkapnya (muncul otomatis jika teks terpotong) -->
+                        <div class="mb-2.5 min-h-[68px] flex flex-col items-start">
+                            <p data-review-comment="{{ $idx }}"
+                               class="nucomu-review-comment text-[12.5px] sm:text-[13px] text-[#333333] leading-snug line-clamp-3 font-body whitespace-pre-line">{{ trim($rev['content']) }}</p>
+                            <button type="button"
+                                    data-readmore-for="{{ $idx }}"
+                                    onclick="event.stopPropagation(); openSingleReviewModal({{ $idx }}, this)"
+                                    aria-label="Baca selengkapnya ulasan dari {{ $rev['name'] }}"
+                                    class="nucomu-review-readmore hidden mt-1 text-[11.5px] font-semibold font-body cursor-pointer">
+                                Baca selengkapnya
+                            </button>
+                        </div>
+
+                        <!-- 4. Attached Photo Grid (2x2 Grid for 4 photos, 1x2 for 2 photos) -->
+                        @if(count($cardImages) >= 4)
+                            <div class="grid grid-cols-2 grid-rows-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-neutral-100 border border-[#EBEBEB] mb-2.5">
+                                @foreach(array_slice($cardImages, 0, 4) as $imgIdx => $imgUrl)
+                                    <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-neutral-200"
+                                         onclick="event.stopPropagation(); openReviewImagePreview('{{ $imgUrl }}', '{{ addslashes($rev['name']) }}')"
+                                         title="Klik untuk memperbesar">
+                                        <img src="{{ $imgUrl }}"
+                                             alt="Foto ulasan {{ $rev['name'] }}"
+                                             referrerpolicy="no-referrer"
+                                             loading="lazy"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        {{-- Video duration badges on Dya slma (idx 0) first two videos --}}
+                                        @if($idx === 0 && in_array($imgIdx, [0, 1]))
+                                            <span class="absolute bottom-1.5 right-1.5 bg-black/65 text-white text-[9.5px] px-1.5 py-0.5 rounded font-mono font-medium backdrop-blur-xs flex items-center gap-1 shadow-xs pointer-events-none">
+                                                0:02
+                                            </span>
+                                        @endif
+                                        <span class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                            <i class="fa-solid fa-expand"></i>
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @elseif(count($cardImages) === 2)
+                            <div class="grid grid-cols-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-neutral-100 border border-[#EBEBEB] mb-2.5">
+                                @foreach($cardImages as $imgUrl)
+                                    <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-neutral-200"
+                                         onclick="event.stopPropagation(); openReviewImagePreview('{{ $imgUrl }}', '{{ addslashes($rev['name']) }}')"
+                                         title="Klik untuk memperbesar">
+                                        <img src="{{ $imgUrl }}"
+                                             alt="Foto ulasan {{ $rev['name'] }}"
+                                             referrerpolicy="no-referrer"
+                                             loading="lazy"
+                                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        <span class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
+                                            <i class="fa-solid fa-expand"></i>
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @elseif(count($cardImages) === 3)
+                            <div class="grid grid-cols-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-neutral-100 border border-[#EBEBEB] mb-2.5">
+                                <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-neutral-200"
+                                     onclick="event.stopPropagation(); openReviewImagePreview('{{ $cardImages[0] }}', '{{ addslashes($rev['name']) }}')">
+                                    <img src="{{ $cardImages[0] }}"
+                                         alt="Foto ulasan {{ $rev['name'] }}"
                                          referrerpolicy="no-referrer"
                                          loading="lazy"
-                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                                    <span class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px]">
-                                        <i class="fa-solid fa-expand"></i>
-                                    </span>
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 </div>
-                            @endif
-                        </div>
+                                <div class="grid grid-rows-2 gap-[3px] w-full h-full">
+                                    @foreach(array_slice($cardImages, 1, 2) as $imgUrl)
+                                        <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-neutral-200"
+                                             onclick="event.stopPropagation(); openReviewImagePreview('{{ $imgUrl }}', '{{ addslashes($rev['name']) }}')">
+                                            <img src="{{ $imgUrl }}"
+                                                 alt="Foto ulasan {{ $rev['name'] }}"
+                                                 referrerpolicy="no-referrer"
+                                                 loading="lazy"
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @elseif(count($cardImages) === 1)
+                            <div class="h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-neutral-100 border border-[#EBEBEB] mb-2.5 relative group cursor-pointer"
+                                 onclick="event.stopPropagation(); openReviewImagePreview('{{ $cardImages[0] }}', '{{ addslashes($rev['name']) }}')">
+                                <img src="{{ $cardImages[0] }}"
+                                     alt="Foto ulasan {{ $rev['name'] }}"
+                                     referrerpolicy="no-referrer"
+                                     loading="lazy"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                        @else
+                            <div class="h-2 mb-2.5"></div>
+                        @endif
                     </div>
 
-                    <!-- Card Footer: Like/Helpful, Order Tag & Action Circle -->
-                    <div class="pt-3.5 mt-3 border-t {{ $isLightCard ? 'border-[#1C1C1C]/10' : 'border-white/12' }} flex items-center justify-between gap-2 font-body">
-                        <div class="flex items-center gap-2">
-                            <button type="button"
-                                    onclick="event.stopPropagation(); toggleReviewLike(this)"
-                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all {{ $isLightCard ? 'bg-[#181818]/8 hover:bg-[#181818] text-[#181818] hover:text-white' : 'bg-white/10 hover:bg-white text-neutral-200 hover:text-[#141414]' }}"
-                                    title="Tandai ulasan membantu">
-                                <i class="fa-regular fa-thumbs-up text-[11px]"></i>
-                                <span class="like-count">{{ 12 + ($idx * 3) % 19 }}</span>
-                            </button>
-
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium truncate max-w-[155px] {{ $isLightCard ? 'bg-[#181818]/6 text-[#333333]' : 'bg-white/10 text-neutral-300' }}">
-                                <i class="fa-solid fa-mug-saucer text-[10px]"></i>
-                                <span class="truncate">{{ $rev['order_tag'] ?? 'Menu Nucomu' }}</span>
-                            </span>
-                        </div>
-
-                        <button type="button"
-                                onclick="event.stopPropagation(); openSingleReviewModal({{ $idx }})"
-                                title="Lihat ulasan lengkap & foto"
-                                aria-label="Lihat ulasan lengkap {{ $rev['name'] }}"
-                                class="w-7 h-7 rounded-full flex items-center justify-center transition-all {{ $isLightCard ? 'bg-[#181818] text-white hover:scale-110' : 'bg-white text-[#141414] hover:scale-110' }}">
-                            <i class="fa-solid fa-ellipsis text-[11px]"></i>
-                        </button>
+                    <!-- 5. Card Footer: Menu Favorit Pill -->
+                    <div class="pt-2.5 border-t border-[#F3F4F6] flex items-center gap-1.5 mt-auto">
+                        <span class="text-[11px] text-[#71717A] font-body shrink-0">Menu Favorit:</span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#F5F5F5] text-[#1C1C1C] border border-[#E5E5E5] truncate font-body">
+                            <i class="fa-solid fa-mug-saucer text-[9px] text-[#1C1C1C]" aria-hidden="true"></i>
+                            <span class="truncate">{{ $rev['order_tag'] ?? 'Menu Nucomu' }}</span>
+                        </span>
                     </div>
                 </article>
-            @endforeach
-        </div>
-
-        <!-- Pagination Dots -->
-        <div class="mt-4 flex items-center justify-center relative z-30">
-            <div id="nucomuStageDots" class="flex items-center justify-center gap-1.5">
-                @foreach($reviewsArray as $idx => $rev)
-                    <button type="button"
-                            onclick="focusStageCard({{ $idx }})"
-                            data-dot-index="{{ $idx }}"
-                            aria-label="Pilih ulasan {{ $idx + 1 }}"
-                            class="h-2 rounded-full transition-all duration-300 {{ $idx === 0 || $idx === 1 ? 'w-6 bg-[#1C1C1C]' : 'w-2 bg-[#D1D5DB] hover:bg-neutral-500' }}">
-                    </button>
                 @endforeach
             </div>
+
+            <!-- Kontrol Navigasi Carousel (Panah Kiri/Kanan Outline + Dot Indicators) -->
+            @if(count($reviewsArray) > 1)
+                <div class="nucomu-reviews-nav font-body" role="group" aria-label="Navigasi carousel ulasan">
+                    <button type="button"
+                            id="reviewsPrevBtn"
+                            onclick="prevHomeReview()"
+                            aria-label="Ulasan sebelumnya"
+                            class="nucomu-reviews-nav-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m15 18-6-6 6-6"/>
+                        </svg>
+                    </button>
+
+                    <div class="nucomu-reviews-dots" role="group" aria-label="Pilih ulasan">
+                        @foreach($reviewsArray as $dotIdx => $dotRev)
+                            <button type="button"
+                                    class="nucomu-reviews-dot {{ $dotIdx === 0 ? 'is-active' : '' }}"
+                                    data-dot-index="{{ $dotIdx }}"
+                                    onclick="focusStageCard({{ $dotIdx }})"
+                                    aria-label="Tampilkan ulasan {{ $dotIdx + 1 }} dari {{ count($reviewsArray) }} oleh {{ $dotRev['name'] ?? 'Pengunjung Nucomu' }}"
+                                    aria-current="{{ $dotIdx === 0 ? 'true' : 'false' }}"></button>
+                        @endforeach
+                    </div>
+
+                    <button type="button"
+                            id="reviewsNextBtn"
+                            onclick="nextHomeReview()"
+                            aria-label="Ulasan berikutnya"
+                            class="nucomu-reviews-nav-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m9 18 6-6-6-6"/>
+                        </svg>
+                    </button>
+                </div>
+            @endif
+
         </div>
 
-    </div>
-
-    <!-- Hidden Hooks for Legacy Compatibility -->
-    <div class="sr-only" aria-hidden="true">
-        <img id="homeReviewAvatar" src="" alt="">
-        <h4 id="homeReviewName"></h4>
-        <span id="homeReviewHandle"></span>
-        <span id="homeReviewTimeAgo"></span>
-        <div id="homeReviewStars"></div>
-        <div id="homeReviewTextCol"><p id="homeReviewText"></p></div>
-        <div id="homeReviewImageCol"><div id="homeReviewImagesWrap"></div></div>
-        <span id="homeReviewOrderTag"></span>
     </div>
 
 </section>
@@ -418,9 +862,8 @@
                          alt="Avatar Pengunjung"
                          referrerpolicy="no-referrer"
                          class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-[#1C1C1C]/15 bg-neutral-100 shadow-xs">
-                    <span class="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#1C1C1C] text-white flex items-center justify-center text-[9px] shadow-xs">
-                        <i class="fa-solid fa-check"></i>
-                    </span>
+                    <div id="singleReviewAvatarFallback"
+                         class="hidden w-12 h-12 sm:w-14 sm:h-14 rounded-full items-center justify-center text-white font-bold text-lg shadow-xs select-none"></div>
                 </div>
                 <div class="min-w-0">
                     <h3 id="singleReviewName" class="text-base sm:text-lg font-bold text-[#1C1C1C] truncate"></h3>
@@ -431,8 +874,8 @@
             <button type="button"
                     onclick="closeSingleReviewModal()"
                     aria-label="Tutup ulasan lengkap"
-                    class="w-9 h-9 rounded-full bg-white border border-[#E5E5E5] hover:bg-[#1C1C1C] hover:text-white flex items-center justify-center text-[#1C1C1C] transition-colors shadow-2xs shrink-0">
-                <i class="fa-solid fa-xmark text-sm"></i>
+                    class="w-9 h-9 rounded-full bg-white border border-[#E5E5E5] hover:bg-[#1C1C1C] hover:text-white flex items-center justify-center text-[#1C1C1C] transition-colors shadow-2xs shrink-0 cursor-pointer">
+                <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
             </button>
         </div>
 
@@ -441,7 +884,7 @@
             <!-- Rating Stars & Time Ago -->
             <div class="flex items-center justify-between gap-2">
                 <div class="inline-flex items-center gap-1.5 bg-[#1C1C1C] text-white px-3 py-1 rounded-full text-xs">
-                    <div id="singleReviewStars" class="flex items-center gap-0.5 text-[11px]"></div>
+                    <div id="singleReviewStars" class="flex items-center gap-0.5 text-[11px]" style="color: #E0A030;"></div>
                     <span id="singleReviewRatingNum" class="font-bold text-[11px] ml-0.5">5.0</span>
                 </div>
                 <span id="singleReviewTimeAgo" class="text-xs text-[#8A8A8A] font-medium"></span>
@@ -474,7 +917,7 @@
 
             <button type="button"
                     onclick="closeSingleReviewModal()"
-                    class="px-4 py-2 rounded-full bg-[#1C1C1C] hover:bg-black text-white text-xs font-bold transition-all shrink-0">
+                    class="px-4 py-2 rounded-full bg-[#1C1C1C] hover:bg-black text-white text-xs font-bold transition-all shrink-0 cursor-pointer">
                 Tutup
             </button>
         </div>
@@ -508,15 +951,15 @@
             <div class="flex items-center gap-2">
                 <button type="button"
                         onclick="closeAllReviewsModal(); openHomeReviewModal();"
-                        class="text-xs font-bold text-white bg-[#1C1C1C] hover:bg-black px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-xs transition-all">
+                        class="text-xs font-bold text-white bg-[#1C1C1C] hover:bg-black px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
                     <i class="fa-solid fa-plus-circle text-white"></i>
                     <span>Tulis Ulasan</span>
                 </button>
                 <button type="button"
                         onclick="closeAllReviewsModal()"
-                        aria-label="Tutup ulasan"
-                        class="w-9 h-9 rounded-full bg-white border border-[#E5E5E5] hover:bg-[#1C1C1C] hover:text-white flex items-center justify-center text-[#1C1C1C] transition-colors shadow-2xs">
-                    <i class="fa-solid fa-xmark text-sm"></i>
+                        aria-label="Tutup semua ulasan"
+                        class="w-9 h-9 rounded-full bg-white border border-[#E5E5E5] hover:bg-[#1C1C1C] hover:text-white flex items-center justify-center text-[#1C1C1C] transition-colors shadow-2xs cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -528,13 +971,13 @@
                 <button type="button"
                         id="filterReviewsAllBtn"
                         onclick="filterModalReviews('all')"
-                        class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1C1C1C] text-white transition-all shadow-2xs">
+                        class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1C1C1C] text-white transition-all shadow-2xs cursor-pointer">
                     Semua ({{ $allReviewsCollection->count() }})
                 </button>
                 <button type="button"
                         id="filterReviewsPhotoBtn"
                         onclick="filterModalReviews('with-photo')"
-                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#F5F5F5] text-[#555555] border border-[#E5E5E5] transition-all">
+                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#F5F5F5] text-[#555555] border border-[#E5E5E5] transition-all cursor-pointer">
                     <i class="fa-solid fa-camera mr-1 text-[#1C1C1C]"></i> Dengan Foto
                 </button>
             </div>
@@ -549,17 +992,26 @@
                             ? $mRev['review_images']
                             : (!empty($mRev['review_image']) ? [$mRev['review_image']] : []);
                         $hasPhotos = count($mImages) > 0;
+                        $mInitial = strtoupper(substr(trim($mRev['name'] ?? 'P'), 0, 1));
+                        $mAvatarBg = $avatarPalette[$mInitial] ?? '#1C1C1C';
                     @endphp
                     <div class="modal-review-item bg-white border border-[#E5E5E5] rounded-2xl p-4 sm:p-5 flex flex-col justify-between hover:border-[#1C1C1C]/40 transition-colors shadow-2xs"
                          data-has-photo="{{ $hasPhotos ? '1' : '0' }}">
                         <div>
                             <div class="flex items-center justify-between gap-3 mb-3">
                                 <div class="flex items-center gap-2.5">
-                                    <img src="{{ $mRev['avatar_url'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' }}"
-                                         alt="{{ $mRev['name'] }}"
-                                         referrerpolicy="no-referrer"
-                                         loading="lazy"
-                                         class="w-10 h-10 rounded-full object-cover border border-[#E5E5E5] bg-neutral-100">
+                                    @if(!empty($mRev['avatar_url']) && !in_array($mIdx, [0, 2]))
+                                        <img src="{{ $mRev['avatar_url'] }}"
+                                             alt="{{ $mRev['name'] }}"
+                                             referrerpolicy="no-referrer"
+                                             loading="lazy"
+                                             class="w-10 h-10 rounded-full object-cover border border-[#E5E5E5] bg-neutral-100">
+                                    @else
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-xs"
+                                             style="background-color: {{ $mAvatarBg }};">
+                                            {{ $mInitial }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <h5 class="text-xs sm:text-sm font-bold text-[#1C1C1C]">{{ $mRev['name'] }}</h5>
                                         <span class="text-[11px] text-[#666666] block">{{ $mRev['handle'] ?? 'Pengunjung Nucomu' }}</span>
@@ -618,8 +1070,9 @@
             </div>
             <button type="button"
                     onclick="closeHomeReviewModal()"
-                    class="w-9 h-9 rounded-full bg-white border border-[#E5E5E5] hover:bg-[#1C1C1C] hover:text-white flex items-center justify-center text-[#1C1C1C] transition-colors shadow-2xs">
-                <i class="fa-solid fa-xmark text-sm"></i>
+                    aria-label="Tutup formulir ulasan"
+                    class="w-9 h-9 rounded-full bg-white border border-[#E5E5E5] hover:bg-[#1C1C1C] hover:text-white flex items-center justify-center text-[#1C1C1C] transition-colors shadow-2xs cursor-pointer">
+                <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
             </button>
         </div>
 
@@ -636,7 +1089,7 @@
                     @for($s = 1; $s <= 5; $s++)
                         <button type="button"
                                 onclick="setHomeRating({{ $s }})"
-                                class="text-2xl text-[#1C1C1C] hover:scale-125 transition-transform">
+                                class="text-2xl text-[#1C1C1C] hover:scale-125 transition-transform cursor-pointer">
                             <i class="fa-solid fa-star"></i>
                         </button>
                     @endfor
@@ -708,11 +1161,11 @@
             <div class="pt-3 border-t border-[#E5E5E5] flex items-center justify-end gap-2">
                 <button type="button"
                         onclick="closeHomeReviewModal()"
-                        class="px-4 py-2 rounded-full border border-[#E5E5E5] text-xs font-semibold text-[#666666] hover:bg-[#F5F5F5] transition-colors">
+                        class="px-4 py-2 rounded-full border border-[#E5E5E5] text-xs font-semibold text-[#666666] hover:bg-[#F5F5F5] transition-colors cursor-pointer">
                     Batal
                 </button>
                 <button type="submit"
-                        class="px-5 py-2 rounded-full bg-[#1C1C1C] hover:bg-black text-white text-xs font-bold transition-all shadow-xs">
+                        class="px-5 py-2 rounded-full bg-[#1C1C1C] hover:bg-black text-white text-xs font-bold transition-all shadow-xs cursor-pointer">
                     Kirim Ulasan
                 </button>
             </div>
@@ -727,8 +1180,9 @@
     <div class="relative max-w-3xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
         <button type="button"
                 onclick="closeReviewImagePreview()"
-                class="absolute -top-12 right-0 w-9 h-9 rounded-full bg-white/20 hover:bg-white text-white hover:text-black flex items-center justify-center transition-colors">
-            <i class="fa-solid fa-xmark text-base"></i>
+                aria-label="Tutup pratinjau foto ulasan"
+                class="absolute -top-12 right-0 w-9 h-9 rounded-full bg-white/20 hover:bg-white text-white hover:text-black flex items-center justify-center transition-colors cursor-pointer">
+            <i class="fa-solid fa-xmark text-base" aria-hidden="true"></i>
         </button>
         <img id="reviewLightboxImg" src="" alt="Pratinjau Foto Ulasan" class="max-h-[80vh] w-auto rounded-2xl object-contain border border-white/20 shadow-2xl">
         <p id="reviewLightboxCaption" class="text-xs text-white/80 mt-3 font-body text-center"></p>
@@ -736,24 +1190,40 @@
 </div>
 
 <!-- =========================================================================
-     JAVASCRIPT: 4-CARD 3D COMPOSITION (2 FRONT + 1 STACKED LEFT & RIGHT)
+     JAVASCRIPT: 3D STAGE CAROUSEL CONTROLLER
+     Animasi panggung 3D: 3 kartu depan + kartu tumpuk samping kiri/kanan
      ========================================================================= -->
 <script>
     const homeReviews = @json($reviewsArray);
+    const homeReviewAvatarPalette = @json($avatarPalette);
     let homeReviewIndex = 0;
-    const HOME_REVIEW_INTERVAL = 5000;
+    const HOME_REVIEW_INTERVAL = 60000; // 1 menit per pergeseran ulasan otomatis
     let homeReviewTimer = null;
     let isHomeReviewPaused = false;
+    let lastSingleReviewTrigger = null;
 
-    // Komposisi 3D: 2 kartu di depan + 1 kartu ditumpuk di belakang kiri & kanan
+    // Deteksi ulasan yang terpotong line-clamp-3 dan tampilkan link "Baca selengkapnya"
+    function updateReviewReadMoreButtons() {
+        const comments = document.querySelectorAll('#nucomuStageViewport [data-review-comment]');
+        comments.forEach((pEl) => {
+            const idx = pEl.getAttribute('data-review-comment');
+            const btnEl = document.querySelector(`#nucomuStageViewport [data-readmore-for="${idx}"]`);
+            if (!btnEl) return;
+
+            const isTruncated = pEl.scrollHeight > pEl.clientHeight + 2;
+            btnEl.classList.toggle('hidden', !isTruncated);
+        });
+    }
+
+    // Komposisi panggung: 1 kartu aktif di tengah + kartu samping (opacity 0.55, scale 0.94)
     function updateStageCardsPositions() {
         const cards = document.querySelectorAll('#nucomuStageViewport .nucomu-stage-card');
-        const dots = document.querySelectorAll('#nucomuStageDots [data-dot-index]');
         const total = cards.length;
         if (total === 0) return;
 
         cards.forEach((card, idx) => {
             card.classList.remove(
+                'is-front-center',
                 'is-front-left',
                 'is-front-right',
                 'is-stack-left',
@@ -767,30 +1237,33 @@
             if (diff < -total / 2) diff += total;
 
             if (diff === 0) {
-                // Kartu Depan Kiri
-                card.classList.add('is-front-left');
-            } else if (diff === 1 || (total === 2 && diff === -1)) {
-                // Kartu Depan Kanan
-                card.classList.add('is-front-right');
+                // Kartu Aktif Utama Tengah
+                card.classList.add('is-front-center');
             } else if (diff === -1) {
-                // Ditumpuk 1 di Belakang Kiri
+                // Kartu Samping Kiri
+                card.classList.add('is-front-left');
+            } else if (diff === 1) {
+                // Kartu Samping Kanan
+                card.classList.add('is-front-right');
+            } else if (diff === -2) {
+                // Ditumpuk 1 di Samping Kiri (Peek)
                 card.classList.add('is-stack-left');
             } else if (diff === 2) {
-                // Ditumpuk 1 di Belakang Kanan
+                // Ditumpuk 1 di Samping Kanan (Peek)
                 card.classList.add('is-stack-right');
-            } else if (diff < -1) {
+            } else if (diff < -2) {
                 card.classList.add('is-hidden-left');
             } else {
                 card.classList.add('is-hidden-right');
             }
         });
 
-        dots.forEach((dot, idx) => {
-            if (idx === homeReviewIndex || idx === (homeReviewIndex + 1) % total) {
-                dot.className = 'h-2 rounded-full transition-all duration-300 w-6 bg-[#1C1C1C]';
-            } else {
-                dot.className = 'h-2 rounded-full transition-all duration-300 w-2 bg-[#D1D5DB] hover:bg-neutral-500';
-            }
+        const dots = document.querySelectorAll('#homeReviewStageWrapper .nucomu-reviews-dot');
+        dots.forEach((dot) => {
+            const dotIdx = parseInt(dot.getAttribute('data-dot-index') || '-1', 10);
+            const isActive = dotIdx === homeReviewIndex;
+            dot.classList.toggle('is-active', isActive);
+            dot.setAttribute('aria-current', isActive ? 'true' : 'false');
         });
     }
 
@@ -830,11 +1303,26 @@
     function pauseHomeReview() { isHomeReviewPaused = true; }
     function resumeHomeReview() { isHomeReviewPaused = false; }
 
-    // Hover Pause on Stage
+    // Autoplay berhenti saat hover / fokus & dukungan panah keyboard
     const reviewStageEl = document.getElementById('homeReviewStageWrapper');
     if (reviewStageEl) {
         reviewStageEl.addEventListener('mouseenter', pauseHomeReview);
         reviewStageEl.addEventListener('mouseleave', resumeHomeReview);
+        reviewStageEl.addEventListener('focusin', pauseHomeReview);
+        reviewStageEl.addEventListener('focusout', (e) => {
+            if (!e.relatedTarget || !reviewStageEl.contains(e.relatedTarget)) {
+                resumeHomeReview();
+            }
+        });
+        reviewStageEl.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevHomeReview();
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                nextHomeReview();
+            }
+        });
     }
 
     // Touch Swipe Navigation for Mobile
@@ -859,16 +1347,37 @@
         }, { passive: true });
     }
 
-    // Modal Details Controller
-    function openSingleReviewModal(index) {
+    // Lightbox & Modals Controller
+    function openReviewImagePreview(imgUrl, reviewerName) {
+        const modal = document.getElementById('reviewImageLightbox');
+        const img = document.getElementById('reviewLightboxImg');
+        const caption = document.getElementById('reviewLightboxCaption');
+        if (modal && img) {
+            img.src = imgUrl;
+            if (caption) caption.innerText = reviewerName ? `Foto ulasan dari ${reviewerName}` : '';
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+    }
+
+    function closeReviewImagePreview() {
+        const modal = document.getElementById('reviewImageLightbox');
+        if (modal) {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+    }
+
+    function openSingleReviewModal(index, triggerEl = null) {
         if (!homeReviews || homeReviews.length === 0) return;
         const safeIdx = ((index % homeReviews.length) + homeReviews.length) % homeReviews.length;
         const rev = homeReviews[safeIdx];
         if (!rev) return;
 
+        lastSingleReviewTrigger = triggerEl || document.activeElement;
+
         const modal = document.getElementById('singleReviewModal');
         const content = document.getElementById('singleReviewModalContent');
         const avatarEl = document.getElementById('singleReviewAvatar');
+        const avatarFallbackEl = document.getElementById('singleReviewAvatarFallback');
         const nameEl = document.getElementById('singleReviewName');
         const handleEl = document.getElementById('singleReviewHandle');
         const starsEl = document.getElementById('singleReviewStars');
@@ -879,24 +1388,48 @@
         const photosWrapEl = document.getElementById('singleReviewPhotosWrap');
         const photosGridEl = document.getElementById('singleReviewPhotosGrid');
 
-        if (avatarEl) {
-            avatarEl.src = rev.avatar_url || rev.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
-            avatarEl.alt = rev.name || 'Pengunjung Nucomu';
+        const reviewerName = (rev.name || 'Pengunjung Nucomu').trim();
+        const initialChar = reviewerName.charAt(0).toUpperCase() || 'P';
+        const avatarBg = homeReviewAvatarPalette[initialChar] || '#1C1C1C';
+        const rawAvatarUrl = rev.avatar_url || '';
+        const useLetterAvatar = [0, 2].includes(safeIdx) || !rawAvatarUrl || rawAvatarUrl.includes('placeholder') || rawAvatarUrl.includes('unsplash');
+
+        if (avatarEl && avatarFallbackEl) {
+            avatarFallbackEl.innerText = initialChar;
+            avatarFallbackEl.style.backgroundColor = avatarBg;
+
+            if (useLetterAvatar) {
+                avatarEl.classList.add('hidden');
+                avatarEl.removeAttribute('src');
+                avatarFallbackEl.classList.remove('hidden');
+                avatarFallbackEl.classList.add('flex');
+            } else {
+                avatarFallbackEl.classList.add('hidden');
+                avatarFallbackEl.classList.remove('flex');
+                avatarEl.classList.remove('hidden');
+                avatarEl.onerror = function() {
+                    avatarEl.classList.add('hidden');
+                    avatarFallbackEl.classList.remove('hidden');
+                    avatarFallbackEl.classList.add('flex');
+                };
+                avatarEl.src = rawAvatarUrl;
+                avatarEl.alt = reviewerName;
+            }
         }
-        if (nameEl) nameEl.innerText = rev.name || 'Pengunjung Nucomu';
-        if (handleEl) handleEl.innerText = rev.handle || 'Pengunjung Nucomu';
+        if (nameEl) nameEl.innerText = reviewerName;
+        if (handleEl) handleEl.innerText = rev.handle || 'Pengunjung Google Maps';
         if (timeAgoEl) timeAgoEl.innerText = rev.time_ago || 'Baru-baru ini';
-        if (textEl) textEl.innerText = `"${rev.content || rev.text || ''}"`;
+        if (textEl) textEl.innerText = `"${(rev.content || '').trim()}"`;
         if (orderTagEl) {
-            orderTagEl.innerHTML = `<i class="fa-solid fa-mug-saucer mr-1 text-[10px] text-[#1C1C1C]"></i> ${rev.order_tag || rev.order || 'Menu Nucomu'}`;
+            orderTagEl.innerHTML = `<i class="fa-solid fa-mug-saucer mr-1 text-[10px] text-[#1C1C1C]" aria-hidden="true"></i> ${rev.order_tag || 'Menu Nucomu'}`;
         }
 
-        const starsCount = parseInt(rev.rating || rev.stars || 5, 10) || 5;
+        const starsCount = parseInt(rev.rating || 5, 10) || 5;
         if (ratingNumEl) ratingNumEl.innerText = `${starsCount}.0`;
         if (starsEl) {
             starsEl.innerHTML = '';
             for (let i = 0; i < starsCount; i++) {
-                starsEl.innerHTML += '<i class="fa-solid fa-star"></i>';
+                starsEl.innerHTML += '<i class="fa-solid fa-star" aria-hidden="true"></i>';
             }
         }
 
@@ -908,33 +1441,14 @@
             photosGridEl.innerHTML = '';
             if (rawPhotos.length > 0) {
                 photosWrapEl.classList.remove('hidden');
-                photosGridEl.className = rawPhotos.length === 1
-                    ? 'grid grid-cols-1 gap-2'
-                    : 'grid grid-cols-2 gap-2';
-
+                photosGridEl.className = rawPhotos.length === 1 ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-2 gap-2';
                 rawPhotos.forEach((imgUrl) => {
-                    const photoItem = document.createElement('div');
-                    photoItem.className = rawPhotos.length === 1
-                        ? 'relative group cursor-pointer rounded-2xl overflow-hidden border border-[#E5E5E5] bg-neutral-100 max-h-72'
-                        : 'relative group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden border border-[#E5E5E5] bg-neutral-100';
-                    photoItem.onclick = function() {
-                        openReviewImagePreview(imgUrl, rev.name || 'Pengunjung Nucomu');
-                    };
-
-                    const imgEl = document.createElement('img');
-                    imgEl.src = imgUrl;
-                    imgEl.alt = `Foto ulasan ${rev.name || 'Pengunjung'}`;
-                    imgEl.referrerPolicy = 'no-referrer';
-                    imgEl.loading = 'lazy';
-                    imgEl.className = 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300';
-
-                    const badgeEl = document.createElement('span');
-                    badgeEl.className = 'absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1.5';
-                    badgeEl.innerHTML = '<i class="fa-solid fa-expand"></i><span>Perbesar</span>';
-
-                    photoItem.appendChild(imgEl);
-                    photoItem.appendChild(badgeEl);
-                    photosGridEl.appendChild(photoItem);
+                    const item = document.createElement('div');
+                    item.className = 'relative group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden border border-[#E5E5E5] bg-neutral-100';
+                    item.onclick = () => openReviewImagePreview(imgUrl, rev.name);
+                    item.innerHTML = `<img src="${imgUrl}" alt="Foto ulasan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                      <span class="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1.5"><i class="fa-solid fa-expand"></i><span>Perbesar</span></span>`;
+                    photosGridEl.appendChild(item);
                 });
             } else {
                 photosWrapEl.classList.add('hidden');
@@ -954,117 +1468,20 @@
         const modal = document.getElementById('singleReviewModal');
         const content = document.getElementById('singleReviewModalContent');
         if (modal && content) {
+            const wasOpen = !modal.classList.contains('pointer-events-none');
             modal.classList.add('opacity-0', 'pointer-events-none');
             content.classList.remove('scale-100');
             content.classList.add('scale-95');
-            const allModal = document.getElementById('allReviewsModal');
-            if (!allModal || allModal.classList.contains('pointer-events-none')) {
-                document.body.style.overflow = '';
-                resumeHomeReview();
-            }
-        }
-    }
-
-    function toggleReviewLike(btnEl) {
-        if (!btnEl) return;
-        const countEl = btnEl.querySelector('.like-count');
-        const iconEl = btnEl.querySelector('i');
-        const isLiked = btnEl.getAttribute('data-liked') === '1';
-        let currentCount = countEl ? parseInt(countEl.innerText, 10) || 0 : 0;
-
-        if (isLiked) {
-            btnEl.setAttribute('data-liked', '0');
-            if (countEl) countEl.innerText = Math.max(0, currentCount - 1);
-            if (iconEl) {
-                iconEl.classList.remove('fa-solid');
-                iconEl.classList.add('fa-regular');
-            }
-        } else {
-            btnEl.setAttribute('data-liked', '1');
-            if (countEl) countEl.innerText = currentCount + 1;
-            if (iconEl) {
-                iconEl.classList.remove('fa-regular');
-                iconEl.classList.add('fa-solid');
-            }
-        }
-    }
-
-    function openReviewImagePreview(imgUrl, reviewerName) {
-        const modal = document.getElementById('reviewImageLightbox');
-        const img = document.getElementById('reviewLightboxImg');
-        const caption = document.getElementById('reviewLightboxCaption');
-        if (modal && img) {
-            img.src = imgUrl;
-            if (caption) caption.innerText = reviewerName ? `Foto ulasan dari ${reviewerName}` : '';
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-        }
-    }
-
-    function closeReviewImagePreview() {
-        const modal = document.getElementById('reviewImageLightbox');
-        if (modal) {
-            modal.classList.add('opacity-0', 'pointer-events-none');
-        }
-    }
-
-    function previewHomeReviewUpload(input) {
-        const label = document.getElementById('homeReviewImageLabel');
-        const wrap = document.getElementById('homeReviewUploadPreviewWrap');
-        const img = document.getElementById('homeReviewUploadPreviewImg');
-        if (input.files && input.files[0]) {
-            if (label) label.innerText = input.files[0].name;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (img && wrap) {
-                    img.src = e.target.result;
-                    wrap.classList.remove('hidden');
+            if (wasOpen) {
+                const allModal = document.getElementById('allReviewsModal');
+                if (!allModal || allModal.classList.contains('pointer-events-none')) {
+                    document.body.style.overflow = '';
+                    resumeHomeReview();
                 }
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    let homeCurrentRating = 5;
-    function openHomeReviewModal() {
-        const modal = document.getElementById('homeReviewModal');
-        const modalContent = document.getElementById('homeModalContent');
-        if (modal && modalContent) {
-            pauseHomeReview();
-            document.body.style.overflow = 'hidden';
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
-            setHomeRating(5);
-        }
-    }
-
-    function closeHomeReviewModal() {
-        const modal = document.getElementById('homeReviewModal');
-        const modalContent = document.getElementById('homeModalContent');
-        if (modal && modalContent) {
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
-            const allModal = document.getElementById('allReviewsModal');
-            if (!allModal || allModal.classList.contains('pointer-events-none')) {
-                document.body.style.overflow = '';
-                resumeHomeReview();
-            }
-        }
-    }
-
-    function setHomeRating(rating) {
-        homeCurrentRating = rating;
-        const ratingInput = document.getElementById('homeRatingInput');
-        if (ratingInput) ratingInput.value = rating;
-        const stars = document.getElementById('homeStarRating').children;
-        for (let i = 0; i < stars.length; i++) {
-            if (i < rating) {
-                stars[i].classList.add('text-[#1C1C1C]');
-                stars[i].classList.remove('text-stone-300');
-            } else {
-                stars[i].classList.remove('text-[#1C1C1C]');
-                stars[i].classList.add('text-stone-300');
+                if (lastSingleReviewTrigger && typeof lastSingleReviewTrigger.focus === 'function') {
+                    lastSingleReviewTrigger.focus();
+                }
+                lastSingleReviewTrigger = null;
             }
         }
     }
@@ -1124,12 +1541,74 @@
 
         if (allBtn && photoBtn) {
             if (mode === 'with-photo') {
-                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1C1C1C] text-white transition-all shadow-2xs';
-                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#F5F5F5] text-[#555555] border border-[#E5E5E5] transition-all';
+                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1C1C1C] text-white transition-all shadow-2xs cursor-pointer';
+                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#F5F5F5] text-[#555555] border border-[#E5E5E5] transition-all cursor-pointer';
             } else {
-                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1C1C1C] text-white transition-all shadow-2xs';
-                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#F5F5F5] text-[#555555] border border-[#E5E5E5] transition-all';
+                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#1C1C1C] text-white transition-all shadow-2xs cursor-pointer';
+                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white hover:bg-[#F5F5F5] text-[#555555] border border-[#E5E5E5] transition-all cursor-pointer';
             }
+        }
+    }
+
+    function openHomeReviewModal() {
+        const modal = document.getElementById('homeReviewModal');
+        const modalContent = document.getElementById('homeModalContent');
+        if (modal && modalContent) {
+            pauseHomeReview();
+            document.body.style.overflow = 'hidden';
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+            setHomeRating(5);
+        }
+    }
+
+    function closeHomeReviewModal() {
+        const modal = document.getElementById('homeReviewModal');
+        const modalContent = document.getElementById('homeModalContent');
+        if (modal && modalContent) {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            const allModal = document.getElementById('allReviewsModal');
+            if (!allModal || allModal.classList.contains('pointer-events-none')) {
+                document.body.style.overflow = '';
+                resumeHomeReview();
+            }
+        }
+    }
+
+    let homeCurrentRating = 5;
+    function setHomeRating(rating) {
+        homeCurrentRating = rating;
+        const ratingInput = document.getElementById('homeRatingInput');
+        if (ratingInput) ratingInput.value = rating;
+        const stars = document.getElementById('homeStarRating').children;
+        for (let i = 0; i < stars.length; i++) {
+            if (i < rating) {
+                stars[i].classList.add('text-[#1C1C1C]');
+                stars[i].classList.remove('text-stone-300');
+            } else {
+                stars[i].classList.remove('text-[#1C1C1C]');
+                stars[i].classList.add('text-stone-300');
+            }
+        }
+    }
+
+    function previewHomeReviewUpload(input) {
+        const label = document.getElementById('homeReviewImageLabel');
+        const wrap = document.getElementById('homeReviewUploadPreviewWrap');
+        const img = document.getElementById('homeReviewUploadPreviewImg');
+        if (input.files && input.files[0]) {
+            if (label) label.innerText = input.files[0].name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (img && wrap) {
+                    img.src = e.target.result;
+                    wrap.classList.remove('hidden');
+                }
+            };
+            reader.readAsDataURL(input.files[0]);
         }
     }
 
@@ -1144,10 +1623,22 @@
         }
     });
 
+    // Inisialisasi Panggung Ulasan & Deteksi Teks Terpotong
+    let reviewReadMoreResizeTimer = null;
     function initNucomuHomeReviews() {
         updateStageCardsPositions();
+        updateReviewReadMoreButtons();
         startHomeReviewLoop();
+
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(updateReviewReadMoreButtons);
+        }
     }
+
+    window.addEventListener('resize', () => {
+        if (reviewReadMoreResizeTimer) clearTimeout(reviewReadMoreResizeTimer);
+        reviewReadMoreResizeTimer = setTimeout(updateReviewReadMoreButtons, 120);
+    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initNucomuHomeReviews);
