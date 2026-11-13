@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Export Viewer - Nucomu Cafe</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background-color: #FFFFFF !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      width: 2400px;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    #wrapper {
+      padding: 40px 60px;
+      width: 2400px;
+      background-color: #FFFFFF;
+    }
+    .diagram-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 3px solid #C2A378;
+    }
+    .diagram-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      background: #140E0A;
+      color: #FFFFFF;
+    }
+    .diagram-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #140E0A;
+      margin-bottom: 6px;
+    }
+    .diagram-subtitle {
+      font-size: 16px;
+      color: #555555;
+    }
+    #diagram-container {
+      background: #FFFFFF;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 0;
+    }
+    #diagram-container svg {
+      max-width: 2280px !important;
+      height: auto !important;
+    }
+  </style>
+  <script src="mermaid.min.js"></script>
+  <script src="diagrams.js"></script>
+</head>
+<body>
+  <div id="wrapper">
+    <div class="diagram-header">
+      <div id="badge" class="diagram-badge">TAB A</div>
+      <div id="title" class="diagram-title">Loading...</div>
+      <div id="subtitle" class="diagram-subtitle"></div>
+    </div>
+    <div id="diagram-container"></div>
+  </div>
+  <div id="render-status" style="display:none;">pending</div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: true,
+        curve: 'basis'
+      }
+    });
+
+    async function renderSelected() {
+      try {
+        const hash = window.location.hash.replace('#', '') || 'A1-hirarki-sistem';
+        const diagram = DIAGRAMS.find(d => d.id === hash) || DIAGRAMS[0];
+
+        const tabLabels = {
+          'A': 'TAB A • DIAGRAM BERJENJANG',
+          'B': 'TAB B • DATA FLOW DIAGRAM (DFD)',
+          'C': 'TAB C • ALGORITMA & FLOWCHART'
+        };
+
+        document.getElementById('badge').textContent = tabLabels[diagram.tab] || ('TAB ' + diagram.tab);
+        document.getElementById('title').textContent = diagram.number + '. ' + diagram.title;
+        document.getElementById('subtitle').textContent = diagram.subtitle;
+
+        const { svg } = await mermaid.render('svg-render-' + diagram.id, diagram.code);
+        document.getElementById('diagram-container').innerHTML = svg;
+        document.getElementById('render-status').textContent = 'done';
+        document.getElementById('render-status').setAttribute('data-id', diagram.id);
+      } catch (err) {
+        document.getElementById('diagram-container').innerHTML = '<div style="color:red;padding:20px;font-family:monospace;">Render Error: ' + err.message + '</div>';
+        document.getElementById('render-status').textContent = 'error: ' + err.message;
+      }
+    }
+
+    renderSelected();
+  </script>
+</body>
+</html>

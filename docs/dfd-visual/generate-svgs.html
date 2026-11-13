@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <title>Batch SVG Generator</title>
+  <script src="mermaid.min.js"></script>
+  <script src="diagrams.js"></script>
+</head>
+<body>
+  <div id="status">Starting...</div>
+  <div id="svg-store"></div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'default',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: false,
+        htmlLabels: true,
+        curve: 'basis'
+      }
+    });
+
+    async function generateAll() {
+      const store = document.getElementById('svg-store');
+      const status = document.getElementById('status');
+      const errors = [];
+
+      for (let i = 0; i < DIAGRAMS.length; i++) {
+        const d = DIAGRAMS[i];
+        status.textContent = 'Rendering ' + (i + 1) + '/' + DIAGRAMS.length + ': ' + d.id;
+        try {
+          const { svg } = await mermaid.render('render-' + d.id, d.code);
+          const div = document.createElement('div');
+          div.className = 'diagram-svg-entry';
+          div.setAttribute('data-id', d.id);
+          div.innerHTML = svg;
+          store.appendChild(div);
+        } catch (err) {
+          errors.push({ id: d.id, error: err.message });
+          const errDiv = document.createElement('div');
+          errDiv.className = 'diagram-svg-error';
+          errDiv.setAttribute('data-id', d.id);
+          errDiv.textContent = 'ERROR: ' + err.message;
+          store.appendChild(errDiv);
+        }
+      }
+
+      if (errors.length > 0) {
+        status.textContent = 'FINISHED_WITH_ERRORS: ' + JSON.stringify(errors);
+      } else {
+        status.textContent = 'ALL_FINISHED_SUCCESS: ' + DIAGRAMS.length;
+      }
+    }
+
+    generateAll();
+  </script>
+</body>
+</html>

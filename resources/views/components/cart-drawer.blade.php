@@ -234,7 +234,7 @@
             cursor: pointer;
         }
         .menu-card:not(.is-open):hover {
-            border-color: #78726b;
+            border-color: #ffffff;
             box-shadow:
                 0 4px 10px rgba(44, 40, 37, 0.08),
                 0 14px 30px -4px rgba(44, 40, 37, 0.18),
@@ -253,7 +253,7 @@
 
     /* Fokus Keyboard (:focus-visible / :focus-within) memberi keadaan zoom foto yang sama dengan indikator fokus */
     .menu-card:focus-within:not(.is-open) {
-        border-color: #78726b;
+        border-color: #ffffff;
         box-shadow:
             0 4px 10px rgba(44, 40, 37, 0.08),
             0 14px 30px -4px rgba(44, 40, 37, 0.18),
@@ -269,10 +269,10 @@
         z-index: 30;
     }
 
-    /* Keadaan 2: KLIK (Kartu terbuka penuh: border hitam arang tipis #242424, bayangan netral lembut, foto TETAP membesar selama kartu terbuka) */
+    /* Keadaan 2: KLIK (Kartu terbuka penuh: border putih #ffffff, bayangan netral 3D lembut, foto TETAP membesar selama kartu terbuka) */
     .menu-card.is-open {
         z-index: 35;
-        border-color: #242424 !important;
+        border-color: #ffffff !important;
         box-shadow:
             0 4px 12px rgba(0, 0, 0, 0.08),
             0 18px 36px -4px rgba(0, 0, 0, 0.18),

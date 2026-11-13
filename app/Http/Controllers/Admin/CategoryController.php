@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Support\FileUploadHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,11 +21,13 @@ class CategoryController extends Controller
         $categories = Category::withCount('menus')
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get();
+            ->get()
+            ->each(fn (Category $category) => $category->append('image_url'));
 
         $nextSortOrder = (Category::max('sort_order') ?? 0) + 1;
+        $categoryPhotoLimits = FileUploadHelper::getEffectiveLimit(2 * 1024 * 1024, 'foto kategori');
 
-        return view('admin.categories.index', compact('categories', 'nextSortOrder'));
+        return view('admin.categories.index', compact('categories', 'nextSortOrder', 'categoryPhotoLimits'));
     }
 
     /**
@@ -32,15 +35,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request): RedirectResponse|JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'boolean'],
-            'description' => ['nullable', 'string', 'max:1000'],
-        ], [
-            'name.required' => 'Nama kategori wajib diisi.',
-            'name.max' => 'Nama kategori maksimal 100 karakter.',
-        ]);
+        $validated = $this->validateCategoryRequest($request);
 
         $baseSlug = Str::slug($validated['name']);
         $slug = $baseSlug ?: 'kategori-'.time();
@@ -52,13 +47,28 @@ class CategoryController extends Controller
 
         $sortOrder = $validated['sort_order'] ?? ((Category::max('sort_order') ?? 0) + 1);
 
-        $category = Category::create([
-            'name' => $validated['name'],
-            'slug' => $slug,
-            'sort_order' => $sortOrder,
-            'is_active' => $request->boolean('is_active', true),
-            'description' => $validated['description'] ?? null,
-        ]);
+        try {
+            $imageName = $request->hasFile('image') ? $this->storeUploadedImage($request) : null;
+
+            $category = Category::create([
+                'name' => $validated['name'],
+                'slug' => $slug,
+                'image' => $imageName,
+                'sort_order' => $sortOrder,
+                'is_active' => $request->boolean('is_active', true),
+                'description' => $validated['description'] ?? null,
+            ]);
+            $category->append('image_url');
+        } catch (\Throwable $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menyimpan kategori: '.$e->getMessage(),
+                ], 500);
+            }
+
+            return back()->withInput()->with('error', 'Gagal menyimpan kategori: '.$e->getMessage());
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -76,15 +86,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): RedirectResponse|JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'boolean'],
-            'description' => ['nullable', 'string', 'max:1000'],
-        ], [
-            'name.required' => 'Nama kategori wajib diisi.',
-            'name.max' => 'Nama kategori maksimal 100 karakter.',
-        ]);
+        $validated = $this->validateCategoryRequest($request);
 
         $slug = $category->slug;
         if ($category->name !== $validated['name']) {
@@ -99,13 +101,39 @@ class CategoryController extends Controller
 
         $sortOrder = $validated['sort_order'] ?? $category->sort_order;
 
-        $category->update([
-            'name' => $validated['name'],
-            'slug' => $slug,
-            'sort_order' => $sortOrder,
-            'is_active' => $request->has('is_active') ? $request->boolean('is_active') : $category->is_active,
-            'description' => $validated['description'] ?? null,
-        ]);
+        try {
+            $imageName = $category->image;
+
+            if ($request->boolean('remove_image') && ! $request->hasFile('image')) {
+                $category->deleteImageFile();
+                $imageName = null;
+            }
+
+            if ($request->hasFile('image')) {
+                $newImageName = $this->storeUploadedImage($request);
+                $category->deleteImageFile();
+                $imageName = $newImageName;
+            }
+
+            $category->update([
+                'name' => $validated['name'],
+                'slug' => $slug,
+                'image' => $imageName,
+                'sort_order' => $sortOrder,
+                'is_active' => $request->has('is_active') ? $request->boolean('is_active') : $category->is_active,
+                'description' => array_key_exists('description', $validated) ? $validated['description'] : $category->description,
+            ]);
+            $category->append('image_url');
+        } catch (\Throwable $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal memperbarui kategori: '.$e->getMessage(),
+                ], 500);
+            }
+
+            return back()->withInput()->with('error', 'Gagal memperbarui kategori: '.$e->getMessage());
+        }
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -139,6 +167,7 @@ class CategoryController extends Controller
         }
 
         $name = $category->name;
+        $category->deleteImageFile();
         $category->delete();
 
         if (request()->wantsJson()) {
@@ -195,5 +224,45 @@ class CategoryController extends Controller
         }
 
         return back()->with('success', 'Urutan kategori berhasil disimpan.');
+    }
+
+    /**
+     * Validate create or update category payload including optional image upload.
+     *
+     * @return array<string, mixed>
+     */
+    private function validateCategoryRequest(Request $request): array
+    {
+        return $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['nullable', 'boolean'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'remove_image' => ['nullable', 'boolean'],
+        ], [
+            'name.required' => 'Nama kategori wajib diisi.',
+            'name.max' => 'Nama kategori maksimal 100 karakter.',
+            'image.uploaded' => 'Foto kategori gagal diunggah ke server. Pastikan ukuran file tidak melebihi batas sistem.',
+            'image.image' => 'Berkas kategori harus berupa gambar.',
+            'image.mimes' => 'Format foto kategori harus berupa JPG, JPEG, PNG, atau WebP.',
+            'image.max' => 'Ukuran file foto kategori maksimal 2 MB.',
+        ]);
+    }
+
+    /**
+     * Persist uploaded category image under public/uploads/categories and return filename.
+     */
+    private function storeUploadedImage(Request $request): string
+    {
+        $uploadDir = public_path('uploads/categories');
+        FileUploadHelper::ensureDirectoryWritable($uploadDir, 'folder upload Kategori');
+
+        $file = $request->file('image');
+        $extension = $file->getClientOriginalExtension() ?: ($file->guessExtension() ?: 'jpg');
+        $fileName = 'category_'.time().'_'.bin2hex(random_bytes(3)).'.'.$extension;
+        $file->move($uploadDir, $fileName);
+
+        return $fileName;
     }
 }

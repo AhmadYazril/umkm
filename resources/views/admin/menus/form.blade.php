@@ -4,6 +4,20 @@
     $actionUrl = $isEdit ? route('admin.menus.update', $menu->id) : route('admin.menus.store');
     $currentImg = $isEdit ? $menu->image_url : null;
     $hasExistingImg = $isEdit && !empty($menu->image);
+
+    $initialOptions = old('options');
+    if (! is_array($initialOptions)) {
+        $loadedOptions = $isEdit
+            ? ($menu->relationLoaded('options') ? $menu->options : $menu->options()->get())
+            : collect();
+        $initialOptions = $loadedOptions->map(fn ($opt) => [
+            'name' => $opt->name,
+            'type' => $opt->type ?? 'variant',
+            'price' => (int) ($opt->price ?? 0),
+        ])->values()->all();
+    } else {
+        $initialOptions = array_values($initialOptions);
+    }
 @endphp
 
 @section('title', ($isEdit ? 'Edit Menu: ' . $menu->name : 'Tambah Menu Baru') . ' — Nucomu Cafe')
@@ -47,11 +61,11 @@
                             Panduan {{ $isEdit ? 'Mengedit' : 'Menambahkan' }} Sajian Menu
                         </h3>
                         <p class="text-[12.5px] mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
-                            Isi formulir 3 langkah di bawah ini. Tampilan di sisi kanan akan berubah langsung saat Anda mengetik.
+                            Isi formulir 4 langkah di bawah ini. Tampilan di sisi kanan akan berubah langsung saat Anda mengetik.
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[12.5px]">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-[12.5px]">
                         <div class="p-3 rounded-xl border bg-white space-y-1" style="border-color: var(--admin-border-card, #E6E8E4);">
                             <span class="font-bold block" style="color: var(--admin-btn-primary-bg, #2F6B4F);">1. Nama &amp; Kategori</span>
                             <p class="text-[12px] m-0" style="color: var(--admin-text-sub, #555D58);">
@@ -68,6 +82,12 @@
                             <span class="font-bold block" style="color: var(--admin-btn-primary-bg, #2F6B4F);">3. Foto &amp; Status</span>
                             <p class="text-[12px] m-0" style="color: var(--admin-text-sub, #555D58);">
                                 Unggah foto kotak 1:1 (disarankan 800 &times; 800 px). Atur status Tersedia dan apakah dijadikan menu andalan di beranda.
+                            </p>
+                        </div>
+                        <div class="p-3 rounded-xl border bg-white space-y-1" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <span class="font-bold block" style="color: var(--admin-btn-primary-bg, #2F6B4F);">4. Varian &amp; Opsi</span>
+                            <p class="text-[12px] m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Tambahkan pilihan penyajian seperti Hot/Iced, ukuran, level gula, atau topping ekstra beserta tambahan harga bila ada.
                             </p>
                         </div>
                     </div>
@@ -420,6 +440,139 @@
 
                 </x-form-section>
 
+                {{-- KARTU LANGKAH 4: VARIAN & OPSI TAMBAHAN --}}
+                <div id="menu-variants-section">
+                    <x-form-section step="4"
+                                    title="Varian dan opsi tambahan"
+                                    description="Opsional — atur pilihan penyajian (Hot / Iced), ukuran porsi, tingkat manis, atau tambahan ekstra">
+                        <input type="hidden" name="sync_options" value="1">
+
+                        {{-- Preset Cepat --}}
+                        <div class="p-3.5 rounded-xl border bg-[#F7F8F6] space-y-2" style="border-color: var(--admin-border-card, #E6E8E4);">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <span class="text-xs font-bold" style="color: var(--admin-text-main, #1B1F1D);">
+                                    Tambah cepat paket varian umum:
+                                </span>
+                                <span class="text-[11px]" style="color: var(--admin-text-sub, #555D58);">
+                                    Klik untuk mengisi otomatis tanpa duplikat
+                                </span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <button type="button"
+                                        onclick='addOptionPresets([{name:"Hot",type:"variant",price:0},{name:"Iced",type:"variant",price:0}])'
+                                        class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border bg-white hover:bg-[#E6F0EA] hover:border-[#2F6B4F] transition cursor-pointer">
+                                    + Hot / Iced
+                                </button>
+                                <button type="button"
+                                        onclick='addOptionPresets([{name:"Regular",type:"variant",price:0},{name:"Large",type:"variant",price:5000}])'
+                                        class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border bg-white hover:bg-[#E6F0EA] hover:border-[#2F6B4F] transition cursor-pointer">
+                                    + Regular / Large (+Rp 5.000)
+                                </button>
+                                <button type="button"
+                                        onclick='addOptionPresets([{name:"0% (Tanpa Gula)",type:"addon",price:0},{name:"50% (Sedang)",type:"addon",price:0},{name:"100% (Penuh)",type:"addon",price:0}])'
+                                        class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border bg-white hover:bg-[#E6F0EA] hover:border-[#2F6B4F] transition cursor-pointer">
+                                    + Level Gula
+                                </button>
+                                <button type="button"
+                                        onclick='addOptionPresets([{name:"Extra Shot",type:"addon",price:5000}])'
+                                        class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold border bg-white hover:bg-[#E6F0EA] hover:border-[#2F6B4F] transition cursor-pointer">
+                                    + Extra Shot (+Rp 5.000)
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Empty State jika belum ada varian --}}
+                        <div id="menuOptionsEmptyState"
+                             class="{{ count($initialOptions) > 0 ? 'hidden' : '' }} p-4 rounded-xl border border-dashed text-center space-y-1 bg-stone-50/60"
+                             style="border-color: var(--admin-border-card, #D6DDD7);">
+                            <p class="text-xs font-semibold m-0" style="color: var(--admin-text-main, #1B1F1D);">
+                                Belum ada varian untuk sajian ini
+                            </p>
+                            <p class="text-[11.5px] m-0" style="color: var(--admin-text-sub, #555D58);">
+                                Klik tombol paket cepat di atas atau <strong>"+ Tambah Varian"</strong> di bawah bila menu memiliki pilihan varian.
+                            </p>
+                        </div>
+
+                        {{-- Daftar Baris Varian --}}
+                        <div id="menuOptionsContainer" class="space-y-2.5">
+                            @foreach($initialOptions as $optIndex => $opt)
+                                @php
+                                    $optType = ($opt['type'] ?? 'variant') === 'addon' ? 'addon' : 'variant';
+                                    $optName = (string) ($opt['name'] ?? '');
+                                    $optPrice = (int) ($opt['price'] ?? 0);
+                                @endphp
+                                <div class="menu-option-row p-3 rounded-xl border bg-white grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end"
+                                     style="border-color: var(--admin-border-card, #E6E8E4);">
+                                    <div class="sm:col-span-4 space-y-1">
+                                        <label class="block text-[11px] font-semibold" style="color: var(--admin-text-sub, #555D58);">
+                                            Jenis Opsi
+                                        </label>
+                                        <select name="options[{{ $optIndex }}][type]"
+                                                onchange="syncMenuPreviewOptions(); markFormAsDirty();"
+                                                class="menu-option-type w-full px-2.5 py-2 rounded-lg border text-xs font-semibold bg-[#F7F8F6] focus:bg-white focus:outline-none focus:border-[#2F6B4F]"
+                                                style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                                            <option value="variant" {{ $optType === 'variant' ? 'selected' : '' }}>Varian Utama (Suhu / Ukuran)</option>
+                                            <option value="addon" {{ $optType === 'addon' ? 'selected' : '' }}>Tambahan / Level Gula</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-4 space-y-1">
+                                        <label class="block text-[11px] font-semibold" style="color: var(--admin-text-sub, #555D58);">
+                                            Nama Varian / Opsi
+                                        </label>
+                                        <input type="text"
+                                               name="options[{{ $optIndex }}][name]"
+                                               value="{{ $optName }}"
+                                               maxlength="100"
+                                               placeholder="Contoh: Iced, Large, Less Sugar"
+                                               oninput="syncMenuPreviewOptions(); markFormAsDirty();"
+                                               class="menu-option-name w-full px-3 py-2 rounded-lg border text-xs font-semibold bg-white focus:outline-none focus:border-[#2F6B4F]"
+                                               style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                                    </div>
+                                    <div class="sm:col-span-3 space-y-1">
+                                        <label class="block text-[11px] font-semibold" style="color: var(--admin-text-sub, #555D58);">
+                                            Tambahan Harga
+                                        </label>
+                                        <div class="relative">
+                                            <span class="absolute left-2.5 top-2 text-[11px] font-semibold text-gray-400 pointer-events-none">+Rp</span>
+                                            <input type="number"
+                                                   name="options[{{ $optIndex }}][price]"
+                                                   value="{{ $optPrice }}"
+                                                   min="0"
+                                                   step="500"
+                                                   oninput="markFormAsDirty();"
+                                                   class="menu-option-price w-full pl-9 pr-2.5 py-2 rounded-lg border text-xs font-bold tabular-nums bg-white focus:outline-none focus:border-[#2F6B4F]"
+                                                   style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                                        </div>
+                                    </div>
+                                    <div class="sm:col-span-1 flex justify-end">
+                                        <button type="button"
+                                                onclick="removeMenuOptionRow(this)"
+                                                class="w-9 h-9 rounded-lg border flex items-center justify-center text-rose-600 hover:bg-rose-50 transition cursor-pointer"
+                                                style="border-color: var(--admin-border-card, #E6E8E4);"
+                                                title="Hapus baris varian ini"
+                                                aria-label="Hapus varian">
+                                            <i class="fa-solid fa-trash-can text-xs" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                            <button type="button"
+                                    onclick="addMenuOptionRow()"
+                                    class="px-3.5 py-2 rounded-xl text-xs font-semibold border bg-white hover:bg-[#F0F4F1] text-emerald-900 transition inline-flex items-center gap-1.5 cursor-pointer"
+                                    style="border-color: var(--admin-border-card, #E6E8E4);">
+                                <i class="fa-solid fa-plus text-[10px]" aria-hidden="true"></i>
+                                <span>Tambah Varian</span>
+                            </button>
+                            <span class="text-[11px]" style="color: var(--admin-text-sub, #555D58);">
+                                Isi tambahan harga <strong>0</strong> bila tidak ada biaya ekstra.
+                            </span>
+                        </div>
+                    </x-form-section>
+                </div>
+
                 {{-- =========================================================================
                      BARIS TOMBOL AKSI FORMULIR (x-form-actions: Non-Sticky, Mengikuti Alur)
                      ========================================================================= --}}
@@ -544,6 +697,8 @@
                            class="text-[12px] leading-relaxed line-clamp-2 text-gray-500 m-0">
                             {{ old('description', $menu->description ?? 'Penjelasan aroma dan cita rasa racikan istimewa sajian kafe.') }}
                         </p>
+
+                        <div id="previewCustomerOptions" class="hidden pt-1 flex flex-wrap gap-1"></div>
 
                         {{-- Tombol Aksi Pelanggan Tiruan --}}
                         <div class="pt-2">
@@ -787,7 +942,182 @@
         if (actionInput) actionInput.value = actionType;
     }
 
-    // 5. Mobile Tab Switcher
+    // 5. Dynamic Variants & Addons Builder
+    let nextMenuOptionIndex = {{ count($initialOptions) }};
+
+    function updateMenuOptionsEmptyState() {
+        const container = document.getElementById('menuOptionsContainer');
+        const emptyEl = document.getElementById('menuOptionsEmptyState');
+        if (!container || !emptyEl) return;
+
+        const hasRows = container.querySelectorAll('.menu-option-row').length > 0;
+        emptyEl.classList.toggle('hidden', hasRows);
+    }
+
+    function syncMenuPreviewOptions() {
+        const previewEl = document.getElementById('previewCustomerOptions');
+        const container = document.getElementById('menuOptionsContainer');
+        if (!previewEl || !container) return;
+
+        const names = Array.from(container.querySelectorAll('.menu-option-name'))
+            .map((input) => input.value.trim())
+            .filter(Boolean);
+
+        previewEl.innerHTML = '';
+        if (names.length === 0) {
+            previewEl.classList.add('hidden');
+            return;
+        }
+
+        names.slice(0, 6).forEach((name) => {
+            const pill = document.createElement('span');
+            pill.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#F7F8F6] border text-[#1B1F1D]';
+            pill.style.borderColor = 'var(--admin-border-card, #E6E8E4)';
+            pill.textContent = name;
+            previewEl.appendChild(pill);
+        });
+
+        if (names.length > 6) {
+            const more = document.createElement('span');
+            more.className = 'px-1.5 py-0.5 text-[10px] font-semibold text-gray-500';
+            more.textContent = `+${names.length - 6} lagi`;
+            previewEl.appendChild(more);
+        }
+
+        previewEl.classList.remove('hidden');
+    }
+
+    function addMenuOptionRow(preset) {
+        const container = document.getElementById('menuOptionsContainer');
+        if (!container) return;
+
+        const idx = nextMenuOptionIndex++;
+        const type = preset && preset.type === 'addon' ? 'addon' : 'variant';
+        const name = preset && preset.name ? String(preset.name) : '';
+        const price = preset && preset.price !== undefined ? Number(preset.price) : 0;
+
+        const row = document.createElement('div');
+        row.className = 'menu-option-row p-3 rounded-xl border bg-white grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end anim-fade-up';
+        row.style.borderColor = 'var(--admin-border-card, #E6E8E4)';
+
+        const typeCol = document.createElement('div');
+        typeCol.className = 'sm:col-span-4 space-y-1';
+        const typeLabel = document.createElement('label');
+        typeLabel.className = 'block text-[11px] font-semibold';
+        typeLabel.style.color = 'var(--admin-text-sub, #555D58)';
+        typeLabel.textContent = 'Jenis Opsi';
+        const typeSelect = document.createElement('select');
+        typeSelect.name = `options[${idx}][type]`;
+        typeSelect.className = 'menu-option-type w-full px-2.5 py-2 rounded-lg border text-xs font-semibold bg-[#F7F8F6] focus:bg-white focus:outline-none focus:border-[#2F6B4F]';
+        typeSelect.style.borderColor = 'var(--admin-border-card, #E6E8E4)';
+        typeSelect.style.color = 'var(--admin-text-main, #1B1F1D)';
+        const optVariant = new Option('Varian Utama (Suhu / Ukuran)', 'variant', type === 'variant', type === 'variant');
+        const optAddon = new Option('Tambahan / Level Gula', 'addon', type === 'addon', type === 'addon');
+        typeSelect.appendChild(optVariant);
+        typeSelect.appendChild(optAddon);
+        typeSelect.addEventListener('change', () => { syncMenuPreviewOptions(); markFormAsDirty(); });
+        typeCol.append(typeLabel, typeSelect);
+
+        const nameCol = document.createElement('div');
+        nameCol.className = 'sm:col-span-4 space-y-1';
+        const nameLabel = document.createElement('label');
+        nameLabel.className = 'block text-[11px] font-semibold';
+        nameLabel.style.color = 'var(--admin-text-sub, #555D58)';
+        nameLabel.textContent = 'Nama Varian / Opsi';
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.name = `options[${idx}][name]`;
+        nameInput.value = name;
+        nameInput.maxLength = 100;
+        nameInput.placeholder = 'Contoh: Iced, Large, Less Sugar';
+        nameInput.className = 'menu-option-name w-full px-3 py-2 rounded-lg border text-xs font-semibold bg-white focus:outline-none focus:border-[#2F6B4F]';
+        nameInput.style.borderColor = 'var(--admin-border-card, #E6E8E4)';
+        nameInput.style.color = 'var(--admin-text-main, #1B1F1D)';
+        nameInput.addEventListener('input', () => { syncMenuPreviewOptions(); markFormAsDirty(); });
+        nameCol.append(nameLabel, nameInput);
+
+        const priceCol = document.createElement('div');
+        priceCol.className = 'sm:col-span-3 space-y-1';
+        const priceLabel = document.createElement('label');
+        priceLabel.className = 'block text-[11px] font-semibold';
+        priceLabel.style.color = 'var(--admin-text-sub, #555D58)';
+        priceLabel.textContent = 'Tambahan Harga';
+        const priceWrap = document.createElement('div');
+        priceWrap.className = 'relative';
+        const prefix = document.createElement('span');
+        prefix.className = 'absolute left-2.5 top-2 text-[11px] font-semibold text-gray-400 pointer-events-none';
+        prefix.textContent = '+Rp';
+        const priceInput = document.createElement('input');
+        priceInput.type = 'number';
+        priceInput.name = `options[${idx}][price]`;
+        priceInput.value = isNaN(price) ? 0 : Math.max(0, price);
+        priceInput.min = '0';
+        priceInput.step = '500';
+        priceInput.className = 'menu-option-price w-full pl-9 pr-2.5 py-2 rounded-lg border text-xs font-bold tabular-nums bg-white focus:outline-none focus:border-[#2F6B4F]';
+        priceInput.style.borderColor = 'var(--admin-border-card, #E6E8E4)';
+        priceInput.style.color = 'var(--admin-text-main, #1B1F1D)';
+        priceInput.addEventListener('input', markFormAsDirty);
+        priceWrap.append(prefix, priceInput);
+        priceCol.append(priceLabel, priceWrap);
+
+        const removeCol = document.createElement('div');
+        removeCol.className = 'sm:col-span-1 flex justify-end';
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'w-9 h-9 rounded-lg border flex items-center justify-center text-rose-600 hover:bg-rose-50 transition cursor-pointer';
+        removeBtn.style.borderColor = 'var(--admin-border-card, #E6E8E4)';
+        removeBtn.title = 'Hapus baris varian ini';
+        removeBtn.setAttribute('aria-label', 'Hapus varian');
+        removeBtn.innerHTML = '<i class="fa-solid fa-trash-can text-xs" aria-hidden="true"></i>';
+        removeBtn.addEventListener('click', () => removeMenuOptionRow(removeBtn));
+        removeCol.appendChild(removeBtn);
+
+        row.append(typeCol, nameCol, priceCol, removeCol);
+        container.appendChild(row);
+
+        updateMenuOptionsEmptyState();
+        syncMenuPreviewOptions();
+        markFormAsDirty();
+
+        if (!preset) {
+            nameInput.focus();
+        }
+    }
+
+    function addOptionPresets(presets) {
+        const container = document.getElementById('menuOptionsContainer');
+        if (!container || !Array.isArray(presets)) return;
+
+        const existingKeys = new Set(
+            Array.from(container.querySelectorAll('.menu-option-row')).map((row) => {
+                const t = row.querySelector('.menu-option-type')?.value || 'variant';
+                const n = (row.querySelector('.menu-option-name')?.value || '').trim().toLowerCase();
+                return `${t}|${n}`;
+            })
+        );
+
+        presets.forEach((preset) => {
+            const key = `${preset.type || 'variant'}|${String(preset.name || '').trim().toLowerCase()}`;
+            if (!existingKeys.has(key)) {
+                addMenuOptionRow(preset);
+                existingKeys.add(key);
+            }
+        });
+    }
+
+    function removeMenuOptionRow(buttonEl) {
+        const row = buttonEl.closest('.menu-option-row');
+        if (row) {
+            row.remove();
+            updateMenuOptionsEmptyState();
+            syncMenuPreviewOptions();
+            markFormAsDirty();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', syncMenuPreviewOptions);
+
+    // 6. Mobile Tab Switcher
     function switchMenuFormMobileTab(tab) {
         const formCol = document.getElementById('menuFormCol');
         const previewCol = document.getElementById('menuPreviewCol');

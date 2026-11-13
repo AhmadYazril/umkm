@@ -97,10 +97,26 @@
                                 #{{ $category->sort_order }}
                             </td>
                             <td class="py-3 px-4">
-                                <span class="font-bold text-ink-black text-sm block">{{ $category->name }}</span>
-                                @if($category->description)
-                                    <span class="text-[11px] text-muted-text line-clamp-1 mt-0.5">{{ $category->description }}</span>
-                                @endif
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-full overflow-hidden border border-hairline bg-warm-stone shrink-0 flex items-center justify-center">
+                                        @if($category->image_url)
+                                            <img src="{{ $category->image_url }}"
+                                                 alt="{{ $category->name }}"
+                                                 class="w-full h-full object-cover">
+                                        @else
+                                            <i class="fa-regular fa-image text-muted-text text-sm" aria-hidden="true"></i>
+                                        @endif
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="font-bold text-ink-black text-sm block">{{ $category->name }}</span>
+                                        @if($category->description)
+                                            <span class="text-[11px] text-muted-text line-clamp-1 mt-0.5 block">{{ $category->description }}</span>
+                                        @endif
+                                        @if(! $category->image_url)
+                                            <span class="text-[10px] text-muted-text/80 italic block mt-0.5">Belum ada foto khusus</span>
+                                        @endif
+                                    </div>
+                                </div>
                             </td>
                             <td class="py-3 px-4 font-mono text-muted-text text-[11px]">
                                 {{ $category->slug }}
@@ -164,7 +180,7 @@
 
 {{-- MODAL TAMBAH KATEGORI --}}
 <div id="modalAddCategory" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-pure-white rounded-3xl border border-hairline shadow-2xl w-full max-w-md p-6 sm:p-7 space-y-5 anim-fade-up">
+    <div class="bg-pure-white rounded-3xl border border-hairline shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 sm:p-7 space-y-5 anim-fade-up">
         <div class="flex items-center justify-between pb-3 border-b border-hairline">
             <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-warm-stone border border-hairline flex items-center justify-center text-xs text-ink-black">
@@ -177,8 +193,53 @@
             </button>
         </div>
 
-        <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
+            <div>
+                <label class="block text-xs font-bold text-charcoal mb-1.5">
+                    Foto Kategori (Opsional, 1:1)
+                </label>
+                <div class="flex items-center gap-4 p-3 rounded-2xl bg-warm-ivory border border-hairline">
+                    <button type="button"
+                            onclick="document.getElementById('add_cat_image').click()"
+                            class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-dashed border-hairline bg-white hover:border-ink-black flex items-center justify-center shrink-0 transition cursor-pointer"
+                            title="Pilih foto kategori">
+                        <img id="add_cat_preview_img" src="" alt="Pratinjau foto kategori" class="hidden w-full h-full object-cover">
+                        <span id="add_cat_preview_placeholder" class="text-muted-text flex flex-col items-center justify-center">
+                            <i class="fa-solid fa-camera text-sm"></i>
+                        </span>
+                    </button>
+                    <div class="flex-1 min-w-0 space-y-1.5">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button"
+                                    onclick="document.getElementById('add_cat_image').click()"
+                                    class="px-3 py-1.5 rounded-xl bg-white hover:bg-warm-stone border border-hairline text-[11px] font-bold text-ink-black transition cursor-pointer">
+                                Pilih Foto
+                            </button>
+                            <button type="button"
+                                    id="add_cat_remove_btn"
+                                    onclick="clearCategoryPhotoPreview('add')"
+                                    class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                                Hapus
+                            </button>
+                        </div>
+                        <p class="text-[10.5px] text-muted-text leading-snug">
+                            Format JPG, PNG, atau WebP (maks. {{ $categoryPhotoLimits['formatted'] ?? '2 MB' }}). Tampil di ikon kategori beranda.
+                        </p>
+                        <input type="file"
+                               name="image"
+                               id="add_cat_image"
+                               accept="image/jpeg,image/png,image/webp"
+                               class="sr-only"
+                               data-max-bytes="{{ $categoryPhotoLimits['effective_bytes'] ?? 2097152 }}"
+                               data-allowed-ext="jpg,jpeg,png,webp"
+                               data-feedback-target="#addCatImageFeedback"
+                               onchange="handleCategoryPhotoChange('add', event)">
+                        <div id="addCatImageFeedback" class="hidden text-[11px]"></div>
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <label for="add_cat_name" class="block text-xs font-bold text-charcoal mb-1">
                     Nama Kategori <span class="text-rose-500">*</span>
@@ -226,7 +287,7 @@
 
 {{-- MODAL EDIT KATEGORI --}}
 <div id="modalEditCategory" class="hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-pure-white rounded-3xl border border-hairline shadow-2xl w-full max-w-md p-6 sm:p-7 space-y-5 anim-fade-up">
+    <div class="bg-pure-white rounded-3xl border border-hairline shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 sm:p-7 space-y-5 anim-fade-up">
         <div class="flex items-center justify-between pb-3 border-b border-hairline">
             <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-warm-stone border border-hairline flex items-center justify-center text-xs text-ink-black">
@@ -239,9 +300,56 @@
             </button>
         </div>
 
-        <form id="editCategoryForm" method="POST" class="space-y-4">
+        <form id="editCategoryForm" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
+            <input type="hidden" name="remove_image" id="edit_cat_remove_image" value="0">
+
+            <div>
+                <label class="block text-xs font-bold text-charcoal mb-1.5">
+                    Foto Kategori (Opsional, 1:1)
+                </label>
+                <div class="flex items-center gap-4 p-3 rounded-2xl bg-warm-ivory border border-hairline">
+                    <button type="button"
+                            onclick="document.getElementById('edit_cat_image').click()"
+                            class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-dashed border-hairline bg-white hover:border-ink-black flex items-center justify-center shrink-0 transition cursor-pointer"
+                            title="Pilih atau ganti foto kategori">
+                        <img id="edit_cat_preview_img" src="" alt="Pratinjau foto kategori" class="hidden w-full h-full object-cover">
+                        <span id="edit_cat_preview_placeholder" class="text-muted-text flex flex-col items-center justify-center">
+                            <i class="fa-solid fa-camera text-sm"></i>
+                        </span>
+                    </button>
+                    <div class="flex-1 min-w-0 space-y-1.5">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button"
+                                    onclick="document.getElementById('edit_cat_image').click()"
+                                    class="px-3 py-1.5 rounded-xl bg-white hover:bg-warm-stone border border-hairline text-[11px] font-bold text-ink-black transition cursor-pointer">
+                                Pilih / Ganti Foto
+                            </button>
+                            <button type="button"
+                                    id="edit_cat_remove_btn"
+                                    onclick="clearCategoryPhotoPreview('edit')"
+                                    class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-bold text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                                Hapus Foto
+                            </button>
+                        </div>
+                        <p class="text-[10.5px] text-muted-text leading-snug">
+                            Format JPG, PNG, atau WebP (maks. {{ $categoryPhotoLimits['formatted'] ?? '2 MB' }}). Tampil di ikon kategori beranda.
+                        </p>
+                        <input type="file"
+                               name="image"
+                               id="edit_cat_image"
+                               accept="image/jpeg,image/png,image/webp"
+                               class="sr-only"
+                               data-max-bytes="{{ $categoryPhotoLimits['effective_bytes'] ?? 2097152 }}"
+                               data-allowed-ext="jpg,jpeg,png,webp"
+                               data-feedback-target="#editCatImageFeedback"
+                               onchange="handleCategoryPhotoChange('edit', event)">
+                        <div id="editCatImageFeedback" class="hidden text-[11px]"></div>
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <label for="edit_cat_name" class="block text-xs font-bold text-charcoal mb-1">
                     Nama Kategori <span class="text-rose-500">*</span>
@@ -288,7 +396,76 @@
 </div>
 
 <script>
+    function getCategoryPhotoEls(mode) {
+        return {
+            input: document.getElementById(mode + '_cat_image'),
+            img: document.getElementById(mode + '_cat_preview_img'),
+            placeholder: document.getElementById(mode + '_cat_preview_placeholder'),
+            removeBtn: document.getElementById(mode + '_cat_remove_btn'),
+            removeFlag: document.getElementById('edit_cat_remove_image'),
+            feedback: document.getElementById(mode === 'add' ? 'addCatImageFeedback' : 'editCatImageFeedback')
+        };
+    }
+
+    function setCategoryPhotoPreview(mode, imageUrl) {
+        const els = getCategoryPhotoEls(mode);
+        if (!els.img || !els.placeholder || !els.removeBtn) return;
+
+        if (imageUrl) {
+            els.img.src = imageUrl;
+            els.img.classList.remove('hidden');
+            els.placeholder.classList.add('hidden');
+            els.removeBtn.classList.remove('hidden');
+        } else {
+            els.img.src = '';
+            els.img.classList.add('hidden');
+            els.placeholder.classList.remove('hidden');
+            els.removeBtn.classList.add('hidden');
+        }
+    }
+
+    function handleCategoryPhotoChange(mode, event) {
+        const els = getCategoryPhotoEls(mode);
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        const maxBytes = parseInt(event.target.getAttribute('data-max-bytes') || '2097152', 10);
+        if (file.size > maxBytes) {
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            setCategoryPhotoPreview(mode, evt.target.result);
+            if (mode === 'edit' && els.removeFlag) {
+                els.removeFlag.value = '0';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearCategoryPhotoPreview(mode) {
+        const els = getCategoryPhotoEls(mode);
+        if (els.input) els.input.value = '';
+        if (els.feedback) {
+            els.feedback.innerHTML = '';
+            els.feedback.classList.add('hidden');
+        }
+        setCategoryPhotoPreview(mode, null);
+        if (mode === 'edit' && els.removeFlag) {
+            els.removeFlag.value = '1';
+        }
+    }
+
     function openAddCategoryModal() {
+        const els = getCategoryPhotoEls('add');
+        if (els.input) els.input.value = '';
+        if (els.feedback) {
+            els.feedback.innerHTML = '';
+            els.feedback.classList.add('hidden');
+        }
+        setCategoryPhotoPreview('add', null);
         document.getElementById('modalAddCategory').classList.remove('hidden');
         document.getElementById('add_cat_name').focus();
     }
@@ -303,6 +480,15 @@
         document.getElementById('edit_cat_sort').value = category.sort_order || 0;
         document.getElementById('edit_cat_active').checked = !!category.is_active;
         document.getElementById('edit_cat_desc').value = category.description || '';
+
+        const els = getCategoryPhotoEls('edit');
+        if (els.input) els.input.value = '';
+        if (els.removeFlag) els.removeFlag.value = '0';
+        if (els.feedback) {
+            els.feedback.innerHTML = '';
+            els.feedback.classList.add('hidden');
+        }
+        setCategoryPhotoPreview('edit', category.image_url || null);
 
         document.getElementById('modalEditCategory').classList.remove('hidden');
         document.getElementById('edit_cat_name').focus();
