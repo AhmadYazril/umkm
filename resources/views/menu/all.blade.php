@@ -16,10 +16,10 @@
         </div>
 
         <!-- Page Header -->
-        <div class="text-center max-w-2xl mx-auto mb-10">
-            <span class="text-[11px] font-semibold uppercase tracking-widest text-neutral-400 block mb-2">KATALOG LENGKAP MENU</span>
-            <h1 class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 tracking-tight">Katalog Sajian Nucomu</h1>
-            <p class="font-body text-xs sm:text-sm text-neutral-500 mt-2.5 leading-relaxed">
+        <div class="text-center max-w-4xl mx-auto mb-10 flex flex-col items-center">
+            <span class="text-[11px] font-semibold uppercase tracking-widest text-neutral-400 block mb-3 pl-[0.1em]">KATALOG LENGKAP MENU</span>
+            <h1 class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 tracking-tight mx-auto">Katalog Sajian Nucomu</h1>
+            <p class="font-body text-xs sm:text-sm text-neutral-500 mt-3.5 leading-relaxed max-w-3xl mx-auto">
                 Koleksi racikan kopi single origin Sendang Tulungagung, seduhan daun teh bergamot, ceremonial matcha, dan sajian hangat dapur Nucomu.
             </p>
         </div>

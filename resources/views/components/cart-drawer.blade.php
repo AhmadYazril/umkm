@@ -41,12 +41,12 @@
 @endphp
 
 <style>
-    /* Typography: Lining numbers for editorial serif fonts */
+    /* Typography: Tabular numbers for price consistency */
     .menu-card-price-row, .card-price, .font-editorial-num, .lining-nums {
-        font-variant-numeric: lining-nums tabular-nums;
-        -moz-font-feature-settings: "lnum" 1;
-        -webkit-font-feature-settings: "lnum" 1;
-        font-feature-settings: "lnum" 1;
+        font-variant-numeric: tabular-nums;
+        -moz-font-feature-settings: "tnum" 1;
+        -webkit-font-feature-settings: "tnum" 1;
+        font-feature-settings: "tnum" 1;
     }
 
     /* N-Column Vertical Flex Layout Container */
@@ -170,9 +170,9 @@
         display: block;
     }
 
-    /* Menu Title: Serif font with consistent min-height for clean row alignment */
+    /* Menu Title: Nunito bold with consistent min-height for clean row alignment */
     .menu-card-name {
-        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-family: var(--font-sans), sans-serif;
         font-size: 1.05rem;
         font-weight: 700;
         line-height: 1.22;
@@ -192,17 +192,18 @@
         }
     }
 
-    /* Price & Unit Row (font-variant-numeric: lining-nums) */
+    /* Price & Unit Row (font-variant-numeric: tabular-nums) */
     .menu-card-price-row {
         display: flex;
         align-items: baseline;
         justify-content: center;
         gap: 4px;
-        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-family: var(--font-sans), sans-serif;
         font-size: 1.05rem;
         font-weight: 700;
         color: #191919;
         white-space: nowrap;
+        font-variant-numeric: tabular-nums;
     }
     .menu-card-unit {
         font-size: 0.75rem;

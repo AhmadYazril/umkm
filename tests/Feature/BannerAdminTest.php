@@ -363,8 +363,8 @@ class BannerAdminTest extends TestCase
         $response->assertSee('Classic Italian');
         $response->assertSee('Tiramisu Nucomu');
         $response->assertSee('id="hero-navbar-offset"', false);
-        $response->assertSee('navbar--scrolled navbar--flush-hero', false);
-        $response->assertSee("document.documentElement.style.setProperty('--hero-bg-color', \"#F9F9F9\")", false);
+        $response->assertSee('navbar--over-hero navbar--flush-hero', false);
+        $response->assertSee("document.documentElement.style.setProperty('--hero-bg-color', \"#0C0C0C\")", false);
     }
 
     public function test_overlay_banner_sets_dark_adaptive_navbar_theme_below_header(): void
@@ -384,7 +384,7 @@ class BannerAdminTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('id="hero-navbar-offset"', false);
         $response->assertSee('navbar--over-hero navbar--flush-hero', false);
-        $response->assertSee("document.documentElement.style.setProperty('--hero-bg-color', \"#191919\")", false);
+        $response->assertSee("document.documentElement.style.setProperty('--hero-bg-color', \"#0C0C0C\")", false);
         $response->assertSee('data-layout-mode="overlay"', false);
         $response->assertSee('data-theme="dark"', false);
     }

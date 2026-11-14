@@ -8,19 +8,19 @@
 <section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FAFAFA] border-b border-[#E5E5E5] overflow-hidden">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
-        <!-- Section Header (Sesuai Pola Fasilitas Nucomu / Minimal Editorial Split) -->
-        <div class="layanan-anim-header flex flex-col sm:flex-row sm:items-end justify-between mb-10 sm:mb-12 pb-6 sm:pb-8 border-b border-[#E5E5E5] gap-4">
-            <div>
-                <span class="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.22em] font-body block mb-2">
+        <!-- Section Header (Vertikal & Rata Tengah) -->
+        <div class="layanan-anim-header mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#E5E5E5]">
+            <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
+                <span class="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.22em] font-body block mb-3 pl-[0.22em]">
                     KEMUDAHAN AKSES &amp; RESERVASI
                 </span>
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#1C1C1C] tracking-tight font-body leading-tight">
+                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1C1C1C] tracking-tight font-heading leading-tight mx-auto">
                     Layanan &amp; Pemesanan
                 </h2>
+                <p class="font-body text-xs sm:text-sm text-[#666666] max-w-3xl font-normal leading-relaxed mx-auto mt-3.5">
+                    Pilih cara terbaik untuk menikmati sajian kopi dan suasana hangat Nucomu Cafe sesuai kebutuhan Anda.
+                </p>
             </div>
-            <p class="font-body text-xs sm:text-sm text-[#666666] max-w-md font-normal leading-relaxed">
-                Pilih cara terbaik untuk menikmati sajian kopi dan suasana hangat Nucomu Cafe sesuai kebutuhan Anda.
-            </p>
         </div>
 
         <!-- 3-KARTU TERANG SEJAJAR & PANEL DETAIL RESERVASI (CSS GRID BERBASIS ORDER) -->

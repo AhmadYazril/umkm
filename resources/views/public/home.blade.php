@@ -238,7 +238,7 @@
                 <p class="text-xs font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Philosophy & Journey</p>
                 <h2 class="text-3xl sm:text-5xl font-serif font-bold text-zinc-950 dark:text-white tracking-tight leading-tight">
                     Dari Rindu Rasa,<br>
-                    <span class="italic font-normal text-zinc-600 dark:text-zinc-300 underline decoration-zinc-300 dark:decoration-white/30 decoration-2 underline-offset-8">Lahirlah Nucomu.</span>
+                    <span class="italic font-semibold text-zinc-600 dark:text-zinc-300 underline decoration-zinc-300 dark:decoration-white/30 decoration-2 underline-offset-8">Lahirlah Nucomu.</span>
                 </h2>
             </div>
 
@@ -255,7 +255,7 @@
                 <div class="min-h-[110px] sm:min-h-[90px]">
                     <p id="story-typewriter" 
                        data-text="{{ $settings['cafe_story'] ?? 'Nucomu Cafe hadir sebagai tempat yang nyaman untuk menikmati dessert, makanan, snack, kopi, dan minuman lainnya. Dengan konsep monokrom elegan — perpaduan hitam, putih, dan abu-abu — kami ingin setiap sudut cafe terasa seperti rumah kedua. Banyak dipilih pelanggan sebagai tempat favorit untuk WFC (Work From Cafe).' }}" 
-                       class="text-zinc-800 dark:text-zinc-200 font-serif sm:text-lg text-base leading-relaxed tracking-wide inline">
+                       class="text-zinc-800 dark:text-zinc-200 font-sans sm:text-lg text-base leading-relaxed tracking-wide inline">
                     </p>
                     <span id="story-cursor" class="inline-block w-0.5 h-5 sm:h-6 bg-zinc-900 dark:bg-white ml-1 animate-pulse align-middle"></span>
                 </div>
@@ -263,7 +263,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-8">
                 <div class="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm border border-white/70 dark:border-white/10 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-zinc-400 dark:hover:border-zinc-700 transition-all duration-300">
-                    <div class="w-10 h-10 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-serif font-black text-base shrink-0 shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-sans font-bold text-base shrink-0 shadow-sm">
                         20
                     </div>
                     <div>
@@ -294,7 +294,7 @@
             </div>
 
             <div class="pt-6 border-t border-zinc-200/70 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <p class="text-xs text-zinc-500 dark:text-zinc-400 italic font-serif">
+                <p class="text-xs text-zinc-500 dark:text-zinc-400 italic font-semibold">
                     "New, Unforgettable, Comfy, Musings"
                 </p>
                 <a href="{{ route('about') }}" class="btn-primary rounded-full px-7 py-3 text-xs tracking-widest uppercase flex items-center gap-2 group shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
@@ -505,7 +505,7 @@
                     <span class="{{ $i <= $t->rating ? 'text-amber-500 dark:text-amber-400' : 'text-zinc-300 dark:text-zinc-700' }} text-base">★</span>
                     @endfor
                 </div>
-                <p class="text-zinc-700 dark:text-zinc-300 text-sm leading-relaxed italic mb-5">"{{ $t->content }}"</p>
+                <p class="text-zinc-700 dark:text-zinc-300 text-sm leading-relaxed italic font-semibold mb-5">"{{ $t->content }}"</p>
                 <p class="font-bold text-zinc-950 dark:text-white text-sm">— {{ $t->name }}</p>
             </div>
             @endforeach

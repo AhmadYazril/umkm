@@ -36,8 +36,8 @@
                     LOKASI &amp; KONTAK RESMI
                 </span>
 
-                <!-- Main Headline (Consistent with About & Layanan Sans-Serif Style) -->
-                <h2 class="font-body text-3xl sm:text-4xl lg:text-[44px] font-semibold text-[#1C1C1C] leading-[1.15] tracking-tight mb-8">
+                <!-- Main Headline (Consistent with Warm Editorial Style) -->
+                <h2 class="font-heading text-3xl sm:text-4xl lg:text-[44px] font-bold text-[#1C1C1C] leading-[1.15] tracking-tight mb-8">
                     Kunjungi Nucomu<br>di Tulungagung.
                 </h2>
 

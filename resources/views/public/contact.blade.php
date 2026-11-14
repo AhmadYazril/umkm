@@ -22,12 +22,12 @@
 <section class="py-16 min-h-screen text-zinc-900 dark:text-white relative">
     <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center max-w-2xl mx-auto mb-16 reveal">
-            <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-2">Hubungi Kami</span>
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-white uppercase mb-4">
+        <div class="text-center max-w-4xl mx-auto mb-12 sm:mb-16 reveal flex flex-col items-center">
+            <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-3 pl-[0.1em]">Hubungi Kami</span>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-white uppercase mx-auto">
                 Kontak & <span class="text-zinc-500">Lokasi</span>
             </h1>
-            <p class="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed">
+            <p class="text-zinc-600 dark:text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto mt-3.5">
                 Kunjungi kami di Tulungagung atau hubungi tim Nucomu Cafe untuk pertanyaan, kerjasama, dan reservasi.
             </p>
         </div>

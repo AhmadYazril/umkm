@@ -139,7 +139,10 @@ function initNucomuIntro() {
                 }
             };
             if ('fonts' in document) {
-                const fontPromise = document.fonts.load('600 14px Manrope').catch(() => {});
+                const fontPromise = Promise.all([
+                    document.fonts.load('700 14px "Playfair Display"'),
+                    document.fonts.load('600 14px "Montserrat"')
+                ]).catch(() => {});
                 const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1000));
                 Promise.race([fontPromise, timeoutPromise]).then(showText);
             } else {

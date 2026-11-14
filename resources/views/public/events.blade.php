@@ -5,12 +5,12 @@
 <section class="py-12 bg-zinc-950 min-h-screen text-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-2">Agenda Cafe</span>
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight uppercase mb-4">
+        <div class="text-center max-w-4xl mx-auto mb-10 sm:mb-12 flex flex-col items-center">
+            <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-3 pl-[0.1em]">Agenda Cafe</span>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight uppercase mx-auto">
                 Event & <span class="text-zinc-500">Promo</span>
             </h1>
-            <p class="text-zinc-400 text-sm sm:text-base leading-relaxed">
+            <p class="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto mt-3.5">
                 Ikuti berbagai agenda menarik seperti live music, workshop manual brew, dan promo terbatas di Nucomu Cafe.
             </p>
         </div>
