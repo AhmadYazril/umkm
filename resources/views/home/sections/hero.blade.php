@@ -219,14 +219,24 @@
     });
     $slides = array_values($slides);
     $totalSlides = count($slides);
+
+    $hasActiveHeroBanners = isset($activeBanners) && $activeBanners->count() > 0;
+    $firstHeroBannerMode = $hasActiveHeroBanners ? ($activeBanners->first()->layout_mode ?: 'poster') : null;
+    $initialHeroBgColor = $hasActiveHeroBanners
+        ? ($firstHeroBannerMode === 'overlay' ? '#191919' : '#F9F9F9')
+        : ($slides[0]['bg_color'] ?? '#140E0A');
+    $initialHeroNavbarTheme = $hasActiveHeroBanners
+        ? ($firstHeroBannerMode === 'overlay' ? 'dark' : 'light')
+        : ($slides[0]['theme'] ?? 'dark');
 @endphp
 
-
-
+<div id="hero-navbar-offset"
+     class="pt-16 sm:pt-20 transition-colors duration-[800ms]"
+     style="background-color: var(--hero-bg-color, {{ $initialHeroBgColor }}); transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);">
 <section id="home" 
-         data-navbar-theme="dark"
-         class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero pt-16 sm:pt-20"
-         style="background-color: #F9F9F9; transition: background-color 0.8s ease;">
+         data-navbar-theme="{{ $initialHeroNavbarTheme }}"
+         class="relative min-h-[560px] sm:min-h-[580px] lg:min-h-[600px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero"
+         style="background-color: {{ $initialHeroBgColor }}; transition: background-color 0.8s ease;">
 
     <!-- Soft feathered ambient glow for warmth and depth -->
     <div class="absolute inset-0 pointer-events-none z-1" 
@@ -240,10 +250,16 @@
              ========================================================================= -->
         <div class="hidden md:block w-full h-full absolute inset-0" id="desktop-hero-banners-wrapper">
             @foreach($activeBanners as $banner)
+                @php
+                    $bannerMode = $banner->layout_mode ?: 'poster';
+                    $bannerBgColor = $bannerMode === 'overlay' ? '#191919' : '#F9F9F9';
+                    $bannerTheme = $bannerMode === 'overlay' ? 'dark' : 'light';
+                @endphp
                 <div class="hero-slide-item hero-banner-slide absolute inset-0 w-full h-full flex items-center justify-center {{ $loop->first ? 'active z-10' : 'opacity-0 pointer-events-none z-0' }}"
                      data-slide-index="{{ $loop->index }}"
-                     data-layout-mode="{{ $banner->layout_mode ?: 'poster' }}"
-                     data-bg-color="#F9F9F9">
+                     data-layout-mode="{{ $bannerMode }}"
+                     data-theme="{{ $bannerTheme }}"
+                     data-bg-color="{{ $bannerBgColor }}">
                     
                     @if(($banner->layout_mode ?: 'poster') === 'poster')
                         <!-- -----------------------------------------------------------------
@@ -471,7 +487,7 @@
                 </div>
 
                 <!-- Konten Teks Sambutan (Rata Kiri, Vertikal Tengah) -->
-                <div class="relative z-20 max-w-7xl mx-auto px-5 sm:px-8 lg:px-14 py-12 sm:py-16 w-full flex items-center min-h-[560px] sm:min-h-[600px] lg:min-h-[640px]">
+                <div class="relative z-20 max-w-7xl mx-auto px-5 sm:px-8 lg:px-14 py-12 sm:py-16 w-full flex items-center min-h-[560px] sm:min-h-[580px] lg:min-h-[600px]">
                     <div class="hero-text-content text-left max-w-xl max-md:mt-auto max-md:pb-14">
                         <!-- Label Kecil Monokrom -->
                         <p class="font-body text-xs sm:text-sm font-semibold tracking-[0.25em] text-white/70 uppercase mb-3 flex items-center gap-2">
@@ -811,3 +827,4 @@
 @endif
 
 </section>
+</div>

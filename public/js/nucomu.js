@@ -225,6 +225,111 @@ function getActiveHeroDots() {
     return document.querySelectorAll('.hero-dot-btn');
 }
 
+function sampleBannerMediaTopColor(mediaEl, isOverlay) {
+    try {
+        const srcW = mediaEl.naturalWidth || mediaEl.videoWidth || 0;
+        const srcH = mediaEl.naturalHeight || mediaEl.videoHeight || 0;
+        if (!srcW || !srcH) return null;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 16;
+        canvas.height = 4;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (!ctx) return null;
+
+        const sampleHeight = Math.max(1, Math.round(srcH * 0.14));
+        ctx.drawImage(mediaEl, 0, 0, srcW, sampleHeight, 0, 0, 16, 4);
+        const pixels = ctx.getImageData(0, 0, 16, 4).data;
+
+        let rSum = 0;
+        let gSum = 0;
+        let bSum = 0;
+        const pixelCount = pixels.length / 4;
+        for (let i = 0; i < pixels.length; i += 4) {
+            rSum += pixels[i];
+            gSum += pixels[i + 1];
+            bSum += pixels[i + 2];
+        }
+
+        let r = Math.round(rSum / pixelCount);
+        let g = Math.round(gSum / pixelCount);
+        let b = Math.round(bSum / pixelCount);
+
+        if (isOverlay) {
+            // Mode overlay memakai gradient gelap di atas media
+            const tint = 0.45;
+            return {
+                color: `rgb(${Math.round(r * tint)}, ${Math.round(g * tint)}, ${Math.round(b * tint)})`,
+                theme: 'dark'
+            };
+        }
+
+        const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        const theme = brightness < 0.52 ? 'dark' : 'light';
+
+        // Jaga kontras teks/logo navbar pada area banner bernuansa medium
+        if (theme === 'dark' && brightness > 0.28) {
+            const factor = 0.65;
+            r = Math.round(r * factor + 20 * (1 - factor));
+            g = Math.round(g * factor + 14 * (1 - factor));
+            b = Math.round(b * factor + 10 * (1 - factor));
+        } else if (theme === 'light' && brightness < 0.78) {
+            const factor = 0.55;
+            r = Math.round(r * factor + 249 * (1 - factor));
+            g = Math.round(g * factor + 249 * (1 - factor));
+            b = Math.round(b * factor + 249 * (1 - factor));
+        }
+
+        return {
+            color: `rgb(${r}, ${g}, ${b})`,
+            theme
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+function applyBannerTopThemeFromMedia(slide, mediaEl) {
+    if (!slide || !mediaEl) return;
+    const layoutMode = slide.getAttribute('data-layout-mode') || 'poster';
+    if (layoutMode === 'split') return;
+
+    const sampled = sampleBannerMediaTopColor(mediaEl, layoutMode === 'overlay');
+    if (!sampled) return;
+
+    slide.setAttribute('data-bg-color', sampled.color);
+    slide.setAttribute('data-theme', sampled.theme);
+
+    const activeSlides = getActiveHeroSlides();
+    if (activeSlides[heroCurrentIndex] === slide) {
+        syncHeroThemeAndColor(slide, heroCurrentIndex);
+    }
+}
+
+function bindBannerTopSampler(mediaEl, readyProp, readyEvent) {
+    const slide = mediaEl.closest('.hero-banner-slide');
+    if (!slide) return;
+    const layoutMode = slide.getAttribute('data-layout-mode') || 'poster';
+    if (layoutMode === 'split') return;
+
+    if (!mediaEl.dataset.topSampleBound) {
+        mediaEl.dataset.topSampleBound = '1';
+        mediaEl.addEventListener(readyEvent, () => {
+            if (readyProp === 'complete' && (!mediaEl.naturalWidth || mediaEl.src.startsWith('data:image/svg'))) {
+                return;
+            }
+            applyBannerTopThemeFromMedia(slide, mediaEl);
+        });
+    }
+
+    const isReady = readyProp === 'complete'
+        ? (mediaEl.complete && mediaEl.naturalWidth > 0 && !mediaEl.src.startsWith('data:image/svg'))
+        : (mediaEl.readyState >= 2);
+    if (isReady) {
+        applyBannerTopThemeFromMedia(slide, mediaEl);
+    }
+}
+
 function loadDesktopBannerMedia() {
     const isDesktop = window.matchMedia('(min-width: 768px)').matches;
     if (!isDesktop) return;
@@ -238,6 +343,7 @@ function loadDesktopBannerMedia() {
         if (src && img.src !== src) {
             img.src = src;
         }
+        bindBannerTopSampler(img, 'complete', 'load');
     });
 
     // Load and play videos only on desktop
@@ -248,6 +354,7 @@ function loadDesktopBannerMedia() {
             source.src = src;
             video.load();
         }
+        bindBannerTopSampler(video, 'readyState', 'loadeddata');
     });
 }
 
@@ -555,8 +662,30 @@ function resetHeroTimerIfActive() {
     }
 }
 
-function renderHeroSlide(index) {
+function syncHeroThemeAndColor(activeSlide, index) {
     const heroSection = document.getElementById('home');
+    if (!heroSection || !activeSlide) return;
+
+    const bgColor = activeSlide.getAttribute('data-bg-color') || HERO_BG_COLORS[index] || '#140E0A';
+    heroSection.style.backgroundColor = bgColor;
+    document.documentElement.style.setProperty('--hero-bg-color', bgColor);
+
+    const heroOffset = document.getElementById('hero-navbar-offset');
+    if (heroOffset) {
+        heroOffset.style.backgroundColor = bgColor;
+    }
+
+    // Sinkronisasi data-navbar-theme pada hero section dengan tema slide/banner aktif
+    const slideTheme = activeSlide.getAttribute('data-theme');
+    const isDarkSlide = (slideTheme === 'dark');
+    heroSection.setAttribute('data-navbar-theme', isDarkSlide ? 'dark' : 'light');
+
+    if (typeof window.updateNavbarTheme === 'function') {
+        window.updateNavbarTheme();
+    }
+}
+
+function renderHeroSlide(index) {
     const slides = getActiveHeroSlides();
     const dots = getActiveHeroDots();
     if (!slides.length) return;
@@ -566,23 +695,8 @@ function renderHeroSlide(index) {
         heroCurrentIndex = 0;
     }
 
-    // 1. Dynamic Smooth Background Transition
-    if (heroSection) {
-        const bgColor = slides[index]?.getAttribute('data-bg-color') || HERO_BG_COLORS[index] || '#140E0A';
-        heroSection.style.backgroundColor = bgColor;
-        document.documentElement.style.setProperty('--hero-bg-color', bgColor);
-
-        // Sinkronisasi data-navbar-theme pada hero section dengan tema slide aktif
-        const slideTheme = slides[index]?.getAttribute('data-theme');
-        // Hanya slide bertema 'dark' (Slide 0) yang mengaktifkan mode gelap navbar
-        // Slide bertema 'light' (seperti Slide 3 Strawberry Basque Cheesecake atau Slide 2) dan 'gold' menjadi 'light'
-        const isDarkSlide = (slideTheme === 'dark');
-        heroSection.setAttribute('data-navbar-theme', isDarkSlide ? 'dark' : 'light');
-
-        if (typeof window.updateNavbarTheme === 'function') {
-            window.updateNavbarTheme();
-        }
-    }
+    // 1. Dynamic Smooth Background & Navbar Color Transition
+    syncHeroThemeAndColor(slides[index], index);
 
     // 2. Switch Slides & Update Accessibility
     slides.forEach((slide, idx) => {
@@ -635,12 +749,25 @@ function initNavbarScroll() {
     const scrollThreshold = 10;
 
     /**
-     * Menentukan tema ('dark' atau 'light') berdasarkan section yang berada tepat di bawah navbar.
-     * Menggunakan titik uji vertikal (probeY) sebesar 50% tinggi navbar.
+     * Menentukan tema ('dark' atau 'light') dan apakah hero berada tepat di bawah navbar.
+     * Ketika hero berada tepat di bawah navbar (belum ter-scroll ke belakang navbar),
+     * navbar menyesuaikan warna penuh dengan slide/banner hero aktif.
      */
-    function detectSectionThemeAtNavbar() {
+    function getNavbarStateAtScroll() {
         const navHeight = navbar.offsetHeight || 70;
         const probeY = navHeight * 0.5;
+        const heroSection = document.getElementById('home');
+
+        if (heroSection) {
+            const heroRect = heroSection.getBoundingClientRect();
+            if (heroRect.top > 0 && heroRect.top <= navHeight + 8 && heroRect.bottom > navHeight) {
+                const heroTheme = heroSection.getAttribute('data-navbar-theme');
+                return {
+                    theme: heroTheme === 'dark' ? 'dark' : 'light',
+                    flushHero: true
+                };
+            }
+        }
 
         // Ambil seluruh section dan footer di halaman
         const candidateSections = document.querySelectorAll('section, footer, [data-navbar-theme]');
@@ -650,19 +777,27 @@ function initNavbarScroll() {
             // Cek apakah probeY berada dalam rentang batas atas & bawah section
             if (rect.top <= probeY && rect.bottom > probeY) {
                 const theme = sec.getAttribute('data-navbar-theme');
-                return theme === 'dark' ? 'dark' : 'light';
+                return {
+                    theme: theme === 'dark' ? 'dark' : 'light',
+                    flushHero: false
+                };
             }
         }
 
         // Halaman tanpa hero atau tanpa section gelap default ke kondisi terang ('light')
-        return 'light';
+        return {
+            theme: 'light',
+            flushHero: false
+        };
     }
 
     /**
      * Terapkan tema navbar secara eksklusif (hanya satu kondisi aktif pada satu waktu)
      */
     function applyNavbarTheme() {
-        const theme = detectSectionThemeAtNavbar();
+        const { theme, flushHero } = getNavbarStateAtScroll();
+
+        navbar.classList.toggle('navbar--flush-hero', flushHero);
 
         if (theme === 'dark') {
             navbar.classList.add('navbar--over-hero');

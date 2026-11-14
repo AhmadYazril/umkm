@@ -92,4 +92,16 @@ class PublicPagesTest extends TestCase
         $response = $this->get('/tentang-kami');
         $response->assertStatus(404);
     }
+
+    public function test_home_hero_sits_below_navbar_with_matching_initial_theme(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('id="hero-navbar-offset"', false);
+        $response->assertSee('class="pt-16 sm:pt-20 transition-colors duration-[800ms]"', false);
+        $response->assertSee('navbar--over-hero navbar--flush-hero', false);
+        $response->assertSee("document.documentElement.style.setProperty('--hero-bg-color', \"#140E0A\")", false);
+        $response->assertSee('data-navbar-theme="dark"', false);
+    }
 }

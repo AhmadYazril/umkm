@@ -362,5 +362,30 @@ class BannerAdminTest extends TestCase
         $response->assertSee('id="mobile-hero-fallback-wrapper"', false);
         $response->assertSee('Classic Italian');
         $response->assertSee('Tiramisu Nucomu');
+        $response->assertSee('id="hero-navbar-offset"', false);
+        $response->assertSee('navbar--scrolled navbar--flush-hero', false);
+        $response->assertSee("document.documentElement.style.setProperty('--hero-bg-color', \"#F9F9F9\")", false);
+    }
+
+    public function test_overlay_banner_sets_dark_adaptive_navbar_theme_below_header(): void
+    {
+        Banner::create([
+            'title' => 'Banner Overlay Gelap',
+            'layout_mode' => 'overlay',
+            'media_type' => 'image',
+            'media_path' => 'banner_overlay_test.jpg',
+            'start_time' => Carbon::now()->subDay(),
+            'end_time' => Carbon::now()->addDays(3),
+            'button_link' => '#menu',
+            'is_active' => true,
+        ]);
+
+        $response = $this->get('/');
+        $response->assertStatus(200);
+        $response->assertSee('id="hero-navbar-offset"', false);
+        $response->assertSee('navbar--over-hero navbar--flush-hero', false);
+        $response->assertSee("document.documentElement.style.setProperty('--hero-bg-color', \"#191919\")", false);
+        $response->assertSee('data-layout-mode="overlay"', false);
+        $response->assertSee('data-theme="dark"', false);
     }
 }

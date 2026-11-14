@@ -2,8 +2,21 @@
     $navTxSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
     $isAnyOrderModeActive = (bool) ($navTxSettings['is_any_mode_active'] ?? true);
     $isHomeWithHero = request()->routeIs('home') || request()->is('/');
-    $initialNavbarThemeClass = $isHomeWithHero ? 'navbar--over-hero' : 'navbar--scrolled';
+    $hasHeroBanners = isset($activeBanners) && $activeBanners->count() > 0;
+    $firstHeroBannerMode = $hasHeroBanners ? ($activeBanners->first()->layout_mode ?: 'poster') : null;
+    $isInitialHeroDark = $isHomeWithHero && (!$hasHeroBanners || $firstHeroBannerMode === 'overlay');
+    $initialHeroNavbarBg = !$isHomeWithHero
+        ? '#F9F9F9'
+        : ($hasHeroBanners ? ($firstHeroBannerMode === 'overlay' ? '#191919' : '#F9F9F9') : '#140E0A');
+    $initialNavbarThemeClass = $isHomeWithHero
+        ? ($isInitialHeroDark ? 'navbar--over-hero navbar--flush-hero' : 'navbar--scrolled navbar--flush-hero')
+        : 'navbar--scrolled';
 @endphp
+@if($isHomeWithHero)
+<script>
+    document.documentElement.style.setProperty('--hero-bg-color', @json($initialHeroNavbarBg));
+</script>
+@endif
 <!-- Main Top Navbar (Styled with Nucomu Warm Ivory & Terracotta Theme) -->
 <header id="main-navbar" class="fixed top-0 left-0 right-0 z-40 navbar-visible {{ $initialNavbarThemeClass }}">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
