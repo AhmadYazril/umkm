@@ -108,28 +108,32 @@
                                  data-name="{{ $item['name'] }}"
                                  data-price="{{ $item['price'] }}">
                             
-                            <!-- Header Trigger: Klik bagian atas kartu (avatar, nama, harga) untuk buka/tutup -->
+                            <!-- Foto Bulat (Avatar) Menembus Tepi Atas Kartu (Klik untuk melihat foto menu) -->
+                            <button type="button"
+                                    class="menu-card-avatar"
+                                    onclick="openMenuPhotoPreview(this)"
+                                    aria-label="Lihat foto {{ $item['name'] }}"
+                                    title="Klik untuk melihat foto">
+                                <img src="{{ $item['image'] }}" 
+                                     alt="{{ $item['name'] }}" 
+                                     loading="lazy" 
+                                     width="130" 
+                                     height="130"
+                                     class="w-full h-full object-cover">
+                                @if(!$isAvailable)
+                                    <span class="absolute inset-0 bg-black/60 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center">
+                                        Habis
+                                    </span>
+                                @endif
+                            </button>
+
+                            <!-- Header Trigger: Klik nama/harga kartu untuk buka/tutup detail menu -->
                             <button type="button" 
                                     class="menu-card-header-btn" 
                                     onclick="toggleMenuCard(this.closest('.menu-card'))"
                                     aria-expanded="false"
                                     aria-controls="drawer-cat-{{ $itemSlug }}-{{ $index }}"
                                     title="Klik untuk membuka detail menu {{ $item['name'] }}">
-                                
-                                <!-- Foto Bulat (Avatar) Menembus Tepi Atas Kartu -->
-                                <div class="menu-card-avatar">
-                                    <img src="{{ $item['image'] }}" 
-                                         alt="{{ $item['name'] }}" 
-                                         loading="lazy" 
-                                         width="130" 
-                                         height="130"
-                                         class="w-full h-full object-cover">
-                                    @if(!$isAvailable)
-                                        <span class="absolute inset-0 bg-black/60 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center">
-                                            Habis
-                                        </span>
-                                    @endif
-                                </div>
 
                                 <!-- Judul Menu Serif -->
                                 <h3 class="menu-card-name" title="{{ $item['name'] }}">

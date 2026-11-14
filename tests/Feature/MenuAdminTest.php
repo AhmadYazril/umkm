@@ -340,4 +340,27 @@ class MenuAdminTest extends TestCase
         $this->assertEquals(1, $cat2->sort_order);
         $this->assertEquals(2, $cat1->sort_order);
     }
+
+    public function test_menu_form_renders_interactive_square_photo_crop_controls(): void
+    {
+        $admin = $this->getAdminUser();
+        $cat = $this->createCategory('Kopi');
+        $menu = $this->createMenu($cat, ['name' => 'Caramel Latte']);
+
+        $createResponse = $this->actingAs($admin)->get(route('admin.menus.create'));
+        $createResponse->assertStatus(200);
+        $createResponse->assertSee('id="menuCropModal"', false);
+        $createResponse->assertSee('id="menuCropViewport"', false);
+        $createResponse->assertSee('id="menuCropCanvas"', false);
+        $createResponse->assertSee('id="menuCropZoomSlider"', false);
+        $createResponse->assertSee('id="menuCropCircleGuide"', false);
+        $createResponse->assertSee('id="btnAdjustMenuCrop"', false);
+        $createResponse->assertSee('id="btnApplyMenuCrop"', false);
+        $createResponse->assertSee('Sesuaikan Crop 1:1');
+
+        $editResponse = $this->actingAs($admin)->get(route('admin.menus.edit', $menu->id));
+        $editResponse->assertStatus(200);
+        $editResponse->assertSee('id="menuCropModal"', false);
+        $editResponse->assertSee('id="btnApplyMenuCrop"', false);
+    }
 }

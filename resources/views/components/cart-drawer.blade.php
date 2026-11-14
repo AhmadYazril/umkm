@@ -141,10 +141,19 @@
             0 20px 36px -8px rgba(44, 40, 37, 0.16);
         overflow: hidden;
         background-color: #faf7f2;
+        padding: 0;
+        margin: 0;
+        display: block;
+        cursor: pointer;
+        outline: none;
         transition: transform 280ms ease-out, box-shadow 280ms ease-out;
         z-index: 10;
-        pointer-events: none;
+        pointer-events: auto;
         will-change: transform, box-shadow;
+    }
+    .menu-card-avatar:focus-visible {
+        outline: 2px solid #242424;
+        outline-offset: 3px;
     }
     @media (min-width: 640px) {
         .menu-card-avatar {
@@ -251,8 +260,8 @@
         }
     }
 
-    /* Fokus Keyboard (:focus-visible / :focus-within) memberi keadaan zoom foto yang sama dengan indikator fokus */
-    .menu-card:focus-within:not(.is-open) {
+    /* Fokus Keyboard (:has(:focus-visible)) hanya memberi zoom saat navigasi keyboard, bukan klik mouse */
+    .menu-card:has(:focus-visible):not(.is-open) {
         border-color: #ffffff;
         box-shadow:
             0 4px 10px rgba(44, 40, 37, 0.08),
@@ -260,7 +269,7 @@
             0 26px 48px -10px rgba(44, 40, 37, 0.18);
         z-index: 25;
     }
-    .menu-card:focus-within .menu-card-avatar {
+    .menu-card:has(:focus-visible) .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
         box-shadow:
             0 6px 14px rgba(44, 40, 37, 0.12),
@@ -436,7 +445,7 @@
             transform: translateX(-50%) translateY(0) scale(1) !important;
         }
         .menu-card:hover .menu-card-avatar,
-        .menu-card:focus-within .menu-card-avatar,
+        .menu-card:has(:focus-visible) .menu-card-avatar,
         .menu-card.is-open .menu-card-avatar {
             transform: translateX(-50%) translateY(0) scale(1) !important;
         }
@@ -1099,9 +1108,13 @@
         }
     });
 
-    // Close open card when pressing Escape and return focus
+    // Close open card when pressing Escape and return focus (unless photo lightbox is currently open)
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' || e.key === 'Esc') {
+            const lightbox = document.getElementById('lightbox-modal');
+            if (lightbox && !lightbox.classList.contains('pointer-events-none')) {
+                return;
+            }
             const openCard = document.querySelector('.menu-card.is-open');
             if (openCard) {
                 window.closeMenuCard(openCard);

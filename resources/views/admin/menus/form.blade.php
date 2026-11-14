@@ -383,15 +383,24 @@
                                 </div>
                             </div>
 
-                            {{-- Tombol Ganti / Hapus Foto --}}
+                            {{-- Tombol Pilih / Sesuaikan Crop / Hapus Foto --}}
                             <div class="space-y-2 text-left sm:flex-1">
-                                <div class="flex items-center gap-2">
+                                <div class="flex flex-wrap items-center gap-2">
                                     <button type="button"
                                             onclick="document.getElementById('menuImageInput').click()"
                                             class="px-3.5 py-1.5 rounded-xl text-xs font-semibold border bg-white hover:bg-gray-50 transition cursor-pointer"
                                             style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
                                         <i class="fa-solid fa-image text-[10px] mr-1" aria-hidden="true"></i>
                                         <span>Pilih / Ganti Foto</span>
+                                    </button>
+
+                                    <button type="button"
+                                            id="btnAdjustMenuCrop"
+                                            onclick="openExistingMenuCropModal()"
+                                            class="{{ $hasExistingImg ? '' : 'hidden' }} px-3 py-1.5 rounded-xl text-xs font-semibold border bg-[#E6F0EA] hover:bg-[#D7E8DD] text-[#2F6B4F] transition cursor-pointer"
+                                            style="border-color: #C4DCCD;">
+                                        <i class="fa-solid fa-crop-simple text-[10px] mr-1" aria-hidden="true"></i>
+                                        <span>Sesuaikan Crop 1:1</span>
                                     </button>
 
                                     <button type="button"
@@ -403,7 +412,7 @@
                                     </button>
                                 </div>
                                 <p class="text-[11.5px] leading-relaxed m-0 text-gray-500">
-                                    Foto kotak memastikan sajian tampil rapi di seluruh daftar menu, kartu visual, dan keranjang pesanan website.
+                                    Saat foto dipilih, jendela potong <strong>1:1</strong> akan terbuka agar Anda dapat menggeser posisi dan memperbesar/memperkecil foto sesuai tampilan kartu menu.
                                 </p>
                                 <div id="menuImageFeedback" class="text-left text-xs"></div>
                             </div>
@@ -719,7 +728,191 @@
 </div>
 
 {{-- =========================================================================
-     JAVASCRIPT: LIVE PREVIEW, DIRTY TRACKING, QUICK CATEGORY & UPLOAD
+     MODAL CROP FOTO MENU 1:1 (INTERAKTIF: GESER, ZOOM, PUTAR, GARIS BANTU BULAT)
+     ========================================================================= --}}
+<div id="menuCropModal"
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-xs p-4"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="menuCropModalTitle"
+     onclick="if (event.target === this) cancelMenuCrop();">
+    <div class="w-full max-w-2xl bg-white rounded-2xl border shadow-2xl overflow-hidden"
+         style="border-color: var(--admin-border-card, #E6E8E4);"
+         onclick="event.stopPropagation()">
+
+        {{-- Header Modal --}}
+        <div class="px-5 py-4 border-b flex items-center justify-between gap-3"
+             style="border-color: var(--admin-border-card, #E6E8E4);">
+            <div>
+                <h3 id="menuCropModalTitle"
+                    class="text-[15px] font-bold tracking-tight m-0"
+                    style="color: var(--admin-text-main, #1B1F1D); font-family: var(--font-heading);">
+                    Potong &amp; Sesuaikan Foto Menu (Rasio 1:1)
+                </h3>
+                <p class="text-[12px] m-0 mt-0.5" style="color: var(--admin-text-sub, #555D58);">
+                    Geser foto dan atur zoom agar sajian tepat di tengah kotak maupun kartu lingkaran.
+                </p>
+            </div>
+            <button type="button"
+                    onclick="cancelMenuCrop()"
+                    class="w-8 h-8 rounded-lg border flex items-center justify-center text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition cursor-pointer shrink-0"
+                    style="border-color: var(--admin-border-card, #E6E8E4);"
+                    aria-label="Tutup jendela potong foto">
+                <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        {{-- Konten Editor Crop 1:1 --}}
+        <div class="p-5 grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+
+            {{-- Kolom Kiri: Area Crop Interaktif 1:1 --}}
+            <div class="md:col-span-7 flex flex-col items-center space-y-2.5">
+                <div id="menuCropViewport"
+                     class="relative w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] rounded-2xl overflow-hidden bg-neutral-900 select-none border shadow-inner"
+                     style="border-color: var(--admin-border-card, #D6DDD7); touch-action: none; cursor: grab;">
+                    <canvas id="menuCropCanvas" class="w-full h-full block"></canvas>
+
+                    {{-- Garis Bantu Rule-of-Thirds (Non-interaktif) --}}
+                    <div class="absolute inset-0 pointer-events-none grid grid-cols-3 grid-rows-3">
+                        <div class="border-r border-b border-white/25"></div>
+                        <div class="border-r border-b border-white/25"></div>
+                        <div class="border-b border-white/25"></div>
+                        <div class="border-r border-b border-white/25"></div>
+                        <div class="border-r border-b border-white/25"></div>
+                        <div class="border-b border-white/25"></div>
+                        <div class="border-r border-white/25"></div>
+                        <div class="border-r border-white/25"></div>
+                        <div></div>
+                    </div>
+
+                    {{-- Garis Bantu Lingkaran Kartu Menu --}}
+                    <div id="menuCropCircleGuide"
+                         class="absolute inset-0 pointer-events-none rounded-full border-2 border-dashed border-white/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.22)]">
+                    </div>
+                </div>
+
+                <p class="text-[11.5px] m-0 text-center flex items-center gap-1.5" style="color: var(--admin-text-sub, #555D58);">
+                    <i class="fa-solid fa-hand text-[11px]" aria-hidden="true"></i>
+                    <span>Seret foto di kotak ini atau gulir mouse untuk zoom</span>
+                </p>
+            </div>
+
+            {{-- Kolom Kanan: Kontrol Zoom, Putar & Pratinjau Mini --}}
+            <div class="md:col-span-5 space-y-4">
+
+                {{-- Pratinjau Mini Kotak & Bulat --}}
+                <div class="p-3 rounded-xl border bg-[#F7F8F6] space-y-2"
+                     style="border-color: var(--admin-border-card, #E6E8E4);">
+                    <span class="text-[11.5px] font-bold block" style="color: var(--admin-text-main, #1B1F1D);">
+                        Pratinjau Hasil Potongan
+                    </span>
+                    <div class="flex items-center gap-4">
+                        <div class="text-center space-y-1">
+                            <canvas id="menuCropMiniSquare" width="64" height="64"
+                                    class="w-16 h-16 rounded-xl border bg-white block mx-auto shadow-2xs"
+                                    style="border-color: var(--admin-border-card, #E6E8E4);"></canvas>
+                            <span class="text-[10.5px] text-gray-500 block">Kotak 1:1</span>
+                        </div>
+                        <div class="text-center space-y-1">
+                            <canvas id="menuCropMiniCircle" width="64" height="64"
+                                    class="w-16 h-16 rounded-full border-2 border-white bg-white block mx-auto shadow-sm"></canvas>
+                            <span class="text-[10.5px] text-gray-500 block">Kartu Website</span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Kontrol Zoom --}}
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs font-semibold" style="color: var(--admin-text-main, #1B1F1D);">
+                        <label for="menuCropZoomSlider" class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-magnifying-glass text-[11px] text-[#2F6B4F]" aria-hidden="true"></i>
+                            <span>Perbesaran (Zoom)</span>
+                        </label>
+                        <span id="menuCropZoomLabel" class="tabular-nums text-[11.5px] text-emerald-800 font-bold">100%</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button"
+                                onclick="nudgeMenuCropZoom(-0.15)"
+                                class="w-8 h-8 rounded-lg border bg-white hover:bg-gray-50 flex items-center justify-center text-xs font-bold cursor-pointer shrink-0"
+                                style="border-color: var(--admin-border-card, #E6E8E4);"
+                                title="Perkecil zoom"
+                                aria-label="Perkecil zoom">
+                            <i class="fa-solid fa-minus" aria-hidden="true"></i>
+                        </button>
+                        <input type="range"
+                               id="menuCropZoomSlider"
+                               min="1"
+                               max="3.5"
+                               step="0.01"
+                               value="1"
+                               oninput="setMenuCropZoom(this.value)"
+                               class="w-full accent-[#2F6B4F] cursor-pointer">
+                        <button type="button"
+                                onclick="nudgeMenuCropZoom(0.15)"
+                                class="w-8 h-8 rounded-lg border bg-white hover:bg-gray-50 flex items-center justify-center text-xs font-bold cursor-pointer shrink-0"
+                                style="border-color: var(--admin-border-card, #E6E8E4);"
+                                title="Perbesar zoom"
+                                aria-label="Perbesar zoom">
+                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Tombol Putar & Reset --}}
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button"
+                            onclick="rotateMenuCrop(90)"
+                            class="px-3 py-2 rounded-xl border text-xs font-semibold bg-white hover:bg-gray-50 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                            style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                        <i class="fa-solid fa-rotate-right text-[11px]" aria-hidden="true"></i>
+                        <span>Putar 90&deg;</span>
+                    </button>
+                    <button type="button"
+                            onclick="resetMenuCropPosition()"
+                            class="px-3 py-2 rounded-xl border text-xs font-semibold bg-white hover:bg-gray-50 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                            style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                        <i class="fa-solid fa-arrows-to-dot text-[11px]" aria-hidden="true"></i>
+                        <span>Tengahkan</span>
+                    </button>
+                </div>
+
+                {{-- Toggle Garis Bantu Lingkaran --}}
+                <label class="flex items-center gap-2 text-xs cursor-pointer select-none" style="color: var(--admin-text-sub, #555D58);">
+                    <input type="checkbox"
+                           id="menuCropToggleCircle"
+                           checked
+                           onchange="toggleMenuCropCircleGuide(this.checked)"
+                           class="rounded accent-[#2F6B4F] cursor-pointer">
+                    <span>Tampilkan garis bantu kartu lingkaran</span>
+                </label>
+
+                <div id="menuCropErrorMsg" class="hidden text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-2.5"></div>
+            </div>
+        </div>
+
+        {{-- Footer Aksi Modal --}}
+        <div class="px-5 py-3.5 border-t bg-[#F7F8F6] flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5"
+             style="border-color: var(--admin-border-card, #E6E8E4);">
+            <button type="button"
+                    onclick="cancelMenuCrop()"
+                    class="min-h-[38px] px-4 py-2 rounded-xl border text-xs font-semibold bg-white hover:bg-gray-50 transition cursor-pointer"
+                    style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                Batal
+            </button>
+            <button type="button"
+                    id="btnApplyMenuCrop"
+                    onclick="applyMenuCrop()"
+                    class="min-h-[38px] px-5 py-2 rounded-xl text-xs font-semibold text-white transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer btn-press"
+                    style="background-color: var(--admin-btn-primary-bg, #2F6B4F);">
+                <i class="fa-solid fa-check text-xs" aria-hidden="true"></i>
+                <span>Terapkan &amp; Gunakan Foto</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- =========================================================================
+     JAVASCRIPT: LIVE PREVIEW, DIRTY TRACKING, QUICK CATEGORY & UPLOAD + CROP 1:1
      ========================================================================= --}}
 <script>
     // 1. Live Preview Synchronizers
@@ -771,47 +964,438 @@
         }
     }
 
-    // 2. Photo Upload & Preview
+    // 2. Photo Upload, Interactive 1:1 Cropper & Preview
+    const MENU_CROP_OUTPUT_SIZE = 800;
+    const MENU_CROP_ALLOWED_EXT = ['jpg', 'jpeg', 'jpe', 'png', 'webp'];
+    const menuCropState = {
+        image: null,
+        sourceUrl: null,
+        sourceBaseName: 'foto-menu',
+        lastCommittedSourceUrl: null,
+        lastCommittedFile: null,
+        lastCommittedPreviewUrl: @json($hasExistingImg ? $currentImg : null),
+        lastTransform: null,
+        openedFromNewFile: false,
+        applyingProgrammatically: false,
+        viewportSize: 320,
+        baseScale: 1,
+        zoom: 1,
+        offsetX: 0,
+        offsetY: 0,
+        rotation: 0,
+        isDragging: false,
+        dragStartX: 0,
+        dragStartY: 0,
+        dragStartOffsetX: 0,
+        dragStartOffsetY: 0,
+        eventsBound: false,
+    };
+
+    function getMenuCropViewportSize() {
+        const viewport = document.getElementById('menuCropViewport');
+        return viewport ? Math.max(200, viewport.clientWidth || 320) : 320;
+    }
+
+    function computeMenuCropMetrics() {
+        if (!menuCropState.image) return;
+
+        const img = menuCropState.image;
+        const size = getMenuCropViewportSize();
+        menuCropState.viewportSize = size;
+
+        const rotated = (menuCropState.rotation % 180) !== 0;
+        const effW = rotated ? img.naturalHeight : img.naturalWidth;
+        const effH = rotated ? img.naturalWidth : img.naturalHeight;
+
+        menuCropState.baseScale = Math.max(size / Math.max(1, effW), size / Math.max(1, effH));
+
+        const dispW = effW * menuCropState.baseScale * menuCropState.zoom;
+        const dispH = effH * menuCropState.baseScale * menuCropState.zoom;
+        const maxOffsetX = Math.max(0, (dispW - size) / 2);
+        const maxOffsetY = Math.max(0, (dispH - size) / 2);
+
+        menuCropState.offsetX = Math.min(maxOffsetX, Math.max(-maxOffsetX, menuCropState.offsetX));
+        menuCropState.offsetY = Math.min(maxOffsetY, Math.max(-maxOffsetY, menuCropState.offsetY));
+    }
+
+    function drawMenuCropToCanvas(canvasEl, targetSize) {
+        if (!canvasEl || !menuCropState.image) return;
+        const ctx = canvasEl.getContext('2d');
+        if (!ctx) return;
+
+        if (canvasEl.width !== targetSize) canvasEl.width = targetSize;
+        if (canvasEl.height !== targetSize) canvasEl.height = targetSize;
+
+        const ratio = targetSize / Math.max(1, menuCropState.viewportSize);
+        ctx.clearRect(0, 0, targetSize, targetSize);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, targetSize, targetSize);
+
+        ctx.save();
+        ctx.translate(
+            (targetSize / 2) + (menuCropState.offsetX * ratio),
+            (targetSize / 2) + (menuCropState.offsetY * ratio)
+        );
+        ctx.rotate((menuCropState.rotation * Math.PI) / 180);
+
+        const drawScale = menuCropState.baseScale * menuCropState.zoom * ratio;
+        const drawW = menuCropState.image.naturalWidth * drawScale;
+        const drawH = menuCropState.image.naturalHeight * drawScale;
+        ctx.drawImage(menuCropState.image, -drawW / 2, -drawH / 2, drawW, drawH);
+        ctx.restore();
+    }
+
+    function renderMenuCropCanvases() {
+        computeMenuCropMetrics();
+        const mainCanvas = document.getElementById('menuCropCanvas');
+        const miniSquare = document.getElementById('menuCropMiniSquare');
+        const miniCircle = document.getElementById('menuCropMiniCircle');
+
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        drawMenuCropToCanvas(mainCanvas, Math.round(menuCropState.viewportSize * dpr));
+        drawMenuCropToCanvas(miniSquare, 128);
+        drawMenuCropToCanvas(miniCircle, 128);
+    }
+
+    function bindMenuCropEvents() {
+        if (menuCropState.eventsBound) return;
+        const viewport = document.getElementById('menuCropViewport');
+        if (!viewport) return;
+        menuCropState.eventsBound = true;
+
+        viewport.addEventListener('pointerdown', function(evt) {
+            if (!menuCropState.image) return;
+            evt.preventDefault();
+            menuCropState.isDragging = true;
+            menuCropState.dragStartX = evt.clientX;
+            menuCropState.dragStartY = evt.clientY;
+            menuCropState.dragStartOffsetX = menuCropState.offsetX;
+            menuCropState.dragStartOffsetY = menuCropState.offsetY;
+            viewport.style.cursor = 'grabbing';
+            if (viewport.setPointerCapture) {
+                try {
+                    viewport.setPointerCapture(evt.pointerId);
+                } catch (_) {}
+            }
+        });
+
+        window.addEventListener('pointermove', function(evt) {
+            if (!menuCropState.isDragging) return;
+            menuCropState.offsetX = menuCropState.dragStartOffsetX + (evt.clientX - menuCropState.dragStartX);
+            menuCropState.offsetY = menuCropState.dragStartOffsetY + (evt.clientY - menuCropState.dragStartY);
+            renderMenuCropCanvases();
+        });
+
+        function stopDragging(evt) {
+            if (!menuCropState.isDragging) return;
+            menuCropState.isDragging = false;
+            viewport.style.cursor = 'grab';
+            if (evt && viewport.releasePointerCapture) {
+                try {
+                    viewport.releasePointerCapture(evt.pointerId);
+                } catch (_) {}
+            }
+        }
+        window.addEventListener('pointerup', stopDragging);
+        window.addEventListener('pointercancel', stopDragging);
+
+        viewport.addEventListener('wheel', function(evt) {
+            if (!menuCropState.image) return;
+            evt.preventDefault();
+            const delta = evt.deltaY < 0 ? 0.1 : -0.1;
+            nudgeMenuCropZoom(delta);
+        }, { passive: false });
+
+        document.addEventListener('keydown', function(evt) {
+            const modal = document.getElementById('menuCropModal');
+            if (!modal || modal.classList.contains('hidden')) return;
+            if (evt.key === 'Escape') {
+                evt.preventDefault();
+                cancelMenuCrop();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            const modal = document.getElementById('menuCropModal');
+            if (modal && !modal.classList.contains('hidden') && menuCropState.image) {
+                renderMenuCropCanvases();
+            }
+        });
+    }
+
+    function openMenuCropModalWithSource(srcUrl, baseName, { fromNewFile, preserveTransform } = {}) {
+        const modal = document.getElementById('menuCropModal');
+        const errBox = document.getElementById('menuCropErrorMsg');
+        if (!modal) return;
+
+        if (errBox) {
+            errBox.classList.add('hidden');
+            errBox.textContent = '';
+        }
+
+        bindMenuCropEvents();
+        menuCropState.openedFromNewFile = Boolean(fromNewFile);
+        menuCropState.sourceUrl = srcUrl;
+        menuCropState.sourceBaseName = baseName || 'foto-menu';
+
+        const img = new Image();
+        if (/^https?:\/\//i.test(srcUrl) && !srcUrl.startsWith(window.location.origin)) {
+            img.crossOrigin = 'anonymous';
+        }
+        img.onload = function() {
+            menuCropState.image = img;
+            if (preserveTransform && menuCropState.lastTransform) {
+                menuCropState.zoom = menuCropState.lastTransform.zoom;
+                menuCropState.offsetX = menuCropState.lastTransform.offsetX;
+                menuCropState.offsetY = menuCropState.lastTransform.offsetY;
+                menuCropState.rotation = menuCropState.lastTransform.rotation;
+            } else {
+                menuCropState.zoom = 1;
+                menuCropState.offsetX = 0;
+                menuCropState.offsetY = 0;
+                menuCropState.rotation = 0;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+
+            syncMenuCropZoomUI();
+            requestAnimationFrame(renderMenuCropCanvases);
+        };
+        img.onerror = function() {
+            if (errBox) {
+                errBox.textContent = 'Foto tidak dapat dimuat ke editor potong. Silakan pilih file gambar lain dari perangkat.';
+                errBox.classList.remove('hidden');
+            }
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+        };
+        img.src = srcUrl;
+    }
+
+    function openExistingMenuCropModal() {
+        const formPreview = document.getElementById('menuFormPreviewImg');
+        const sourceUrl = menuCropState.lastCommittedSourceUrl || (formPreview && !formPreview.classList.contains('hidden') ? formPreview.src : null);
+        if (!sourceUrl) {
+            document.getElementById('menuImageInput')?.click();
+            return;
+        }
+        const preserveTransform = Boolean(menuCropState.lastCommittedSourceUrl && sourceUrl === menuCropState.lastCommittedSourceUrl);
+        openMenuCropModalWithSource(sourceUrl, menuCropState.sourceBaseName, {
+            fromNewFile: false,
+            preserveTransform,
+        });
+    }
+
+    function syncMenuCropZoomUI() {
+        const slider = document.getElementById('menuCropZoomSlider');
+        const label = document.getElementById('menuCropZoomLabel');
+        if (slider) slider.value = menuCropState.zoom.toFixed(2);
+        if (label) label.textContent = `${Math.round(menuCropState.zoom * 100)}%`;
+    }
+
+    function setMenuCropZoom(value) {
+        const num = parseFloat(value);
+        menuCropState.zoom = Math.min(3.5, Math.max(1, isNaN(num) ? 1 : num));
+        syncMenuCropZoomUI();
+        renderMenuCropCanvases();
+    }
+
+    function nudgeMenuCropZoom(delta) {
+        setMenuCropZoom(menuCropState.zoom + delta);
+    }
+
+    function rotateMenuCrop(deg) {
+        menuCropState.rotation = (menuCropState.rotation + deg + 360) % 360;
+        menuCropState.offsetX = 0;
+        menuCropState.offsetY = 0;
+        renderMenuCropCanvases();
+    }
+
+    function resetMenuCropPosition() {
+        menuCropState.zoom = 1;
+        menuCropState.offsetX = 0;
+        menuCropState.offsetY = 0;
+        syncMenuCropZoomUI();
+        renderMenuCropCanvases();
+    }
+
+    function toggleMenuCropCircleGuide(show) {
+        const guide = document.getElementById('menuCropCircleGuide');
+        if (guide) {
+            guide.classList.toggle('hidden', !show);
+        }
+    }
+
+    function closeMenuCropModalOnly() {
+        const modal = document.getElementById('menuCropModal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    function cancelMenuCrop() {
+        const fileInput = document.getElementById('menuImageInput');
+        const feedbackEl = document.getElementById('menuImageFeedback');
+
+        if (menuCropState.openedFromNewFile && fileInput) {
+            menuCropState.applyingProgrammatically = true;
+            try {
+                if (menuCropState.lastCommittedFile) {
+                    const dt = new DataTransfer();
+                    dt.items.add(menuCropState.lastCommittedFile);
+                    fileInput.files = dt.files;
+                } else {
+                    fileInput.value = '';
+                }
+            } catch (_) {
+                fileInput.value = '';
+            }
+            menuCropState.applyingProgrammatically = false;
+
+            if (typeof window.validateSelectedUploadFile === 'function') {
+                window.validateSelectedUploadFile(fileInput);
+            } else if (feedbackEl && !menuCropState.lastCommittedFile) {
+                feedbackEl.innerHTML = '';
+            }
+        }
+
+        closeMenuCropModalOnly();
+    }
+
+    async function encodeMenuCropWithinLimit(exportCanvas, maxBytes) {
+        const attempts = [
+            { size: MENU_CROP_OUTPUT_SIZE, quality: 0.92 },
+            { size: MENU_CROP_OUTPUT_SIZE, quality: 0.82 },
+            { size: MENU_CROP_OUTPUT_SIZE, quality: 0.70 },
+            { size: 640, quality: 0.72 },
+        ];
+
+        for (const attempt of attempts) {
+            const targetCanvas = document.createElement('canvas');
+            drawMenuCropToCanvas(targetCanvas, attempt.size);
+
+            const blob = await new Promise((resolve) => {
+                targetCanvas.toBlob(resolve, 'image/jpeg', attempt.quality);
+            });
+            if (blob && (blob.size <= maxBytes || attempt === attempts[attempts.length - 1])) {
+                return { blob, previewDataUrl: targetCanvas.toDataURL('image/jpeg', attempt.quality) };
+            }
+        }
+
+        return null;
+    }
+
+    async function applyMenuCrop() {
+        if (!menuCropState.image) return;
+        const fileInput = document.getElementById('menuImageInput');
+        const applyBtn = document.getElementById('btnApplyMenuCrop');
+        const errBox = document.getElementById('menuCropErrorMsg');
+        const maxBytes = parseInt(fileInput?.getAttribute('data-max-bytes') || '1048576', 10);
+
+        if (applyBtn) applyBtn.disabled = true;
+        try {
+            const dummyCanvas = document.createElement('canvas');
+            const encoded = await encodeMenuCropWithinLimit(dummyCanvas, maxBytes);
+            if (!encoded || !encoded.blob) {
+                throw new Error('Gagal memproses hasil potongan gambar.');
+            }
+
+            const safeBase = (menuCropState.sourceBaseName || 'menu-photo')
+                .replace(/\.[^.]+$/, '')
+                .replace(/[^a-zA-Z0-9_-]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'menu-photo';
+            const croppedFile = new File([encoded.blob], `${safeBase}.jpg`, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+            });
+
+            if (fileInput) {
+                const dt = new DataTransfer();
+                dt.items.add(croppedFile);
+                menuCropState.applyingProgrammatically = true;
+                fileInput.files = dt.files;
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                menuCropState.applyingProgrammatically = false;
+            }
+
+            menuCropState.lastCommittedSourceUrl = menuCropState.sourceUrl;
+            menuCropState.lastCommittedFile = croppedFile;
+            menuCropState.lastCommittedPreviewUrl = encoded.previewDataUrl;
+            menuCropState.lastTransform = {
+                zoom: menuCropState.zoom,
+                offsetX: menuCropState.offsetX,
+                offsetY: menuCropState.offsetY,
+                rotation: menuCropState.rotation,
+            };
+
+            const formPreview = document.getElementById('menuFormPreviewImg');
+            const customerPreview = document.getElementById('previewCustomerImg');
+            const prompt = document.getElementById('menuFormPrompt');
+            const overlay = document.getElementById('menuFormOverlay');
+            const adjustBtn = document.getElementById('btnAdjustMenuCrop');
+            const removeBtn = document.getElementById('btnRemoveMenuImage');
+            const removeInput = document.getElementById('removeImageInput');
+
+            if (formPreview) {
+                formPreview.src = encoded.previewDataUrl;
+                formPreview.classList.remove('hidden');
+            }
+            if (customerPreview) {
+                customerPreview.src = encoded.previewDataUrl;
+            }
+            if (prompt) prompt.classList.add('hidden');
+            if (overlay) overlay.classList.remove('hidden');
+            if (adjustBtn) adjustBtn.classList.remove('hidden');
+            if (removeBtn) removeBtn.classList.remove('hidden');
+            if (removeInput) removeInput.value = '0';
+
+            if (fileInput && typeof window.validateSelectedUploadFile === 'function') {
+                window.validateSelectedUploadFile(fileInput);
+            }
+
+            markFormAsDirty();
+            closeMenuCropModalOnly();
+        } catch (err) {
+            if (errBox) {
+                errBox.textContent = 'Foto ini tidak dapat dipotong langsung dari tautan eksternal. Silakan unggah file foto dari perangkat Anda terlebih dahulu.';
+                errBox.classList.remove('hidden');
+            }
+        } finally {
+            if (applyBtn) applyBtn.disabled = false;
+        }
+    }
+
     function handleMenuPhotoChange(e) {
+        if (menuCropState.applyingProgrammatically) return;
+
         const file = e.target.files && e.target.files[0];
         const feedbackEl = document.getElementById('menuImageFeedback');
         if (!file) return;
 
-        // Size check
-        const maxBytes = parseInt(e.target.getAttribute('data-max-bytes') || '1048576', 10);
-        if (file.size > maxBytes) {
-            const maxMB = (maxBytes / (1024 * 1024)).toFixed(1);
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        if (!MENU_CROP_ALLOWED_EXT.includes(ext)) {
+            return;
+        }
+
+        // Prevent oversized raw browser images (e.g. > 20 MB) from freezing FileReader
+        if (file.size > 20 * 1024 * 1024) {
             if (feedbackEl) {
-                feedbackEl.innerHTML = `<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-exclamation mr-1"></i> Ukuran foto melebihi batas server (${maxMB} MB). Perkecil foto terlebih dahulu.</span>`;
+                feedbackEl.innerHTML = `<span class="text-rose-600 font-semibold"><i class="fa-solid fa-circle-exclamation mr-1"></i> Ukuran file terlalu besar (&gt; 20 MB). Silakan pilih foto yang lebih kecil.</span>`;
             }
             e.target.value = '';
             return;
         }
 
-        if (feedbackEl) feedbackEl.innerHTML = '';
-
         const reader = new FileReader();
         reader.onload = function(evt) {
-            const formPreview = document.getElementById('menuFormPreviewImg');
-            const customerPreview = document.getElementById('previewCustomerImg');
-            const prompt = document.getElementById('menuFormPrompt');
-            const overlay = document.getElementById('menuFormOverlay');
-            const removeBtn = document.getElementById('btnRemoveMenuImage');
-            const removeInput = document.getElementById('removeImageInput');
-
-            if (formPreview) {
-                formPreview.src = evt.target.result;
-                formPreview.classList.remove('hidden');
-            }
-            if (customerPreview) {
-                customerPreview.src = evt.target.result;
-            }
-            if (prompt) prompt.classList.add('hidden');
-            if (overlay) overlay.classList.remove('hidden');
-            if (removeBtn) removeBtn.classList.remove('hidden');
-            if (removeInput) removeInput.value = '0';
-
-            markFormAsDirty();
+            openMenuCropModalWithSource(evt.target.result, file.name, {
+                fromNewFile: true,
+                preserveTransform: false,
+            });
         };
         reader.readAsDataURL(file);
     }
@@ -822,8 +1406,10 @@
         const customerPreview = document.getElementById('previewCustomerImg');
         const prompt = document.getElementById('menuFormPrompt');
         const overlay = document.getElementById('menuFormOverlay');
+        const adjustBtn = document.getElementById('btnAdjustMenuCrop');
         const removeBtn = document.getElementById('btnRemoveMenuImage');
         const removeInput = document.getElementById('removeImageInput');
+        const feedbackEl = document.getElementById('menuImageFeedback');
 
         if (fileInput) fileInput.value = '';
         if (formPreview) {
@@ -835,8 +1421,15 @@
         }
         if (prompt) prompt.classList.remove('hidden');
         if (overlay) overlay.classList.add('hidden');
+        if (adjustBtn) adjustBtn.classList.add('hidden');
         if (removeBtn) removeBtn.classList.add('hidden');
         if (removeInput) removeInput.value = '1';
+        if (feedbackEl) feedbackEl.innerHTML = '';
+
+        menuCropState.lastCommittedSourceUrl = null;
+        menuCropState.lastCommittedFile = null;
+        menuCropState.lastCommittedPreviewUrl = null;
+        menuCropState.lastTransform = null;
 
         markFormAsDirty();
     }

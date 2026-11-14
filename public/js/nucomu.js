@@ -1713,6 +1713,10 @@ window.switchBestMenuItem = function(index) {
                 imgEl.src = item.image;
                 imgEl.alt = item.name;
                 imgEl.classList.remove('hidden');
+                const photoBtn = imgEl.closest('button');
+                if (photoBtn) {
+                    photoBtn.setAttribute('aria-label', `Lihat foto ${item.name}`);
+                }
             }
         }
 
@@ -1841,7 +1845,9 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
         buttonEl.querySelector('.cat-circle-label')?.classList.remove('text-neutral-800');
     }
 
-    if (targetCategory === 'snacks') targetCategory = 'meals';
+    if (targetCategory === 'snacks' && !document.querySelector('#recommendations-cards-pool .rec-card[data-category~="snacks"]')) {
+        targetCategory = 'meals';
+    }
     if (targetCategory === 'specials') targetCategory = 'all';
 
     window.filterRecommendations(targetCategory);
@@ -1902,6 +1908,8 @@ window.filterAllMenuCategory = function(category, buttonEl) {
    ========================================================================== */
 let galleryItems = [];
 let currentGalleryIndex = 0;
+let lightboxMode = 'gallery';
+let lightboxReturnFocusEl = null;
 
 function initGalleryLightbox() {
     const images = document.querySelectorAll('.gallery-trigger-img');
@@ -1911,10 +1919,36 @@ function initGalleryLightbox() {
     }));
 }
 
+function setLightboxChrome({ isGallery }) {
+    const counterEl = document.getElementById('lightbox-counter');
+    const prevBtn = document.getElementById('lightbox-prev-btn');
+    const nextBtn = document.getElementById('lightbox-next-btn');
+    const captionEl = document.getElementById('lightbox-caption');
+
+    if (counterEl) counterEl.classList.toggle('hidden', !isGallery);
+    if (prevBtn) prevBtn.classList.toggle('hidden', !isGallery);
+    if (nextBtn) nextBtn.classList.toggle('hidden', !isGallery);
+    if (captionEl) captionEl.classList.toggle('hidden', isGallery);
+}
+
+function captureKeyboardReturnFocus(el) {
+    const active = el || document.activeElement;
+    if (!active || active === document.body) {
+        return null;
+    }
+
+    try {
+        return active.matches(':focus-visible') ? active : null;
+    } catch (_) {
+        return null;
+    }
+}
+
 window.openLightbox = function(index) {
     if (galleryItems.length === 0) {
         initGalleryLightbox();
     }
+    lightboxMode = 'gallery';
     currentGalleryIndex = index;
     const modal = document.getElementById('lightbox-modal');
     const imgEl = document.getElementById('lightbox-image');
@@ -1923,36 +1957,114 @@ window.openLightbox = function(index) {
 
     if (!modal || !imgEl) return;
 
+    setLightboxChrome({ isGallery: true });
+
     const item = galleryItems[currentGalleryIndex];
     if (item) {
         imgEl.src = item.src;
+        imgEl.alt = item.title || 'Nucomu Cafe Gallery Preview';
         if (titleEl) titleEl.textContent = item.title;
         if (counterEl) counterEl.textContent = `${currentGalleryIndex + 1} / ${galleryItems.length}`;
     }
 
+    lightboxReturnFocusEl = captureKeyboardReturnFocus();
     modal.classList.remove('opacity-0', 'pointer-events-none');
     modal.classList.add('opacity-100');
     document.body.classList.add('overflow-hidden');
 };
 
+window.openImageLightbox = function(src, title = '', meta = '') {
+    if (!src) return;
+    lightboxMode = 'single';
+
+    const modal = document.getElementById('lightbox-modal');
+    const imgEl = document.getElementById('lightbox-image');
+    const titleEl = document.getElementById('lightbox-title');
+    const captionTitleEl = document.getElementById('lightbox-caption-title');
+    const captionMetaEl = document.getElementById('lightbox-caption-meta');
+
+    if (!modal || !imgEl) return;
+
+    setLightboxChrome({ isGallery: false });
+
+    imgEl.style.opacity = '1';
+    imgEl.src = src;
+    imgEl.alt = title || 'Foto Menu Nucomu Cafe';
+    if (titleEl) titleEl.textContent = title || 'Foto Menu Nucomu Cafe';
+    if (captionTitleEl) captionTitleEl.textContent = title || '';
+    if (captionMetaEl) {
+        captionMetaEl.textContent = meta || '';
+        captionMetaEl.classList.toggle('hidden', !meta);
+    }
+
+    lightboxReturnFocusEl = captureKeyboardReturnFocus();
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    modal.classList.add('opacity-100');
+    document.body.classList.add('overflow-hidden');
+};
+
+window.openMenuPhotoPreview = function(avatarBtnEl) {
+    if (!avatarBtnEl) return;
+    const imgEl = avatarBtnEl.querySelector('img');
+    const src = imgEl?.getAttribute('data-full-src') || imgEl?.currentSrc || imgEl?.getAttribute('src');
+    if (!src) return;
+
+    const cardEl = avatarBtnEl.closest('.menu-card');
+    const title = cardEl?.dataset?.name || imgEl?.getAttribute('alt') || '';
+    const priceText = cardEl?.querySelector('.menu-card-price-row')?.textContent?.replace(/\s+/g, ' ').trim() || '';
+
+    const keyboardTriggered = Boolean(captureKeyboardReturnFocus(avatarBtnEl));
+    window.openImageLightbox(src, title, priceText);
+    if (!keyboardTriggered) {
+        avatarBtnEl.blur();
+    }
+};
+
+window.openCurrentBestMenuPhoto = function() {
+    const items = window.nucomuBestMenuItems || [];
+    const activeItem = items[window.currentBestMenuIndex || 0] || null;
+    const heroImg = document.getElementById('best-hero-img');
+    const heroPrice = document.getElementById('best-hero-price');
+
+    const src = activeItem?.image || heroImg?.currentSrc || heroImg?.getAttribute('src');
+    const title = activeItem?.name || heroImg?.getAttribute('alt') || '';
+    const price = activeItem?.price_formatted || heroPrice?.textContent?.trim() || '';
+
+    if (src) {
+        const heroBtn = heroImg?.closest('button');
+        const keyboardTriggered = Boolean(captureKeyboardReturnFocus(heroBtn));
+        window.openImageLightbox(src, title, price);
+        if (heroBtn && !keyboardTriggered) {
+            heroBtn.blur();
+        }
+    }
+};
+
 window.closeLightbox = function() {
     const modal = document.getElementById('lightbox-modal');
     if (!modal) return;
+    const wasOpen = !modal.classList.contains('pointer-events-none');
+
     modal.classList.add('opacity-0', 'pointer-events-none');
     modal.classList.remove('opacity-100');
     document.body.classList.remove('overflow-hidden');
+
+    if (wasOpen && lightboxReturnFocusEl && typeof lightboxReturnFocusEl.focus === 'function') {
+        lightboxReturnFocusEl.focus();
+    }
+    lightboxReturnFocusEl = null;
 };
 
 window.nextLightbox = function(event) {
     if (event) event.stopPropagation();
-    if (!galleryItems.length) return;
+    if (lightboxMode !== 'gallery' || !galleryItems.length) return;
     currentGalleryIndex = (currentGalleryIndex + 1) % galleryItems.length;
     updateLightboxContent();
 };
 
 window.prevLightbox = function(event) {
     if (event) event.stopPropagation();
-    if (!galleryItems.length) return;
+    if (lightboxMode !== 'gallery' || !galleryItems.length) return;
     currentGalleryIndex = (currentGalleryIndex - 1 + galleryItems.length) % galleryItems.length;
     updateLightboxContent();
 };

@@ -61,10 +61,16 @@
                 <div class="lg:col-span-5 flex flex-col items-center justify-center my-4 lg:my-0">
                     <!-- Big Round Plate with Soft Shadow -->
                     <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-white shadow-2xl transition-all duration-500 ease-out border border-stone-100 flex items-center justify-center">
-                        <img id="best-hero-img" 
-                             src="{{ $bestMenu[0]['image'] }}" 
-                             alt="{{ $bestMenu[0]['name'] }}" 
-                             class="w-full h-full object-cover rounded-full shadow-inner transition-all duration-500">
+                        <button type="button"
+                                onclick="openCurrentBestMenuPhoto()"
+                                aria-label="Lihat foto {{ $bestMenu[0]['name'] }}"
+                                title="Klik untuk melihat foto"
+                                class="group relative w-full h-full rounded-full overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900">
+                            <img id="best-hero-img" 
+                                 src="{{ $bestMenu[0]['image'] }}" 
+                                 alt="{{ $bestMenu[0]['name'] }}" 
+                                 class="w-full h-full object-cover rounded-full shadow-inner transition-all duration-500 group-hover:scale-105">
+                        </button>
                     </div>
 
                     <!-- Charcoal Pill Order Button Underneath -->
@@ -205,28 +211,32 @@
                              data-name="{{ $item['name'] }}"
                              data-price="{{ $item['price'] }}">
                         
-                        <!-- Header Trigger: Klik bagian atas kartu (avatar, nama, harga) untuk buka/tutup -->
+                        <!-- Foto Bulat Menembus Tepi Atas Kartu (Klik untuk melihat foto menu) -->
+                        <button type="button"
+                                class="menu-card-avatar"
+                                onclick="openMenuPhotoPreview(this)"
+                                aria-label="Lihat foto {{ $item['name'] }}"
+                                title="Klik untuk melihat foto">
+                            <img src="{{ $item['image'] }}" 
+                                 alt="{{ $item['name'] }}" 
+                                 loading="lazy" 
+                                 width="130" 
+                                 height="130"
+                                 class="w-full h-full object-cover">
+                            @if(!$isAvailable)
+                                <span class="absolute inset-0 bg-black/60 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center">
+                                    Habis
+                                </span>
+                            @endif
+                        </button>
+
+                        <!-- Header Trigger: Klik bagian nama & harga kartu untuk buka/tutup detail menu -->
                         <button type="button" 
                                 class="menu-card-header-btn" 
                                 onclick="toggleMenuCard(this.closest('.menu-card'))"
                                 aria-expanded="false"
                                 aria-controls="drawer-rec-{{ $itemSlug }}-{{ $index }}"
                                 title="Klik untuk membuka detail menu {{ $item['name'] }}">
-                            
-                            <!-- Foto Bulat Menembus Tepi Atas Kartu -->
-                            <div class="menu-card-avatar">
-                                <img src="{{ $item['image'] }}" 
-                                     alt="{{ $item['name'] }}" 
-                                     loading="lazy" 
-                                     width="130" 
-                                     height="130"
-                                     class="w-full h-full object-cover">
-                                @if(!$isAvailable)
-                                    <span class="absolute inset-0 bg-black/60 text-white font-bold text-[10px] uppercase tracking-wider flex items-center justify-center">
-                                        Habis
-                                    </span>
-                                @endif
-                            </div>
 
                             <!-- Judul Menu Serif -->
                             <h4 class="menu-card-name" title="{{ $item['name'] }}">

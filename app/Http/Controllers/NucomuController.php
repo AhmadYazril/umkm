@@ -202,57 +202,23 @@ class NucomuController extends Controller
                 ->with(['menus' => fn ($query) => $query->available()->orderBy('sort_order')])
                 ->orderBy('sort_order')
                 ->get();
-            $liveMenus = Menu::available()->with(['category', 'options'])->orderBy('sort_order')->get();
+            $liveMenus = Menu::available()
+                ->with(['category', 'options'])
+                ->where(function ($query): void {
+                    $query->whereNull('category_id')
+                        ->orWhereHas('category', fn ($q) => $q->where('is_active', true));
+                })
+                ->orderByDesc('is_featured')
+                ->orderByDesc('is_best_seller')
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get();
+
             if ($liveMenus->isNotEmpty()) {
-                $mappedLiveMenus = $liveMenus->map(function ($m) {
-                    $catSlug = $m->category ? ($m->category->slug ?: Str::slug($m->category->name)) : 'coffee';
-
-                    $opts = $m->options && $m->options->isNotEmpty()
-                        ? $this->formatMenuOptionsForCard($m->options)
-                        : [];
-
-                    return [
-                        'id' => $m->slug ?: 'menu-'.$m->id,
-                        'name' => $m->name,
-                        'category' => $catSlug,
-                        'category_label' => $m->category->name ?? ucfirst($catSlug),
-                        'price' => (int) $m->price,
-                        'price_formatted' => 'Rp '.number_format($m->price, 0, ',', '.'),
-                        'short_info' => $m->description ?? 'Racikan pilihan Nucomu Cafe.',
-                        'image' => $m->image_url,
-                        'options' => $opts,
-                    ];
-                })->toArray();
-
-                $merged = array_merge($mappedLiveMenus, config('nucomu.all_menu', []));
-                $seen = [];
-                $uniqueAllMenu = [];
-                foreach ($merged as $item) {
-                    if (! isset($seen[$item['name']])) {
-                        $seen[$item['name']] = true;
-                        $uniqueAllMenu[] = $item;
-                    }
-                }
-                $allMenu = $uniqueAllMenu;
-
-                // Sync live database options with recommendations where available
-                $dbMenuLookup = $liveMenus->keyBy(function ($m) {
-                    return strtolower(trim($m->name));
-                });
-                $hasAnyDbOptions = MenuOption::exists();
-                $recommendations = collect($recommendations)->map(function ($rec) use ($dbMenuLookup, $hasAnyDbOptions) {
-                    $key = strtolower(trim($rec['name'] ?? ''));
-                    if ($dbMenuLookup->has($key)) {
-                        $dbM = $dbMenuLookup->get($key);
-                        if ($dbM->options && $dbM->options->isNotEmpty()) {
-                            $rec['options'] = $this->formatMenuOptionsForCard($dbM->options);
-                        } elseif ($hasAnyDbOptions) {
-                            $rec['options'] = [];
-                        }
-                    }
-
-                    return $rec;
-                })->all();
+                $mappedLiveMenus = $this->mapMenusForHomeCards($liveMenus);
+                $bestMenu = $this->buildHomeBestMenu($liveMenus);
+                $recommendations = $mappedLiveMenus;
+                $allMenu = $mappedLiveMenus;
             }
 
             if ($dbCategories->isNotEmpty()) {
@@ -2655,6 +2621,101 @@ class NucomuController extends Controller
     }
 
     /**
+     * Map live database menu models into recommendation/catalog card arrays for the homepage.
+     *
+     * @param  Collection<int, Menu>  $liveMenus
+     * @return array<int, array{
+     *     id: string,
+     *     name: string,
+     *     category: string,
+     *     category_label: string,
+     *     price: int,
+     *     price_formatted: string,
+     *     short_info: string,
+     *     image: string,
+     *     is_available: bool,
+     *     options: array<int, array{title: string, choices: array<int, string>}>
+     * }>
+     */
+    private function mapMenusForHomeCards(Collection $liveMenus): array
+    {
+        return $liveMenus->map(function (Menu $menu): array {
+            $catSlug = $menu->category ? ($menu->category->slug ?: Str::slug($menu->category->name)) : 'coffee';
+
+            return [
+                'id' => $menu->slug ?: 'menu-'.$menu->id,
+                'name' => $menu->name,
+                'category' => $catSlug,
+                'category_label' => $menu->category->name ?? ucfirst($catSlug),
+                'price' => (int) $menu->price,
+                'price_formatted' => 'Rp '.number_format((int) $menu->price, 0, ',', '.'),
+                'short_info' => $menu->description ?: 'Racikan pilihan Nucomu Cafe.',
+                'image' => $menu->image_url,
+                'is_available' => (bool) $menu->is_available,
+                'options' => $menu->options->isNotEmpty()
+                    ? $this->formatMenuOptionsForCard($menu->options)
+                    : [],
+            ];
+        })->values()->all();
+    }
+
+    /**
+     * Build the homepage BEST MENU showcase items from live database menus.
+     *
+     * @param  Collection<int, Menu>  $liveMenus
+     * @return array<int, array{
+     *     id: string,
+     *     name: string,
+     *     display_title: string,
+     *     category: string,
+     *     category_label: string,
+     *     price: int,
+     *     price_formatted: string,
+     *     description: string,
+     *     image: string,
+     *     video: null
+     * }>
+     */
+    private function buildHomeBestMenu(Collection $liveMenus): array
+    {
+        return $liveMenus->take(4)->map(function (Menu $menu): array {
+            $catSlug = $menu->category ? ($menu->category->slug ?: Str::slug($menu->category->name)) : 'coffee';
+
+            return [
+                'id' => $menu->slug ?: 'menu-'.$menu->id,
+                'name' => $menu->name,
+                'display_title' => $this->formatBestMenuDisplayTitle($menu->name),
+                'category' => $catSlug,
+                'category_label' => $menu->category->name ?? ucfirst($catSlug),
+                'price' => (int) $menu->price,
+                'price_formatted' => 'Rp '.number_format((int) $menu->price, 0, ',', '.'),
+                'description' => $menu->description ?: 'Racikan pilihan terbaik dari dapur Nucomu Cafe.',
+                'image' => $menu->image_url,
+                'video' => null,
+            ];
+        })->values()->all();
+    }
+
+    /**
+     * Escape a menu title and split multi-word names across two lines for the hero showcase heading.
+     */
+    private function formatBestMenuDisplayTitle(string $name): string
+    {
+        $trimmed = trim($name);
+        $words = preg_split('/\s+/', $trimmed) ?: [$trimmed];
+
+        if (count($words) <= 1) {
+            return e($trimmed);
+        }
+
+        $splitAt = (int) ceil(count($words) / 2);
+        $firstLine = implode(' ', array_slice($words, 0, $splitAt));
+        $secondLine = implode(' ', array_slice($words, $splitAt));
+
+        return e($firstLine).'<br>'.e($secondLine);
+    }
+
+    /**
      * Attach slug aliases to recommendation items so DB category slugs match frontend filters cleanly.
      *
      * @param  array<int, array<string, mixed>>  $recommendations
@@ -2664,10 +2725,15 @@ class NucomuController extends Controller
     {
         $aliasGroups = [
             'coffee' => 'coffee kopi',
+            'kopi' => 'kopi coffee',
             'meals' => 'meals makanan',
+            'makanan' => 'makanan meals',
             'dessert' => 'dessert desserts',
             'beverages' => 'beverages non-kopi non-coffee minuman',
+            'non-kopi' => 'non-kopi non-coffee beverages minuman',
+            'non-coffee' => 'non-coffee non-kopi beverages minuman',
             'snacks' => 'snacks snack',
+            'snack' => 'snack snacks',
         ];
 
         return array_map(function (array $item) use ($aliasGroups): array {
@@ -2692,7 +2758,7 @@ class NucomuController extends Controller
 
         if ($variants->isNotEmpty()) {
             $grouped[] = [
-                'title' => 'Penyajian',
+                'title' => 'Pilihan Varian',
                 'choices' => $variants->pluck('name')->all(),
             ];
         }

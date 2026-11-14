@@ -14,23 +14,29 @@
     </div>
 
     <!-- Navigation Arrows -->
-    <button onclick="prevLightbox(event)" 
+    <button id="lightbox-prev-btn"
+            onclick="prevLightbox(event)" 
             class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-charcoal/70 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
             aria-label="Foto Sebelumnya">
         <span class="material-symbols-outlined text-2xl">chevron_left</span>
     </button>
-    <button onclick="nextLightbox(event)" 
+    <button id="lightbox-next-btn"
+            onclick="nextLightbox(event)" 
             class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-charcoal/70 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
             aria-label="Foto Berikutnya">
         <span class="material-symbols-outlined text-2xl">chevron_right</span>
     </button>
 
     <!-- Image Display Container (No captions displayed on photo as instructed) -->
-    <div class="relative max-w-5xl max-h-[85vh] p-2 flex items-center justify-center" onclick="event.stopPropagation()">
+    <div class="relative max-w-5xl max-h-[88vh] p-2 flex flex-col items-center justify-center" onclick="event.stopPropagation()">
         <img id="lightbox-image" 
              src="" 
              alt="Nucomu Cafe Gallery Preview" 
-             class="max-w-full max-h-[80vh] object-contain rounded shadow-2xl border border-white/10 transition-opacity duration-200">
+             class="max-w-full max-h-[78vh] object-contain rounded-xl shadow-2xl border border-white/10 transition-opacity duration-200">
         <p id="lightbox-title" class="sr-only"></p>
+        <div id="lightbox-caption" class="hidden mt-4 text-center px-4">
+            <h3 id="lightbox-caption-title" class="font-editorial text-xl sm:text-2xl font-bold text-white tracking-tight"></h3>
+            <p id="lightbox-caption-meta" class="font-body text-xs sm:text-sm text-neutral-300 mt-1"></p>
+        </div>
     </div>
 </div>
