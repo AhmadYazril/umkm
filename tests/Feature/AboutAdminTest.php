@@ -105,7 +105,7 @@ class AboutAdminTest extends TestCase
         $homeResponse->assertStatus(200);
         $homeResponse->assertSee('CERITA KAMI / SEJARAH');
         $homeResponse->assertSee('Kopi Hangat, Suasana Tenang di Tulungagung.');
-        $homeResponse->assertSee('Lihat Menu Favorit');
+        $homeResponse->assertDontSee('Lihat Menu Favorit');
     }
 
     public function test_admin_can_update_about_custom_link(): void
