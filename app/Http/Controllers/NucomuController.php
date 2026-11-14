@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\Menu;
+use App\Models\MenuOption;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Reservation;
@@ -197,45 +198,18 @@ class NucomuController extends Controller
 
         $dbCategories = collect();
         try {
-            $dbCategories = Category::where('is_active', true)->orderBy('sort_order')->get();
+            $dbCategories = Category::where('is_active', true)
+                ->with(['menus' => fn ($query) => $query->available()->orderBy('sort_order')])
+                ->orderBy('sort_order')
+                ->get();
             $liveMenus = Menu::available()->with(['category', 'options'])->orderBy('sort_order')->get();
             if ($liveMenus->isNotEmpty()) {
                 $mappedLiveMenus = $liveMenus->map(function ($m) {
                     $catSlug = $m->category ? ($m->category->slug ?: Str::slug($m->category->name)) : 'coffee';
 
-                    $opts = [];
-                    if ($m->options && $m->options->isNotEmpty()) {
-                        $variants = $m->options->where('type', 'variant')->values();
-                        $addons = $m->options->where('type', 'addon')->values();
-                        if ($variants->isNotEmpty()) {
-                            $opts[] = [
-                                'title' => 'Penyajian',
-                                'choices' => $variants->pluck('name')->all(),
-                            ];
-                        }
-                        if ($addons->isNotEmpty()) {
-                            $sugar = $addons->filter(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
-                            $extra = $addons->reject(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
-                            if ($sugar->isNotEmpty()) {
-                                $opts[] = [
-                                    'title' => 'Level Manis',
-                                    'choices' => $sugar->pluck('name')->all(),
-                                ];
-                            }
-                            if ($extra->isNotEmpty()) {
-                                $opts[] = [
-                                    'title' => 'Tambahan',
-                                    'choices' => array_merge(['Tanpa Tambahan'], $extra->pluck('name')->all()),
-                                ];
-                            }
-                            if ($sugar->isEmpty() && $extra->isEmpty()) {
-                                $opts[] = [
-                                    'title' => 'Pilihan Opsi',
-                                    'choices' => $addons->pluck('name')->all(),
-                                ];
-                            }
-                        }
-                    }
+                    $opts = $m->options && $m->options->isNotEmpty()
+                        ? $this->formatMenuOptionsForCard($m->options)
+                        : [];
 
                     return [
                         'id' => $m->slug ?: 'menu-'.$m->id,
@@ -265,48 +239,26 @@ class NucomuController extends Controller
                 $dbMenuLookup = $liveMenus->keyBy(function ($m) {
                     return strtolower(trim($m->name));
                 });
-                $recommendations = collect($recommendations)->map(function ($rec) use ($dbMenuLookup) {
-                    if (empty($rec['options'])) {
-                        return $rec;
-                    }
+                $hasAnyDbOptions = MenuOption::exists();
+                $recommendations = collect($recommendations)->map(function ($rec) use ($dbMenuLookup, $hasAnyDbOptions) {
                     $key = strtolower(trim($rec['name'] ?? ''));
                     if ($dbMenuLookup->has($key)) {
                         $dbM = $dbMenuLookup->get($key);
                         if ($dbM->options && $dbM->options->isNotEmpty()) {
-                            $dbOpts = [];
-                            $variants = $dbM->options->where('type', 'variant')->values();
-                            $addons = $dbM->options->where('type', 'addon')->values();
-                            if ($variants->isNotEmpty()) {
-                                $dbOpts[] = [
-                                    'title' => 'Penyajian',
-                                    'choices' => $variants->pluck('name')->all(),
-                                ];
-                            }
-                            if ($addons->isNotEmpty()) {
-                                $sugar = $addons->filter(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
-                                $extra = $addons->reject(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
-                                if ($sugar->isNotEmpty()) {
-                                    $dbOpts[] = [
-                                        'title' => 'Level Manis',
-                                        'choices' => $sugar->pluck('name')->all(),
-                                    ];
-                                }
-                                if ($extra->isNotEmpty()) {
-                                    $dbOpts[] = [
-                                        'title' => 'Tambahan',
-                                        'choices' => array_merge(['Tanpa Tambahan'], $extra->pluck('name')->all()),
-                                    ];
-                                }
-                            }
-                            if (! empty($dbOpts)) {
-                                $rec['options'] = $dbOpts;
-                            }
+                            $rec['options'] = $this->formatMenuOptionsForCard($dbM->options);
+                        } elseif ($hasAnyDbOptions) {
+                            $rec['options'] = [];
                         }
                     }
 
                     return $rec;
                 })->all();
             }
+
+            if ($dbCategories->isNotEmpty()) {
+                $menuCategories = $this->resolveCategoryDisplayItems($dbCategories, $menuCategories);
+            }
+            $recommendations = $this->enrichRecommendationFilterCategories($recommendations);
         } catch (\Throwable $e) {
             // Graceful fallback
         }
@@ -507,46 +459,11 @@ class NucomuController extends Controller
                     $normCat = 'coffee';
                 }
 
-                $img = null;
-                if ($m->image && file_exists(public_path('storage/'.$m->image))) {
-                    $img = asset('storage/'.$m->image);
-                } elseif ($m->image && (str_starts_with($m->image, 'http://') || str_starts_with($m->image, 'https://'))) {
-                    $img = $m->image;
-                }
+                $img = ! empty($m->image) ? $m->image_url : null;
 
-                $opts = [];
-                if ($m->options && $m->options->isNotEmpty()) {
-                    $variants = $m->options->where('type', 'variant')->values();
-                    $addons = $m->options->where('type', 'addon')->values();
-                    if ($variants->isNotEmpty()) {
-                        $opts[] = [
-                            'title' => 'Penyajian',
-                            'choices' => $variants->pluck('name')->all(),
-                        ];
-                    }
-                    if ($addons->isNotEmpty()) {
-                        $sugar = $addons->filter(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
-                        $extra = $addons->reject(fn ($a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
-                        if ($sugar->isNotEmpty()) {
-                            $opts[] = [
-                                'title' => 'Level Manis',
-                                'choices' => $sugar->pluck('name')->all(),
-                            ];
-                        }
-                        if ($extra->isNotEmpty()) {
-                            $opts[] = [
-                                'title' => 'Tambahan',
-                                'choices' => array_merge(['Tanpa Tambahan'], $extra->pluck('name')->all()),
-                            ];
-                        }
-                        if ($sugar->isEmpty() && $extra->isEmpty()) {
-                            $opts[] = [
-                                'title' => 'Pilihan Opsi',
-                                'choices' => $addons->pluck('name')->all(),
-                            ];
-                        }
-                    }
-                }
+                $opts = $m->options && $m->options->isNotEmpty()
+                    ? $this->formatMenuOptionsForCard($m->options)
+                    : [];
 
                 return [
                     'id' => $m->slug ?: 'menu-'.$m->id,
@@ -2679,5 +2596,133 @@ class NucomuController extends Controller
         }
 
         return redirect()->away($whatsappUrl);
+    }
+
+    /**
+     * Build homepage circular category display items from database categories with smart image fallbacks.
+     *
+     * @param  Collection<int, Category>  $dbCategories
+     * @param  array<int, array{id: string, name: string, image: string}>  $fallbackConfigCategories
+     * @return array<int, array{id: string, name: string, image: string}>
+     */
+    private function resolveCategoryDisplayItems(Collection $dbCategories, array $fallbackConfigCategories): array
+    {
+        $configById = collect($fallbackConfigCategories)->keyBy('id');
+        $aliasToConfigKey = [
+            'coffee' => 'coffee',
+            'kopi' => 'coffee',
+            'meals' => 'meals',
+            'makanan' => 'meals',
+            'food' => 'meals',
+            'dessert' => 'dessert',
+            'desserts' => 'dessert',
+            'beverages' => 'beverages',
+            'non-kopi' => 'beverages',
+            'non-coffee' => 'beverages',
+            'minuman' => 'beverages',
+            'snacks' => 'snacks',
+            'snack' => 'snacks',
+            'food-snacks' => 'snacks',
+            'specials' => 'specials',
+            'chef-specials' => 'specials',
+        ];
+        $defaultFallbackImage = asset('images/nucomu-latte-hero.jpg');
+
+        return $dbCategories->map(function (Category $category) use ($configById, $aliasToConfigKey, $defaultFallbackImage): array {
+            $slug = $category->slug ?: Str::slug($category->name);
+            $imageUrl = $category->image_url;
+
+            if (! $imageUrl) {
+                $mappedKey = $aliasToConfigKey[strtolower($slug)] ?? null;
+                if ($mappedKey && $configById->has($mappedKey)) {
+                    $imageUrl = $configById->get($mappedKey)['image'] ?? null;
+                }
+            }
+
+            if (! $imageUrl) {
+                $menuWithPhoto = $category->menus->first(fn (Menu $menu) => ! empty($menu->image));
+                if ($menuWithPhoto) {
+                    $imageUrl = $menuWithPhoto->image_url;
+                }
+            }
+
+            return [
+                'id' => $slug,
+                'name' => $category->name,
+                'image' => $imageUrl ?: $defaultFallbackImage,
+            ];
+        })->values()->all();
+    }
+
+    /**
+     * Attach slug aliases to recommendation items so DB category slugs match frontend filters cleanly.
+     *
+     * @param  array<int, array<string, mixed>>  $recommendations
+     * @return array<int, array<string, mixed>>
+     */
+    private function enrichRecommendationFilterCategories(array $recommendations): array
+    {
+        $aliasGroups = [
+            'coffee' => 'coffee kopi',
+            'meals' => 'meals makanan',
+            'dessert' => 'dessert desserts',
+            'beverages' => 'beverages non-kopi non-coffee minuman',
+            'snacks' => 'snacks snack',
+        ];
+
+        return array_map(function (array $item) use ($aliasGroups): array {
+            $baseCategory = strtolower((string) ($item['category'] ?? 'coffee'));
+            $item['filter_categories'] = $aliasGroups[$baseCategory] ?? $baseCategory;
+
+            return $item;
+        }, $recommendations);
+    }
+
+    /**
+     * Format menu option rows into grouped choice blocks for homepage and catalog cards.
+     *
+     * @param  Collection<int, MenuOption>  $options
+     * @return array<int, array{title: string, choices: array<int, string>}>
+     */
+    private function formatMenuOptionsForCard(Collection $options): array
+    {
+        $grouped = [];
+        $variants = $options->where('type', 'variant')->values();
+        $addons = $options->where('type', 'addon')->values();
+
+        if ($variants->isNotEmpty()) {
+            $grouped[] = [
+                'title' => 'Penyajian',
+                'choices' => $variants->pluck('name')->all(),
+            ];
+        }
+
+        if ($addons->isNotEmpty()) {
+            $sugar = $addons->filter(fn (MenuOption $a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+            $extra = $addons->reject(fn (MenuOption $a) => str_contains($a->name, '%') || str_contains(strtolower($a->name), 'gula'))->values();
+
+            if ($sugar->isNotEmpty()) {
+                $grouped[] = [
+                    'title' => 'Level Manis',
+                    'choices' => $sugar->pluck('name')->all(),
+                ];
+            }
+
+            if ($extra->isNotEmpty()) {
+                $grouped[] = [
+                    'title' => 'Tambahan',
+                    'choices' => array_merge(['Tanpa Tambahan'], $extra->pluck('name')->all()),
+                ];
+            }
+
+            if ($sugar->isEmpty() && $extra->isEmpty()) {
+                $grouped[] = [
+                    'title' => 'Pilihan Opsi',
+                    'choices' => $addons->pluck('name')->all(),
+                ];
+            }
+        }
+
+        return $grouped;
     }
 }

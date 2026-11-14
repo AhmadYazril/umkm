@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi Visual Sistem - Nucomu Cafe & Roastery</title>
+  
+  <!-- Font Modern -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --color-dark: #140E0A;
+      --color-coffee: #2A1D17;
+      --color-accent: #C2A378;
+      --color-accent-light: #E7DED1;
+      --color-cream: #FAF8F5;
+      --color-white: #FFFFFF;
+      --color-gray-50: #F9FAFB;
+      --color-gray-100: #F3F4F6;
+      --color-gray-200: #E5E7EB;
+      --color-gray-300: #D1D5DB;
+      --color-gray-600: #4B5563;
+      --color-gray-700: #374151;
+      --color-gray-900: #111827;
+      --color-success: #059669;
+      --color-error: #DC2626;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--color-gray-100);
+      color: var(--color-gray-900);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation Header */
+    .app-header {
+      background: var(--color-dark);
+      color: var(--color-white);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--color-accent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo-badge {
+      background: var(--color-accent);
+      color: var(--color-dark);
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 1px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-text h1 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--color-white);
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 12px;
+      color: var(--color-accent-light);
+      font-weight: 500;
+    }
+
+    /* Tabs Bar */
+    .tabs-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--color-accent-light);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: var(--color-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .tab-btn.active {
+      background: var(--color-accent);
+      color: var(--color-dark);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .tab-badge {
+      background: rgba(0, 0, 0, 0.25);
+      color: currentColor;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+
+    .tab-btn.active .tab-badge {
+      background: var(--color-dark);
+      color: var(--color-accent);
+    }
+
+    /* Main Layout */
+    .app-main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      height: calc(100vh - 67px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 340px;
+      background: var(--color-white);
+      border-right: 1px solid var(--color-gray-200);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .sidebar-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--color-gray-600);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--color-gray-300);
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .search-box:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 2px rgba(194, 163, 120, 0.2);
+    }
+
+    .diagram-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .diagram-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: var(--color-white);
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .diagram-item:hover {
+      background: var(--color-cream);
+      border-color: var(--color-accent-light);
+    }
+
+    .diagram-item.active {
+      background: var(--color-cream);
+      border-color: var(--color-accent);
+      box-shadow: 0 2px 4px rgba(42, 29, 23, 0.06);
+    }
+
+    .diagram-id-pill {
+      background: var(--color-gray-100);
+      color: var(--color-coffee);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 11px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      border: 1px solid var(--color-gray-200);
+    }
+
+    .diagram-item.active .diagram-id-pill {
+      background: var(--color-dark);
+      color: var(--color-accent);
+      border-color: var(--color-dark);
+    }
+
+    .diagram-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .diagram-info-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--color-gray-900);
+      line-height: 1.3;
+      margin-bottom: 2px;
+    }
+
+    .diagram-item.active .diagram-info-title {
+      color: var(--color-coffee);
+    }
+
+    .diagram-info-desc {
+      font-size: 11px;
+      color: var(--color-gray-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-gray-50);
+      overflow-y: auto;
+    }
+
+    /* Toolbar */
+    .viewer-toolbar {
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-gray-200);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-title-group {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .toolbar-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--color-coffee);
+      background: var(--color-accent-light);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .toolbar-heading {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-dark);
+      line-height: 1.25;
+    }
+
+    .toolbar-subheading {
+      font-size: 12px;
+      color: var(--color-gray-600);
+      margin-top: 2px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-group {
+      display: flex;
+      background: var(--color-gray-100);
+      border: 1px solid var(--color-gray-300);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .tool-btn {
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-300);
+      border-radius: 6px;
+      color: var(--color-gray-700);
+      padding: 6px 12px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .tool-btn:hover {
+      background: var(--color-cream);
+      color: var(--color-dark);
+      border-color: var(--color-accent);
+    }
+
+    .tool-btn-primary {
+      background: var(--color-dark);
+      color: var(--color-white);
+      border-color: var(--color-dark);
+    }
+
+    .tool-btn-primary:hover {
+      background: var(--color-coffee);
+      color: var(--color-accent);
+      border-color: var(--color-coffee);
+    }
+
+    .tool-btn-accent {
+      background: var(--color-accent);
+      color: var(--color-dark);
+      border-color: var(--color-accent);
+    }
+
+    .tool-btn-accent:hover {
+      background: #b59263;
+      color: var(--color-white);
+    }
+
+    .btn-group .tool-btn {
+      border: none;
+      border-radius: 0;
+      border-right: 1px solid var(--color-gray-300);
+      padding: 6px 10px;
+    }
+
+    .btn-group .tool-btn:last-child {
+      border-right: none;
+    }
+
+    /* Diagram Viewport & Pan/Zoom Canvas */
+    .viewport-card {
+      margin: 16px 24px;
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .viewport-header {
+      padding: 10px 16px;
+      background: var(--color-cream);
+      border-bottom: 1px solid var(--color-accent-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--color-coffee);
+      font-weight: 600;
+    }
+
+    .pan-zoom-hint {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--color-gray-600);
+      font-size: 11px;
+    }
+
+    #diagram-viewport {
+      width: 100%;
+      height: 540px;
+      background-color: #FFFFFF !important;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #diagram-viewport:active {
+      cursor: grabbing;
+    }
+
+    #diagram-canvas {
+      position: absolute;
+      transform-origin: 0 0;
+      transition: transform 0.05s linear;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #diagram-canvas svg {
+      max-width: none !important;
+      height: auto !important;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.03));
+    }
+
+    /* Floating Zoom Controls */
+    .floating-zoom {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--color-white);
+      padding: 4px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      border: 1px solid var(--color-gray-200);
+      z-index: 10;
+    }
+
+    .float-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 14px;
+      color: var(--color-gray-700);
+      transition: all 0.15s ease;
+    }
+
+    .float-btn:hover {
+      background: var(--color-cream);
+      color: var(--color-dark);
+      border-color: var(--color-accent);
+    }
+
+    /* Visual Legend Card */
+    .legend-card {
+      margin: 0 24px 16px;
+      padding: 14px 18px;
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 10px;
+    }
+
+    .legend-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--color-gray-600);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--color-gray-700);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-shape {
+      display: inline-block;
+      width: 20px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1.5px solid var(--color-dark);
+    }
+
+    /* Tab C Details Panel */
+    .detail-section {
+      margin: 0 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-card {
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--color-accent-light);
+    }
+
+    .panel-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--color-coffee);
+    }
+
+    .panel-icon {
+      background: var(--color-dark);
+      color: var(--color-accent);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    /* Step Cards */
+    .steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--color-cream);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-accent);
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--color-gray-800);
+    }
+
+    .step-num {
+      background: var(--color-dark);
+      color: var(--color-white);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 12px;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Responsive Table */
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+
+    .matrix-table th {
+      background: var(--color-dark);
+      color: var(--color-white);
+      padding: 10px 12px;
+      font-weight: 700;
+      border: 1px solid var(--color-coffee);
+      white-space: nowrap;
+    }
+
+    .matrix-table td {
+      padding: 10px 12px;
+      border: 1px solid var(--color-gray-200);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    .matrix-table tr:nth-child(even) {
+      background: var(--color-gray-50);
+    }
+
+    .matrix-table tr:hover {
+      background: var(--color-cream);
+    }
+
+    .badge-table {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      background: var(--color-accent-light);
+      color: var(--color-dark);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin: 1px 2px;
+    }
+
+    .badge-col-yes {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-success);
+      font-weight: 600;
+    }
+
+    .badge-col-no {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--color-gray-600);
+      font-style: italic;
+    }
+
+    .badge-err {
+      color: var(--color-error);
+      font-weight: 600;
+    }
+
+    /* Loading overlay */
+    .render-loading {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255, 255, 255, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-weight: 700;
+      color: var(--color-dark);
+      z-index: 20;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--color-accent-light);
+      border-top-color: var(--color-accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app-main {
+        flex-direction: column;
+        height: auto;
+      }
+      .sidebar {
+        width: 100%;
+        height: 260px;
+      }
+      #diagram-viewport {
+        height: 420px;
+      }
+    }
+  </style>
+
+  <!-- Local Mermaid with CDN Fallback -->
+  <script src="mermaid.min.js"></script>
+  <script>
+    if (typeof mermaid === 'undefined') {
+      console.warn('Local mermaid.min.js not detected, loading CDN fallback...');
+      document.write('<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"><\/script>');
+    }
+  </script>
+
+  <!-- Diagrams Data Store -->
+  <script src="diagrams.js"></script>
+</head>
+<body>
+
+  <!-- Top App Header -->
+  <header class="app-header">
+    <div class="brand-group">
+      <div class="brand-logo-badge">
+        <span>☕</span>
+        <span>NUCOMU</span>
+      </div>
+      <div class="brand-text">
+        <h1>DOKUMENTASI SISTEM INFORMASI & TRANSAKSI PEMESANAN</h1>
+        <p>Nucomu Cafe & Roastery • Diagram Berjenjang, DFD Gane-Sarson & Algoritma Prosedural (SMK RPL)</p>
+      </div>
+    </div>
+
+    <!-- Tab Selector -->
+    <nav class="tabs-wrapper">
+      <button class="tab-btn active" data-tab="A" onclick="switchTab('A')">
+        <span>Tab A: Diagram Berjenjang</span>
+        <span class="tab-badge" id="badge-count-A">7</span>
+      </button>
+      <button class="tab-btn" data-tab="B" onclick="switchTab('B')">
+        <span>Tab B: DFD (Gane-Sarson)</span>
+        <span class="tab-badge" id="badge-count-B">8</span>
+      </button>
+      <button class="tab-btn" data-tab="C" onclick="switchTab('C')">
+        <span>Tab C: Algoritma & Flowchart</span>
+        <span class="tab-badge" id="badge-count-C">15</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Main Work Area -->
+  <main class="app-main">
+    <!-- Left Sidebar: Diagram Selector -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">
+          <span id="sidebar-tab-title">Daftar Diagram Berjenjang</span>
+          <span id="sidebar-count" style="color: var(--color-accent); font-weight: 800;">7 Diagram</span>
+        </div>
+        <input type="text" id="search-input" class="search-box" placeholder="Cari diagram atau modul..." oninput="filterDiagramList()">
+      </div>
+      <div class="diagram-list" id="diagram-list">
+        <!-- Rendered by JS -->
+      </div>
+    </aside>
+
+    <!-- Main Content Area: Viewer & Detail Panels -->
+    <section class="content-area">
+      <!-- Toolbar -->
+      <div class="viewer-toolbar">
+        <div class="toolbar-title-group">
+          <span id="current-badge" class="toolbar-tag">TAB A • BERJENJANG</span>
+          <h2 id="current-title" class="toolbar-heading">Pilih Diagram</h2>
+          <p id="current-subtitle" class="toolbar-subheading">Memuat rincian diagram...</p>
+        </div>
+
+        <div class="toolbar-actions">
+          <!-- Pan & Zoom Buttons -->
+          <div class="btn-group">
+            <button class="tool-btn" onclick="zoomIn()" title="Perbesar (Zoom In)">🔍 +</button>
+            <button class="tool-btn" onclick="zoomOut()" title="Perkecil (Zoom Out)">🔍 -</button>
+            <button class="tool-btn" onclick="resetZoom()" title="Reset Ukuran (100%)">100%</button>
+            <button class="tool-btn" onclick="fitToScreen()" title="Sesuaikan Ukuran (Fit)">Fit</button>
+          </div>
+
+          <button class="tool-btn" onclick="toggleFullscreen()" title="Layar Penuh (Fullscreen)">⛶ Layar Penuh</button>
+          
+          <!-- Download Buttons -->
+          <button class="tool-btn tool-btn-accent" onclick="downloadCurrentSVG()" title="Unduh format vektor SVG murni">
+            📥 Unduh SVG
+          </button>
+          <button class="tool-btn tool-btn-primary" onclick="downloadCurrentPNG()" title="Unduh format gambar resolusi tinggi (Scale 3, Background Putih)">
+            🖼️ Unduh PNG (Skala 3x)
+          </button>
+        </div>
+      </div>
+
+      <!-- Viewport Card with Pan & Zoom Canvas -->
+      <div class="viewport-card" id="viewport-card-container">
+        <div class="viewport-header">
+          <span id="canvas-status">Status: Siap Ditampilkan</span>
+          <div class="pan-zoom-hint">
+            <span>💡 <b>Geser (Drag)</b> mouse untuk Pan • <b>Scroll</b> untuk Zoom</span>
+          </div>
+        </div>
+
+        <div id="diagram-viewport">
+          <div class="render-loading" id="render-loading" style="display: none;">
+            <div class="spinner"></div>
+            <span>Merender Diagram Mermaid...</span>
+          </div>
+          <div id="diagram-canvas">
+            <!-- Mermaid SVG inserted here -->
+          </div>
+        </div>
+
+        <!-- Floating Quick Zoom -->
+        <div class="floating-zoom">
+          <button class="float-btn" onclick="zoomIn()" title="Zoom In">+</button>
+          <button class="float-btn" onclick="zoomOut()" title="Zoom Out">-</button>
+          <button class="float-btn" onclick="resetZoom()" title="Reset 100%">⟲</button>
+          <button class="float-btn" onclick="fitToScreen()" title="Fit Screen">⊡</button>
+        </div>
+      </div>
+
+      <!-- Visual Color & Shape Legend Card -->
+      <div class="legend-card" id="legend-card">
+        <div class="legend-title" id="legend-title">
+          <span>🏷️</span>
+          <span>LEGENDA NOTASI & BENTUK SIMBOL</span>
+        </div>
+        <div class="legend-items" id="legend-items">
+          <!-- Populated by JS based on active tab -->
+        </div>
+      </div>
+
+      <!-- Tab C Exclusive: User Steps & Database Matrix Panel -->
+      <div class="detail-section" id="detail-section" style="display: none;">
+        <!-- Panel 1: Langkah Penggunaan -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-icon">1</div>
+            <h3>Langkah Penggunaan (Sudut Pandang Pengguna)</h3>
+          </div>
+          <div class="steps-list" id="steps-container">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Panel 2: Matriks Operasi Data -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-icon">2</div>
+            <h3>Matriks Operasi Data (Tabel yang Dibaca & Ditulis)</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th style="width: 18%;">Langkah / Aksi</th>
+                  <th style="width: 22%;">Tabel Terlibat</th>
+                  <th style="width: 22%;">Kolom yang Dibaca</th>
+                  <th style="width: 22%;">Kolom Ditulis (Cabang IYA)</th>
+                  <th style="width: 16%;">Pesan Error Validasi</th>
+                </tr>
+              </thead>
+              <tbody id="matrix-tbody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // App State
+    let currentTab = 'A';
+    let currentDiagramId = 'A1-hirarki-sistem';
+    let scale = 1.0;
+    let translateX = 0;
+    let translateY = 0;
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+
+    // Initialize Mermaid
+    if (typeof mermaid !== 'undefined') {
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'default',
+        securityLevel: 'loose',
+        flowchart: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          curve: 'basis'
+        }
+      });
+    }
+
+    // Switch Tab
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Update Tab Buttons UI
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+      });
+
+      // Update Sidebar Title
+      const titles = {
+        'A': 'Daftar Diagram Berjenjang',
+        'B': 'Daftar DFD (Gane & Sarson)',
+        'C': 'Daftar Flowchart Algoritma'
+      };
+      document.getElementById('sidebar-tab-title').textContent = titles[tab];
+
+      // Filter Diagrams
+      const filtered = DIAGRAMS.filter(d => d.tab === tab);
+      document.getElementById('sidebar-count').textContent = filtered.length + ' Diagram';
+
+      // Re-render Sidebar List
+      renderDiagramList(filtered);
+
+      // Select first diagram of tab
+      if (filtered.length > 0) {
+        selectDiagram(filtered[0].id);
+      }
+
+      // Update Legend
+      renderLegend(tab);
+    }
+
+    // Render Sidebar List
+    function renderDiagramList(diagrams) {
+      const container = document.getElementById('diagram-list');
+      container.innerHTML = '';
+
+      diagrams.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'diagram-item' + (d.id === currentDiagramId ? ' active' : '');
+        item.id = 'list-item-' + d.id;
+        item.onclick = () => selectDiagram(d.id);
+
+        item.innerHTML = `
+          <div class="diagram-id-pill">${d.number}</div>
+          <div class="diagram-info">
+            <div class="diagram-info-title">${d.title}</div>
+            <div class="diagram-info-desc">${d.subtitle}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Filter Diagrams in Sidebar
+    function filterDiagramList() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const filtered = DIAGRAMS.filter(d => {
+        return d.tab === currentTab && (
+          d.title.toLowerCase().includes(query) ||
+          d.subtitle.toLowerCase().includes(query) ||
+          d.number.toLowerCase().includes(query) ||
+          d.id.toLowerCase().includes(query)
+        );
+      });
+      renderDiagramList(filtered);
+    }
+
+    // Select Diagram
+    async function selectDiagram(id) {
+      currentDiagramId = id;
+      const diagram = DIAGRAMS.find(d => d.id === id);
+      if (!diagram) return;
+
+      // Update Sidebar Active Class
+      document.querySelectorAll('.diagram-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById('list-item-' + id);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Update Toolbar Header
+      const tabLabels = {
+        'A': 'TAB A • DIAGRAM BERJENJANG',
+        'B': 'TAB B • DFD GANE-SARSON',
+        'C': 'TAB C • ALGORITMA & FLOWCHART'
+      };
+      document.getElementById('current-badge').textContent = tabLabels[diagram.tab] || ('TAB ' + diagram.tab);
+      document.getElementById('current-title').textContent = diagram.number + '. ' + diagram.title;
+      document.getElementById('current-subtitle').textContent = diagram.subtitle;
+
+      // Show Loading
+      const loading = document.getElementById('render-loading');
+      loading.style.display = 'flex';
+      document.getElementById('canvas-status').textContent = 'Merender diagram ' + diagram.number + '...';
+
+      // Render Mermaid SVG
+      try {
+        const { svg } = await mermaid.render('active-svg-' + diagram.id, diagram.code);
+        const canvas = document.getElementById('diagram-canvas');
+        canvas.innerHTML = svg;
+        loading.style.display = 'none';
+        document.getElementById('canvas-status').textContent = 'Diagram ' + diagram.number + ' Siap (Status OK)';
+        
+        // Reset View & Fit
+        setTimeout(() => fitToScreen(), 50);
+      } catch (err) {
+        console.error('Mermaid render error:', err);
+        loading.style.display = 'none';
+        document.getElementById('diagram-canvas').innerHTML = `
+          <div style="padding: 24px; color: var(--color-error); font-family: var(--font-mono); font-size: 13px;">
+            <b>Gagal Merender Diagram:</b><br>${err.message}
+          </div>
+        `;
+        document.getElementById('canvas-status').textContent = 'Error: ' + err.message;
+      }
+
+      // Handle Tab C Detail Panels (Steps & DB Matrix)
+      const detailSection = document.getElementById('detail-section');
+      if (diagram.tab === 'C' && diagram.steps && diagram.dbMatrix) {
+        detailSection.style.display = 'flex';
+        renderAlgorithmDetails(diagram);
+      } else {
+        detailSection.style.display = 'none';
+      }
+    }
+
+    // Render Tab C Details
+    function renderAlgorithmDetails(diagram) {
+      // 1. Steps
+      const stepsContainer = document.getElementById('steps-container');
+      stepsContainer.innerHTML = '';
+      diagram.steps.forEach((step, idx) => {
+        const card = document.createElement('div');
+        card.className = 'step-card';
+        card.innerHTML = `
+          <div class="step-num">${idx + 1}</div>
+          <div>${step}</div>
+        `;
+        stepsContainer.appendChild(card);
+      });
+
+      // 2. Database Matrix
+      const tbody = document.getElementById('matrix-tbody');
+      tbody.innerHTML = '';
+      diagram.dbMatrix.forEach(row => {
+        const tr = document.createElement('tr');
+        
+        // Format table badges
+        const tableBadges = row.tables.split(',').map(t => `<span class="badge-table">${t.trim()}</span>`).join(' ');
+
+        tr.innerHTML = `
+          <td><b>${row.step}</b></td>
+          <td>${tableBadges}</td>
+          <td><span class="badge-col-yes">${row.readCols}</span></td>
+          <td><span class="badge-col-yes">${row.writeColsYes}</span></td>
+          <td><span class="badge-err">${row.errorMessage || '-'}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Render Dynamic Legend
+    function renderLegend(tab) {
+      const container = document.getElementById('legend-items');
+      container.innerHTML = '';
+
+      let items = [];
+      if (tab === 'A') {
+        items = [
+          { shape: 'background:#140E0A; border-color:#C2A378;', label: 'Sistem Induk (0.0 Root System)' },
+          { shape: 'background:#2A1D17; border-color:#C2A378;', label: 'Peran Aktor (1.0 Admin, 2.0 Kasir, 3.0 Cust, 4.0 Kurir)' },
+          { shape: 'background:#E7DED1; border-color:#2A1D17;', label: 'Modul Fungsional Utama (1.X, 2.X, ...)' },
+          { shape: 'background:#FAF8F5; border-color:#8C7E74;', label: 'Sub-modul / Aksi Spesifik Terkecil' }
+        ];
+      } else if (tab === 'B') {
+        items = [
+          { shape: 'background:#140E0A; border-color:#C2A378;', label: 'Entitas Luar (External Entity: Admin, Kasir, Cust, Kurir, WA, API)' },
+          { shape: 'background:#E7DED1; border-color:#2A1D17; border-radius:6px;', label: 'Proses Transformasi (Rounded Rect: No. | Kata Kerja Aktif)' },
+          { shape: 'background:#FAF8F5; border-color:#2A1D17; border-style:dashed;', label: 'Data Store Bernomor (D1 s/d D17: Nama Tabel MySQL Fisik)' },
+          { shape: 'background:none; border:none; color:var(--color-dark); font-weight:bold;', label: '→ Aliran Data (Panah Frasa Kata Benda)' }
+        ];
+      } else {
+        items = [
+          { shape: 'background:#140E0A; border-color:#C2A378; border-radius:999px;', label: 'Start / End (Kapsul/Pill Oval)' },
+          { shape: 'background:#E7DED1; border-color:#2A1D17;', label: 'Proses Komputasi / Penyimpanan' },
+          { shape: 'background:#C2A378; border-color:#140E0A; transform:rotate(45deg); width:12px; height:12px;', label: 'Keputusan Logika (Belah Ketupat Decision)' },
+          { shape: 'background:#FAF8F5; border-color:#2A1D17; transform:skewX(-20deg);', label: 'Masukan / Keluaran (Jajar Genjang I/O)' }
+        ];
+      }
+
+      items.forEach(it => {
+        const div = document.createElement('div');
+        div.className = 'legend-item';
+        div.innerHTML = `<span class="legend-shape" style="${it.shape}"></span><span>${it.label}</span>`;
+        container.appendChild(div);
+      });
+    }
+
+    // Pan & Zoom Logic
+    const viewport = document.getElementById('diagram-viewport');
+    const canvas = document.getElementById('diagram-canvas');
+
+    function updateTransform() {
+      canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    viewport.addEventListener('mousedown', (e) => {
+      isPanning = true;
+      startX = e.clientX - translateX;
+      startY = e.clientY - translateY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      translateX = e.clientX - startX;
+      translateY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isPanning = false;
+    });
+
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.15 : 0.85;
+      const newScale = Math.min(Math.max(scale * zoomFactor, 0.15), 5.0);
+      
+      const rect = viewport.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      translateX = mouseX - (mouseX - translateX) * (newScale / scale);
+      translateY = mouseY - (mouseY - translateY) * (newScale / scale);
+      scale = newScale;
+      updateTransform();
+    });
+
+    function zoomIn() {
+      scale = Math.min(scale * 1.25, 5.0);
+      updateTransform();
+    }
+
+    function zoomOut() {
+      scale = Math.max(scale * 0.8, 0.15);
+      updateTransform();
+    }
+
+    function resetZoom() {
+      scale = 1.0;
+      translateX = 0;
+      translateY = 0;
+      updateTransform();
+    }
+
+    function fitToScreen() {
+      const svg = canvas.querySelector('svg');
+      if (!svg) return;
+
+      const vRect = viewport.getBoundingClientRect();
+      const sRect = svg.getBoundingClientRect();
+
+      const naturalWidth = parseFloat(svg.getAttribute('viewBox')?.split(' ')[2]) || sRect.width / scale || 1000;
+      const naturalHeight = parseFloat(svg.getAttribute('viewBox')?.split(' ')[3]) || sRect.height / scale || 600;
+
+      const padding = 40;
+      const availableWidth = vRect.width - padding;
+      const availableHeight = vRect.height - padding;
+
+      const scaleX = availableWidth / naturalWidth;
+      const scaleY = availableHeight / naturalHeight;
+      scale = Math.min(scaleX, scaleY, 1.2);
+
+      translateX = (vRect.width - naturalWidth * scale) / 2;
+      translateY = (vRect.height - naturalHeight * scale) / 2;
+      updateTransform();
+    }
+
+    function toggleFullscreen() {
+      const card = document.getElementById('viewport-card-container');
+      if (!document.fullscreenElement) {
+        card.requestFullscreen().catch(err => alert('Fullscreen error: ' + err.message));
+        viewport.style.height = 'calc(100vh - 60px)';
+      } else {
+        document.exitFullscreen();
+        viewport.style.height = '540px';
+      }
+      setTimeout(() => fitToScreen(), 200);
+    }
+
+    // Download SVG
+    function downloadCurrentSVG() {
+      const svg = canvas.querySelector('svg');
+      if (!svg) {
+        alert('Tidak ada diagram yang aktif untuk diunduh.');
+        return;
+      }
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = currentDiagramId + '.svg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // Download High-Resolution PNG (Scale 3, Pure White Background)
+    function downloadCurrentPNG() {
+      const svg = canvas.querySelector('svg');
+      if (!svg) {
+        alert('Tidak ada diagram yang aktif untuk diunduh.');
+        return;
+      }
+
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      const img = new Image();
+      img.onload = () => {
+        const viewBox = svg.getAttribute('viewBox');
+        let width = 1200;
+        let height = 800;
+
+        if (viewBox) {
+          const parts = viewBox.split(/[\s,]+/);
+          if (parts.length >= 4) {
+            width = parseFloat(parts[2]);
+            height = parseFloat(parts[3]);
+          }
+        } else {
+          width = svg.clientWidth || 1200;
+          height = svg.clientHeight || 800;
+        }
+
+        const scaleFactor = 3; // Skala 3x High Resolution
+        const canvasEl = document.createElement('canvas');
+        canvasEl.width = width * scaleFactor;
+        canvasEl.height = height * scaleFactor;
+        const ctx = canvasEl.getContext('2d');
+
+        // Clean White Background
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+
+        // Draw Diagram
+        ctx.drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
+        URL.revokeObjectURL(url);
+
+        // Download PNG
+        canvasEl.toBlob((blob) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = currentDiagramId + '.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, 'image/png');
+      };
+      img.src = url;
+    }
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+      switchTab('A');
+    });
+  </script>
+</body>
+</html>

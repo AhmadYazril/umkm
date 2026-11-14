@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond the screen. — 3D Curved Carousel</title>
+
+    <!-- Google Fonts: Cormorant Garamond & Playfair Display untuk Heading Serif Elegan, Inter untuk Subjudul -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* =====================================================================
+           1. RESET & DASAR TATA LETAK (BACKGROUND HITAM PEKAT & KONTEN RATA TENGAH)
+           ===================================================================== */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px 0 20px;
+        }
+
+        /* Container Pembungkus Keseluruhan */
+        .page-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* =====================================================================
+           2. HEADER TYPOGRAPHY (HEADING & SUBJUDUL KECIL)
+           ===================================================================== */
+        .header-section {
+            text-align: center;
+            padding: 0 24px;
+            margin-bottom: 46px; /* Jarak subjudul ke carousel sekitar 40-50px */
+            z-index: 10;
+        }
+
+        .header-title {
+            font-family: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+            font-size: clamp(28px, 4.2vw, 36px);
+            font-weight: 400;
+            color: #ffffff;
+            letter-spacing: -0.015em;
+            line-height: 1.15;
+            margin-bottom: 7px; /* Jarak heading ke subjudul rapat */
+        }
+
+        .header-subtitle {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: clamp(11px, 1.15vw, 12px);
+            font-weight: 400;
+            color: #9a9a9a;
+            letter-spacing: 0.015em;
+            line-height: 1.45;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        /* =====================================================================
+           3. CAROUSEL SECTION (STAGE 3D PERSPECTIVE & CONTAINER)
+           ===================================================================== */
+        .carousel-section {
+            width: 100%;
+            max-width: 100vw;
+            /* Tinggi area carousel sekitar 40-50% tinggi viewport */
+            height: clamp(340px, 48vh, 460px);
+            position: relative;
+            overflow: hidden; /* Kartu tidak boleh overflow keluar section */
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: pan-y;
+        }
+
+        .carousel-section:active,
+        .carousel-section.is-dragging {
+            cursor: grabbing;
+        }
+
+        /* Viewport 3D Perspective */
+        .carousel-viewport {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            perspective: 1200px; /* Nilai perspektif 3D */
+            transform-style: preserve-3d;
+            perspective-origin: center center;
+        }
+
+        .carousel-track {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        /* =====================================================================
+           4. KARTU GAMBAR (POTRET RASIO ±3:4, RADIUS 0-2px, OBJECT-FIT COVER)
+           ===================================================================== */
+        .carousel-card {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            /* Tinggi kartu relatif terhadap viewport carousel */
+            height: clamp(270px, 42vh, 390px);
+            border-radius: 1px; /* Sudut hampir tajam (radius 0-2px) */
+            overflow: hidden;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
+            transform-origin: center center;
+            will-change: transform, filter, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            background-color: #0c0c0c;
+        }
+
+        .carousel-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* object-fit: cover */
+            display: block;
+            pointer-events: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Efek bayangan batas halus pada tiap kartu */
+        .carousel-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+        }
+
+        /* Gradien halus di tepi kiri & kanan untuk menyatu mulus dengan #000 */
+        .edge-fade-left,
+        .edge-fade-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: clamp(24px, 5vw, 60px);
+            pointer-events: none;
+            z-index: 20;
+        }
+        .edge-fade-left {
+            left: 0;
+            background: linear-gradient(to right, #000000 0%, rgba(0, 0, 0, 0) 100%);
+        }
+        .edge-fade-right {
+            right: 0;
+            background: linear-gradient(to left, #000000 0%, rgba(0, 0, 0, 0) 100%);
+        }
+
+        /* Media Query untuk Mobile */
+        @media (max-width: 640px) {
+            .header-section {
+                margin-bottom: 34px;
+            }
+            .carousel-section {
+                height: clamp(300px, 46vh, 380px);
+            }
+            .carousel-card {
+                height: clamp(240px, 40vh, 320px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="page-container">
+
+        <!-- 1 & 2. HEADER TYPOGRAPHY -->
+        <header class="header-section">
+            <h1 class="header-title">Beyond the screen.</h1>
+            <p class="header-subtitle">Spatial thinking used to test clarity and intent before design decisions are locked.</p>
+        </header>
+
+        <!-- 3. CAROUSEL SECTION (3D CYLINDER STAGE) -->
+        <section class="carousel-section" id="carouselSection" aria-label="3D Curved Painting Gallery">
+            <!-- Fade Vignette di Ujung Kiri dan Kanan -->
+            <div class="edge-fade-left" aria-hidden="true"></div>
+            <div class="edge-fade-right" aria-hidden="true"></div>
+
+            <!-- 3D Perspective Viewport -->
+            <div class="carousel-viewport" id="carouselViewport">
+                <div class="carousel-track" id="carouselTrack">
+                    <!-- Kartu gambar akan di-generate dan dikontrol oleh JavaScript -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         5. VANILLA JAVASCRIPT: 3D CURVATURE, AUTO-SCROLL LOOP & GESTURE PHYSICS
+         ===================================================================== -->
+    <script>
+        // =====================================================================
+        // VARIABEL KONFIGURASI UTAMA
+        // =====================================================================
+        const CONFIG = {
+            // Kecepatan auto-scroll ke kiri (piksel per frame). Contoh: 0.65 pelan dan anggun
+            SPEED: 0.65,
+
+            // Nilai CSS perspective dalam piksel (1000 - 1400px)
+            PERSPECTIVE: 1200,
+
+            // Jarak celah horizontal antar kartu gambar (piksel)
+            GAP: 14,
+
+            // Sudut kemiringan rotasi Y maksimum kartu di tepi layar (derajat)
+            MAX_ROTATION: 36,
+
+            // Kedalaman melengkung terjauh (translateZ negatif maksimum dalam piksel)
+            MAX_DEPTH: -250,
+
+            // Kecerahan kartu paling tepi saat memudar ke hitam (0.0 = hitam, 1.0 = normal)
+            MIN_BRIGHTNESS: 0.35,
+
+            // Skala ukuran kartu paling tepi (1.0 = normal di tengah, < 1.0 = menyusut halus)
+            MIN_SCALE: 0.90,
+
+            // Kehalusan gerakan lerp/inersia (0.05 - 0.12)
+            LERP_FACTOR: 0.08,
+
+            // Pengurangan kecepatan auto-scroll saat kursor mouse melayang di atasnya
+            // 0.0 = berhenti total saat di-hover, 0.25 = melambat 75%
+            HOVER_SPEED_FACTOR: 0.0
+        };
+
+        // =====================================================================
+        // DATA 9 KARYA LUKISAN KLASIK (URUTAN SESUAI SPESIFIKASI)
+        // Lebar tiap kartu sedikit bervariasi agar ritme visual terasa alami
+        // =====================================================================
+        const PAINTINGS = [
+            {
+                id: 1,
+                title: "The Persistence of Memory",
+                artist: "Salvador Dalí, 1931",
+                baseWidth: 275, // Lebar sedikit bervariasi
+                src: "https://upload.wikimedia.org/wikipedia/en/d/dd/The_Persistence_of_Memory.jpg",
+                local: "images/img1.jpg"
+            },
+            {
+                id: 2,
+                title: "The Scream",
+                artist: "Edvard Munch, 1893",
+                baseWidth: 255,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg/800px-Edvard_Munch%2C_1893%2C_The_Scream%2C_oil%2C_tempera_and_pastel_on_cardboard%2C_91_x_73_cm%2C_National_Gallery_of_Norway.jpg",
+                local: "images/img2.jpg"
+            },
+            {
+                id: 3,
+                title: "Wanderer above the Sea of Fog",
+                artist: "Caspar David Friedrich, 1818",
+                baseWidth: 265,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg/800px-Caspar_David_Friedrich_-_Wanderer_above_the_sea_of_fog.jpg",
+                local: "images/img3.jpg"
+            },
+            {
+                id: 4,
+                title: "The Kiss",
+                artist: "Gustav Klimt, 1907-1908",
+                baseWidth: 260,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg/800px-The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg",
+                local: "images/img4.jpg"
+            },
+            {
+                id: 5,
+                title: "Cafe Terrace at Night",
+                artist: "Vincent van Gogh, 1888",
+                baseWidth: 270,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Vincent_Willem_van_Gogh_-_Cafe_Terrace_at_Night_%28Yorck%29.jpg/800px-Vincent_Willem_van_Gogh_-_Cafe_Terrace_at_Night_%28Yorck%29.jpg",
+                local: "images/img5.jpg"
+            },
+            {
+                id: 6,
+                title: "Portrait of a Man (Melancholy)",
+                artist: "Gustave Courbet, 1843-1845",
+                baseWidth: 285,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Gustave_Courbet_-_Le_D%C3%A9sesp%C3%A9r%C3%A9.jpg/800px-Gustave_Courbet_-_Le_D%C3%A9sesp%C3%A9r%C3%A9.jpg",
+                local: "images/img6.jpg"
+            },
+            {
+                id: 7,
+                title: "Woman with a Parasol",
+                artist: "Claude Monet, 1875",
+                baseWidth: 265,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Claude_Monet_-_Woman_with_a_Parasol_-_Madame_Monet_and_Her_Son_-_Google_Art_Project.jpg/800px-Claude_Monet_-_Woman_with_a_Parasol_-_Madame_Monet_and_Her_Son_-_Google_Art_Project.jpg",
+                local: "images/img7.jpg"
+            },
+            {
+                id: 8,
+                title: "Girl with a Pearl Earring",
+                artist: "Johannes Vermeer, 1665",
+                baseWidth: 250,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/1665_Girl_with_a_Pearl_Earring.jpg/800px-1665_Girl_with_a_Pearl_Earring.jpg",
+                local: "images/img8.jpg"
+            },
+            {
+                id: 9,
+                title: "Sunflowers",
+                artist: "Vincent van Gogh, 1888",
+                baseWidth: 270,
+                src: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Vincent_Willem_van_Gogh_127.jpg/800px-Vincent_Willem_van_Gogh_127.jpg",
+                local: "images/img9.jpg"
+            }
+        ];
+
+        // =====================================================================
+        // ENGINE CAROUSEL SILINDER 3D (VANILLA JS)
+        // =====================================================================
+        (function() {
+            const section = document.getElementById('carouselSection');
+            const viewport = document.getElementById('carouselViewport');
+            const track = document.getElementById('carouselTrack');
+            if (!section || !viewport || !track) return;
+
+            // Set perspective pada viewport
+            viewport.style.perspective = CONFIG.PERSPECTIVE + 'px';
+
+            // Deteksi preferensi reduced motion dari sistem pengguna
+            const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+            let isReducedMotion = motionQuery.matches;
+            motionQuery.addEventListener('change', (e) => {
+                isReducedMotion = e.matches;
+            });
+
+            // Keadaan interaksi dan pergeseran (scroll tracking)
+            let scroll = 0;          // Posisi terinterpolasi (current)
+            let targetScroll = 0;    // Posisi target tujuan
+            let isDragging = false;
+            let isHovered = false;
+            let startPointerX = 0;
+            let dragStartScroll = 0;
+            let lastPointerX = 0;
+            let dragVelocity = 0;
+            let viewportWidth = section.clientWidth || window.innerWidth;
+
+            // Gandakan set data lukisan (3 kali = 27 kartu) agar infinite loop mulus di semua layar
+            const SET_COUNT = 3;
+            const cardInstances = [];
+
+            // Hitung lebar responsif per kartu untuk layar kecil
+            function getCardWidth(baseW) {
+                const screenFactor = Math.min(1.0, Math.max(0.72, viewportWidth / 768));
+                return Math.round(baseW * screenFactor);
+            }
+
+            // Inisialisasi kartu ke dalam DOM
+            function buildCards() {
+                track.innerHTML = '';
+                cardInstances.length = 0;
+
+                viewportWidth = section.clientWidth || window.innerWidth;
+                let currentRestX = 0;
+
+                for (let s = 0; s < SET_COUNT; s++) {
+                    for (let p = 0; p < PAINTINGS.length; p++) {
+                        const item = PAINTINGS[p];
+                        const cardWidth = getCardWidth(item.baseWidth);
+
+                        const cardEl = document.createElement('div');
+                        cardEl.className = 'carousel-card';
+                        cardEl.style.width = cardWidth + 'px';
+
+                        const img = document.createElement('img');
+                        img.src = item.src;
+                        img.alt = item.title;
+                        img.loading = 'eager';
+
+                        // Fallback cerdas: Jika link eksternal gagal, gunakan file lokal /images
+                        img.onerror = function() {
+                            if (this.src !== item.local) {
+                                this.src = item.local;
+                            } else {
+                                this.onerror = null;
+                                // Placeholder SVG jika file lokal belum ditaruh
+                                this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400"><rect width="100%" height="100%" fill="%231a1a1a"/><text x="50%" y="50%" fill="%23666" font-family="sans-serif" font-size="14" text-anchor="middle" dy=".3em">' + encodeURIComponent(item.title) + '</text></svg>';
+                            }
+                        };
+
+                        cardEl.appendChild(img);
+                        track.appendChild(cardEl);
+
+                        cardInstances.push({
+                            el: cardEl,
+                            width: cardWidth,
+                            restX: currentRestX,
+                            centerRestX: currentRestX + (cardWidth / 2)
+                        });
+
+                        currentRestX += cardWidth + CONFIG.GAP;
+                    }
+                }
+
+                // Total panjang satu putaran loop penuh (semua kartu)
+                window._fullTrackLength = currentRestX;
+            }
+
+            buildCards();
+
+            // Responsif saat ukuran jendela berubah (Resize)
+            window.addEventListener('resize', () => {
+                const oldW = viewportWidth;
+                viewportWidth = section.clientWidth || window.innerWidth;
+                if (Math.abs(oldW - viewportWidth) > 10) {
+                    buildCards();
+                }
+            }, { passive: true });
+
+            // =================================================================
+            // EVENT GESTURE & INTERAKSI (DRAG MOUSE, TOUCH SWIPE, HORIZONTAL WHEEL)
+            // =================================================================
+
+            // 1. Mouse Drag
+            section.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startPointerX = e.clientX;
+                lastPointerX = e.clientX;
+                dragStartScroll = targetScroll;
+                dragVelocity = 0;
+                section.classList.add('is-dragging');
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const currentX = e.clientX;
+                const deltaX = startPointerX - currentX;
+                dragVelocity = currentX - lastPointerX;
+                lastPointerX = currentX;
+
+                targetScroll = dragStartScroll + deltaX;
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                section.classList.remove('is-dragging');
+                // Lemparan inersia (momentum flick)
+                targetScroll -= dragVelocity * 6.5;
+            });
+
+            // 2. Touch Drag (Mobile & Tablet)
+            section.addEventListener('touchstart', (e) => {
+                if (!e.touches || !e.touches[0]) return;
+                isDragging = true;
+                startPointerX = e.touches[0].clientX;
+                lastPointerX = e.touches[0].clientX;
+                dragStartScroll = targetScroll;
+                dragVelocity = 0;
+            }, { passive: true });
+
+            section.addEventListener('touchmove', (e) => {
+                if (!isDragging || !e.touches || !e.touches[0]) return;
+                const currentX = e.touches[0].clientX;
+                const deltaX = startPointerX - currentX;
+                dragVelocity = currentX - lastPointerX;
+                lastPointerX = currentX;
+
+                targetScroll = dragStartScroll + deltaX;
+            }, { passive: true });
+
+            section.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                targetScroll -= dragVelocity * 7.5;
+            }, { passive: true });
+
+            // 3. Horizontal Wheel / Trackpad Scroll
+            section.addEventListener('wheel', (e) => {
+                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                targetScroll += delta * 0.85;
+                e.preventDefault(); // Cegah scroll halaman saat kursor berada di carousel
+            }, { passive: false });
+
+            // 4. Hover Pause / Slowdown
+            section.addEventListener('mouseenter', () => { isHovered = true; });
+            section.addEventListener('mouseleave', () => { isHovered = false; });
+
+            // =================================================================
+            // ANIMATION LOOP: PERHITUNGAN SILINDER 3D TIAP FRAME (RAF)
+            // =================================================================
+            function updateCarousel() {
+                const totalL = window._fullTrackLength || 2500;
+                const centerX = viewportWidth / 2;
+                const halfViewport = viewportWidth / 2;
+
+                // 1. Auto-scroll ke KIRI secara mulus jika tidak sedang disentuh & tidak reduced-motion
+                if (!isDragging && !isReducedMotion) {
+                    const speedMultiplier = isHovered ? CONFIG.HOVER_SPEED_FACTOR : 1.0;
+                    targetScroll += CONFIG.SPEED * speedMultiplier;
+                }
+
+                // 2. Interpolasi Lerp ke target (Inersia halus tanpa patah-patah)
+                scroll += (targetScroll - scroll) * CONFIG.LERP_FACTOR;
+
+                // 3. Hitung posisi 3D tiap kartu
+                for (let i = 0; i < cardInstances.length; i++) {
+                    const card = cardInstances[i];
+
+                    // Posisi kartu relatif terhadap titik tengah layar
+                    let offset = (card.centerRestX - scroll - centerX) % totalL;
+
+                    // Normalisasi offset ke rentang simetris [-totalL / 2, +totalL / 2]
+                    if (offset < -totalL / 2) offset += totalL;
+                    if (offset > totalL / 2) offset -= totalL;
+
+                    // Posisi koordinat tengah kartu pada layar
+                    const screenCenterX = centerX + offset;
+                    const cardLeft = screenCenterX - (card.width / 2);
+
+                    // Jarak ternormalisasi dari tengah layar (-1.0 di tepi kiri, 0 di tengah, +1.0 di tepi kanan)
+                    const norm = offset / halfViewport;
+                    const absNorm = Math.abs(norm);
+
+                    // =========================================================
+                    // KALKULASI SILINDER 3D
+                    // =========================================================
+
+                    // a) RotateY: Kartu di tengah lurus (0deg), kartu di kiri/kanan makin miring
+                    // Di sisi kiri (norm < 0) memutar ke dalam (negatif), di sisi kanan memutar ke dalam (positif)
+                    const rotY = Math.max(-CONFIG.MAX_ROTATION, Math.min(CONFIG.MAX_ROTATION, norm * CONFIG.MAX_ROTATION));
+
+                    // b) TranslateZ: Kartu di tengah paling dekat (0px), makin ke tepi makin jauh (Z negatif)
+                    const depthFactor = Math.min(1.4, Math.pow(absNorm, 1.6));
+                    const translateZ = depthFactor * CONFIG.MAX_DEPTH;
+
+                    // c) Scale: Kartu di tengah paling besar (1.0), makin ke tepi makin kecil (MIN_SCALE)
+                    const scaleFactor = 1.0 - Math.min(1.0, absNorm) * (1.0 - CONFIG.MIN_SCALE);
+
+                    // d) Brightness: Kartu di tengah 100% terang, makin ke tepi memudar gelap ke hitam
+                    const brightnessFactor = 1.0 - Math.min(1.0, absNorm) * (1.0 - CONFIG.MIN_BRIGHTNESS);
+
+                    // e) Opacity: Transisi memudar halus saat kartu mendekati ujung layar
+                    const opacityFactor = absNorm > 0.85 ? Math.max(0.1, 1.0 - (absNorm - 0.85) * 1.5) : 1.0;
+
+                    // Terapkan transformasi 3D dan filter
+                    card.el.style.transform = `translate3d(${cardLeft}px, -50%, ${translateZ}px) rotateY(${rotY}deg) scale(${scaleFactor})`;
+                    card.el.style.filter = `brightness(${brightnessFactor})`;
+                    card.el.style.opacity = opacityFactor.toFixed(3);
+                }
+
+                requestAnimationFrame(updateCarousel);
+            }
+
+            requestAnimationFrame(updateCarousel);
+        })();
+    </script>
+</body>
+</html>

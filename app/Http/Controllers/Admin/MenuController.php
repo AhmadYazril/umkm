@@ -10,7 +10,10 @@ use App\Support\FileUploadHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class MenuController extends Controller
@@ -34,9 +37,9 @@ class MenuController extends Controller
 
         // Base query
         if ($status === 'trashed') {
-            $query = Menu::onlyTrashed()->with('category')->withCount('orderItems');
+            $query = Menu::onlyTrashed()->with('category')->withCount(['orderItems', 'options']);
         } else {
-            $query = Menu::with('category')->withCount('orderItems');
+            $query = Menu::with('category')->withCount(['orderItems', 'options']);
         }
 
         // Category filter
@@ -71,9 +74,11 @@ class MenuController extends Controller
         $categories = Category::withCount('menus')
             ->orderBy('sort_order')
             ->orderBy('id')
-            ->get();
+            ->get()
+            ->each(fn (Category $category) => $category->append('image_url'));
 
         $menuPhotoLimits = FileUploadHelper::getEffectiveLimit(1024 * 1024, 'foto menu');
+        $categoryPhotoLimits = FileUploadHelper::getEffectiveLimit(2 * 1024 * 1024, 'foto kategori');
 
         return view('admin.menus.index', compact(
             'menus',
@@ -81,6 +86,7 @@ class MenuController extends Controller
             'totalCount',
             'trashedCount',
             'menuPhotoLimits',
+            'categoryPhotoLimits',
             'status',
             'categoryId',
             'search',
@@ -114,31 +120,8 @@ class MenuController extends Controller
     {
         KasirController::ensureDatabaseSchemaAndSync();
 
-        $validated = $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1500'],
-            'price' => ['required', 'integer', 'min:0'],
-            'stock' => ['nullable', 'integer', 'min:0', 'max:9999'],
-            'image' => ['nullable', 'file', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-            'is_featured' => ['nullable', 'boolean'],
-            'is_best_seller' => ['nullable', 'boolean'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-        ], [
-            'category_id.required' => 'Pilih kategori yang sesuai untuk sajian ini.',
-            'category_id.exists' => 'Kategori yang dipilih tidak terdaftar di sistem.',
-            'name.required' => 'Nama menu wajib diisi.',
-            'name.max' => 'Nama menu maksimal 255 karakter.',
-            'price.required' => 'Harga menu wajib diisi.',
-            'price.integer' => 'Harga menu harus berupa angka bulat dalam Rupiah (tanpa titik).',
-            'price.min' => 'Harga menu tidak boleh kurang dari Rp 0.',
-            'stock.integer' => 'Jumlah stok harus berupa bilangan bulat.',
-            'stock.min' => 'Jumlah stok tidak boleh kurang dari 0.',
-            'stock.max' => 'Jumlah stok maksimal 9999.',
-            'image.uploaded' => 'Foto menu gagal diunggah ke server. Pastikan ukuran file tidak melebihi batas sistem.',
-            'image.mimes' => 'Format foto menu harus berupa JPG, PNG, atau WebP.',
-            'image.max' => 'Ukuran file foto menu melebihi batas maksimal yang diizinkan.',
-        ]);
+        $validated = $this->validateMenuRequest($request);
+        $uploadedFileName = null;
 
         try {
             $baseSlug = Str::slug($validated['name']);
@@ -153,27 +136,26 @@ class MenuController extends Controller
                 ? max(0, (int) $request->input('stock'))
                 : 25;
 
-            $validated['slug'] = $slug;
-            $validated['stock'] = $stock;
-            $validated['is_available'] = true;
-            $validated['is_featured'] = $request->boolean('is_featured', false);
-            $validated['is_best_seller'] = $request->boolean('is_best_seller', false);
-            $validated['sort_order'] = $validated['sort_order'] ?? ((Menu::max('sort_order') ?? 0) + 1);
+            $menuData = Arr::except($validated, ['options', 'sync_options', 'remove_image']);
+            $menuData['slug'] = $slug;
+            $menuData['stock'] = $stock;
+            $menuData['is_available'] = true;
+            $menuData['is_featured'] = $request->boolean('is_featured', false);
+            $menuData['is_best_seller'] = $request->boolean('is_best_seller', false);
+            $menuData['sort_order'] = $validated['sort_order'] ?? ((Menu::max('sort_order') ?? 0) + 1);
 
             if ($request->hasFile('image')) {
-                $uploadDir = public_path('uploads/menus');
-                FileUploadHelper::ensureDirectoryWritable($uploadDir, 'folder upload Menu');
-
-                $file = $request->file('image');
-                $extension = $file->getClientOriginalExtension();
-                $fileName = 'menu_'.time().'_'.bin2hex(random_bytes(3)).'.'.$extension;
-                $file->move($uploadDir, $fileName);
-
-                $validated['image'] = $fileName;
+                $uploadedFileName = $this->storeUploadedMenuImage($request);
+                $menuData['image'] = $uploadedFileName;
             }
 
-            $menu = Menu::create($validated);
-            KasirController::syncSingleMenuStock($menu, (int) $validated['stock']);
+            $menu = DB::transaction(function () use ($menuData, $request, $stock): Menu {
+                $created = Menu::create($menuData);
+                $this->syncMenuOptions($created, $request);
+                KasirController::syncSingleMenuStock($created, (int) $stock);
+
+                return $created;
+            });
 
             if ($request->input('action') === 'save_and_add_another') {
                 return redirect()->route('admin.menus.create')
@@ -182,7 +164,13 @@ class MenuController extends Controller
 
             return redirect()->route('admin.menus.index')
                 ->with('success', 'Menu "'.$menu->name.'" berhasil ditambahkan ke katalog.');
+        } catch (ValidationException $e) {
+            $this->deleteUploadedMenuFile($uploadedFileName);
+
+            throw $e;
         } catch (\Throwable $e) {
+            $this->deleteUploadedMenuFile($uploadedFileName);
+
             return back()->withInput()->with('error', 'Gagal menambahkan menu: '.$e->getMessage());
         }
     }
@@ -194,6 +182,7 @@ class MenuController extends Controller
     {
         KasirController::ensureDatabaseSchemaAndSync();
 
+        $menu->load(['category', 'options']);
         $categories = Category::orderBy('sort_order')->get();
         $menuPhotoLimits = FileUploadHelper::getEffectiveLimit(1024 * 1024, 'foto menu');
 
@@ -207,71 +196,49 @@ class MenuController extends Controller
     {
         KasirController::ensureDatabaseSchemaAndSync();
 
-        $validated = $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1500'],
-            'price' => ['required', 'integer', 'min:0'],
-            'stock' => ['nullable', 'integer', 'min:0', 'max:9999'],
-            'image' => ['nullable', 'file', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
-            'remove_image' => ['nullable', 'boolean'],
-            'is_featured' => ['nullable', 'boolean'],
-            'is_best_seller' => ['nullable', 'boolean'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-        ], [
-            'category_id.required' => 'Pilih kategori yang sesuai untuk sajian ini.',
-            'category_id.exists' => 'Kategori yang dipilih tidak terdaftar di sistem.',
-            'name.required' => 'Nama menu wajib diisi.',
-            'name.max' => 'Nama menu maksimal 255 karakter.',
-            'price.required' => 'Harga menu wajib diisi.',
-            'price.integer' => 'Harga menu harus berupa angka bulat dalam Rupiah (tanpa titik).',
-            'price.min' => 'Harga menu tidak boleh kurang dari Rp 0.',
-            'stock.integer' => 'Jumlah stok harus berupa bilangan bulat.',
-            'stock.min' => 'Jumlah stok tidak boleh kurang dari 0.',
-            'stock.max' => 'Jumlah stok maksimal 9999.',
-            'image.uploaded' => 'Foto menu gagal diunggah ke server. Pastikan ukuran file tidak melebihi batas sistem.',
-            'image.mimes' => 'Format foto menu harus berupa JPG, PNG, atau WebP.',
-            'image.max' => 'Ukuran file foto menu melebihi batas maksimal yang diizinkan.',
-        ]);
+        $validated = $this->validateMenuRequest($request, true);
+        $uploadedFileName = null;
 
         try {
             $stock = $request->filled('stock')
                 ? max(0, (int) $request->input('stock'))
                 : (($menu->stock !== null) ? (int) $menu->stock : 25);
 
-            $validated['stock'] = $stock;
-            $validated['is_available'] = true;
-            $validated['is_featured'] = $request->boolean('is_featured', false);
-            $validated['is_best_seller'] = $request->boolean('is_best_seller', false);
-            $validated['sort_order'] = $validated['sort_order'] ?? $menu->sort_order;
+            $menuData = Arr::except($validated, ['options', 'sync_options', 'remove_image']);
+            $menuData['stock'] = $stock;
+            $menuData['is_available'] = true;
+            $menuData['is_featured'] = $request->boolean('is_featured', false);
+            $menuData['is_best_seller'] = $request->boolean('is_best_seller', false);
+            $menuData['sort_order'] = $validated['sort_order'] ?? $menu->sort_order;
 
             // Hapus foto jika diminta
             if ($request->boolean('remove_image')) {
                 $menu->deleteImageFile();
-                $validated['image'] = null;
+                $menuData['image'] = null;
             }
 
             // Ganti foto baru jika diunggah
             if ($request->hasFile('image')) {
-                $uploadDir = public_path('uploads/menus');
-                FileUploadHelper::ensureDirectoryWritable($uploadDir, 'folder upload Menu');
-
+                $uploadedFileName = $this->storeUploadedMenuImage($request);
                 $menu->deleteImageFile();
-
-                $file = $request->file('image');
-                $extension = $file->getClientOriginalExtension();
-                $fileName = 'menu_'.time().'_'.bin2hex(random_bytes(3)).'.'.$extension;
-                $file->move($uploadDir, $fileName);
-
-                $validated['image'] = $fileName;
+                $menuData['image'] = $uploadedFileName;
             }
 
-            $menu->update($validated);
-            KasirController::syncSingleMenuStock($menu, (int) $validated['stock']);
+            DB::transaction(function () use ($menu, $menuData, $request, $stock): void {
+                $menu->update($menuData);
+                $this->syncMenuOptions($menu, $request);
+                KasirController::syncSingleMenuStock($menu, (int) $stock);
+            });
 
             return redirect()->route('admin.menus.index')
                 ->with('success', 'Perubahan pada menu "'.$menu->name.'" berhasil disimpan.');
+        } catch (ValidationException $e) {
+            $this->deleteUploadedMenuFile($uploadedFileName);
+
+            throw $e;
         } catch (\Throwable $e) {
+            $this->deleteUploadedMenuFile($uploadedFileName);
+
             return back()->withInput()->with('error', 'Gagal memperbarui menu: '.$e->getMessage());
         }
     }
@@ -442,5 +409,136 @@ class MenuController extends Controller
         }
 
         return back()->with('success', $msg);
+    }
+
+    /**
+     * Validate create or update menu payload including optional variants and addons.
+     *
+     * @return array<string, mixed>
+     */
+    private function validateMenuRequest(Request $request, bool $isUpdate = false): array
+    {
+        $rules = [
+            'category_id' => ['required', 'exists:categories,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1500'],
+            'price' => ['required', 'integer', 'min:0'],
+            'stock' => ['nullable', 'integer', 'min:0', 'max:9999'],
+            'image' => ['nullable', 'file', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'is_featured' => ['nullable', 'boolean'],
+            'is_best_seller' => ['nullable', 'boolean'],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
+            'sync_options' => ['nullable', 'boolean'],
+            'options' => ['nullable', 'array', 'max:30'],
+            'options.*.name' => ['nullable', 'string', 'max:100'],
+            'options.*.type' => ['nullable', 'in:variant,addon'],
+            'options.*.price' => ['nullable', 'integer', 'min:0', 'max:1000000'],
+        ];
+
+        if ($isUpdate) {
+            $rules['remove_image'] = ['nullable', 'boolean'];
+        }
+
+        return $request->validate($rules, [
+            'category_id.required' => 'Pilih kategori yang sesuai untuk sajian ini.',
+            'category_id.exists' => 'Kategori yang dipilih tidak terdaftar di sistem.',
+            'name.required' => 'Nama menu wajib diisi.',
+            'name.max' => 'Nama menu maksimal 255 karakter.',
+            'price.required' => 'Harga menu wajib diisi.',
+            'price.integer' => 'Harga menu harus berupa angka bulat dalam Rupiah (tanpa titik).',
+            'price.min' => 'Harga menu tidak boleh kurang dari Rp 0.',
+            'stock.integer' => 'Jumlah stok harus berupa bilangan bulat.',
+            'stock.min' => 'Jumlah stok tidak boleh kurang dari 0.',
+            'stock.max' => 'Jumlah stok maksimal 9999.',
+            'image.uploaded' => 'Foto menu gagal diunggah ke server. Pastikan ukuran file tidak melebihi batas sistem.',
+            'image.mimes' => 'Format foto menu harus berupa JPG, PNG, atau WebP.',
+            'image.max' => 'Ukuran file foto menu melebihi batas maksimal yang diizinkan.',
+            'options.max' => 'Maksimal 30 varian atau opsi tambahan per menu.',
+            'options.*.name.max' => 'Nama varian maksimal 100 karakter.',
+            'options.*.type.in' => 'Jenis opsi harus berupa Varian Utama atau Tambahan.',
+            'options.*.price.integer' => 'Tambahan harga varian harus berupa angka bulat.',
+            'options.*.price.min' => 'Tambahan harga varian tidak boleh kurang dari Rp 0.',
+        ]);
+    }
+
+    /**
+     * Save uploaded menu image into public/uploads/menus and return filename.
+     */
+    private function storeUploadedMenuImage(Request $request): string
+    {
+        $uploadDir = public_path('uploads/menus');
+        FileUploadHelper::ensureDirectoryWritable($uploadDir, 'folder upload Menu');
+
+        $file = $request->file('image');
+        $extension = $file->getClientOriginalExtension() ?: ($file->guessExtension() ?: 'jpg');
+        $fileName = 'menu_'.time().'_'.bin2hex(random_bytes(3)).'.'.$extension;
+        $file->move($uploadDir, $fileName);
+
+        return $fileName;
+    }
+
+    /**
+     * Clean up a newly uploaded file if persistence fails before redirect.
+     */
+    private function deleteUploadedMenuFile(?string $fileName): void
+    {
+        if (empty($fileName)) {
+            return;
+        }
+
+        $path = public_path('uploads/menus/'.$fileName);
+        if (is_file($path)) {
+            @unlink($path);
+        }
+    }
+
+    /**
+     * Synchronize menu variants and addon options when submitted from the menu form.
+     */
+    private function syncMenuOptions(Menu $menu, Request $request): void
+    {
+        if (! $request->boolean('sync_options') && ! $request->has('options')) {
+            return;
+        }
+
+        $rawOptions = $request->input('options', []);
+        if (! is_array($rawOptions)) {
+            return;
+        }
+
+        $normalized = [];
+        foreach ($rawOptions as $index => $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $name = trim((string) ($row['name'] ?? ''));
+            $price = max(0, (int) ($row['price'] ?? 0));
+            $type = ($row['type'] ?? 'variant') === 'addon' ? 'addon' : 'variant';
+
+            if ($name === '') {
+                if ($price > 0) {
+                    throw ValidationException::withMessages([
+                        "options.{$index}.name" => 'Nama varian wajib diisi jika tambahan harga lebih dari Rp 0.',
+                    ]);
+                }
+
+                continue;
+            }
+
+            $dedupeKey = strtolower($type.'|'.$name);
+            $normalized[$dedupeKey] = [
+                'name' => $name,
+                'type' => $type,
+                'price' => $price,
+                'is_sample' => false,
+            ];
+        }
+
+        $menu->options()->delete();
+
+        foreach ($normalized as $optionData) {
+            $menu->options()->create($optionData);
+        }
     }
 }

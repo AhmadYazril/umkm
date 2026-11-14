@@ -197,6 +197,23 @@
         </div>
     @endif
 
+    @if($errors->any())
+        <div class="p-3.5 sm:p-4 rounded-xl border text-[13px] leading-relaxed anim-fade-up"
+             style="background-color: #FDF2F2; border-color: #F8B4B4; color: #9B1C1C;">
+            <div class="flex items-start gap-2.5">
+                <i class="fa-solid fa-triangle-exclamation text-rose-600 shrink-0 text-base mt-0.5" aria-hidden="true"></i>
+                <div>
+                    <span class="font-bold">Periksa kembali input Anda:</span>
+                    <ul class="mt-1 list-disc list-inside space-y-0.5 text-xs">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- TOOLBAR FILTER & TAMPILAN (Chip Kategori, Segmented Status, Live Search & View Switcher) --}}
     <div class="bg-white rounded-2xl border p-4 shadow-sm space-y-3.5" style="border-color: var(--admin-border-card, #E6E8E4);">
         
@@ -395,9 +412,20 @@
                             </h3>
                         </div>
 
-                        {{-- Harga: Plus Jakarta Sans Bold, tabular-nums --}}
-                        <div class="text-[15.5px] font-extrabold tracking-tight tabular-nums" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
-                            Rp {{ number_format($menu->price, 0, ',', '.') }}
+                        {{-- Harga & Shortcut Varian --}}
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="text-[15.5px] font-extrabold tracking-tight tabular-nums" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
+                                Rp {{ number_format($menu->price, 0, ',', '.') }}
+                            </div>
+                            @if(!$menu->trashed())
+                                <a href="{{ route('admin.menus.edit', $menu->id) }}#menu-variants-section"
+                                   class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-semibold border transition hover:border-[#2F6B4F] shrink-0"
+                                   style="{{ ($menu->options_count ?? 0) > 0 ? 'background-color: var(--admin-bg-sidebar-active, #E6F0EA); border-color: #C3DCD0; color: #164E33;' : 'background-color: #F7F8F6; border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-sub, #555D58);' }}"
+                                   title="Atur varian dan opsi tambahan menu">
+                                    <i class="fa-solid fa-sliders text-[9px]" aria-hidden="true"></i>
+                                    <span>{{ ($menu->options_count ?? 0) > 0 ? $menu->options_count . ' Varian' : '+ Varian' }}</span>
+                                </a>
+                            @endif
                         </div>
 
                         {{-- Deskripsi Singkat 2 Baris --}}
@@ -612,6 +640,13 @@
                                             </button>
                                         </form>
                                     @else
+                                        <a href="{{ route('admin.menus.edit', $menu->id) }}#menu-variants-section"
+                                           class="px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition shadow-2xs btn-press inline-flex items-center gap-1"
+                                           style="{{ ($menu->options_count ?? 0) > 0 ? 'background-color: var(--admin-bg-sidebar-active, #E6F0EA); border-color: #C3DCD0; color: #164E33;' : 'background-color: #F7F8F6; border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-sub, #555D58);' }}"
+                                           title="Atur varian dan opsi menu">
+                                            <i class="fa-solid fa-sliders text-[9px]" aria-hidden="true"></i>
+                                            <span>{{ ($menu->options_count ?? 0) > 0 ? $menu->options_count . ' Varian' : 'Varian' }}</span>
+                                        </a>
                                         <a href="{{ route('admin.menus.edit', $menu->id) }}"
                                            class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition shadow-2xs btn-press"
                                            style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
@@ -795,8 +830,49 @@
                 <i class="fa-solid fa-plus text-[10px]" style="color: var(--admin-btn-primary-bg, #2F6B4F);" aria-hidden="true"></i>
                 <span>Tambah Kategori Baru</span>
             </div>
-            <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-2.5">
+            <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3">
                 @csrf
+                <div class="flex items-center gap-3">
+                    <button type="button"
+                            onclick="document.getElementById('drawer_add_cat_image').click()"
+                            class="relative w-12 h-12 rounded-full overflow-hidden border-2 border-dashed bg-white hover:border-[#2F6B4F] flex items-center justify-center shrink-0 transition cursor-pointer"
+                            style="border-color: var(--admin-border-card, #D6DDD7);"
+                            title="Pilih foto kategori (opsional)">
+                        <img id="drawer_add_cat_preview_img" src="" alt="Pratinjau foto kategori" class="hidden w-full h-full object-cover">
+                        <span id="drawer_add_cat_preview_placeholder" class="text-gray-400 flex items-center justify-center">
+                            <i class="fa-solid fa-camera text-xs" aria-hidden="true"></i>
+                        </span>
+                    </button>
+                    <div class="flex-1 min-w-0 space-y-1">
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <button type="button"
+                                    onclick="document.getElementById('drawer_add_cat_image').click()"
+                                    class="px-2.5 py-1 rounded-lg bg-white hover:bg-gray-50 border text-[11px] font-semibold transition cursor-pointer"
+                                    style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                                Pilih Foto (1:1)
+                            </button>
+                            <button type="button"
+                                    id="drawer_add_cat_remove_btn"
+                                    onclick="clearDrawerCategoryPhotoPreview('add')"
+                                    class="hidden px-2 py-1 rounded-lg text-[11px] font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                                Hapus
+                            </button>
+                        </div>
+                        <p class="text-[10.5px] m-0 leading-snug" style="color: var(--admin-text-sub, #555D58);">
+                            Opsional. JPG, PNG, WebP (maks. {{ $categoryPhotoLimits['formatted'] ?? '2 MB' }}).
+                        </p>
+                        <input type="file"
+                               name="image"
+                               id="drawer_add_cat_image"
+                               accept="image/jpeg,image/png,image/webp"
+                               class="sr-only"
+                               data-max-bytes="{{ $categoryPhotoLimits['effective_bytes'] ?? 2097152 }}"
+                               data-allowed-ext="jpg,jpeg,png,webp"
+                               data-feedback-target="#drawerAddCatImageFeedback"
+                               onchange="handleDrawerCategoryPhotoChange('add', event)">
+                        <div id="drawerAddCatImageFeedback" class="hidden text-[11px]"></div>
+                    </div>
+                </div>
                 <div>
                     <input type="text"
                            name="name"
@@ -831,7 +907,7 @@
                          data-cat-name="{{ $cat->name }}"
                          data-cat-count="{{ $cat->menus_count ?? 0 }}">
                         
-                        {{-- Kiri: Urutan & Nama Kategori --}}
+                        {{-- Kiri: Urutan, Thumbnail Foto & Nama Kategori --}}
                         <div class="flex items-center gap-2.5 min-w-0">
                             {{-- Tombol Panah Atas & Bawah --}}
                             <div class="flex flex-col gap-0.5 shrink-0">
@@ -847,6 +923,16 @@
                                         title="Pindah ke bawah">
                                     <i class="fa-solid fa-chevron-down text-[9px]" aria-hidden="true"></i>
                                 </button>
+                            </div>
+
+                            {{-- Thumbnail Foto Kategori --}}
+                            <div class="w-10 h-10 rounded-full overflow-hidden border bg-[#F7F8F6] shrink-0 flex items-center justify-center"
+                                 style="border-color: var(--admin-border-card, #E6E8E4);">
+                                @if($cat->image_url)
+                                    <img src="{{ $cat->image_url }}" alt="{{ $cat->name }}" class="w-full h-full object-cover">
+                                @else
+                                    <i class="fa-solid fa-image text-xs text-gray-300" aria-hidden="true"></i>
+                                @endif
                             </div>
 
                             <div class="min-w-0">
@@ -866,7 +952,7 @@
                             </div>
                         </div>
 
-                        {{-- Kanan: Aksi (Toggle Aktif, Edit Nama, Hapus) --}}
+                        {{-- Kanan: Aksi (Toggle Aktif, Edit Nama & Foto, Hapus) --}}
                         <div class="flex items-center gap-1.5 shrink-0">
                             {{-- Toggle Aktif --}}
                             <form action="{{ route('admin.categories.toggle', $cat->id) }}" method="POST" class="inline">
@@ -879,12 +965,12 @@
                                 </button>
                             </form>
 
-                            {{-- Edit Nama Modal / Inline --}}
+                            {{-- Edit Nama & Foto Kategori --}}
                             <button type="button"
-                                    onclick="editCategoryNameModal({{ $cat->id }}, '{{ addslashes($cat->name) }}')"
+                                    onclick='editCategoryNameModal(@json(["id" => $cat->id, "name" => $cat->name, "image_url" => $cat->image_url]))'
                                     class="w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-gray-50 text-gray-700 transition"
                                     style="border-color: var(--admin-border-card, #E6E8E4);"
-                                    title="Ubah nama kategori">
+                                    title="Ubah nama dan foto kategori">
                                 <i class="fa-solid fa-pen text-[10px]" aria-hidden="true"></i>
                             </button>
 
@@ -934,22 +1020,72 @@
 
 </div>
 
-{{-- Modal Ubah Nama Kategori --}}
-<div id="modalEditCategory" class="hidden fixed inset-0 z-50 bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl border shadow-2xl w-full max-w-sm p-6 space-y-4 anim-fade-up"
+{{-- Modal Edit Nama & Foto Kategori --}}
+<div id="modalEditCategory" class="hidden fixed inset-0 z-[60] bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 space-y-4 anim-fade-up"
          style="border-color: var(--admin-border-card, #E6E8E4);">
         <div class="flex items-center justify-between pb-2 border-b" style="border-color: var(--admin-border-card, #E6E8E4);">
-            <h3 class="text-sm font-bold" style="color: var(--admin-text-main, #1B1F1D);">Ubah Nama Kategori</h3>
+            <h3 class="text-sm font-bold" style="color: var(--admin-text-main, #1B1F1D);">Edit Kategori</h3>
             <button type="button" onclick="closeEditCategoryModal()" class="text-gray-400 hover:text-gray-700">
                 <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
-        <form id="formEditCategory" method="POST" action="" class="space-y-4">
+        <form id="formEditCategory" method="POST" action="" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
+            <input type="hidden" name="remove_image" id="drawer_edit_cat_remove_image" value="0">
+
+            <div>
+                <label class="block text-xs font-semibold mb-1.5" style="color: var(--admin-text-main, #1B1F1D);">
+                    Foto Kategori (Opsional, 1:1)
+                </label>
+                <div class="flex items-center gap-3.5 p-3 rounded-2xl bg-[#F7F8F6] border"
+                     style="border-color: var(--admin-border-card, #E6E8E4);">
+                    <button type="button"
+                            onclick="document.getElementById('drawer_edit_cat_image').click()"
+                            class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-dashed bg-white hover:border-[#2F6B4F] flex items-center justify-center shrink-0 transition cursor-pointer"
+                            style="border-color: var(--admin-border-card, #D6DDD7);"
+                            title="Pilih atau ganti foto kategori">
+                        <img id="drawer_edit_cat_preview_img" src="" alt="Pratinjau foto kategori" class="hidden w-full h-full object-cover">
+                        <span id="drawer_edit_cat_preview_placeholder" class="text-gray-400 flex items-center justify-center">
+                            <i class="fa-solid fa-camera text-sm" aria-hidden="true"></i>
+                        </span>
+                    </button>
+                    <div class="flex-1 min-w-0 space-y-1.5">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button"
+                                    onclick="document.getElementById('drawer_edit_cat_image').click()"
+                                    class="px-3 py-1.5 rounded-xl bg-white hover:bg-gray-50 border text-[11px] font-semibold transition cursor-pointer"
+                                    style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                                Pilih / Ganti Foto
+                            </button>
+                            <button type="button"
+                                    id="drawer_edit_cat_remove_btn"
+                                    onclick="clearDrawerCategoryPhotoPreview('edit')"
+                                    class="hidden px-2.5 py-1.5 rounded-xl text-[11px] font-semibold text-rose-600 hover:bg-rose-50 transition cursor-pointer">
+                                Hapus Foto
+                            </button>
+                        </div>
+                        <p class="text-[10.5px] m-0 leading-snug" style="color: var(--admin-text-sub, #555D58);">
+                            Format JPG, PNG, atau WebP (maks. {{ $categoryPhotoLimits['formatted'] ?? '2 MB' }}). Tampil di ikon kategori beranda.
+                        </p>
+                        <input type="file"
+                               name="image"
+                               id="drawer_edit_cat_image"
+                               accept="image/jpeg,image/png,image/webp"
+                               class="sr-only"
+                               data-max-bytes="{{ $categoryPhotoLimits['effective_bytes'] ?? 2097152 }}"
+                               data-allowed-ext="jpg,jpeg,png,webp"
+                               data-feedback-target="#drawerEditCatImageFeedback"
+                               onchange="handleDrawerCategoryPhotoChange('edit', event)">
+                        <div id="drawerEditCatImageFeedback" class="hidden text-[11px]"></div>
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <label for="edit_cat_name" class="block text-xs font-semibold mb-1" style="color: var(--admin-text-main, #1B1F1D);">
-                    Nama Kategori Baru
+                    Nama Kategori
                 </label>
                 <input type="text"
                        name="name"
@@ -1298,14 +1434,90 @@
         }
     }
 
-    // 9. Edit Category Name Modal
-    function editCategoryNameModal(catId, catName) {
+    // 9. Category Drawer Photo Helpers & Edit Modal
+    function getDrawerCategoryPhotoEls(mode) {
+        return {
+            input: document.getElementById('drawer_' + mode + '_cat_image'),
+            img: document.getElementById('drawer_' + mode + '_cat_preview_img'),
+            placeholder: document.getElementById('drawer_' + mode + '_cat_preview_placeholder'),
+            removeBtn: document.getElementById('drawer_' + mode + '_cat_remove_btn'),
+            removeFlag: document.getElementById('drawer_edit_cat_remove_image'),
+            feedback: document.getElementById(mode === 'add' ? 'drawerAddCatImageFeedback' : 'drawerEditCatImageFeedback')
+        };
+    }
+
+    function setDrawerCategoryPhotoPreview(mode, imageUrl) {
+        const els = getDrawerCategoryPhotoEls(mode);
+        if (!els.img || !els.placeholder || !els.removeBtn) return;
+
+        if (imageUrl) {
+            els.img.src = imageUrl;
+            els.img.classList.remove('hidden');
+            els.placeholder.classList.add('hidden');
+            els.removeBtn.classList.remove('hidden');
+        } else {
+            els.img.src = '';
+            els.img.classList.add('hidden');
+            els.placeholder.classList.remove('hidden');
+            els.removeBtn.classList.add('hidden');
+        }
+    }
+
+    function handleDrawerCategoryPhotoChange(mode, event) {
+        const els = getDrawerCategoryPhotoEls(mode);
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+
+        const maxBytes = parseInt(event.target.getAttribute('data-max-bytes') || '2097152', 10);
+        if (file.size > maxBytes) {
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            setDrawerCategoryPhotoPreview(mode, evt.target.result);
+            if (mode === 'edit' && els.removeFlag) {
+                els.removeFlag.value = '0';
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function clearDrawerCategoryPhotoPreview(mode) {
+        const els = getDrawerCategoryPhotoEls(mode);
+        if (els.input) els.input.value = '';
+        if (els.feedback) {
+            els.feedback.innerHTML = '';
+            els.feedback.classList.add('hidden');
+        }
+        setDrawerCategoryPhotoPreview(mode, null);
+        if (mode === 'edit' && els.removeFlag) {
+            els.removeFlag.value = '1';
+        }
+    }
+
+    function editCategoryNameModal(categoryOrId, optionalName) {
+        const category = typeof categoryOrId === 'object' && categoryOrId !== null
+            ? categoryOrId
+            : { id: categoryOrId, name: optionalName || '', image_url: null };
+
         const modal = document.getElementById('modalEditCategory');
         const input = document.getElementById('edit_cat_name');
         const form = document.getElementById('formEditCategory');
 
-        form.action = `/admin/kategori/${catId}`;
-        input.value = catName;
+        form.action = `/admin/kategori/${category.id}`;
+        input.value = category.name || '';
+
+        const els = getDrawerCategoryPhotoEls('edit');
+        if (els.input) els.input.value = '';
+        if (els.removeFlag) els.removeFlag.value = '0';
+        if (els.feedback) {
+            els.feedback.innerHTML = '';
+            els.feedback.classList.add('hidden');
+        }
+        setDrawerCategoryPhotoPreview('edit', category.image_url || null);
+
         modal.classList.remove('hidden');
         input.focus();
     }

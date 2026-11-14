@@ -53,7 +53,11 @@
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
         <!-- SUBSECTION 2A: OUR STORY / ABOUT NUCOMU (3D ROOM TOUR VIDEO & CAFE PROFILE) -->
-        <div id="our-story-section" class="mb-20 sm:mb-24 lg:mb-28">
+        <div id="our-story-section" class="relative overflow-hidden mb-20 sm:mb-24 lg:mb-28">
+            {{-- Faded Watermark Background Text --}}
+            <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
+                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(100px, 18vw, 300px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; color: var(--color-about-title, #1C1C1C); opacity: 0.04; white-space: nowrap; display: block;">NUCOMU</span>
+            </div>
             {{-- TWO-COLUMN MAIN CONTENT --}}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
 
@@ -133,7 +137,7 @@
                             <span id="about-headline">{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : 'Nucomu Cafe' }}</span>
                         </h2>
                         <div class="sr-only">
-                            <h2>{{ $brand['story_headline'] ?? ($brand['cafe_story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.') }}</h2>
+                            <h2>Nucomu Cafe</h2>
                             <p>Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.</p>
                             <p>Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.</p>
                             <p>Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.</p>
@@ -203,7 +207,12 @@
         </div>
 
         <!-- SUBSECTION 2B: FASILITAS CAFE (MODERN ELEGANT MONOCHROME — FLOATING GALLERY) -->
-        <div id="facilities" class="pt-14 sm:pt-18 lg:pt-22 border-t border-[var(--color-about-divider,#E5E5E5)]">
+        <div id="facilities" class="relative overflow-hidden pt-14 sm:pt-18 lg:pt-22 border-t border-[var(--color-about-divider,#E5E5E5)]">
+
+            {{-- Faded Watermark Background Text --}}
+            <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
+                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(100px, 18vw, 300px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; color: var(--color-about-title, #1C1C1C); opacity: 0.04; white-space: nowrap; display: block;">NUCOMU</span>
+            </div>
             
             <!-- 1. Introduction Header (Minimal Editorial Split) -->
             <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[var(--color-about-divider,#E5E5E5)] gap-4 reveal-fade-up">
@@ -241,6 +250,7 @@
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let isVisible = false;
         let isManuallyPaused = false;
+
 
         function updateUI(isPlaying) {
             if (iconPlay && iconPause) {

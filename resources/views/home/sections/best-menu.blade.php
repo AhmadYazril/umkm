@@ -145,14 +145,14 @@
             </div>
         </div>
 
-        <!-- 6 Circular Category Items (Direct Filter Controls) -->
-        <div class="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6 max-w-5xl mx-auto mb-8 reveal-on-scroll">
+        <!-- Circular Category Items (Direct Filter Controls) -->
+        <div class="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-10 max-w-5xl mx-auto mb-8 reveal-on-scroll">
             @foreach($menuCategories as $cat)
                 <button type="button" 
                         onclick="handleCircularCategoryClick('{{ $cat['id'] }}', this)" 
                         class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
                         data-cat-id="{{ $cat['id'] }}">
-                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-neutral-900 transition-all duration-300">
+                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-white border border-neutral-200/90 shadow-sm group-hover:shadow-md group-hover:border-white transition-all duration-300">
                         <img src="{{ $cat['image'] }}" 
                              alt="{{ $cat['name'] }}" 
                              class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
@@ -194,7 +194,7 @@
                 @endphp
                 <div class="menu-card-wrapper rec-card" 
                      data-index="{{ $index }}"
-                     data-category="{{ $item['category'] ?? '' }}"
+                     data-category="{{ $item['filter_categories'] ?? $item['category'] ?? '' }}"
                      data-id="{{ $item['id'] ?? $itemSlug }}"
                      data-name="{{ $item['name'] }}"
                      data-price="{{ $item['price'] }}">

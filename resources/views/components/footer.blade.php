@@ -72,20 +72,39 @@
                         Ruang santai bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan momen-momen sederhana yang berkesan.
                     </p>
 
-                    <!-- Quote Block with Scroll Reveal & Typewriter Animation -->
-                    <div class="footer-quote-box mt-6 flex items-stretch gap-3.5 cursor-pointer group/quote select-none py-1"
+                    <!-- Luxury Editorial Quote Block with Liquid Gold Light Beam & Masked Stagger Reveal -->
+                    <div class="footer-quote-box mt-6 relative flex items-stretch gap-4 cursor-pointer group/quote select-none py-2 px-1 transition-all duration-500 hover:translate-x-1.5"
                          id="footer-quote-box"
-                         title="Klik untuk memutar ulang efek ketik"
                          role="region"
-                         aria-label="Slogan Nucomu Cafe">
-                        <!-- Animated vertical line: scaleY(0) -> scaleY(1) with glowing accent -->
-                        <div class="w-[2px] bg-zinc-700/80 rounded-full relative overflow-hidden shrink-0 self-stretch min-h-[50px]">
-                            <div class="footer-quote-line absolute inset-0 bg-white w-full rounded-full origin-top transition-transform duration-700 ease-out shadow-[0_0_8px_rgba(255,255,255,0.7)]" style="transform: scaleY(0);"></div>
+                         aria-label="Nucomu Cafe Slogan">
+
+                        <!-- Ambient Radial Backlight Glow on hover -->
+                        <div class="absolute -inset-2 rounded-2xl bg-gradient-to-r from-white/[0.06] via-[#c2a378]/[0.05] to-transparent opacity-0 group-hover/quote:opacity-100 transition-opacity duration-700 pointer-events-none blur-md"></div>
+
+                        <!-- Oversized Decorative Quotation Mark Watermark -->
+                        <span class="absolute -top-3 left-1 font-editorial italic text-5xl sm:text-6xl text-white/[0.05] select-none pointer-events-none leading-none transition-all duration-500 group-hover/quote:text-[#c2a378]/25 group-hover/quote:-translate-y-0.5" aria-hidden="true">&ldquo;</span>
+
+                        <!-- Vertical Accent Bar with Slow-Drip Traveling Light Bead -->
+                        <div class="w-[2.5px] bg-zinc-800/90 rounded-full relative overflow-hidden shrink-0 self-stretch min-h-[52px]">
+                            <!-- Base gradient bar: scaleY(0) -> scaleY(1) on scroll reveal -->
+                            <div class="footer-quote-line absolute inset-0 bg-gradient-to-b from-white via-zinc-200 to-[#c2a378] w-full rounded-full origin-top transition-transform duration-700 ease-out" style="transform: scaleY(0);"></div>
+                            <!-- Slow-Drip Traveling Glowing Light Droplet -->
+                            <div class="footer-quote-bead"></div>
                         </div>
-                        <!-- Quote text: typewriter effect with reserved min-height to prevent layout shifts -->
-                        <div class="footer-quote-content py-0.5 transition-all duration-700 ease-out opacity-0 -translate-x-[5px] flex items-center min-h-[54px] sm:min-h-[58px]">
-                            <p class="font-editorial italic text-lg sm:text-xl text-zinc-200 leading-snug footer-quote-text transition-all duration-300">
-                                <span id="footer-typewriter-target" class="footer-quote-text-target">"Tempat Kembali, Rasa yang<br>Dirindukan."</span><span id="footer-typewriter-cursor" class="footer-typewriter-cursor" aria-hidden="true"></span>
+
+                        <!-- Quote Text with Masked Stagger Reveal & Continuous Warm Champagne Liquid Shimmer -->
+                        <div class="footer-quote-content relative z-10 py-0.5 flex flex-col justify-center">
+                            <p class="font-editorial italic text-lg sm:text-[21px] text-zinc-200 leading-[1.3] footer-quote-text">
+                                <span class="footer-quote-row-wrap block overflow-hidden">
+                                    <span class="footer-quote-row block transition-all duration-700 ease-out">
+                                        "Tempat Kembali, Rasa yang
+                                    </span>
+                                </span>
+                                <span class="footer-quote-row-wrap block overflow-hidden mt-0.5">
+                                    <span class="footer-quote-row block transition-all duration-700 ease-out" style="transition-delay: 160ms;">
+                                        Dirindukan."
+                                    </span>
+                                </span>
                             </p>
                         </div>
                     </div>
@@ -398,66 +417,137 @@
         70% { transform: translateY(1.5px); }
     }
 
-    /* 5. Quote Section Scroll Reveal, Typewriter & Shimmer */
-    .quote-revealed .footer-quote-line {
-        transform: scaleY(1) !important;
-    }
-    .quote-revealed .footer-quote-content {
-        opacity: 1 !important;
-        transform: translateX(0) !important;
-    }
-
-    /* Typewriter Caret Animation */
-    .footer-typewriter-cursor {
-        display: inline-block;
-        width: 2px;
-        height: 1.1em;
-        background-color: #ffffff;
-        margin-left: 2px;
-        vertical-align: -0.1em;
-        border-radius: 9999px;
-        box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
-        transition: opacity 0.15s ease;
+    /* 5. Luxury Editorial Quote Section Animations */
+    .footer-quote-row {
+        transform: translateY(115%);
         opacity: 0;
-    }
-    .footer-typewriter-cursor.blinking {
-        opacity: 1 !important;
-        animation: footerCursorBlink 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    .footer-typewriter-cursor.typing {
-        opacity: 1 !important;
-        animation: none;
-    }
-    @keyframes footerCursorBlink {
-        0%, 100% {
-            opacity: 1;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
-        }
-        50% {
-            opacity: 0.15;
-            box-shadow: 0 0 2px rgba(255, 255, 255, 0.2);
-        }
-    }
-
-    /* Shimmer effect on text: on hover or right after finishing typing */
-    .footer-quote-box:hover .footer-quote-text-target,
-    .footer-quote-text-target.shimmering {
+        color: #f4f4f5;
         background: linear-gradient(
             105deg,
-            #e4e4e7 0%,
+            #d4d4d8 0%,
             #e4e4e7 25%,
-            #ffffff 50%,
+            #ffffff 45%,
+            #edd5be 52%,
+            #ffffff 60%,
             #e4e4e7 75%,
-            #e4e4e7 100%
+            #d4d4d8 100%
         );
-        background-size: 200% 100%;
+        background-size: 260% 100%;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        animation: footerQuoteShimmer 2.2s linear infinite;
+        animation: footerQuoteShimmer 4.5s ease-in-out infinite;
+        transition: filter 0.4s ease, transform 0.4s ease;
     }
+
+    .quote-revealed .footer-quote-line {
+        transform: scaleY(1) !important;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 18px rgba(194, 163, 120, 0.35);
+    }
+
+    .quote-revealed .footer-quote-row {
+        transform: translateY(0%) !important;
+        opacity: 1 !important;
+    }
+
+    .quote-revealed .footer-quote-content {
+        animation: footerQuoteFloat 5.5s ease-in-out infinite 1s;
+    }
+
+    @keyframes footerQuoteFloat {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-2.5px);
+        }
+    }
+
+    /* Slow-Drip Traveling Glowing Light Bead */
+    .footer-quote-bead {
+        position: absolute;
+        top: -35%;
+        left: 0;
+        width: 100%;
+        height: 35%;
+        background: linear-gradient(180deg, transparent 0%, #ffffff 50%, #c2a378 80%, transparent 100%);
+        border-radius: 9999px;
+        box-shadow: 0 0 8px #ffffff, 0 0 14px #c2a378;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .quote-revealed .footer-quote-bead {
+        animation: footerBeadTravel 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.9s;
+    }
+
+    @keyframes footerBeadTravel {
+        0% {
+            top: -35%;
+            opacity: 0;
+        }
+        15% {
+            opacity: 1;
+        }
+        70% {
+            opacity: 1;
+        }
+        85%, 100% {
+            top: 115%;
+            opacity: 0;
+        }
+    }
+
+    /* Liquid Warm Champagne & Silver Shimmer Wave */
     @keyframes footerQuoteShimmer {
-        0% { background-position: 150% 0; }
-        100% { background-position: -150% 0; }
+        0%, 15% {
+            background-position: 160% 0;
+        }
+        60%, 100% {
+            background-position: -160% 0;
+        }
+    }
+
+    /* Hover State: brighter luminous sheen & glowing drop shadow */
+    .footer-quote-box:hover .footer-quote-row {
+        filter: drop-shadow(0 0 12px rgba(237, 213, 190, 0.45));
+    }
+
+    .footer-quote-box:hover .footer-quote-line {
+        box-shadow: 0 0 14px rgba(255, 255, 255, 0.9), 0 0 24px rgba(194, 163, 120, 0.7) !important;
+    }
+
+    .footer-quote-box:hover .footer-quote-bead {
+        animation-duration: 2.2s;
+    }
+
+    /* Interactive Click Sparkle */
+    .footer-quote-box.quote-sparkle .footer-quote-row {
+        animation: footerQuoteSparkle 1.2s ease-out 1, footerQuoteShimmer 4.5s ease-in-out infinite;
+    }
+    @keyframes footerQuoteSparkle {
+        0% {
+            filter: drop-shadow(0 0 18px rgba(255, 255, 255, 1)) drop-shadow(0 0 26px rgba(194, 163, 120, 0.9));
+        }
+        100% {
+            filter: drop-shadow(0 0 0px transparent);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .footer-quote-row {
+            transform: none !important;
+            opacity: 1 !important;
+            animation: none !important;
+        }
+        .footer-quote-line {
+            transform: none !important;
+        }
+        .footer-quote-bead {
+            display: none !important;
+        }
+        .footer-quote-content {
+            animation: none !important;
+        }
     }
 </style>
 
@@ -537,14 +627,9 @@
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Reveal Quote block & Trigger Typewriter
+                        // Reveal Quote block
                         const quoteBox = footerSection.querySelector('.footer-quote-box');
-                        if (quoteBox) {
-                            quoteBox.classList.add('quote-revealed');
-                            if (typeof startFooterQuoteTypewriter === 'function') {
-                                startFooterQuoteTypewriter();
-                            }
-                        }
+                        if (quoteBox) quoteBox.classList.add('quote-revealed');
 
                         // Reveal Navigation list staggered
                         const navList = footerSection.querySelector('#footer-nav-list');
@@ -559,190 +644,19 @@
         } else {
             // Direct fallback
             const quoteBox = document.querySelector('.footer-quote-box');
-            if (quoteBox) {
-                quoteBox.classList.add('quote-revealed');
-                if (typeof startFooterQuoteTypewriter === 'function') {
-                    startFooterQuoteTypewriter();
-                }
-            }
+            if (quoteBox) quoteBox.classList.add('quote-revealed');
             const navList = document.querySelector('#footer-nav-list');
             if (navList) navList.classList.add('footer-nav-visible');
         }
 
-        // --- 4. Nucomu Slogan Typewriter & Breathing Loop ---
-        let startFooterQuoteTypewriter = function() {};
-
-        (function setupQuoteTypewriter() {
-            const quoteBox = document.getElementById('footer-quote-box');
-            const quoteTarget = document.getElementById('footer-typewriter-target');
-            const quoteCursor = document.getElementById('footer-typewriter-cursor');
-
-            if (!quoteBox || !quoteTarget || !quoteCursor) return;
-
-            const line1 = '"Tempat Kembali, Rasa yang';
-            const line2 = 'Dirindukan."';
-
-            let typingTimeout = null;
-            let isHovered = false;
-            let isStarted = false;
-            let currentLine = 1;
-            let charIndex = 0;
-            let isDeleting = false;
-
-            quoteBox.addEventListener('mouseenter', function() {
-                isHovered = true;
+        // --- 4. Interactive Click Sparkle for Quote Block ---
+        const quoteBoxEl = document.getElementById('footer-quote-box');
+        if (quoteBoxEl) {
+            quoteBoxEl.addEventListener('click', function() {
+                quoteBoxEl.classList.remove('quote-sparkle');
+                void quoteBoxEl.offsetWidth; // force reflow
+                quoteBoxEl.classList.add('quote-sparkle');
             });
-
-            quoteBox.addEventListener('mouseleave', function() {
-                isHovered = false;
-            });
-
-            // Replay immediately on click
-            quoteBox.addEventListener('click', function() {
-                if (typingTimeout) clearTimeout(typingTimeout);
-                isDeleting = false;
-                currentLine = 1;
-                charIndex = 0;
-                quoteTarget.classList.remove('shimmering');
-                quoteTarget.innerHTML = '';
-                setCursorState('typing');
-                typeStep();
-            });
-
-            function setCursorState(state) {
-                if (state === 'typing') {
-                    quoteCursor.classList.remove('blinking');
-                    quoteCursor.classList.add('typing');
-                    quoteCursor.style.opacity = '1';
-                } else if (state === 'blinking') {
-                    quoteCursor.classList.remove('typing');
-                    quoteCursor.classList.add('blinking');
-                } else if (state === 'hidden') {
-                    quoteCursor.classList.remove('blinking', 'typing');
-                    quoteCursor.style.opacity = '0';
-                }
-            }
-
-            function typeStep() {
-                // Respect users who prefer reduced motion
-                if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                    quoteTarget.innerHTML = line1 + '<br>' + line2;
-                    setCursorState('blinking');
-                    return;
-                }
-
-                if (!isDeleting) {
-                    setCursorState('typing');
-
-                    if (currentLine === 1) {
-                        if (charIndex < line1.length) {
-                            charIndex++;
-                            quoteTarget.innerHTML = line1.substring(0, charIndex);
-
-                            // Natural cadence: slightly longer pause at comma
-                            const char = line1.charAt(charIndex - 1);
-                            let delay = 50 + Math.random() * 25;
-                            if (char === ',') delay += 180;
-
-                            typingTimeout = setTimeout(typeStep, delay);
-                        } else {
-                            // Move to line 2 with line-break
-                            currentLine = 2;
-                            charIndex = 0;
-                            quoteTarget.innerHTML = line1 + '<br>';
-                            typingTimeout = setTimeout(typeStep, 160);
-                        }
-                    } else if (currentLine === 2) {
-                        if (charIndex < line2.length) {
-                            charIndex++;
-                            quoteTarget.innerHTML = line1 + '<br>' + line2.substring(0, charIndex);
-
-                            // Natural cadence: longer pause at period
-                            const char = line2.charAt(charIndex - 1);
-                            let delay = 50 + Math.random() * 25;
-                            if (char === '.') delay += 200;
-
-                            typingTimeout = setTimeout(typeStep, delay);
-                        } else {
-                            // Completed full sentence!
-                            setCursorState('blinking');
-
-                            // Soft light shimmer across the finished quote
-                            quoteTarget.classList.add('shimmering');
-                            setTimeout(function() {
-                                quoteTarget.classList.remove('shimmering');
-                            }, 2200);
-
-                            // Comfortable reading delay before starting smooth backspace
-                            function scheduleDelete(remainingMs) {
-                                if (isHovered) {
-                                    // Pause deleting when hovered so user can read
-                                    typingTimeout = setTimeout(function() {
-                                        scheduleDelete(1500);
-                                    }, 1000);
-                                    return;
-                                }
-
-                                if (remainingMs <= 0) {
-                                    isDeleting = true;
-                                    typeStep();
-                                } else {
-                                    const step = Math.min(500, remainingMs);
-                                    typingTimeout = setTimeout(function() {
-                                        scheduleDelete(remainingMs - step);
-                                    }, step);
-                                }
-                            }
-
-                            scheduleDelete(4500);
-                        }
-                    }
-                } else {
-                    // Backspacing
-                    if (isHovered) {
-                        setCursorState('blinking');
-                        typingTimeout = setTimeout(typeStep, 600);
-                        return;
-                    }
-
-                    setCursorState('typing');
-
-                    if (currentLine === 2) {
-                        if (charIndex > 0) {
-                            charIndex--;
-                            quoteTarget.innerHTML = line1 + '<br>' + line2.substring(0, charIndex);
-                            typingTimeout = setTimeout(typeStep, 24);
-                        } else {
-                            // Move back to line 1
-                            currentLine = 1;
-                            charIndex = line1.length;
-                            quoteTarget.innerHTML = line1;
-                            typingTimeout = setTimeout(typeStep, 30);
-                        }
-                    } else if (currentLine === 1) {
-                        if (charIndex > 0) {
-                            charIndex--;
-                            quoteTarget.innerHTML = line1.substring(0, charIndex);
-                            typingTimeout = setTimeout(typeStep, 24);
-                        } else {
-                            // Backspaced to start! Brief breath before typing again
-                            isDeleting = false;
-                            currentLine = 1;
-                            charIndex = 0;
-                            setCursorState('blinking');
-                            typingTimeout = setTimeout(typeStep, 750);
-                        }
-                    }
-                }
-            }
-
-            startFooterQuoteTypewriter = function() {
-                if (isStarted) return;
-                isStarted = true;
-                quoteTarget.innerHTML = '';
-                setCursorState('typing');
-                typingTimeout = setTimeout(typeStep, 300);
-            };
-        })();
+        }
     })();
 </script>

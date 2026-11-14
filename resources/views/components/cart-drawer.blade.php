@@ -83,14 +83,17 @@
         position: relative;
     }
 
-    /* Menu Card: In-flow card with rounded corners, soft shadow, and smooth border transitions */
+    /* Menu Card: In-flow card with rounded corners, layered 3D shadow, and smooth border transitions */
     .menu-card {
         position: relative;
         width: 100%;
         background-color: #ffffff;
         border-radius: 28px;
         border: 1.5px solid #ece7de;
-        box-shadow: 0 4px 18px rgba(44, 40, 37, 0.04);
+        box-shadow:
+            0 2px 6px rgba(44, 40, 37, 0.06),
+            0 10px 24px -4px rgba(44, 40, 37, 0.12),
+            0 22px 42px -10px rgba(44, 40, 37, 0.14);
         padding: 66px 14px 18px 14px;
         text-align: center;
         box-sizing: border-box;
@@ -132,7 +135,10 @@
         height: 110px;
         border-radius: 50%;
         border: 5px solid #ffffff;
-        box-shadow: 0 8px 22px rgba(44, 40, 37, 0.12);
+        box-shadow:
+            0 4px 10px rgba(44, 40, 37, 0.10),
+            0 12px 24px -4px rgba(44, 40, 37, 0.22),
+            0 20px 36px -8px rgba(44, 40, 37, 0.16);
         overflow: hidden;
         background-color: #faf7f2;
         transition: transform 280ms ease-out, box-shadow 280ms ease-out;
@@ -228,38 +234,56 @@
             cursor: pointer;
         }
         .menu-card:not(.is-open):hover {
-            border-color: #78726b;
-            box-shadow: 0 8px 24px rgba(44, 40, 37, 0.1);
+            border-color: #ffffff;
+            box-shadow:
+                0 4px 10px rgba(44, 40, 37, 0.08),
+                0 14px 30px -4px rgba(44, 40, 37, 0.18),
+                0 26px 48px -10px rgba(44, 40, 37, 0.18);
         }
         /* Foto bulat membesar mendekat ke depan dan bayangan lebih tegas */
         .menu-card:hover .menu-card-avatar {
             transform: translateX(-50%) translateY(-3px) scale(1.10);
-            box-shadow: 0 14px 28px rgba(44, 40, 37, 0.22);
+            box-shadow:
+                0 6px 14px rgba(44, 40, 37, 0.12),
+                0 16px 32px -4px rgba(44, 40, 37, 0.26),
+                0 24px 44px -8px rgba(44, 40, 37, 0.20);
             z-index: 30;
         }
     }
 
     /* Fokus Keyboard (:focus-visible / :focus-within) memberi keadaan zoom foto yang sama dengan indikator fokus */
     .menu-card:focus-within:not(.is-open) {
-        border-color: #78726b;
-        box-shadow: 0 8px 24px rgba(44, 40, 37, 0.1);
+        border-color: #ffffff;
+        box-shadow:
+            0 4px 10px rgba(44, 40, 37, 0.08),
+            0 14px 30px -4px rgba(44, 40, 37, 0.18),
+            0 26px 48px -10px rgba(44, 40, 37, 0.18);
         z-index: 25;
     }
     .menu-card:focus-within .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
-        box-shadow: 0 14px 28px rgba(44, 40, 37, 0.22);
+        box-shadow:
+            0 6px 14px rgba(44, 40, 37, 0.12),
+            0 16px 32px -4px rgba(44, 40, 37, 0.26),
+            0 24px 44px -8px rgba(44, 40, 37, 0.20);
         z-index: 30;
     }
 
-    /* Keadaan 2: KLIK (Kartu terbuka penuh: border hitam arang tipis #242424, bayangan netral lembut, foto TETAP membesar selama kartu terbuka) */
+    /* Keadaan 2: KLIK (Kartu terbuka penuh: border putih #ffffff, bayangan netral 3D lembut, foto TETAP membesar selama kartu terbuka) */
     .menu-card.is-open {
         z-index: 35;
-        border-color: #242424 !important;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12) !important;
+        border-color: #ffffff !important;
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.08),
+            0 18px 36px -4px rgba(0, 0, 0, 0.18),
+            0 28px 54px -10px rgba(0, 0, 0, 0.18) !important;
     }
     .menu-card.is-open .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
-        box-shadow: 0 14px 28px rgba(44, 40, 37, 0.22);
+        box-shadow:
+            0 6px 14px rgba(44, 40, 37, 0.12),
+            0 16px 32px -4px rgba(44, 40, 37, 0.26),
+            0 24px 44px -8px rgba(44, 40, 37, 0.20);
         z-index: 30;
     }
     .menu-card.is-open .menu-card-drawer-content {
