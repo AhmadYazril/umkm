@@ -360,10 +360,10 @@ if (isset($_GET['api']) && $_GET['api'] === 'menu') {
     <title>Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan</title>
     <meta name="description" content="Kafe bernuansa warm minimalist di Tulungagung untuk menikmati kopi single origin, artisan pastry, dan waktu yang tenang.">
 
-    <!-- Google Fonts: Cormorant Garamond, Plus Jakarta Sans, Manrope, JetBrains Mono -->
+    <!-- Google Fonts: Playfair Display (Serif) & Montserrat (Sans) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">

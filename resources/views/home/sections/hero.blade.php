@@ -79,7 +79,7 @@
             'type' => 'product',
             'label' => '02 / DAILY SIGNATURE DRINK',
             'giant_headline' => 'FRESH BREW',
-            'giant_headline_class' => 'text-[#1C1C1C]/25',
+            'giant_headline_class' => 'text-white/15',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -91,8 +91,8 @@
             'img_height' => 1157,
             'aspect_ratio' => 'auto',
             'img_class' => 'w-auto max-h-[250px] sm:max-h-[340px] lg:max-h-[410px] xl:max-h-[430px] object-contain relative z-20 hero-float-idle',
-            'bg_color' => '#EDEDED',
-            'theme' => 'light',
+            'bg_color' => '#141414',
+            'theme' => 'dark',
             'has_ambient_glow' => false,
             'floaters' => [
                 // 1. Kiri atas (jauh)
@@ -187,7 +187,7 @@
             'type' => 'product',
             'label' => '03 / ARTISANAL PASTRY',
             'giant_headline' => 'SWEET MOMENT',
-            'giant_headline_class' => 'text-[#1C1C1C]/22',
+            'giant_headline_class' => 'text-white/15',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -199,8 +199,8 @@
             'img_height' => 667,
             'aspect_ratio' => 'auto',
             'img_class' => 'w-[85vw] max-w-[330px] sm:max-w-[440px] lg:max-w-[490px] xl:max-w-[540px] max-h-[260px] sm:max-h-[340px] lg:max-h-[390px] xl:max-h-[420px] object-contain relative z-20 hero-float-rotate',
-            'bg_color' => '#FAFAFA',
-            'theme' => 'light',
+            'bg_color' => '#1A1A1A',
+            'theme' => 'dark',
             'floaters' => [],
             'has_float_rotate' => true,
         ],
@@ -225,12 +225,12 @@
 
 <section id="home" 
          data-navbar-theme="dark"
-         class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-light-gray/60 select-none group/hero pt-16 sm:pt-20"
-         style="background-color: #F9F9F9; transition: background-color 0.8s ease;">
+         class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-[var(--border-soft)] select-none group/hero pt-16 sm:pt-20"
+         style="background-color: #140E0A; transition: background-color 0.8s ease;">
 
-    <!-- Soft feathered ambient glow for warmth and depth -->
+    <!-- Soft feathered ambient glow for subtle dark depth -->
     <div class="absolute inset-0 pointer-events-none z-1" 
-         style="background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 60%, transparent 100%);">
+         style="background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 60%, transparent 100%);">
     </div>
 
     @if(isset($activeBanners) && $activeBanners->count() > 0)
@@ -243,7 +243,8 @@
                 <div class="hero-slide-item hero-banner-slide absolute inset-0 w-full h-full flex items-center justify-center {{ $loop->first ? 'active z-10' : 'opacity-0 pointer-events-none z-0' }}"
                      data-slide-index="{{ $loop->index }}"
                      data-layout-mode="{{ $banner->layout_mode ?: 'poster' }}"
-                     data-bg-color="#F9F9F9">
+                     data-bg-color="#0C0C0C"
+                     data-theme="dark">
                     
                     @if(($banner->layout_mode ?: 'poster') === 'poster')
                         <!-- -----------------------------------------------------------------
@@ -304,7 +305,7 @@
                                     </p>
                                 @endif
 
-                                <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] mb-3 tracking-tight drop-shadow-sm max-w-2xl" style="font-variant-numeric: lining-nums;">
+                                <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] mb-3 tracking-tight drop-shadow-sm max-w-2xl">
                                     {{ $banner->title }}
                                 </h1>
 
@@ -324,11 +325,11 @@
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                       class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
+                                       class="inline-flex items-center justify-center bg-[#F5F2EE] hover:bg-white text-[#111111] text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                         {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                     </a>
                                     <a href="#menu" 
-                                       class="inline-flex items-center justify-center bg-white/20 hover:bg-white text-white hover:text-[#1F1F1F] border border-white/40 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
+                                       class="inline-flex items-center justify-center bg-black/40 hover:bg-white/15 text-[#F5F5F5] border border-white/45 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
                                         DAFTAR MENU
                                     </a>
                                 </div>
@@ -346,36 +347,36 @@
                                 <!-- Text Column (Left) -->
                                 <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
                                     @if($banner->subtitle)
-                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#555555] mb-1.5 leading-tight">
+                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#B5B5B5] mb-1.5 leading-tight">
                                             {{ $banner->subtitle }}
                                         </p>
                                     @endif
 
-                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#1F1F1F] leading-[1.08] mb-3 tracking-tight" style="font-variant-numeric: lining-nums;">
+                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#F5F5F5] leading-[1.08] mb-3 tracking-tight">
                                         {{ $banner->title }}
                                     </h1>
 
-                                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-neutral-200 shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
-                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#555555]">
+                                    <div class="inline-flex items-center space-x-2 mb-3 bg-[var(--surface-strong)] backdrop-blur-sm px-3.5 py-1 rounded-full border border-[var(--border)] shadow-2xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
+                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#B5B5B5]">
                                             Nucomu Promo • Tulungagung
                                         </span>
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
                                     </div>
 
                                     @if($banner->description)
-                                        <p class="font-body text-xs sm:text-sm text-[#555555] max-w-lg leading-relaxed mb-6 font-normal">
+                                        <p class="font-body text-xs sm:text-sm text-[#B5B5B5] max-w-lg leading-relaxed mb-6 font-normal">
                                             {{ $banner->description }}
                                         </p>
                                     @endif
 
                                     <div class="flex flex-wrap items-center gap-3">
                                         <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                           class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
+                                           class="inline-flex items-center justify-center bg-[#F5F2EE] hover:bg-white text-[#111111] text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                             {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                         </a>
                                         <a href="#menu" 
-                                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#1F1F1F] border border-neutral-300 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                                           class="inline-flex items-center justify-center bg-transparent hover:bg-white/10 text-[#F5F5F5] border border-[var(--btn-outline)] text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                                             DAFTAR MENU
                                         </a>
                                     </div>
@@ -396,8 +397,8 @@
                                                  alt="{{ $banner->title }}"
                                                  class="w-full h-full object-cover rounded-[24px] desktop-banner-img">
                                         @endif
-                                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#252525] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
+                                        <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#F5F5F5] border border-[var(--border)] shadow-sm flex items-center space-x-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
                                             <span>{{ $banner->subtitle ?: 'Special Banner' }}</span>
                                         </div>
                                     </div>
@@ -479,8 +480,8 @@
                             <span>{{ $slide['label'] }}</span>
                         </p>
 
-                        <!-- Headline Besar Manrope Semibold -->
-                        <h1 class="font-body text-3xl sm:text-5xl lg:text-6xl font-semibold text-white leading-[1.12] tracking-tight mb-4">
+                        <!-- Headline Besar Playfair Display Bold (700) -->
+                        <h1 class="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] tracking-tight mb-4">
                             {{ $slide['headline_line1'] }}<br>
                             {{ $slide['headline_line2'] }}
                         </h1>
@@ -519,7 +520,7 @@
 
                     <!-- 1. Giant Headline Behind Product: FRESH BEANS (z-10) -->
                     <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                        <span class="font-body font-black uppercase text-[clamp(4.2rem,13.8vw,11.5rem)] leading-none tracking-tighter text-center whitespace-nowrap text-white/18 select-none">
+                        <span class="font-sans font-extrabold uppercase text-[clamp(3.8rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap text-white/18 select-none">
                             FRESH BEANS
                         </span>
                     </div>
@@ -615,7 +616,10 @@
                 <!-- -----------------------------------------------------------------
                      SLIDES 2-3: PRODUK DI DEPAN HEADLINE RAKSASA (EDITORIAL POSTER)
                      ----------------------------------------------------------------- -->
-                <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
+                <div class="relative w-full h-full flex items-center justify-center overflow-hidden"
+                     style="{{ $slide['id'] === 'sweet-moment' ? 'background: linear-gradient(145deg, #1E1E1E 0%, #141414 55%, #0D0D0D 100%);' : 'background: linear-gradient(145deg, #181818 0%, #101010 55%, #0B0B0B 100%);' }}">
+                        <!-- Radial Charcoal Spotlight behind center product -->
+                        <div class="absolute inset-0 pointer-events-none z-5" style="background: radial-gradient(circle 420px at 50% 48%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 45%, transparent 72%);" aria-hidden="true"></div>
                         <!-- Ambient Warm Glow (Other Slides) -->
                         @if(!empty($slide['has_ambient_glow']))
                             <div class="hero-glow-amber absolute inset-0 pointer-events-none z-10" aria-hidden="true"></div>
@@ -623,7 +627,7 @@
 
                         <!-- 1. Headline Raksasa (Di Belakang Produk, z-10) -->
                         <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                            <span class="font-body font-black uppercase text-[clamp(3.8rem,14vw,11.5rem)] leading-none tracking-tighter text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? ($slide['theme'] === 'dark' ? 'text-white/20' : 'text-[#1C1C1C]/22') }}">
+                            <span class="font-sans font-extrabold uppercase text-[clamp(3.6rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? ($slide['theme'] === 'dark' ? 'text-white/20' : 'text-[#1C1C1C]/22') }}">
                                 {{ $slide['giant_headline'] }}
                             </span>
                         </div>
@@ -694,17 +698,17 @@
 
                     <!-- 4. Informasi Produk & CTA di Kiri Bawah (z-30) -->
                     <div class="hero-product-info absolute max-sm:bottom-[88px] bottom-10 lg:bottom-14 left-5 sm:left-8 lg:left-14 z-30 text-left max-w-xs sm:max-w-sm">
-                        <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.25em] {{ $slide['theme'] === 'dark' ? 'text-white/70' : 'text-[#666666]' }}">
+                        <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.25em] text-[#B5B5B5]">
                             {{ $slide['label'] }}
                         </p>
                         @if(!empty($slide['subtext']))
-                            <p class="text-xs sm:text-sm font-medium mt-1 {{ $slide['theme'] === 'dark' ? 'text-white/90' : 'text-[#242424]' }}">
+                            <p class="text-xs sm:text-sm font-medium mt-1 text-[#F5F5F5]">
                                 {{ $slide['subtext'] }}
                             </p>
                         @endif
                         <div class="mt-3.5">
                             <a href="{{ $slide['cta_primary']['url'] }}" 
-                               class="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 py-3 rounded-full transition-all duration-200 active:scale-95 shadow-md group/btn cursor-pointer {{ $slide['theme'] === 'dark' ? 'bg-white text-[#242424] hover:bg-neutral-100' : 'bg-[#242424] text-white hover:bg-black' }}">
+                               class="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 py-3 rounded-full transition-all duration-200 active:scale-95 shadow-md group/btn cursor-pointer bg-[#F5F2EE] text-[#111111] hover:bg-white">
                                 <span>{{ $slide['cta_primary']['text'] }}</span>
                                 <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1">arrow_forward</span>
                             </a>
@@ -732,13 +736,13 @@
         @if($activeBanners->count() > 1)
             <button type="button" 
                     onclick="prevHeroSlide()" 
-                    class="hero-nav-arrow hero-prev-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                    class="hero-nav-arrow hero-prev-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_4px_16px_rgba(0,0,0,0.45)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                     aria-label="Slide Sebelumnya">
                 <span class="material-symbols-outlined text-xl">chevron_left</span>
             </button>
             <button type="button" 
                     onclick="nextHeroSlide()" 
-                    class="hero-nav-arrow hero-next-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                    class="hero-nav-arrow hero-next-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_4px_16px_rgba(0,0,0,0.45)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                     aria-label="Slide Berikutnya">
                 <span class="material-symbols-outlined text-xl">chevron_right</span>
             </button>
@@ -746,26 +750,26 @@
 
         <!-- Desktop Indicator Dots -->
         @if($activeBanners->count() > 1)
-            <div class="hero-controls-bar hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="desktop-hero-dots">
+            <div class="hero-controls-bar hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/60 hover:bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="desktop-hero-dots">
                 @foreach($activeBanners as $b)
-                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#1F1F1F]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
+                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-white' : 'w-2 bg-white/35 hover:bg-white/70' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
                 @endforeach
             </div>
         @endif
 
         <!-- Mobile Indicator Dots (4 Slide Hero Bawaan) -->
-        <div class="hero-controls-bar flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="mobile-hero-dots">
-            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#1F1F1F] transition-all duration-300" aria-label="Slide 1"></button>
-            <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
-            <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
-            <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4"></button>
+        <div class="hero-controls-bar flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/60 hover:bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="mobile-hero-dots">
+            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-white transition-all duration-300" aria-label="Slide 1"></button>
+            <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all duration-300" aria-label="Slide 2"></button>
+            <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all duration-300" aria-label="Slide 3"></button>
+            <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all duration-300" aria-label="Slide 4"></button>
         </div>
     @else
         @if($totalSlides > 1)
         <!-- Left Carousel Arrow -->
         <button type="button" 
                 onclick="prevHeroSlide()" 
-                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.45)] absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                 aria-label="Slide Sebelumnya">
             <span class="material-symbols-outlined text-xl">chevron_left</span>
         </button>
@@ -773,7 +777,7 @@
         <!-- Right Carousel Arrow -->
         <button type="button" 
                 onclick="nextHeroSlide()" 
-                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.45)] absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                 aria-label="Slide Berikutnya">
             <span class="material-symbols-outlined text-xl">chevron_right</span>
         </button>

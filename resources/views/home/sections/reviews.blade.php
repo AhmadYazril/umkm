@@ -278,24 +278,26 @@
     #reviews .nucomu-reviews-header {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-        gap: 16px;
-        margin-bottom: 24px;
+        align-items: center;
+        text-align: center;
+        gap: 0;
+        margin: 0 auto 28px auto;
         padding: 0;
         position: relative;
         z-index: 10;
         opacity: 1;
         filter: none;
+        max-width: 1040px;
+        width: 100%;
     }
 
     #reviews .nucomu-reviews-header-left {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
+        align-items: center;
+        text-align: center;
         min-width: 0;
-        flex: 1 1 auto;
+        width: 100%;
     }
 
     #reviews .nucomu-reviews-eyebrow {
@@ -303,37 +305,41 @@
         font-size: 12px;
         font-weight: 700;
         letter-spacing: 0.12em;
+        padding-left: 0.12em;
         text-transform: uppercase;
         line-height: 1.2;
         color: var(--nucomu-accent);
-        margin-bottom: 8px;
+        margin-bottom: 14px;
     }
 
     #reviews .nucomu-reviews-header-title {
-        font-family: "Fraunces", Georgia, "Times New Roman", serif;
+        font-family: var(--font-heading), Georgia, serif;
         font-size: clamp(2rem, 4vw, 3.25rem);
-        font-weight: 500;
+        font-weight: 700;
         font-style: normal;
-        line-height: 1.05;
+        line-height: 1.15;
         letter-spacing: -0.01em;
         color: var(--nucomu-text);
         opacity: 1;
         filter: none;
-        margin: 0;
+        margin: 0 auto;
+        max-width: none;
+        width: 100%;
     }
 
     #reviews .nucomu-reviews-header-title-accent {
         font-style: italic;
-        font-weight: 500;
+        font-weight: 700;
         color: var(--nucomu-accent);
     }
 
     #reviews .nucomu-reviews-header-right {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
+        align-items: center;
+        text-align: center;
         gap: 12px;
+        margin-top: 18px;
         width: 100%;
     }
 
@@ -346,6 +352,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;
+        justify-content: center;
         gap: 10px;
         width: 100%;
     }
@@ -525,30 +532,31 @@
 
     @media (min-width: 768px) {
         #reviews .nucomu-reviews-header {
-            flex-direction: row;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 20px 28px;
-            margin-bottom: 32px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 0;
+            margin-bottom: 36px;
         }
 
         #reviews .nucomu-reviews-header-right {
-            align-items: flex-end;
-            text-align: right;
+            align-items: center;
+            text-align: center;
             width: auto;
             flex-shrink: 0;
         }
 
         #reviews .nucomu-reviews-header-actions {
             width: auto;
-            justify-content: flex-end;
+            justify-content: center;
             flex-wrap: nowrap;
         }
     }
 
     @media (min-width: 1024px) {
         #reviews .nucomu-reviews-header {
-            margin-bottom: 36px;
+            margin-bottom: 40px;
         }
 
         #reviews .nucomu-reviews-header-title {

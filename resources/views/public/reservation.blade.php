@@ -5,15 +5,15 @@
 <section class="py-12 sm:py-16 bg-warm-ivory min-h-screen text-charcoal">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center max-w-2xl mx-auto mb-10">
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/10 border border-neutral-900/20 text-neutral-900 text-xs font-bold uppercase tracking-widest mb-2">
+        <div class="text-center max-w-4xl mx-auto mb-10 flex flex-col items-center">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-900/10 border border-neutral-900/20 text-neutral-900 text-xs font-bold uppercase tracking-widest mb-3 pl-[0.1em]">
                 <span class="material-symbols-outlined text-sm">celebration</span>
                 <span>Formulir Kunjungan &amp; Paket Acara</span>
             </div>
-            <h1 class="font-editorial text-3xl sm:text-5xl font-bold text-ink-black leading-tight mb-2">
+            <h1 class="font-editorial text-3xl sm:text-5xl font-bold text-ink-black leading-tight mx-auto">
                 Reservasi Meja &amp; Paket Acara
             </h1>
-            <p class="text-charcoal/75 text-xs sm:text-sm">
+            <p class="text-charcoal/75 text-xs sm:text-sm max-w-3xl mx-auto mt-3.5 leading-relaxed">
                 Pilih paket dekorasi untuk momen spesial <strong>Bridal</strong> atau <strong>Birthday</strong> di Nucomu Cafe Tulungagung.
             </p>
         </div>

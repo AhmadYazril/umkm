@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ $isCourier ? 'Workspace Kurir Zendo' : 'Live Tracking Pesanan' }} — #{{ $delivery->order_code }}</title>
-    <!-- Plus Jakarta Sans Font -->
+    <!-- Montserrat Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <!-- Leaflet CSS & JS (Local Assets + CDN Fallback) -->
@@ -130,7 +130,7 @@
             overflow: hidden;
             transform: scale(0.92) translateY(12px);
             transition: transform 0.35s var(--pw-ease-bounce), box-shadow 0.35s ease;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Montserrat', sans-serif;
         }
         .verify-modal-overlay.active .verify-card-box {
             transform: scale(1) translateY(0);
@@ -345,7 +345,7 @@
             border-radius: var(--pw-radius-box);
             background: #FFFFFF;
             border: 1.6px solid rgba(108, 92, 231, 0.25);
-            font-family: 'Plus Jakarta Sans', monospace, sans-serif;
+            font-family: 'Montserrat', monospace, sans-serif;
             font-size: 22px;
             font-weight: 800;
             text-align: center;

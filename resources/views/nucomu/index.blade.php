@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
@@ -23,9 +23,9 @@
                         warmStone: '#E5E5E5'
                     },
                     fontFamily: {
-                        sans: ['Manrope', 'Plus Jakarta Sans', 'sans-serif'],
-                        editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-                        body: ['Manrope', 'sans-serif'],
+                        sans: ['"Montserrat"', 'sans-serif'],
+                        editorial: ['"Playfair Display"', 'Georgia', 'serif'],
+                        body: ['"Montserrat"', 'sans-serif'],
                     },
                     borderRadius: {
                         'story': '2rem',
@@ -91,15 +91,15 @@
 
     {{-- HERO --}}
     <section class="pt-10 pb-6 px-6 text-center relative z-10">
-        <div class="max-w-2xl mx-auto space-y-3">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E5E5E5] text-[11px] font-semibold text-[#1C1C1C] shadow-2xs font-body">
+        <div class="max-w-4xl mx-auto flex flex-col items-center">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E5E5E5] text-[11px] font-semibold text-[#1C1C1C] shadow-2xs font-body mb-3">
                 <span class="w-2 h-2 rounded-full bg-[#1C1C1C] animate-pulse"></span> Open Daily: 08:00 - 23:00 WIB
             </div>
-            <h1 class="text-3xl sm:text-5xl font-semibold tracking-tight leading-tight text-[#1C1C1C] font-editorial">
-                Suasana, Rasa, &amp; <br>
+            <h1 class="text-3xl sm:text-5xl font-bold tracking-tight leading-tight text-[#1C1C1C] font-editorial mx-auto">
+                Suasana, Rasa, &amp; 
                 <span>Cerita Nucomu Cafe</span>
             </h1>
-            <p class="text-[#666666] text-xs sm:text-sm font-body">Nikmati momen harian dan ulasan pengunjung yang berganti otomatis.</p>
+            <p class="text-[#666666] text-xs sm:text-sm font-body max-w-3xl mx-auto mt-3.5 leading-relaxed">Nikmati momen harian dan ulasan pengunjung yang berganti otomatis.</p>
         </div>
     </section>
 

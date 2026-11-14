@@ -30,7 +30,7 @@
         <!-- Apron Pocket -->
         <rect x="80" y="160" width="40" height="30" rx="6" fill="#1e1e1e" stroke="#333333" stroke-width="1.5"/>
         <!-- Nucomu 'N' Monogram on Apron -->
-        <text x="100" y="180" font-family="'Cormorant Garamond', serif" font-weight="bold" font-size="14" fill="#ffffff" text-anchor="middle">N</text>
+        <text x="100" y="180" font-family="'Playfair Display', Georgia, serif" font-weight="bold" font-size="14" fill="#ffffff" text-anchor="middle">N</text>
 
         <!-- Head -->
         <circle cx="100" cy="72" r="38" fill="url(#mascotSkin)"/>

@@ -9,16 +9,16 @@
 <section class="py-16 sm:py-20 relative bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-6 border-b border-zinc-200 dark:border-zinc-800 gap-4">
-            <div>
-                <span class="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500 block mb-1.5">Koleksi Visual Lengkap</span>
-                <h2 class="text-2xl sm:text-4xl font-semibold tracking-tight text-zinc-950 dark:text-white font-editorial">
+        <div class="mb-10 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+            <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
+                <span class="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500 block mb-3 pl-[0.2em]">Koleksi Visual Lengkap</span>
+                <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-zinc-950 dark:text-white font-editorial mx-auto">
                     Arsip Foto &amp; Dokumentasi
                 </h2>
+                <p class="text-xs sm:text-sm text-zinc-500 max-w-3xl font-body leading-relaxed mx-auto mt-3.5">
+                    Eksplorasi sudut ruang, detail material, dan suasana yang terekam di Nucomu Cafe Tulungagung.
+                </p>
             </div>
-            <p class="text-xs sm:text-sm text-zinc-500 max-w-md font-body leading-relaxed">
-                Eksplorasi sudut ruang, detail material, dan suasana yang terekam di Nucomu Cafe Tulungagung.
-            </p>
         </div>
 
         @if($gallery->count() > 0)

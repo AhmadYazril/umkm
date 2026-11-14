@@ -5,12 +5,12 @@
 <section class="py-16 sm:py-20 bg-zinc-950 min-h-screen text-white">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="text-center max-w-3xl mx-auto mb-14 sm:mb-18">
-            <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-2">Our Space &amp; Amenities</span>
-            <h1 class="text-3xl sm:text-5xl font-black tracking-tight uppercase mb-4">
+        <div class="text-center max-w-4xl mx-auto mb-10 sm:mb-14 flex flex-col items-center">
+            <span class="text-xs font-mono tracking-widest text-zinc-500 uppercase block mb-3 pl-[0.1em]">Our Space &amp; Amenities</span>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight uppercase mx-auto">
                 Fasilitas <span class="text-zinc-500">Nucomu</span>
             </h1>
-            <p class="text-zinc-400 text-sm sm:text-base leading-relaxed">
+            <p class="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto mt-3.5">
                 Dirancang khusus dengan cermat untuk kenyamanan bekerja (WFC), kehangatan berkumpul bersama teman, hingga ketenangan dalam beribadah.
             </p>
         </div>

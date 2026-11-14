@@ -56,7 +56,7 @@
         <div id="our-story-section" class="relative overflow-hidden mb-20 sm:mb-24 lg:mb-28">
             {{-- Faded Watermark Background Text --}}
             <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
-                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(100px, 18vw, 300px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; color: var(--color-about-title, #1C1C1C); opacity: 0.04; white-space: nowrap; display: block;">NUCOMU</span>
+                <span style="font-family: var(--font-sans); font-size: clamp(90px, 16vw, 260px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; color: var(--color-about-title, #1C1C1C); opacity: 0.04; white-space: nowrap; display: block;">NUCOMU</span>
             </div>
             {{-- TWO-COLUMN MAIN CONTENT --}}
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 xl:gap-20 items-center">
@@ -131,9 +131,9 @@
                         <div class="w-12 h-px bg-[var(--color-about-divider,#E5E5E5)]" aria-hidden="true"></div>
                     </div>
 
-                    {{-- 2. Headline Utama: Modern Minimalist Manrope Semibold (600) Statis Server-Side --}}
+                    {{-- 2. Headline Utama: Warm Organic Playfair Display Bold (700) Statis Server-Side --}}
                     <div class="story-anim-right story-delay-2 mb-5 flex items-center">
-                        <h2 class="font-body text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-semibold text-[var(--color-about-title,#1C1C1C)] leading-[1.18] tracking-tight">
+                        <h2 class="font-heading text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-bold text-[var(--color-about-title,#1C1C1C)] leading-[1.18] tracking-tight">
                             <span id="about-headline">{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : 'Nucomu Cafe' }}</span>
                         </h2>
                         <div class="sr-only">
@@ -169,7 +169,7 @@
                         {{-- Left Quote Icon Indicator --}}
                         <div class="flex-shrink-0 flex items-center gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-white border border-[var(--color-about-quote-border,#E5E5E5)] flex items-center justify-center text-[#1C1C1C] shadow-sm">
-                                <span class="font-editorial text-3xl font-bold leading-none select-none">&ldquo;</span>
+                                <span class="font-sans text-3xl font-bold leading-none select-none">&ldquo;</span>
                             </div>
                             <div class="hidden sm:block w-px h-10 bg-[var(--color-about-divider,#E5E5E5)]" aria-hidden="true"></div>
                         </div>
@@ -184,10 +184,10 @@
                             </p>
                             <div class="relative">
                                 {{-- Phantom text for zero layout shift (card height remains rock-solid while typing) --}}
-                                <p class="font-editorial italic font-medium text-lg sm:text-xl lg:text-[22px] leading-[1.55] invisible select-none pointer-events-none" aria-hidden="true">
+                                <p class="font-sans italic font-semibold text-lg sm:text-xl lg:text-[22px] leading-[1.55] invisible select-none pointer-events-none" aria-hidden="true">
                                     &ldquo;{{ $quoteText }}&rdquo;
                                 </p>
-                                <blockquote class="absolute inset-0 font-editorial italic font-medium text-lg sm:text-xl lg:text-[22px] text-[var(--color-about-quote-text,#333333)] leading-[1.55]">
+                                <blockquote class="absolute inset-0 font-sans italic font-semibold text-lg sm:text-xl lg:text-[22px] text-[var(--color-about-quote-text,#333333)] leading-[1.55]">
                                     <span id="story-typewriter-text" data-quote="&ldquo;{{ $quoteText }}&rdquo;">&ldquo;{{ $quoteText }}&rdquo;</span><span id="story-typewriter-cursor" class="inline-block w-[2px] h-[0.9em] bg-[#1C1C1C] align-middle ml-1 animate-pulse" aria-hidden="true"></span>
                                 </blockquote>
                             </div>
@@ -212,22 +212,22 @@
 
             {{-- Faded Watermark Background Text --}}
             <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
-                <span style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(100px, 18vw, 300px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; color: var(--color-about-title, #1C1C1C); opacity: 0.04; white-space: nowrap; display: block;">NUCOMU</span>
+                <span style="font-family: var(--font-sans); font-size: clamp(90px, 16vw, 260px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; color: var(--color-about-title, #1C1C1C); opacity: 0.04; white-space: nowrap; display: block;">NUCOMU</span>
             </div>
             
-            <!-- 1. Introduction Header (Minimal Editorial Split) -->
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[var(--color-about-divider,#E5E5E5)] gap-4 reveal-fade-up">
-                <div>
-                    <span class="text-[11px] font-semibold text-[var(--color-about-meta,#737373)] uppercase tracking-[0.22em] font-body block mb-2">
+            <!-- 1. Introduction Header (Vertikal & Rata Tengah) -->
+            <div class="mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[var(--color-about-divider,#E5E5E5)] reveal-fade-up">
+                <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
+                    <span class="text-[11px] font-semibold text-[var(--color-about-meta,#737373)] uppercase tracking-[0.22em] font-body block mb-3 pl-[0.22em]">
                         OUR SPACE / FASILITAS NUCOMU
                     </span>
-                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-[var(--color-about-title,#1C1C1C)] tracking-tight font-body leading-tight">
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-about-title,#1C1C1C)] tracking-tight font-heading leading-tight mx-auto">
                         Setiap Sudut, Punya Cerita.
                     </h2>
+                    <p class="font-body text-xs sm:text-sm text-[var(--color-about-body,#666666)] max-w-3xl font-normal leading-relaxed mx-auto mt-3.5">
+                        Dirancang dengan cermat untuk kenyamanan bekerja, kehangatan bercengkerama, hingga ketenangan beribadah.
+                    </p>
                 </div>
-                <p class="font-body text-xs sm:text-sm text-[var(--color-about-body,#666666)] max-w-md font-normal leading-relaxed">
-                    Dirancang dengan cermat untuk kenyamanan bekerja, kehangatan bercengkerama, hingga ketenangan beribadah.
-                </p>
             </div>
 
             <!-- 2. Interactive Floating Gallery (Carousel Fasilitas Dinamis) -->

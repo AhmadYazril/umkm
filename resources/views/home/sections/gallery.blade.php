@@ -159,22 +159,24 @@
     #gallery .nucomu-gallery-header {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
-        gap: 16px;
-        margin-bottom: 32px;
+        align-items: center;
+        text-align: center;
+        gap: 0;
+        margin: 0 auto 28px auto;
         padding: 0;
         position: relative;
         z-index: 10;
+        max-width: 1040px;
+        width: 100%;
     }
 
     #gallery .nucomu-gallery-header-left {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
+        align-items: center;
+        text-align: center;
         min-width: 0;
-        flex: 1 1 auto;
+        width: 100%;
     }
 
     #gallery .nucomu-gallery-eyebrow {
@@ -182,26 +184,29 @@
         font-size: 12px;
         font-weight: 700;
         letter-spacing: 0.14em;
+        padding-left: 0.14em;
         text-transform: uppercase;
         line-height: 1.2;
         color: var(--nucomu-accent);
-        margin-bottom: 6px;
+        margin-bottom: 12px;
     }
 
     #gallery .nucomu-gallery-header-title {
-        font-family: "Fraunces", Georgia, "Times New Roman", serif;
+        font-family: var(--font-heading), Georgia, serif;
         font-size: clamp(32px, 4vw, 48px);
-        font-weight: 500;
+        font-weight: 700;
         font-style: normal;
-        line-height: 1.1;
+        line-height: 1.15;
         letter-spacing: -0.01em;
         color: var(--nucomu-text);
-        margin: 0;
+        margin: 0 auto;
+        max-width: none;
+        width: 100%;
     }
 
     #gallery .nucomu-gallery-header-title-accent {
         font-style: italic;
-        font-weight: 500;
+        font-weight: 700;
         color: var(--nucomu-accent);
     }
 
@@ -209,17 +214,19 @@
         font-size: clamp(14px, 1.1vw, 15px);
         line-height: 1.55;
         color: #71645B;
-        max-width: 520px;
-        margin: 8px 0 0 0;
+        max-width: 820px;
+        margin: 14px auto 0 auto;
         font-weight: 400;
+        text-align: center;
     }
 
     #gallery .nucomu-gallery-header-right {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        text-align: left;
+        align-items: center;
+        text-align: center;
         gap: 12px;
+        margin-top: 18px;
         width: 100%;
     }
 
@@ -228,7 +235,7 @@
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: center;
         gap: 10px;
         width: 100%;
     }
@@ -277,34 +284,39 @@
 
     @media (min-width: 768px) {
         #gallery .nucomu-gallery-header {
-            flex-direction: row;
-            align-items: flex-end;
-            justify-content: space-between;
-            gap: 24px 32px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 0;
             margin-bottom: 36px;
         }
 
+        #gallery .nucomu-gallery-header-title {
+            white-space: nowrap;
+        }
+
         #gallery .nucomu-gallery-header-right {
-            align-items: flex-end;
-            text-align: right;
+            align-items: center;
+            text-align: center;
             width: auto;
             flex-shrink: 0;
         }
 
         #gallery .nucomu-gallery-header-actions {
             width: auto;
-            justify-content: flex-end;
+            justify-content: center;
             flex-wrap: nowrap;
         }
     }
 
     @media (min-width: 1024px) {
         #gallery .nucomu-gallery-header {
-            margin-bottom: 36px;
+            margin-bottom: 40px;
         }
 
         #gallery .nucomu-gallery-header-title {
-            white-space: normal;
+            white-space: nowrap;
         }
     }
 
@@ -584,7 +596,7 @@ window.handleGalleryImgError = function(imgEl, fileName, cardNum, caption, categ
             <circle cx="300" cy="370" r="54" fill="#202020" stroke="${theme.border}" stroke-width="2"/>
             <path d="M280 358h40l8 12h18c4.4 0 8 3.6 8 8v40c0 4.4-3.6 8-8 8H254c-4.4 0-8-3.6-8-8v-40c0-4.4 3.6-8 8-8h18l8-12z" fill="none" stroke="#666666" stroke-width="3" stroke-linejoin="round"/>
             <circle cx="300" cy="390" r="14" fill="none" stroke="#666666" stroke-width="3"/>
-            <text x="300" y="480" text-anchor="middle" fill="#E8E8E8" font-family="'Fraunces', Georgia, serif" font-size="22" font-weight="600">${safeCaption}</text>
+            <text x="300" y="480" text-anchor="middle" fill="#E8E8E8" font-family="'Playfair Display', Georgia, serif" font-size="22" font-weight="700">${safeCaption}</text>
             <text x="300" y="520" text-anchor="middle" fill="#888888" font-family="monospace" font-size="14">${cleanFileName}</text>
             <text x="300" y="555" text-anchor="middle" fill="#555555" font-family="sans-serif" font-size="12">File belum ditemukan di ${fileName}</text>
         </svg>

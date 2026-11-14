@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#0C0C0C">
+    <meta name="color-scheme" content="dark">
+    <style>:root{color-scheme:dark;}html,body{background-color:#0C0C0C;color:#F5F5F5;}</style>
     <title>@yield('title', 'Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
     <meta name="description" content="@yield('meta_description', 'Nucomu Cafe — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
 
@@ -38,11 +41,11 @@
     <link rel="preload" as="image" href="{{ asset('images/hero/hero-welcome.webp') }}" type="image/webp" fetchpriority="high">
     @endif
 
-    <!-- Google Fonts: Cormorant Garamond, Manrope, Alex Brush, Plus Jakarta Sans & Fraunces -->
+    <!-- Google Fonts: Playfair Display (Serif) & Montserrat (Sans-Serif) - Modern Organic Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -62,26 +65,33 @@
             theme: {
                 extend: {
                     colors: {
-                        'ink-black': '#191919',
-                        'charcoal': '#252525',
-                        'warm-ivory': '#F9F9F9',
-                        'pure-white': '#FFFFFF',
-                        'light-gray': '#E5E5E5',
-                        'medium-gray': '#737373',
-                        'soft-beige': '#E5E5E5',
-                        'warm-stone': '#D4D4D4',
-                        'espresso-brown': '#252525',
-                        'espresso-dark': '#1A1A1A',
-                        'accent-gold': '#555555',
+                        'bg-page': '#0C0C0C',
+                        'bg-section-alt': '#101010',
+                        'accent-solid': '#F5F2EE',
+                        'ink-black': '#F5F5F5',
+                        'charcoal': '#B5B5B5',
+                        'warm-ivory': '#0C0C0C',
+                        'pure-white': '#F5F5F5',
+                        'light-gray': 'rgba(255,255,255,0.14)',
+                        'medium-gray': '#B5B5B5',
+                        'soft-beige': 'rgba(255,255,255,0.08)',
+                        'warm-stone': 'rgba(255,255,255,0.22)',
+                        'espresso-brown': '#F5F2EE',
+                        'espresso-dark': '#141414',
+                        'accent-gold': '#B5B5B5',
                     },
                     fontFamily: {
-                        editorial: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-                        script: ['"Alex Brush"', 'cursive'],
-                        body: ['Manrope', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'sans-serif'],
+                        body: ['var(--font-sans)', 'system-ui', '-apple-system', 'sans-serif'],
+                        heading: ['var(--font-heading)', 'Georgia', 'serif'],
+                        display: ['var(--font-heading)', 'Georgia', 'serif'],
+                        editorial: ['var(--font-heading)', 'Georgia', 'serif'],
+                        serif: ['var(--font-heading)', 'Georgia', 'serif'],
+                        script: ['var(--font-heading)', 'Georgia', 'serif'],
                     },
                     letterSpacing: {
                         'editorial-widest': '0.15em',
-                        'editorial-tighter': '-0.02em',
+                        'editorial-tighter': '-0.01em',
                     }
                 }
             }
@@ -94,7 +104,7 @@
     <!-- Page-specific styles -->
     @stack('styles')
 </head>
-<body class="bg-warm-ivory text-charcoal font-body antialiased selection:bg-ink-black selection:text-warm-ivory">
+<body class="bg-[#0C0C0C] text-[#F5F5F5] font-body antialiased selection:bg-[#F5F2EE] selection:text-[#111111]">
 
     <!-- Opening Intro / Preloader (Main Page Only) -->
     @if(request()->routeIs('home') || request()->is('/'))

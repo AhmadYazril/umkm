@@ -8,11 +8,11 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 lg:mb-28">
         
         <!-- Section Title & Subtitle (Clean Editorial Serif, No Orange Badge) -->
-        <div class="text-center max-w-2xl mx-auto mb-10 reveal-on-scroll">
-            <h2 class="font-editorial text-4xl sm:text-5xl font-bold tracking-tight text-neutral-900 uppercase">
+        <div class="text-center max-w-4xl mx-auto mb-8 sm:mb-12 reveal-on-scroll flex flex-col items-center">
+            <h2 class="font-editorial text-4xl sm:text-5xl font-bold tracking-tight text-neutral-900 uppercase mx-auto">
                 BEST MENU
             </h2>
-            <p class="font-body text-xs sm:text-sm text-neutral-500 mt-2">
+            <p class="font-body text-xs sm:text-sm text-neutral-500 mt-3.5 max-w-3xl mx-auto leading-relaxed">
                 Explore our curated selection of fine artisanal coffees and gourmet delights.
             </p>
         </div>
@@ -138,13 +138,13 @@
          PART 1: OUR MENU CATEGORIES (6 Circular Thumbnails with Hover Zoom)
          ========================================================================= -->
     <div class="max-w-7xl xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div class="text-center max-w-2xl mx-auto mb-10 reveal-on-scroll">
-            <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-neutral-900 uppercase">
+        <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12 reveal-on-scroll flex flex-col items-center">
+            <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-neutral-900 uppercase max-w-[22ch] mx-auto" style="text-wrap: balance;">
                 OUR MENU CATEGORIES
             </h2>
             
             <!-- Monochromatic Divider -->
-            <div class="flex items-center justify-center space-x-3 mt-3">
+            <div class="flex items-center justify-center space-x-3 mt-4">
                 <span class="w-12 h-px bg-neutral-300"></span>
                 <span class="text-neutral-400 text-sm">♔</span>
                 <span class="w-12 h-px bg-neutral-300"></span>

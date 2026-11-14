@@ -62,7 +62,7 @@
                              alt="Nucomu Cafe Logo" 
                              class="w-12 h-12 rounded-full object-contain shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-sm">
                         <div class="flex flex-col">
-                            <span class="font-editorial text-2xl lg:text-[26px] font-bold tracking-tight text-white leading-tight">Nucomu Cafe</span>
+                            <span class="font-sans text-2xl lg:text-[26px] font-bold tracking-tight text-white leading-tight">Nucomu Cafe</span>
                             <span class="text-[9px] uppercase tracking-[0.22em] text-zinc-400 font-semibold mt-0.5">SLOW HOSPITALITY &amp; ROASTERY</span>
                         </div>
                     </a>
@@ -82,7 +82,7 @@
                         <div class="absolute -inset-2 rounded-2xl bg-gradient-to-r from-white/[0.06] via-[#c2a378]/[0.05] to-transparent opacity-0 group-hover/quote:opacity-100 transition-opacity duration-700 pointer-events-none blur-md"></div>
 
                         <!-- Oversized Decorative Quotation Mark Watermark -->
-                        <span class="absolute -top-3 left-1 font-editorial italic text-5xl sm:text-6xl text-white/[0.05] select-none pointer-events-none leading-none transition-all duration-500 group-hover/quote:text-[#c2a378]/25 group-hover/quote:-translate-y-0.5" aria-hidden="true">&ldquo;</span>
+                        <span class="absolute -top-3 left-1 font-sans italic font-bold text-5xl sm:text-6xl text-white/[0.05] select-none pointer-events-none leading-none transition-all duration-500 group-hover/quote:text-[#c2a378]/25 group-hover/quote:-translate-y-0.5" aria-hidden="true">&ldquo;</span>
 
                         <!-- Vertical Accent Bar with Slow-Drip Traveling Light Bead -->
                         <div class="w-[2.5px] bg-zinc-800/90 rounded-full relative overflow-hidden shrink-0 self-stretch min-h-[52px]">
@@ -94,7 +94,7 @@
 
                         <!-- Quote Text with Masked Stagger Reveal & Continuous Warm Champagne Liquid Shimmer -->
                         <div class="footer-quote-content relative z-10 py-0.5 flex flex-col justify-center">
-                            <p class="font-editorial italic text-lg sm:text-[21px] text-zinc-200 leading-[1.3] footer-quote-text">
+                            <p class="font-sans italic font-semibold text-lg sm:text-[21px] text-zinc-200 leading-[1.3] footer-quote-text">
                                 <span class="footer-quote-row-wrap block overflow-hidden">
                                     <span class="footer-quote-row block transition-all duration-700 ease-out">
                                         "Tempat Kembali, Rasa yang
