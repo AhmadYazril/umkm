@@ -226,7 +226,7 @@
 
             <!-- Right Visual Locator Frame (6 Cols - Interactive 3D Animated Video & Direct Maps Integration) -->
             <div class="lg:col-span-6 reveal-on-scroll">
-                <div class="relative w-full max-w-[560px] sm:max-w-[590px] lg:max-w-[620px] mx-auto select-none" 
+                <div class="relative w-full max-w-[560px] sm:max-w-[590px] lg:max-w-[620px] mx-auto select-none contact-map-perspective-wrap contact-map-zoom-target" 
                      id="contact-3d-scene-container" 
                      style="perspective: 1200px;">
                     

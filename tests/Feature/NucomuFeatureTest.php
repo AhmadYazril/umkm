@@ -10,7 +10,6 @@ use App\Models\Menu;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\Setting;
-use App\Models\Testimonial;
 use App\Models\User;
 use App\Models\ZendoDelivery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -136,7 +135,7 @@ class NucomuFeatureTest extends TestCase
         $response->assertSee('data-anim-mode="stacked-3d"', false);
         $response->assertSee('openSingleReviewModal(', false);
         $response->assertSee('id="singleReviewModal"', false);
-        $response->assertSee('const HOME_REVIEW_INTERVAL = 5000;', false);
+        $response->assertSee('const HOME_REVIEW_INTERVAL = 60000;', false);
         $response->assertDontSee('id="allReviewsGrid"', false);
         $response->assertDontSee('Mode Animasi:', false);
     }

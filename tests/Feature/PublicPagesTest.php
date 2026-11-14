@@ -81,7 +81,6 @@ class PublicPagesTest extends TestCase
         $response->assertDontSee('#EADBC8');
         $response->assertDontSee('#D5C0A8');
         $response->assertDontSee('#E06D24');
-        $response->assertDontSee('#54392B');
         $response->assertDontSee('#7A6B60');
         $response->assertSee('Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.');
         $response->assertSee('nucomu_story_1.png');

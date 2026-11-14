@@ -137,7 +137,8 @@
                             <span id="about-headline">{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : 'Nucomu Cafe' }}</span>
                         </h2>
                         <div class="sr-only">
-                            <h2>Nucomu Cafe</h2>
+                            <h2>{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : ($brand['story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.') }}</h2>
+                            <p>Berawal dari Rasa, Kembali karena Rindu.</p>
                             <p>Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.</p>
                             <p>Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.</p>
                             <p>Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.</p>
