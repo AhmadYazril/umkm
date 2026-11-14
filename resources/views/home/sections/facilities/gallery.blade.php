@@ -164,7 +164,7 @@ $firstCat = $facilityCategories[$firstKey];
             <!-- Dynamic Information Pane (Fade In/Out saat Switch Slide) -->
             <div id="facility-info-pane" class="space-y-4 transition-all duration-300 transform opacity-100 translate-y-0">
                 <!-- Category Label / Badge -->
-                <span id="facility-info-label" class="facility-anim-left facility-delay-2 text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.2em] block font-body">
+                <span id="facility-info-label" class="facility-anim-left facility-delay-2 text-[11px] font-semibold text-[#737373] uppercase tracking-[0.2em] block font-body">
                     {{ $firstCat['badge'] }}
                 </span>
 
@@ -194,7 +194,7 @@ $firstCat = $facilityCategories[$firstKey];
             </div>
 
             <!-- Accessibility Note / Hint for Gallery Interaction -->
-            <div class="facility-anim-left facility-delay-6 pt-2 flex items-center gap-2 text-[11px] text-[#8A8A8A] font-body">
+            <div class="facility-anim-left facility-delay-6 pt-2 flex items-center gap-2 text-[11px] text-[#737373] font-body">
                 <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m3.407-4.243L5.566 4.666" />
                 </svg>
@@ -283,7 +283,7 @@ $firstCat = $facilityCategories[$firstKey];
                      style="z-index: 60;"
                      class="absolute -top-3 sm:-top-4 right-2 sm:right-auto sm:left-[52%] lg:left-[54%] z-50 bg-white/95 backdrop-blur-md border border-[#E5E5E5] rounded-[14px] sm:rounded-[16px] px-3.5 sm:px-4 py-2 sm:py-2.5 shadow-[0_12px_28px_-4px_rgba(0,0,0,0.16)] max-w-[195px] sm:max-w-[240px] pointer-events-none select-none transition-all duration-300"
                      aria-hidden="true">
-                    <span id="facility-card-a-badge" class="text-[9px] sm:text-[10px] font-bold text-[#8A8A8A] uppercase tracking-[0.18em] block font-body mb-0.5">
+                    <span id="facility-card-a-badge" class="text-[9px] sm:text-[10px] font-bold text-[#737373] uppercase tracking-[0.18em] block font-body mb-0.5">
                         {{ $firstCat['room_label'] }}
                     </span>
                     <p id="facility-card-a-subtitle" class="text-xs sm:text-[13px] font-bold text-[#1C1C1C] leading-snug font-body truncate">

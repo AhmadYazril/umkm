@@ -385,7 +385,7 @@
                             <x-field for="about_button_text"
                                      label="Tulisan di tombol"
                                      :required="false"
-                                     hint="Teks pada tombol bulat utama di bawah cerita. Contoh: Jelajahi Pilihan Menu"
+                                     hint="Tombol ini tidak lagi ditampilkan di halaman publik."
                                      recommendation="Saran: 15–30 huruf"
                                      :defaultValue="'Jelajahi Pilihan Menu'"
                                      :counter="true"

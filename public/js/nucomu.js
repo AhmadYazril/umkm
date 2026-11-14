@@ -1163,8 +1163,8 @@ function initFacilitiesGallery() {
     let isPaused = false;
     let pauseResumeTimeout = null;
 
-    const AUTOPLAY_INTERVAL = 1500; // 1,5 detik per foto sesuai instruksi user
-    const MANUAL_PAUSE_DURATION = 3500; // Jeda singkat setelah klik manual sebelum lanjut autoplay
+    const AUTOPLAY_INTERVAL = 6000; // 6 detik per foto sesuai rancangan
+    const MANUAL_PAUSE_DURATION = 8000; // Jeda 8 detik setelah klik manual sebelum lanjut autoplay
 
     // 0. Entrance Animation: Sisi Kiri (Teks) dari Kiri, Sisi Kanan (Foto) dari Kanan (Slow & Ultra-Smooth)
     function triggerEntrance() {
