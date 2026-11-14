@@ -7,6 +7,7 @@ use App\Http\Controllers\NucomuController;
 use App\Http\Controllers\ZendoTrackingController;
 use App\Models\Category;
 use App\Models\Menu;
+use App\Models\MenuOption;
 use App\Models\Order;
 use App\Models\Reservation;
 use App\Models\Setting;
@@ -768,5 +769,94 @@ class NucomuFeatureTest extends TestCase
             ->post(route('kasir.logout'));
         $logoutResponse->assertRedirect(route('kasir.login'));
         $logoutResponse->assertCookieExpired(KasirController::KASIR_COOKIE);
+    }
+
+    public function test_kasir_renders_best_sellers_variant_options_and_stores_item_options_cleanly(): void
+    {
+        KasirController::ensureDefaultKasirUser();
+        $loginResponse = $this->post(route('kasir.login.post'), ['password' => 'password123']);
+        $kasirCookieValue = $loginResponse->getCookie(KasirController::KASIR_COOKIE, false)->getValue();
+        auth()->logout();
+
+        $cat = Category::create([
+            'name' => 'Minuman Signature',
+            'slug' => 'kopi',
+            'sort_order' => 1,
+            'is_active' => true,
+        ]);
+
+        $latte = Menu::create([
+            'category_id' => $cat->id,
+            'name' => 'Signature Aren Latte',
+            'slug' => 'signature-aren-latte',
+            'description' => 'Best seller',
+            'price' => 25000,
+            'stock' => 20,
+            'is_available' => true,
+            'is_best_seller' => true,
+        ]);
+
+        MenuOption::create([
+            'menu_id' => $latte->id,
+            'name' => 'Iced',
+            'price' => 0,
+            'type' => 'variant',
+        ]);
+        MenuOption::create([
+            'menu_id' => $latte->id,
+            'name' => 'Extra Shot',
+            'price' => 5000,
+            'type' => 'addon',
+        ]);
+
+        $pageResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->get(route('kasir.index'));
+
+        $pageResponse->assertOk();
+        $pageResponse->assertSee('Terlaris');
+        $pageResponse->assertSee('Signature Aren Latte');
+        $pageResponse->assertSee('Extra Shot');
+        $pageResponse->assertSee('Lihat pesanan (0 item)');
+        $pageResponse->assertViewHas('qrisImageUrl');
+        $pageResponse->assertViewHas('bestSellerItems', fn ($items) => $items->contains('id', $latte->id));
+
+        $orderResponse = $this->withUnencryptedCookie(KasirController::KASIR_COOKIE, $kasirCookieValue)
+            ->postJson(route('kasir.orders.store'), [
+                'order_type' => 'take_away',
+                'payment_method' => 'cash',
+                'payment_status' => 'paid',
+                'cash_received' => 50000,
+                'items' => [
+                    [
+                        'menu_id' => $latte->id,
+                        'menu_name' => $latte->name,
+                        'unit_price' => 30000,
+                        'qty' => 1,
+                        'options' => [
+                            ['name' => 'Iced', 'price' => 0],
+                            ['name' => 'Extra Shot', 'price' => 5000],
+                        ],
+                        'item_notes' => 'Less ice, Less sugar',
+                    ],
+                ],
+            ]);
+
+        $orderResponse->assertOk();
+        $orderResponse->assertJson([
+            'success' => true,
+            'order' => [
+                'total' => 30000,
+                'change_amount' => 20000,
+            ],
+        ]);
+
+        $orderId = $orderResponse->json('order.id');
+        $order = Order::with('items')->findOrFail($orderId);
+        $this->assertCount(1, $order->items);
+        $this->assertSame([
+            ['name' => 'Iced', 'price' => 0],
+            ['name' => 'Extra Shot', 'price' => 5000],
+            'Catatan: Less ice, Less sugar',
+        ], $order->items->first()->options);
     }
 }

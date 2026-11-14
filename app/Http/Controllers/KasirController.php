@@ -395,6 +395,19 @@ class KasirController extends Controller
 
         $catalogItems = $this->resolveKasirCatalog();
         $groupedCategories = $this->groupCatalogByCategory($catalogItems);
+        $bestSellerItems = $catalogItems
+            ->filter(fn (array $item): bool => (bool) ($item['is_best_seller'] ?? false))
+            ->values();
+
+        $qrisImageUrl = null;
+        try {
+            $rawQris = Setting::get('qris_image');
+            if (! empty($rawQris) && file_exists(public_path(ltrim($rawQris, '/')))) {
+                $qrisImageUrl = asset(ltrim($rawQris, '/'));
+            }
+        } catch (\Throwable $e) {
+            // Fallback cleanly when settings table is unavailable
+        }
 
         $scannedOrder = null;
         $rawCode = trim((string) $request->query('code', ''));
@@ -442,6 +455,8 @@ class KasirController extends Controller
         return view('kasir.index', compact(
             'catalogItems',
             'groupedCategories',
+            'bestSellerItems',
+            'qrisImageUrl',
             'scannedOrder',
             'recentOrders',
             'tables',
@@ -477,6 +492,8 @@ class KasirController extends Controller
             'items.*.menu_name' => ['required', 'string', 'max:255'],
             'items.*.unit_price' => ['required', 'integer', 'min:0'],
             'items.*.qty' => ['required', 'integer', 'min:1'],
+            'items.*.options' => ['nullable', 'array'],
+            'items.*.item_notes' => ['nullable', 'string', 'max:255'],
         ]);
 
         $customerName = trim((string) ($validated['customer_name'] ?? '')) ?: 'Pelanggan Kasir';
@@ -495,11 +512,17 @@ class KasirController extends Controller
             $lineTotal = $unitPrice * $qty;
             $subtotal += $lineTotal;
 
+            $storedOptions = $this->normalizeOrderItemOptions(
+                is_array($item['options'] ?? null) ? $item['options'] : [],
+                (string) ($item['item_notes'] ?? '')
+            );
+
             $normalizedItems[] = [
                 'menu_id' => $item['menu_id'] ?? null,
                 'menu_name' => $item['menu_name'],
                 'unit_price' => $unitPrice,
                 'qty' => $qty,
+                'options' => $storedOptions,
                 'line_total' => $lineTotal,
             ];
         }
@@ -566,6 +589,7 @@ class KasirController extends Controller
                     'menu_name' => $item['menu_name'],
                     'unit_price' => $item['unit_price'],
                     'qty' => $item['qty'],
+                    'options' => $item['options'],
                     'line_total' => $item['line_total'],
                 ]);
             }
@@ -616,6 +640,7 @@ class KasirController extends Controller
                     'menu_name' => $i->menu_name,
                     'qty' => $i->qty,
                     'unit_price' => $i->unit_price,
+                    'options' => $i->options ?? [],
                     'line_total' => $i->line_total,
                 ])->values()->all(),
             ],
@@ -743,6 +768,7 @@ class KasirController extends Controller
                     'menu_name' => $i->menu_name,
                     'qty' => $i->qty,
                     'unit_price' => $i->unit_price,
+                    'options' => $i->options ?? [],
                     'line_total' => $i->line_total,
                 ])->values()->all(),
             ])->values()->all();
@@ -820,6 +846,7 @@ class KasirController extends Controller
                         'menu_name' => $i->menu_name,
                         'qty' => $i->qty,
                         'unit_price' => $i->unit_price,
+                        'options' => $i->options ?? [],
                         'line_total' => $i->line_total,
                     ])->values()->all(),
                 ],
@@ -971,7 +998,7 @@ class KasirController extends Controller
         $items = collect();
 
         try {
-            $dbMenus = Menu::with('category')->orderBy('sort_order')->get();
+            $dbMenus = Menu::with(['category', 'options'])->orderBy('sort_order')->get();
 
             if ($dbMenus->isNotEmpty()) {
                 $items = $dbMenus->map(function (Menu $m) use ($configImageMap, $stockMap) {
@@ -1002,6 +1029,13 @@ class KasirController extends Controller
                         'sub_category' => $categorization['sub_category'],
                         'stock' => $stock,
                         'is_available' => $isAvailable,
+                        'is_best_seller' => (bool) $m->is_best_seller,
+                        'options' => $m->options->map(fn ($opt): array => [
+                            'id' => $opt->id,
+                            'name' => (string) $opt->name,
+                            'price' => (int) $opt->price,
+                            'type' => (string) ($opt->type ?: 'variant'),
+                        ])->values()->all(),
                     ];
                 });
             }
@@ -1033,11 +1067,47 @@ class KasirController extends Controller
                     'sub_category' => $categorization['sub_category'],
                     'stock' => $stock,
                     'is_available' => $stock > 0,
+                    'is_best_seller' => (bool) ($m['is_best_seller'] ?? false),
+                    'options' => [],
                 ];
             });
         }
 
         return $items;
+    }
+
+    /**
+     * Normalize optional item variants and per-item notes into OrderItem options array format.
+     *
+     * @param  array<int, mixed>  $rawOptions
+     * @return array<int, string|array{name: string, price: int}>|null
+     */
+    protected function normalizeOrderItemOptions(array $rawOptions, string $itemNote = ''): ?array
+    {
+        $normalized = [];
+        foreach ($rawOptions as $opt) {
+            if (is_array($opt) && ! empty($opt['name'])) {
+                $name = mb_substr(trim((string) $opt['name']), 0, 100);
+                if ($name !== '') {
+                    $normalized[] = [
+                        'name' => $name,
+                        'price' => max(0, (int) ($opt['price'] ?? 0)),
+                    ];
+                }
+            } elseif (is_string($opt)) {
+                $name = mb_substr(trim($opt), 0, 100);
+                if ($name !== '') {
+                    $normalized[] = $name;
+                }
+            }
+        }
+
+        $cleanNote = mb_substr(trim($itemNote), 0, 200);
+        if ($cleanNote !== '') {
+            $normalized[] = 'Catatan: '.$cleanNote;
+        }
+
+        return count($normalized) > 0 ? $normalized : null;
     }
 
     /**
