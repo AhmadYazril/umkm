@@ -59,7 +59,7 @@
             'type' => 'product',
             'label' => '01 / SPECIALTY ROASTERY',
             'giant_headline' => 'FRESH BEANS',
-            'giant_headline_class' => 'text-white/18',
+            'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -79,7 +79,7 @@
             'type' => 'product',
             'label' => '02 / DAILY SIGNATURE DRINK',
             'giant_headline' => 'FRESH BREW',
-            'giant_headline_class' => 'text-white/15',
+            'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -187,7 +187,7 @@
             'type' => 'product',
             'label' => '03 / ARTISANAL PASTRY',
             'giant_headline' => 'SWEET MOMENT',
-            'giant_headline_class' => 'text-white/15',
+            'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -529,7 +529,7 @@
 
                     <!-- 1. Giant Headline Behind Product: FRESH BEANS (z-10) -->
                     <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                        <span class="font-sans font-extrabold uppercase text-[clamp(3.8rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap text-white/18 select-none">
+                        <span class="font-sans font-extrabold uppercase text-[clamp(3.8rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap hero-giant-headline-text select-none">
                             FRESH BEANS
                         </span>
                     </div>
@@ -636,7 +636,7 @@
 
                         <!-- 1. Headline Raksasa (Di Belakang Produk, z-10) -->
                         <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                            <span class="font-sans font-extrabold uppercase text-[clamp(3.6rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? ($slide['theme'] === 'dark' ? 'text-white/20' : 'text-[#1C1C1C]/22') }}">
+                            <span class="font-sans font-extrabold uppercase text-[clamp(3.6rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? 'hero-giant-headline-text' }} select-none">
                                 {{ $slide['giant_headline'] }}
                             </span>
                         </div>
@@ -663,41 +663,98 @@
                                         @endforeach
                                     @endif
 
-                                    <img src="{{ asset($slide['product_image']) }}"
-                                         alt="{{ $slide['product_name'] }}"
-                                         width="{{ $slide['img_width'] ?? 420 }}"
-                                         height="{{ $slide['img_height'] ?? 420 }}"
-                                         loading="lazy"
-                                         decoding="async"
-                                         class="{{ $slide['img_class'] ?? 'w-full h-auto object-contain relative z-20 hero-float-idle' }}">
-
                                     @if($slide['id'] === 'sweet-moment')
-                                        <!-- Animasi Tetesan Slay (Strawberry Jam Drip) yang Menetes Jatuh -->
-                                        <div class="hero-jam-drip-wrapper absolute pointer-events-none select-none z-25"
-                                             style="left: 31%; top: 60%; width: 22px; height: 32px;"
-                                             aria-hidden="true">
-                                            <!-- Tetesan Utama Selai Stroberi Berkilap -->
-                                            <svg class="hero-jam-drop-main w-full h-full" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <defs>
-                                                    <radialGradient id="jamGradHero" cx="35%" cy="30%" r="65%">
-                                                        <stop offset="0%" stop-color="#FF3848" />
-                                                        <stop offset="40%" stop-color="#D11224" />
-                                                        <stop offset="85%" stop-color="#880816" />
-                                                        <stop offset="100%" stop-color="#55030D" />
-                                                    </radialGradient>
-                                                    <linearGradient id="jamGlossHero" x1="0" y1="0" x2="1" y2="1">
-                                                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
-                                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-                                                    </linearGradient>
-                                                </defs>
-                                                <path d="M12 0 C12 4, 2 15, 2 23 C2 29.5 6.5 35 12 35 C17.5 35 22 29.5 22 23 C22 15, 12 4, 12 0 Z" fill="url(#jamGradHero)" filter="drop-shadow(0 3px 6px rgba(130, 10, 20, 0.45))" />
-                                                <ellipse cx="8" cy="18" rx="2" ry="5.5" transform="rotate(-18 8 18)" fill="url(#jamGlossHero)" />
-                                                <circle cx="14" cy="27" r="1.3" fill="#FFFFFF" opacity="0.5" />
-                                            </svg>
+                                        <!-- Cake & Multiple Strawberry Jam ("Slay") Drips Container (Synchronized Floating) -->
+                                        <div class="relative w-full flex items-center justify-center hero-float-cake z-20">
+                                            <img src="{{ asset($slide['product_image']) }}"
+                                                 alt="{{ $slide['product_name'] }}"
+                                                 width="{{ $slide['img_width'] ?? 730 }}"
+                                                 height="{{ $slide['img_height'] ?? 667 }}"
+                                                 loading="lazy"
+                                                 decoding="async"
+                                                 class="w-[85vw] max-w-[330px] sm:max-w-[440px] lg:max-w-[490px] xl:max-w-[540px] max-h-[260px] sm:max-h-[340px] lg:max-h-[390px] xl:max-h-[420px] object-contain relative z-20 select-none">
 
-                                            <!-- Tetesan Tambahan Kecil (Trailing Micro Drip) -->
-                                            <div class="hero-jam-drop-trail absolute left-1/2 -translate-x-1/2 -top-2 w-2 h-2.5 rounded-full bg-[#C51224] opacity-0" aria-hidden="true"></div>
+                                            <!-- Multiple Strawberry Jam Drips attached directly along the strawberry topping rim -->
+                                            <div class="hero-jam-drips-container absolute inset-0 pointer-events-none select-none z-30" aria-hidden="true">
+                                                <!-- SVG Defs reusable for all jam drops -->
+                                                <svg class="sr-only" aria-hidden="true">
+                                                    <defs>
+                                                        <radialGradient id="heroJamGrad" cx="35%" cy="30%" r="68%">
+                                                            <stop offset="0%" stop-color="#FF3850" />
+                                                            <stop offset="35%" stop-color="#E10826" />
+                                                            <stop offset="70%" stop-color="#9E0215" />
+                                                            <stop offset="100%" stop-color="#5E000B" />
+                                                        </radialGradient>
+                                                        <linearGradient id="heroJamGloss" x1="0" y1="0" x2="1" y2="1">
+                                                            <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+                                                            <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0.25" />
+                                                            <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                                                        </linearGradient>
+                                                        <filter id="heroJamGlow" x="-30%" y="-30%" width="160%" height="160%">
+                                                            <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#DC143C" flood-opacity="0.55" />
+                                                            <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.45" />
+                                                        </filter>
+                                                    </defs>
+                                                </svg>
+
+                                                <!-- Drip Stream 1: Tetesan Utama Depan Kiri (Besar & Paling Menonjol) -->
+                                                <div class="hero-jam-stream hero-jam-stream-1" style="left: 31.5%; top: 58.5%;">
+                                                    <div class="hero-jam-nodule hero-jam-nodule-1"></div>
+                                                    <svg class="hero-jam-drop hero-jam-drop-1" viewBox="0 0 24 36" fill="none">
+                                                        <path d="M12 0 C12 4.5, 2 15, 2 23 C2 29.5 6.5 35 12 35 C17.5 35 22 29.5 22 23 C22 15, 12 4.5, 12 0 Z" fill="url(#heroJamGrad)" filter="url(#heroJamGlow)" />
+                                                        <ellipse cx="8" cy="18" rx="2.2" ry="5.8" transform="rotate(-18 8 18)" fill="url(#heroJamGloss)" />
+                                                        <circle cx="14" cy="27" r="1.4" fill="#FFFFFF" opacity="0.65" />
+                                                    </svg>
+                                                    <div class="hero-jam-micro hero-jam-micro-1"></div>
+                                                </div>
+
+                                                <!-- Drip Stream 2: Tetesan Tengah Kiri (Sedang Juicy) -->
+                                                <div class="hero-jam-stream hero-jam-stream-2" style="left: 38.5%; top: 63%;">
+                                                    <div class="hero-jam-nodule hero-jam-nodule-2"></div>
+                                                    <svg class="hero-jam-drop hero-jam-drop-2" viewBox="0 0 22 32" fill="none">
+                                                        <path d="M11 0 C11 4, 2 13, 2 20 C2 26 6 31 11 31 C16 31 20 26 20 20 C20 13, 11 4, 11 0 Z" fill="url(#heroJamGrad)" filter="url(#heroJamGlow)" />
+                                                        <ellipse cx="7.5" cy="16" rx="1.8" ry="5" transform="rotate(-18 7.5 16)" fill="url(#heroJamGloss)" />
+                                                        <circle cx="13" cy="24" r="1.2" fill="#FFFFFF" opacity="0.6" />
+                                                    </svg>
+                                                </div>
+
+                                                <!-- Drip Stream 3: Tetesan Sudut Ujung Kiri (Ramping Manis) -->
+                                                <div class="hero-jam-stream hero-jam-stream-3" style="left: 25.5%; top: 56.5%;">
+                                                    <div class="hero-jam-nodule hero-jam-nodule-3"></div>
+                                                    <svg class="hero-jam-drop hero-jam-drop-3" viewBox="0 0 18 26" fill="none">
+                                                        <path d="M9 0 C9 3.5, 1.5 11, 1.5 17 C1.5 22 5 25.5 9 25.5 C13 25.5 16.5 22 16.5 17 C16.5 11, 9 3.5, 9 0 Z" fill="url(#heroJamGrad)" filter="url(#heroJamGlow)" />
+                                                        <ellipse cx="6" cy="13" rx="1.5" ry="4" transform="rotate(-18 6 13)" fill="url(#heroJamGloss)" />
+                                                    </svg>
+                                                </div>
+
+                                                <!-- Drip Stream 4: Tetesan Lereng Kanan Tengah (Sedang) -->
+                                                <div class="hero-jam-stream hero-jam-stream-4" style="left: 46.5%; top: 60.5%;">
+                                                    <div class="hero-jam-nodule hero-jam-nodule-4"></div>
+                                                    <svg class="hero-jam-drop hero-jam-drop-4" viewBox="0 0 20 30" fill="none">
+                                                        <path d="M10 0 C10 4, 2 12, 2 19 C2 25 5.5 29 10 29 C14.5 29 18 25 18 19 C18 12, 10 4, 10 0 Z" fill="url(#heroJamGrad)" filter="url(#heroJamGlow)" />
+                                                        <ellipse cx="7" cy="15" rx="1.8" ry="4.5" transform="rotate(-18 7 15)" fill="url(#heroJamGloss)" />
+                                                        <circle cx="12" cy="23" r="1.1" fill="#FFFFFF" opacity="0.55" />
+                                                    </svg>
+                                                </div>
+
+                                                <!-- Drip Stream 5: Tetesan Sisi Kanan (Halus Meluncur) -->
+                                                <div class="hero-jam-stream hero-jam-stream-5" style="left: 53.5%; top: 54.5%;">
+                                                    <div class="hero-jam-nodule hero-jam-nodule-5"></div>
+                                                    <svg class="hero-jam-drop hero-jam-drop-5" viewBox="0 0 16 24" fill="none">
+                                                        <path d="M8 0 C8 3, 1.5 10, 1.5 15 C1.5 19.5 4.5 23 8 23 C11.5 23 14.5 19.5 14.5 15 C14.5 10, 8 3, 8 0 Z" fill="url(#heroJamGrad)" filter="url(#heroJamGlow)" />
+                                                        <ellipse cx="5.5" cy="12" rx="1.3" ry="3.8" transform="rotate(-18 5.5 12)" fill="url(#heroJamGloss)" />
+                                                    </svg>
+                                                </div>
+                                            </div>
                                         </div>
+                                    @else
+                                        <img src="{{ asset($slide['product_image']) }}"
+                                             alt="{{ $slide['product_name'] }}"
+                                             width="{{ $slide['img_width'] ?? 420 }}"
+                                             height="{{ $slide['img_height'] ?? 420 }}"
+                                             loading="lazy"
+                                             decoding="async"
+                                             class="{{ $slide['img_class'] ?? 'w-full h-auto object-contain relative z-20 hero-float-idle' }}">
                                     @endif
 
                                     <div class="hero-product-shadow {{ $slide['id'] === 'sweet-moment' ? 'hero-product-shadow-wide' : '' }} {{ $slide['theme'] === 'dark' ? 'opacity-40' : 'opacity-25' }}" aria-hidden="true"></div>
