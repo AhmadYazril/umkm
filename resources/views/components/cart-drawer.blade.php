@@ -759,6 +759,13 @@
 
         <!-- Actions -->
         <div class="space-y-2 pt-2">
+            <a id="success-wa-link" 
+               href="#" 
+               target="_blank" 
+               class="hidden w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-md shadow-emerald-600/20 active:scale-98">
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span>Kirim Pesanan ke WhatsApp Kurir Zendo</span>
+            </a>
             <a id="success-slip-link" 
                href="#" 
                target="_blank" 
@@ -1337,6 +1344,11 @@
         const fieldAddress = document.getElementById('drawer-field-address');
         const submitText = document.getElementById('drawer-submit-text');
 
+        const dotKasir = cardKasir ? cardKasir.querySelector('.method-dot') : null;
+        const dotZendo = cardZendo ? cardZendo.querySelector('.method-dot') : null;
+        const iconKasir = cardKasir ? cardKasir.querySelector('.material-symbols-outlined') : null;
+        const iconZendo = cardZendo ? cardZendo.querySelector('.material-symbols-outlined') : null;
+
         if (method === 'kasir') {
             if (cardKasir) {
                 cardKasir.classList.add('border-neutral-900');
@@ -1346,6 +1358,11 @@
                 cardZendo.classList.remove('border-neutral-900');
                 cardZendo.classList.add('border-stone-200');
             }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+
             if (fieldTable) fieldTable.classList.remove('hidden');
             if (fieldAddress) fieldAddress.classList.add('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kasir)';
@@ -1358,11 +1375,17 @@
                 cardKasir.classList.remove('border-neutral-900');
                 cardKasir.classList.add('border-stone-200');
             }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+
             if (fieldTable) fieldTable.classList.add('hidden');
             if (fieldAddress) fieldAddress.classList.remove('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kurir Zendo)';
         }
     };
+    window.setModalProcessMethod = window.selectDrawerMethod;
 
     // ============================================
     // CHECKOUT FORM SUBMISSION
@@ -1414,28 +1437,39 @@
             return;
         }
 
-        // Format items for payload
-        const payloadItems = items.map(it => ({
-            id: it.id,
-            name: it.name,
-            qty: it.qty,
-            price: it.price,
-            options: it.options || [],
-            notes: it.optionsStr || ''
-        }));
+        // Format items for payload with complete keys matching server validation
+        const payloadItems = items.map(it => {
+            const qty = parseInt(it.qty, 10) || 1;
+            const price = parseInt(it.price, 10) || 0;
+            return {
+                id: it.id,
+                menu_id: it.id,
+                name: it.name,
+                menu_name: it.name,
+                qty: qty,
+                price: price,
+                unit_price: price,
+                line_total: price * qty,
+                options: it.options || [],
+                notes: it.optionsStr || ''
+            };
+        });
 
         let subtotal = 0;
-        items.forEach(it => subtotal += (it.price * it.qty));
+        payloadItems.forEach(it => subtotal += it.line_total);
 
         const payload = {
             process_method: isZendo ? 'zendo' : 'kasir',
             customer_name: customerName,
             customer_phone: customerPhone,
+            table_no: tableNumber,
             table_number: tableNumber,
+            dine_type: tableNumber ? 'dine_in' : 'take_away',
             delivery_address: address,
             notes: notes,
             payment_method: 'cash',
             items: payloadItems,
+            total: subtotal,
             subtotal: subtotal,
             grand_total: subtotal
         };
@@ -1476,25 +1510,44 @@
             const typeEl = document.getElementById('success-order-type');
             const totalEl = document.getElementById('success-total-amount');
             const slipLink = document.getElementById('success-slip-link');
+            const waLink = document.getElementById('success-wa-link');
             const subtextEl = document.getElementById('success-subtext');
+            const qrContainer = document.getElementById('drawer-qr-container');
 
             if (codeEl) codeEl.innerText = data.order_code || 'NCM-ORDER';
             if (nameEl) nameEl.innerText = customerName;
             if (typeEl) typeEl.innerText = isZendo ? 'Kurir Zendo' : (tableNumber ? `Kasir (Meja ${tableNumber})` : 'Kasir (Take Away)');
             if (totalEl) totalEl.innerText = 'Rp ' + (data.grand_total || subtotal).toLocaleString('id-ID');
-            if (subtextEl) {
-                subtextEl.innerText = isZendo 
-                    ? 'Kurir Zendo akan segera mengonfirmasi pesanan ke WhatsApp Anda.' 
-                    : 'Tunjukkan QR code ini ke kasir untuk proses pembayaran.';
-            }
 
-            if (slipLink && data.slip_url) {
-                slipLink.href = data.slip_url;
-                slipLink.classList.remove('hidden');
+            if (isZendo) {
+                if (subtextEl) {
+                    subtextEl.innerText = data.courier_name 
+                        ? `Pesanan Anda akan diantar oleh ${data.courier_name}. Klik tombol di bawah untuk konfirmasi WhatsApp.`
+                        : 'Pesanan Kurir Zendo berhasil dibuat. Silakan konfirmasi ke WhatsApp kurir.';
+                }
+                if (qrContainer) qrContainer.classList.add('hidden');
+                if (slipLink) slipLink.classList.add('hidden');
+                if (waLink && data.whatsapp_url) {
+                    waLink.href = data.whatsapp_url;
+                    waLink.classList.remove('hidden');
+                }
+            } else {
+                if (subtextEl) {
+                    subtextEl.innerText = 'Tunjukkan QR code ini ke kasir untuk proses pembayaran.';
+                }
+                if (qrContainer) qrContainer.classList.remove('hidden');
+                if (waLink) waLink.classList.add('hidden');
+                if (slipLink) {
+                    if (data.slip_url) {
+                        slipLink.href = data.slip_url;
+                        slipLink.classList.remove('hidden');
+                    } else {
+                        slipLink.classList.add('hidden');
+                    }
+                }
+                // Render QR code
+                generateDrawerQrCode(data.order_code || 'NCM-ORDER', data.slip_url || '');
             }
-
-            // Render QR code
-            generateDrawerQrCode(data.order_code || 'NCM-ORDER', data.slip_url || '');
 
             // Switch to success view
             switchCartView('success');

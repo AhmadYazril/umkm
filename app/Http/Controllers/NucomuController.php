@@ -1701,19 +1701,12 @@ class NucomuController extends Controller
                 $menu = Menu::find((int) $menuIdVal);
             }
             if (! $menu && ! empty($item['menu_name'] ?? $item['name'] ?? null)) {
-                $menu = Menu::where('name', $item['menu_name'] ?? $item['name'])->first();
+                $itemName = trim((string) ($item['menu_name'] ?? $item['name']));
+                $menu = Menu::where('name', $itemName)->first()
+                    ?? Menu::where('name', 'LIKE', '%'.$itemName.'%')->first();
             }
 
-            if ($menuExistsInDb) {
-                if (! $menu) {
-                    $itemLabel = $item['menu_name'] ?? $item['name'] ?? 'Menu #'.($idx + 1);
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Menu '{$itemLabel}' tidak ditemukan dalam daftar menu kami.",
-                    ], 422);
-                }
-
+            if ($menuExistsInDb && $menu) {
                 if (! $menu->is_available) {
                     return response()->json([
                         'success' => false,
@@ -1727,7 +1720,7 @@ class NucomuController extends Controller
             } else {
                 $unitPrice = (int) ($item['unit_price'] ?? $item['price'] ?? 0);
                 $menuName = (string) ($item['menu_name'] ?? $item['name'] ?? 'Menu');
-                $validMenuId = is_numeric($menuIdVal) ? (int) $menuIdVal : null;
+                $validMenuId = is_numeric($menuIdVal) && Menu::whereKey($menuIdVal)->exists() ? (int) $menuIdVal : null;
             }
 
             $lineTotal = $unitPrice * $qty;
@@ -1802,8 +1795,8 @@ class NucomuController extends Controller
 
         $subtotal = $calcSubtotal;
 
-        $dineType = $request->input('dine_type', 'dine_in');
-        $tableNo = trim((string) $request->input('table_no', ''));
+        $tableNo = trim((string) ($request->input('table_no') ?? $request->input('table_number') ?? ''));
+        $dineType = $request->input('dine_type', $tableNo !== '' ? 'dine_in' : 'take_away');
         $kasirParts = [];
         if ($processMethod === 'kasir') {
             if ($dineType === 'dine_in' && $tableNo !== '') {

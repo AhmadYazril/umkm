@@ -65,6 +65,7 @@ Route::post('/nucomu/ulasan', [NucomuController::class, 'storeReview'])->name('n
 // Nucomu Order (kasir-less ordering)
 Route::get('/pesan', [NucomuController::class, 'orderPage'])->name('nucomu.order');
 Route::post('/pesan', [NucomuController::class, 'storeOrder'])->name('nucomu.order.store');
+Route::post('/api/transactions/process', [NucomuController::class, 'storeOrder'])->name('api.transactions.process');
 Route::get('/pesan/slip/{code}', [NucomuController::class, 'orderSlip'])->name('nucomu.order.slip');
 
 // ─────────────────────────────────────────────
