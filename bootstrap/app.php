@@ -34,6 +34,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'reservasi',
             'reservasi/*',
             'api/*',
+            'transactions/*',
+            'pesan',
+            'pesan/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

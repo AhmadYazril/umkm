@@ -1481,17 +1481,39 @@
 
         try {
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfMeta ? csrfMeta.content : '';
+            const csrfToken = csrfMeta ? csrfMeta.content : '{{ csrf_token() }}';
 
-            const res = await fetch('/api/transactions/process', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify(payload)
-            });
+            // Resolve endpoints dynamically so it works seamlessly on root domain or subdirectory (Laragon /umkm/public)
+            const primaryEndpoint = '{{ route("api.transactions.process", [], false) }}';
+            const fallbackEndpoint = '{{ route("nucomu.order.store", [], false) }}';
+
+            let res;
+            try {
+                res = await fetch(primaryEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (fetchErr) {
+                console.warn('Primary endpoint network error, falling back to /pesan:', fetchErr);
+            }
+
+            // Fallback to /pesan if primary endpoint returned 404 or failed
+            if (!res || res.status === 404) {
+                res = await fetch(fallbackEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
 
             const data = await res.json();
 
