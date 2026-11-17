@@ -159,10 +159,10 @@
          TOP BAR (1 baris ~56px di Tablet/Desktop, tanpa teks & ikon dekoratif)
          ========================================================================= --}}
     <header class="sticky top-0 z-40 bg-white border-b border-line">
-        <div class="max-w-[1680px] mx-auto px-4 sm:px-5 py-2 sm:py-0 sm:h-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+        <div class="max-w-[1680px] mx-auto px-3.5 sm:px-5 h-14 flex items-center justify-between gap-2 sm:gap-4">
 
             {{-- Kiri: Logo + Titik Status Sinkron + "Nucomu Kasir" --}}
-            <div class="flex items-center justify-between gap-2 min-w-0">
+            <div class="flex items-center justify-between gap-2 min-w-0 w-full sm:w-auto">
                 <a href="{{ route('kasir.index') }}" class="flex items-center gap-2.5 min-w-0">
                     <span class="w-8 h-8 rounded-lg bg-forest text-white flex items-center justify-center shrink-0">
                         <img src="{{ asset('images/nucomu/nucomu_logo_icon.png') }}" alt="Nucomu" class="h-4 w-auto object-contain brightness-0 invert">
@@ -170,17 +170,17 @@
                     <span class="relative flex items-center gap-2 min-w-0">
                         <span class="text-sm font-bold text-ink truncate">Nucomu Kasir</span>
                         <span id="kasirSyncDot" class="w-2 h-2 rounded-full bg-forest shrink-0" title="Status sinkronisasi database"></span>
-                        <span id="kasirSyncErrorLabel" class="hidden text-xs font-bold text-danger shrink-0">Tidak tersambung</span>
+                        <span id="kasirSyncErrorLabel" class="hidden text-xs font-bold text-danger shrink-0">Offline</span>
                     </span>
                 </a>
 
                 {{-- Aksi Kanan Versi HP --}}
-                <div class="flex sm:hidden items-center gap-2 shrink-0">
+                <div class="flex sm:hidden items-center gap-1.5 shrink-0">
                     <button
                         type="button"
                         onclick="toggleKasirMoreMenu(event)"
                         aria-label="Menu lainnya"
-                        class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-sm font-bold text-sub flex items-center justify-center cursor-pointer"
+                        class="w-9 h-9 rounded-xl bg-canvas border border-line text-sm font-bold text-sub flex items-center justify-center cursor-pointer active:scale-95"
                     >
                         &#8943;
                     </button>
@@ -188,7 +188,7 @@
                         @csrf
                         <button
                             type="submit"
-                            class="min-h-[44px] px-3 rounded-xl text-xs font-bold text-sub cursor-pointer"
+                            class="h-9 px-3 rounded-xl bg-canvas border border-line text-xs font-bold text-sub cursor-pointer active:scale-95"
                         >
                             Keluar
                         </button>
@@ -196,8 +196,8 @@
                 </div>
             </div>
 
-            {{-- Tengah: 4 Tab Tanpa Ikon (HP: Menu Kasir & Scan QR paling depan) --}}
-            <nav aria-label="Menu Utama Kasir" class="grid grid-cols-2 sm:flex sm:items-center gap-2 shrink-0">
+            {{-- Tengah: 4 Tab di Tablet/Desktop (di HP pindah ke Bottom Navigation Bar) --}}
+            <nav aria-label="Menu Utama Kasir" class="hidden sm:flex sm:items-center gap-2 shrink-0">
                 <button
                     type="button"
                     id="mainTabBtn-pos"
@@ -354,7 +354,7 @@
                     </div>
 
                     {{-- Grid Menu yang Bisa Di-Scroll --}}
-                    <div id="kasirCatalogScrollArea" class="lg:flex-1 lg:overflow-y-auto pb-28 lg:pb-4 lg:pr-1 space-y-4">
+                    <div id="kasirCatalogScrollArea" class="lg:flex-1 lg:overflow-y-auto pb-36 sm:pb-28 lg:pb-4 lg:pr-1 space-y-4">
                         <div id="kasirCatalogContainer" class="space-y-4">
                             @foreach($catalogSections as $section)
                                 <div
@@ -370,7 +370,7 @@
                                             <p class="text-xs font-normal text-sub mt-1">Pilih tab kategori lain di atas.</p>
                                         </div>
                                     @else
-                                        <div class="kasir-menu-grid grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4">
+                                        <div class="kasir-menu-grid grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-4">
                                             @foreach($section['items'] as $menu)
                                                 @php
                                                     $isAvail = (bool) $menu['is_available'] && (int) $menu['stock'] > 0;
@@ -419,17 +419,17 @@
                                                     </div>
 
                                                     {{-- Nama Menu & Harga Menjadi Fokus Utama --}}
-                                                    <div class="p-3 flex-1 w-full flex flex-col justify-between gap-2 bg-white">
-                                                        <h3 class="text-sm font-bold text-ink leading-snug line-clamp-2">
+                                                    <div class="p-2.5 sm:p-3 flex-1 w-full flex flex-col justify-between gap-1.5 sm:gap-2 bg-white">
+                                                        <h3 class="text-xs sm:text-sm font-bold text-ink leading-snug line-clamp-2">
                                                             {{ $menu['name'] }}
                                                         </h3>
 
-                                                        <div class="flex items-baseline justify-between gap-2">
-                                                            <span class="text-sm font-bold text-forest-dark tabular-nums">
+                                                        <div class="flex items-baseline justify-between gap-1.5 sm:gap-2">
+                                                            <span class="text-xs sm:text-sm font-bold text-forest-dark tabular-nums">
                                                                 {{ $menu['price_formatted'] }}
                                                             </span>
                                                             @if($hasOptions)
-                                                                <span class="text-xs font-normal text-muted shrink-0">+ pilihan</span>
+                                                                <span class="text-[10.5px] sm:text-xs font-normal text-muted shrink-0">+ pilihan</span>
                                                             @endif
                                                         </div>
                                                     </div>
@@ -469,17 +469,20 @@
                         id="kasirCartPanel"
                         class="bg-white border border-line rounded-t-2xl lg:rounded-xl overflow-hidden flex flex-col w-full max-h-[90vh] lg:max-h-none lg:h-full"
                     >
-                        {{-- Mobile Sheet Top Header --}}
-                        <div class="lg:hidden px-4 py-2 border-b border-line flex items-center justify-between bg-white shrink-0">
-                            <span class="text-sm font-bold text-ink">Tagihan</span>
-                            <button
-                                type="button"
-                                onclick="closeMobileKasirDrawer()"
-                                aria-label="Tutup panel tagihan"
-                                class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-ink flex items-center justify-center cursor-pointer"
-                            >
-                                <i class="fa-solid fa-xmark text-sm"></i>
-                            </button>
+                        {{-- Mobile Sheet Top Header with Drag Handle --}}
+                        <div class="lg:hidden pt-2 pb-1.5 px-4 border-b border-line bg-white shrink-0">
+                            <div class="w-10 h-1 rounded-full bg-line mx-auto mb-1.5"></div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-bold text-ink">Rincian Tagihan Kasir</span>
+                                <button
+                                    type="button"
+                                    onclick="closeMobileKasirDrawer()"
+                                    aria-label="Tutup panel tagihan"
+                                    class="w-9 h-9 rounded-xl bg-canvas text-ink flex items-center justify-center cursor-pointer"
+                                >
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                            </div>
                         </div>
 
                         {{-- ZONE 1: HEADER TAGIHAN (Tenang, Tanpa Badge & Tanpa Ikon Dekoratif) --}}
@@ -657,7 +660,7 @@
         {{-- =====================================================================
              TAB 2: STOK BARANG (Satu-satunya tempat tombol Habis / Ada berada)
              ===================================================================== --}}
-        <section id="kasirMainPanel-stock" class="{{ $activeTab === 'stock' ? '' : 'hidden' }} space-y-4 pb-8">
+        <section id="kasirMainPanel-stock" class="{{ $activeTab === 'stock' ? '' : 'hidden' }} space-y-4 pb-24 sm:pb-8">
 
             {{-- Summary Ringkas --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -762,7 +765,7 @@
         {{-- =====================================================================
              TAB 3: SCAN QR (Akan disempurnakan penuh pada Tahap 4)
              ===================================================================== --}}
-        <section id="kasirMainPanel-scan" class="{{ $activeTab === 'scan' ? '' : 'hidden' }} pb-8">
+        <section id="kasirMainPanel-scan" class="{{ $activeTab === 'scan' ? '' : 'hidden' }} pb-24 sm:pb-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
                 <div class="lg:col-span-5 bg-white border border-line rounded-xl p-4 sm:p-5 space-y-4">
@@ -891,7 +894,7 @@
         {{-- =====================================================================
              TAB 4: PESANAN (Perbaikan filter, auto-sync & status dikerjakan di Tahap 4)
              ===================================================================== --}}
-        <section id="kasirMainPanel-orders" class="{{ $activeTab === 'orders' ? '' : 'hidden' }} space-y-4 pb-8">
+        <section id="kasirMainPanel-orders" class="{{ $activeTab === 'orders' ? '' : 'hidden' }} space-y-4 pb-24 sm:pb-8">
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
@@ -986,16 +989,85 @@
     {{-- =========================================================================
          HP PORTRAIT BOTTOM BAR: "Lihat pesanan (n item) Rp xx" -> Buka Drawer Bawah
          ========================================================================= --}}
-    <div id="mobileKasirBottomBar" class="lg:hidden fixed bottom-0 inset-x-0 z-30 p-3 bg-gradient-to-t from-canvas via-canvas/95 to-transparent pointer-events-none {{ $activeTab === 'pos' ? '' : 'hidden' }}">
+    <div id="mobileKasirBottomBar" class="lg:hidden fixed bottom-[62px] sm:bottom-0 inset-x-0 z-30 px-3 py-2.5 bg-gradient-to-t from-canvas via-canvas/95 to-transparent pointer-events-none {{ $activeTab === 'pos' ? '' : 'hidden' }}">
         <button
             type="button"
             onclick="openMobileKasirDrawer()"
-            class="w-full min-h-[56px] bg-forest hover:bg-forest-dark text-white rounded-xl px-4 shadow-lg flex items-center justify-between gap-3 pointer-events-auto cursor-pointer active:scale-[0.99] transition-transform"
+            class="w-full min-h-[50px] bg-forest hover:bg-forest-dark text-white rounded-2xl px-4 shadow-lg flex items-center justify-between gap-3 pointer-events-auto cursor-pointer active:scale-[0.99] transition-transform"
         >
-            <span id="mobileCartSummaryLabel" class="text-sm font-bold">Lihat pesanan (0 item)</span>
-            <span id="mobileCartTotalBadge" class="text-sm font-bold tabular-nums shrink-0">Rp 0</span>
+            <span class="flex items-center gap-2 text-xs sm:text-sm font-bold">
+                <i class="fa-solid fa-bag-shopping text-xs"></i>
+                <span id="mobileCartSummaryLabel">Lihat pesanan (0 item)</span>
+            </span>
+            <span class="flex items-center gap-1.5 text-xs sm:text-sm font-bold tabular-nums shrink-0">
+                <span id="mobileCartTotalBadge">Rp 0</span>
+                <i class="fa-solid fa-chevron-up text-[10px] opacity-80"></i>
+            </span>
         </button>
     </div>
+
+    {{-- =========================================================================
+         MOBILE BOTTOM NAVIGATION BAR (Hanya di HP < 640px)
+         Membuat perpindahan Menu Kasir, Scan QR, Stok, dan Pesanan super cepat
+         ========================================================================= --}}
+    <nav aria-label="Navigasi Bawah Kasir Mobile"
+         class="sm:hidden fixed bottom-0 inset-x-0 z-40 h-[62px] bg-white/98 backdrop-blur-md border-t border-line grid grid-cols-4 px-1 select-none shadow-[0_-4px_20px_rgba(27,31,29,0.06)]">
+        <button
+            type="button"
+            id="mobileMainTabBtn-pos"
+            onclick="switchKasirMainTab('pos')"
+            class="kasir-mobile-nav-tab flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors cursor-pointer {{ $activeTab === 'pos' ? 'text-forest font-bold' : 'text-sub font-normal opacity-75' }}"
+        >
+            <i class="fa-solid fa-cash-register text-[15px]"></i>
+            <span class="text-[10.5px] leading-tight">Menu Kasir</span>
+        </button>
+
+        <button
+            type="button"
+            id="mobileMainTabBtn-scan"
+            onclick="switchKasirMainTab('scan')"
+            class="kasir-mobile-nav-tab flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors cursor-pointer {{ $activeTab === 'scan' ? 'text-forest font-bold' : 'text-sub font-normal opacity-75' }}"
+        >
+            <i class="fa-solid fa-qrcode text-[15px]"></i>
+            <span class="text-[10.5px] leading-tight">Scan QR</span>
+        </button>
+
+        <button
+            type="button"
+            id="mobileMainTabBtn-stock"
+            onclick="switchKasirMainTab('stock')"
+            class="kasir-mobile-nav-tab relative flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors cursor-pointer {{ $activeTab === 'stock' ? 'text-forest font-bold' : 'text-sub font-normal opacity-75' }}"
+        >
+            <div class="relative">
+                <i class="fa-solid fa-boxes-stacked text-[15px]"></i>
+                <span
+                    id="mobileBottomStockBadge"
+                    class="{{ $outOfStockCount > 0 ? 'inline-flex' : 'hidden' }} absolute -top-1.5 -right-3 min-w-[15px] h-[15px] px-1 rounded-full text-[9px] font-bold tabular-nums leading-none bg-danger text-white items-center justify-center"
+                >
+                    {{ $outOfStockCount }}
+                </span>
+            </div>
+            <span class="text-[10.5px] leading-tight">Stok</span>
+        </button>
+
+        <button
+            type="button"
+            id="mobileMainTabBtn-orders"
+            onclick="switchKasirMainTab('orders')"
+            class="kasir-mobile-nav-tab relative flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors cursor-pointer {{ $activeTab === 'orders' ? 'text-forest font-bold' : 'text-sub font-normal opacity-75' }}"
+        >
+            <div class="relative">
+                <i class="fa-solid fa-receipt text-[15px]"></i>
+                <span
+                    id="mobileBottomPendingBadge"
+                    class="{{ $pendingOrdersCount > 0 ? 'inline-flex' : 'hidden' }} absolute -top-1.5 -right-3 min-w-[15px] h-[15px] px-1 rounded-full text-[9px] font-bold tabular-nums leading-none bg-warning text-white items-center justify-center"
+                >
+                    {{ $pendingOrdersCount }}
+                </span>
+            </div>
+            <span class="text-[10.5px] leading-tight">Pesanan</span>
+        </button>
+    </nav>
 
     {{-- =========================================================================
          MODAL VARIAN & CATATAN CEPAT MENU (Ringkas & Tenang)
@@ -1221,6 +1293,7 @@
             ['pos', 'stock', 'scan', 'orders'].forEach(t => {
                 const panel = document.getElementById(`kasirMainPanel-${t}`);
                 const btn = document.getElementById(`mainTabBtn-${t}`);
+                const mobileBtn = document.getElementById(`mobileMainTabBtn-${t}`);
                 if (panel) panel.classList.toggle('hidden', t !== tab);
                 if (btn) {
                     const orderClasses = t === 'pos'
@@ -1234,6 +1307,11 @@
                     btn.className = t === tab
                         ? `kasir-main-tab ${orderClasses} min-h-[44px] px-3.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer bg-forest text-white`
                         : `kasir-main-tab ${orderClasses} min-h-[44px] px-3.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer text-sub bg-canvas sm:bg-transparent`;
+                }
+                if (mobileBtn) {
+                    mobileBtn.className = t === tab
+                        ? 'kasir-mobile-nav-tab relative flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors cursor-pointer text-forest font-bold'
+                        : 'kasir-mobile-nav-tab relative flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors cursor-pointer text-sub font-normal opacity-75';
                 }
             });
 
@@ -2001,6 +2079,7 @@
             const statAvail = document.getElementById('stockStatAvailable');
             const statOut = document.getElementById('stockStatOut');
             const headerBadge = document.getElementById('headerStockAlertBadge');
+            const mobileStockBadge = document.getElementById('mobileBottomStockBadge');
 
             if (statAvail) statAvail.textContent = String(availCount);
             if (statOut) statOut.textContent = String(outCount);
@@ -2008,6 +2087,11 @@
                 headerBadge.textContent = String(outCount);
                 headerBadge.classList.toggle('hidden', outCount === 0);
                 headerBadge.classList.toggle('inline-flex', outCount > 0);
+            }
+            if (mobileStockBadge) {
+                mobileStockBadge.textContent = String(outCount);
+                mobileStockBadge.classList.toggle('hidden', outCount === 0);
+                mobileStockBadge.classList.toggle('inline-flex', outCount > 0);
             }
         }
 
@@ -2451,6 +2535,7 @@
             const trxEl = document.getElementById('headerTodayOrdersCount');
             const revEl = document.getElementById('headerTodayRevenue');
             const pendEl = document.getElementById('headerPendingOrdersBadge');
+            const mobilePendEl = document.getElementById('mobileBottomPendingBadge');
 
             if (trxEl && typeof stats.today_orders_count !== 'undefined') {
                 trxEl.textContent = `${stats.today_orders_count} Trx`;
@@ -2463,6 +2548,11 @@
                 pendEl.textContent = String(pendCount);
                 pendEl.classList.toggle('hidden', pendCount === 0);
                 pendEl.classList.toggle('inline-flex', pendCount > 0);
+                if (mobilePendEl) {
+                    mobilePendEl.textContent = String(pendCount);
+                    mobilePendEl.classList.toggle('hidden', pendCount === 0);
+                    mobilePendEl.classList.toggle('inline-flex', pendCount > 0);
+                }
             }
         }
 

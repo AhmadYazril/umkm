@@ -6,6 +6,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     initNucomuIntro();
+    initMobileHomePages();
     initHeroSlider();
     initNavbarScroll();
     initScrollSpy();
@@ -701,18 +702,25 @@ function renderHeroSlide(index) {
     // 1. Dynamic Smooth Background & Navbar Color Transition
     syncHeroThemeAndColor(slides[index], index);
 
-    // 2. Switch Slides & Update Accessibility
+    // 2. Switch Slides & Update Accessibility (also pause off-slide videos to keep mobile lightweight)
     slides.forEach((slide, idx) => {
+        const slideVid = slide.querySelector('video');
         if (idx === index) {
             slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
             slide.classList.add('active', 'opacity-100', 'z-10');
             slide.setAttribute('aria-hidden', 'false');
             slide.removeAttribute('inert');
+            if (slideVid && slideVid.paused && heroIsVisibleOnScreen && !document.hidden) {
+                slideVid.play().catch(() => {});
+            }
         } else {
             slide.classList.add('opacity-0', 'pointer-events-none', 'z-0');
             slide.classList.remove('active', 'opacity-100', 'z-10');
             slide.setAttribute('aria-hidden', 'true');
             slide.setAttribute('inert', '');
+            if (slideVid && !slideVid.paused) {
+                slideVid.pause();
+            }
         }
     });
 
@@ -870,6 +878,7 @@ function initNavbarScroll() {
    ========================================================================== */
 function initScrollSpy() {
     const navLinks = document.querySelectorAll('.desktop-nav-link');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
     const sections = ['home', 'about', 'menu', 'gallery', 'contact', 'layanan'];
 
     const sectionElements = sections.map(id => document.getElementById(id)).filter(Boolean);
@@ -890,6 +899,16 @@ function initScrollSpy() {
                         link.classList.add('active');
                     } else {
                         link.classList.remove('active');
+                    }
+                });
+                mobileNavLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === `#${activeId}` || (href && href.endsWith(`#${activeId}`))) {
+                        link.classList.add('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
+                        link.classList.remove('text-[#C8C8C8]', 'font-semibold');
+                    } else if (href && href.includes('#')) {
+                        link.classList.remove('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
+                        link.classList.add('text-[#C8C8C8]', 'font-semibold');
                     }
                 });
             }
@@ -923,6 +942,158 @@ window.toggleMobileDrawer = function() {
         document.body.classList.add('overflow-hidden');
     }
 };
+
+/* ==========================================================================
+   3B. MOBILE PER-PAGE SWITCHER & GLASS BOTTOM LAY-UP BAR (< 768px)
+   Mengelompokkan beranda mobile menjadi 4 halaman:
+     1. home-about      -> Home + About & Fasilitas
+     2. menu            -> Menu (Sendiri)
+     3. gallery-reviews -> Galeri 3D + Ulasan Pelanggan
+     4. layanan-contact -> Layanan & Reservasi + Lokasi & Kontak
+   ========================================================================== */
+const MOBILE_SECTION_TO_PAGE = {
+    'home': 'home-about',
+    'about': 'home-about',
+    'our-story-section': 'home-about',
+    'facilities': 'home-about',
+    'menu': 'menu',
+    'gallery': 'gallery-reviews',
+    'reviews': 'gallery-reviews',
+    'layanan': 'layanan-contact',
+    'contact': 'layanan-contact'
+};
+
+window.switchMobileHomePage = function(pageKey, targetSectionId = null, shouldScroll = true) {
+    const pages = document.querySelectorAll('.mobile-home-page');
+    if (!pages.length) return;
+
+    const validPages = ['home-about', 'menu', 'gallery-reviews', 'layanan-contact'];
+    const resolvedPage = validPages.includes(pageKey) ? pageKey : 'home-about';
+
+    document.body.setAttribute('data-mobile-home-page', resolvedPage);
+
+    pages.forEach(pageEl => {
+        const isMatch = pageEl.getAttribute('data-mobile-page') === resolvedPage;
+        pageEl.classList.toggle('is-active-mobile-page', isMatch);
+
+        if (isMatch) {
+            // Pastikan elemen animasi reveal di halaman yang baru dibuka langsung tampil
+            pageEl.querySelectorAll('.reveal-on-scroll, .reveal-from-left, .reveal-from-right, .reveal-fade-up').forEach(el => {
+                el.classList.add('is-visible');
+            });
+            const layananSec = pageEl.querySelector('#layanan');
+            if (layananSec) layananSec.classList.add('layanan-in-view');
+            const storySec = pageEl.querySelector('#our-story-section, #about');
+            if (storySec) storySec.classList.add('story-in-view');
+            const facSec = pageEl.querySelector('#facilities-gallery-section');
+            if (facSec) facSec.classList.add('facility-in-view');
+        }
+    });
+
+    // Update tombol aktif pada Glass Lay-Up Bar bawah
+    document.querySelectorAll('#mobile-glass-layup-nav [data-mobile-page-btn]').forEach(btn => {
+        const isBtnActive = btn.getAttribute('data-mobile-page-btn') === resolvedPage;
+        btn.classList.toggle('is-active', isBtnActive);
+        if (isBtnActive) {
+            btn.setAttribute('aria-current', 'page');
+        } else {
+            btn.removeAttribute('aria-current');
+        }
+        const labelSpan = btn.querySelector('span:last-child');
+        if (labelSpan) {
+            labelSpan.classList.toggle('font-bold', isBtnActive);
+            labelSpan.classList.toggle('font-semibold', !isBtnActive);
+        }
+    });
+
+    // Rekalkulasi komponen dinamis sesuai halaman yang dibuka
+    if (resolvedPage === 'menu' && typeof window.distributeMenuCards === 'function') {
+        setTimeout(() => {
+            const activeCat = window.activeRecommendationCategory || 'all';
+            window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container', activeCat);
+        }, 20);
+    } else if (resolvedPage === 'gallery-reviews') {
+        setTimeout(() => {
+            if (typeof window.refreshNucomu3DGallery === 'function') {
+                window.refreshNucomu3DGallery();
+            }
+            window.dispatchEvent(new Event('resize'));
+        }, 30);
+    }
+
+    // Pastikan navbar atas terlihat dan temanya sesuai dengan halaman baru
+    const navbar = document.getElementById('main-navbar');
+    if (navbar) {
+        navbar.classList.remove('navbar-hidden');
+        navbar.classList.add('navbar-visible');
+    }
+
+    if (shouldScroll && window.innerWidth < 768) {
+        if (targetSectionId && targetSectionId !== 'home' && targetSectionId !== 'menu' && targetSectionId !== 'gallery' && targetSectionId !== 'layanan') {
+            setTimeout(() => {
+                const targetEl = document.getElementById(targetSectionId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                if (typeof window.updateNavbarTheme === 'function') window.updateNavbarTheme();
+            }, 40);
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+                if (typeof window.updateNavbarTheme === 'function') window.updateNavbarTheme();
+            }, 60);
+        }
+    } else if (typeof window.updateNavbarTheme === 'function') {
+        setTimeout(() => window.updateNavbarTheme(), 40);
+    }
+};
+
+function initMobileHomePages() {
+    const layupNav = document.getElementById('mobile-glass-layup-nav');
+    if (!layupNav) return;
+
+    // Set halaman awal berdasarkan URL hash jika ada
+    const rawHash = (window.location.hash || '').replace(/^#/, '').trim();
+    const initialPage = MOBILE_SECTION_TO_PAGE[rawHash] || 'home-about';
+    window.switchMobileHomePage(initialPage, rawHash || null, Boolean(rawHash));
+
+    // Tangkap klik link anchor (#home, #about, #menu, #gallery, #layanan, #contact) di layar mobile
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth >= 768) return;
+        const link = e.target.closest('a[href*="#"]');
+        if (!link) return;
+
+        const href = link.getAttribute('href') || '';
+        const hashIdx = href.indexOf('#');
+        if (hashIdx === -1) return;
+
+        const targetId = href.slice(hashIdx + 1).trim();
+        const mappedPage = MOBILE_SECTION_TO_PAGE[targetId];
+        if (!mappedPage) return;
+
+        e.preventDefault();
+        window.switchMobileHomePage(mappedPage, targetId, true);
+    });
+
+    // Saat ukuran layar berubah dari mobile ke desktop (atau sebaliknya), segarkan tata letak
+    let wasMobileViewport = window.innerWidth < 768;
+    window.addEventListener('resize', () => {
+        const isNowMobile = window.innerWidth < 768;
+        if (wasMobileViewport !== isNowMobile) {
+            wasMobileViewport = isNowMobile;
+            if (!isNowMobile) {
+                if (typeof window.distributeMenuCards === 'function') {
+                    window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container', window.activeRecommendationCategory || 'all');
+                }
+                if (typeof window.refreshNucomu3DGallery === 'function') {
+                    window.refreshNucomu3DGallery();
+                }
+            }
+        }
+    });
+}
 
 /* ==========================================================================
    4. SCROLL REVEAL OBSERVER
@@ -1870,13 +2041,13 @@ window.switchBestMenuItem = function(index) {
         const priceSpan = pill.querySelector('.pill-price');
         
         if (idx === index) {
-            pill.className = 'best-menu-pill active bg-[#242424] text-white shadow-md flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-white';
-            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-bold block mt-0.5 text-white';
+            pill.className = 'best-menu-pill active bg-[#242424] text-white shadow-md flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-white';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-bold block mt-0.5 text-white/90';
         } else {
-            pill.className = 'best-menu-pill bg-white text-neutral-800 shadow-md hover:shadow-lg hover:-translate-x-1 border border-stone-100 flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-neutral-800';
-            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-medium block mt-0.5 text-neutral-600';
+            pill.className = 'best-menu-pill bg-white hover:bg-neutral-50 text-neutral-800 border border-stone-200/80 lg:border-0 lg:border-b lg:border-stone-100/90 flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-neutral-800';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-medium block mt-0.5 text-neutral-500';
         }
     });
 

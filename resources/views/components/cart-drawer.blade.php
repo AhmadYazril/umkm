@@ -54,7 +54,7 @@
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        gap: 16px;
+        gap: 12px;
         width: 100%;
     }
     @media (min-width: 640px) {
@@ -69,11 +69,11 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 96px; /* 6rem gap-y-24 */
+        gap: 74px; /* Compact mobile vertical gap */
     }
     @media (min-width: 640px) {
         .menu-column {
-            gap: 112px; /* 7rem gap-y-28 */
+            gap: 112px; /* 7rem gap-y-28 on desktop/tablet */
         }
     }
 
@@ -88,19 +88,23 @@
         position: relative;
         width: 100%;
         background-color: #ffffff;
-        border-radius: 28px;
+        border-radius: 24px;
         border: 1.5px solid #ece7de;
         box-shadow:
-            0 2px 6px rgba(44, 40, 37, 0.06),
-            0 10px 24px -4px rgba(44, 40, 37, 0.12),
-            0 22px 42px -10px rgba(44, 40, 37, 0.14);
-        padding: 66px 14px 18px 14px;
+            0 2px 5px rgba(44, 40, 37, 0.05),
+            0 8px 18px -4px rgba(44, 40, 37, 0.10);
+        padding: 56px 11px 14px 11px;
         text-align: center;
         box-sizing: border-box;
         transition: border-color 0.28s ease, box-shadow 0.28s ease;
     }
     @media (min-width: 640px) {
         .menu-card {
+            border-radius: 28px;
+            box-shadow:
+                0 2px 6px rgba(44, 40, 37, 0.06),
+                0 10px 24px -4px rgba(44, 40, 37, 0.12),
+                0 22px 42px -10px rgba(44, 40, 37, 0.14);
             padding: 72px 16px 20px 16px;
         }
     }
@@ -127,18 +131,17 @@
     /* Overhanging Large Circular Photo with Thick White Border (Overhangs card top edge) */
     .menu-card-avatar {
         position: absolute;
-        top: -52px;
+        top: -44px;
         left: 50%;
         transform: translateX(-50%) translateY(0) scale(1);
         transform-origin: center center;
-        width: 110px;
-        height: 110px;
+        width: 94px;
+        height: 94px;
         border-radius: 50%;
-        border: 5px solid #ffffff;
+        border: 4px solid #ffffff;
         box-shadow:
             0 4px 10px rgba(44, 40, 37, 0.10),
-            0 12px 24px -4px rgba(44, 40, 37, 0.22),
-            0 20px 36px -8px rgba(44, 40, 37, 0.16);
+            0 10px 20px -4px rgba(44, 40, 37, 0.18);
         overflow: hidden;
         background-color: #faf7f2;
         padding: 0;
@@ -161,6 +164,10 @@
             width: 126px;
             height: 126px;
             border-width: 6px;
+            box-shadow:
+                0 4px 10px rgba(44, 40, 37, 0.10),
+                0 12px 24px -4px rgba(44, 40, 37, 0.22),
+                0 20px 36px -8px rgba(44, 40, 37, 0.16);
         }
     }
     .menu-card-avatar img {
@@ -173,12 +180,12 @@
     /* Menu Title: Nunito bold with consistent min-height for clean row alignment */
     .menu-card-name {
         font-family: var(--font-sans), sans-serif;
-        font-size: 1.05rem;
+        font-size: 0.92rem;
         font-weight: 700;
         line-height: 1.22;
         color: #191919;
         margin-bottom: 4px;
-        min-height: 2.6rem;
+        min-height: 2.3rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -197,13 +204,19 @@
         display: flex;
         align-items: baseline;
         justify-content: center;
-        gap: 4px;
+        gap: 3px;
         font-family: var(--font-sans), sans-serif;
-        font-size: 1.05rem;
+        font-size: 0.94rem;
         font-weight: 700;
         color: #191919;
         white-space: nowrap;
         font-variant-numeric: tabular-nums;
+    }
+    @media (min-width: 640px) {
+        .menu-card-price-row {
+            gap: 4px;
+            font-size: 1.05rem;
+        }
     }
     .menu-card-unit {
         font-size: 0.75rem;
@@ -301,12 +314,18 @@
         pointer-events: auto;
     }
 
-    /* Radio Options 2-Columns */
+    /* Radio Options 2-Columns (1-Col on ultra-narrow mobile < 390px) */
     .options-columns {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        grid-template-columns: 1fr;
+        gap: 6px;
         text-align: left;
+    }
+    @media (min-width: 390px) {
+        .options-columns {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
     }
     .option-group-title {
         font-size: 0.72rem;
@@ -389,23 +408,40 @@
         box-shadow: none;
     }
 
-    /* Floating Cart Pill (Exact match to video reference) */
+    /* Floating Cart Pill (Full-width sleek bar on mobile < 640px, bottom-right pill on desktop >= 640px) */
     .floating-cart-pill {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
+        bottom: 14px;
+        left: 14px;
+        right: 14px;
         z-index: 45;
         display: flex;
         align-items: center;
-        gap: 8px;
-        background-color: #ffffff;
-        border: 1.5px solid #ded8ce;
-        border-radius: 9999px;
-        padding: 8px 18px 8px 12px;
-        box-shadow: 0 10px 30px rgba(44, 40, 37, 0.12), 0 2px 6px rgba(44, 40, 37, 0.04);
+        justify-content: space-between;
+        gap: 10px;
+        background-color: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.14);
+        border-radius: 18px;
+        padding: 11px 16px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.12);
         cursor: pointer;
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.3s ease;
-        color: #191919;
+        color: #ffffff;
+    }
+    @media (min-width: 640px) {
+        .floating-cart-pill {
+            bottom: 24px;
+            left: auto;
+            right: 24px;
+            justify-content: flex-start;
+            gap: 8px;
+            background-color: #ffffff;
+            border: 1.5px solid #ded8ce;
+            border-radius: 9999px;
+            padding: 8px 18px 8px 12px;
+            box-shadow: 0 10px 30px rgba(44, 40, 37, 0.12), 0 2px 6px rgba(44, 40, 37, 0.04);
+            color: #191919;
+        }
     }
     .floating-cart-pill:hover {
         transform: translateY(-2px);
@@ -466,19 +502,24 @@
         onclick="openCartDrawer()" 
         class="floating-cart-pill opacity-0 pointer-events-none translate-y-4"
         aria-label="Lihat Keranjang Belanja">
-    <div class="relative flex items-center">
-        <span class="material-symbols-outlined text-neutral-900 text-xl">shopping_cart</span>
-        <span id="floating-cart-badge" 
-              class="absolute -top-2 -right-2 bg-neutral-900 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
-            0
+    <div class="flex items-center gap-2.5 sm:gap-2">
+        <div class="relative flex items-center">
+            <span class="material-symbols-outlined text-white sm:text-neutral-900 text-xl">shopping_cart</span>
+            <span id="floating-cart-badge" 
+                  class="absolute -top-2 -right-2 bg-white text-neutral-900 sm:bg-neutral-900 sm:text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                0
+            </span>
+        </div>
+        <span class="font-body text-xs font-bold sm:font-semibold text-white sm:text-neutral-800 tracking-wide">
+            My cart:
         </span>
     </div>
-    <span class="font-body text-xs font-semibold text-neutral-800 tracking-wide">
-        My cart:
-    </span>
-    <span id="floating-cart-total" class="font-editorial-num text-xs font-bold text-neutral-900">
-        Rp 0
-    </span>
+    <div class="flex items-center gap-1.5">
+        <span id="floating-cart-total" class="font-editorial-num text-xs sm:text-xs font-bold text-white sm:text-neutral-900">
+            Rp 0
+        </span>
+        <span class="material-symbols-outlined text-base text-white/80 sm:hidden">chevron_right</span>
+    </div>
 </button>
 @endif
 
@@ -904,10 +945,11 @@
 
     function triggerCartBadgeBump() {
         const navBadge = document.getElementById('nav-cart-badge');
+        const mobileNavBadge = document.getElementById('mobile-nav-cart-badge');
         const drawerBadge = document.getElementById('drawer-cart-badge');
         const floatingBadge = document.getElementById('floating-cart-badge');
 
-        [navBadge, drawerBadge, floatingBadge].forEach(b => {
+        [navBadge, mobileNavBadge, drawerBadge, floatingBadge].forEach(b => {
             if (b) {
                 b.classList.remove('cart-bump');
                 void b.offsetWidth; // force reflow
@@ -1022,7 +1064,7 @@
         const columns = [];
         for (let c = 0; c < numCols; c++) {
             const col = document.createElement('div');
-            col.className = 'menu-column flex-1 flex flex-col gap-y-24 sm:gap-y-28 min-w-0';
+            col.className = 'menu-column flex-1 flex flex-col gap-y-[74px] sm:gap-y-28 min-w-0';
             container.appendChild(col);
             columns.push(col);
         }
@@ -1203,6 +1245,7 @@
         const floatingBadge = document.getElementById('floating-cart-badge');
         const floatingTotal = document.getElementById('floating-cart-total');
         const navBadge = document.getElementById('nav-cart-badge');
+        const mobileNavBadge = document.getElementById('mobile-nav-cart-badge');
         const drawerBadge = document.getElementById('drawer-cart-badge');
 
         const keys = Object.keys(window.nucomuCart);
@@ -1226,6 +1269,10 @@
             if (navBadge) {
                 navBadge.innerText = '0';
                 navBadge.classList.add('hidden');
+            }
+            if (mobileNavBadge) {
+                mobileNavBadge.innerText = '0';
+                mobileNavBadge.classList.add('hidden');
             }
             if (drawerBadge) drawerBadge.innerText = '0';
             return;
@@ -1303,6 +1350,10 @@
         if (navBadge) {
             navBadge.innerText = totalQty;
             navBadge.classList.remove('hidden');
+        }
+        if (mobileNavBadge) {
+            mobileNavBadge.innerText = totalQty;
+            mobileNavBadge.classList.remove('hidden');
         }
         if (drawerBadge) drawerBadge.innerText = totalQty;
     };

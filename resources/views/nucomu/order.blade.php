@@ -163,8 +163,8 @@
                     @endforeach
                 </div>
 
-                {{-- MENU CARDS GRID --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="menuGrid">
+                {{-- MENU CARDS GRID (2-column compact on mobile, 2 on sm, 3 on xl) --}}
+                <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-4" id="menuGrid">
                     @forelse($menus as $menu)
                         <div class="menu-card glass-card rounded-2xl overflow-hidden border border-white/10 transition-all duration-200 hover:border-white/25 flex flex-col"
                              data-cat="{{ $menu->category?->slug ?? 'other' }}"
@@ -173,7 +173,7 @@
                              data-price="{{ $menu->price }}">
 
                             {{-- Image --}}
-                            <div class="relative h-40 sm:h-44 bg-zinc-900 overflow-hidden">
+                            <div class="relative h-32 sm:h-44 bg-zinc-900 overflow-hidden">
                                 @php
                                     $mLower = strtolower($menu->name);
                                     $mVideo = null;
@@ -234,19 +234,19 @@
                             </div>
 
                             {{-- Info --}}
-                            <div class="p-4 flex flex-col flex-1">
-                                <h3 class="font-bold text-white text-sm mb-1">{{ $menu->name }}</h3>
+                            <div class="p-2.5 sm:p-4 flex flex-col flex-1">
+                                <h3 class="font-bold text-white text-xs sm:text-sm mb-1 line-clamp-1">{{ $menu->name }}</h3>
                                 @if($menu->description)
-                                    <p class="text-gray-400 text-xs leading-relaxed line-clamp-2 flex-1">{{ $menu->description }}</p>
+                                    <p class="text-gray-400 text-[11px] sm:text-xs leading-relaxed line-clamp-2 flex-1">{{ $menu->description }}</p>
                                 @endif
 
-                                <div class="flex items-center justify-between mt-3">
-                                    <span class="text-goldAccent font-black text-base font-mono">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2.5 sm:mt-3">
+                                    <span class="text-goldAccent font-black text-xs sm:text-base font-mono">
                                         Rp {{ number_format($menu->price, 0, ',', '.') }}
                                     </span>
                                     <button type="button" onclick="addToCart({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }})"
-                                            class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-goldAccent text-black text-xs font-bold hover:bg-amber-400 active:scale-95 transition-all">
-                                        <i class="fa-solid fa-plus text-xs"></i> Tambah
+                                            class="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-goldAccent text-black text-[11px] sm:text-xs font-bold hover:bg-amber-400 active:scale-95 transition-all">
+                                        <i class="fa-solid fa-plus text-[10px] sm:text-xs"></i> Tambah
                                     </button>
                                 </div>
                             </div>
