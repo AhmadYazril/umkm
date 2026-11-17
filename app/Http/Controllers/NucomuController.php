@@ -75,7 +75,11 @@ class NucomuController extends Controller
             }
             $brand['story_p2'] = ! empty($dbSettings['cafe_story_p2'])
                 ? $dbSettings['cafe_story_p2']
-                : 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.';
+                : 'Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.';
+            $brand['cafe_story_p2'] = $brand['story_p2'];
+            if (! empty($dbSettings['cafe_story_p3'])) {
+                $brand['cafe_story_p3'] = $dbSettings['cafe_story_p3'];
+            }
             if (! empty($dbSettings['about_label'])) {
                 $brand['about_label'] = $dbSettings['about_label'];
             }
