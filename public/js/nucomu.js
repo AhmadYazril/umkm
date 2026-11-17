@@ -2520,6 +2520,8 @@ window.toggleLayananDetailPanel = function() {
         panelWrapper.classList.remove('hidden');
         panelWrapper.setAttribute('aria-hidden', 'false');
         toggleBtn.setAttribute('aria-expanded', 'true');
+        toggleBtn.classList.add('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
+        toggleBtn.classList.remove('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
         if (toggleText) toggleText.textContent = 'Tutup Detail';
         if (toggleIcon) toggleIcon.classList.add('rotate-180');
 
@@ -2562,6 +2564,8 @@ window.closeLayananDetailPanel = function() {
     panelWrapper.setAttribute('aria-hidden', 'true');
     if (toggleBtn) {
         toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.classList.remove('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
+        toggleBtn.classList.add('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
         if (typeof toggleBtn.focus === 'function') {
             toggleBtn.focus();
         }

@@ -39,7 +39,7 @@
                  role="button"
                  tabindex="0"
                  aria-label="Reservasi Meja & Acara Privat"
-                 class="layanan-card-reservasi layanan-interactive-card layanan-anim-card-1 relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-1 {{ $orderModeZendo ? 'md:col-span-2 lg:col-span-1' : 'md:col-span-1 lg:col-span-1' }} lg:order-1">
+                 class="layanan-card-reservasi layanan-interactive-card layanan-anim-card-1 relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#D4D4D4] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-1 {{ $orderModeZendo ? 'md:col-span-2 lg:col-span-1' : 'md:col-span-1 lg:col-span-1' }} lg:order-1">
                 
                 <!-- Watermark Nomor Cantik 01 -->
                 <span class="absolute top-2 right-4 text-5xl sm:text-6xl font-heading font-extrabold text-black/[0.035] group-hover:text-black/[0.08] transition-colors duration-500 select-none pointer-events-none" aria-hidden="true">01</span>
@@ -76,16 +76,16 @@
                                 </p>
                             </div>
 
-                            <!-- Tombol Lihat Detail (Pill Hitam di Kiri Bawah) -->
+                            <!-- Tombol Lihat Detail (Pill Abu-abu dengan Border, berubah hitam saat aktif/diklik) -->
                             <div class="pt-4 mt-auto">
                                 <button type="button" 
                                         id="btn-toggle-layanan-detail"
                                         onclick="toggleLayananDetailPanel()" 
                                         aria-expanded="false" 
                                         aria-controls="layanan-detail-panel"
-                                        class="layanan-btn-action inline-flex items-center gap-2 bg-[#242424] hover:bg-[#1C1C1C] text-white font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
+                                        class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#D4D4D4] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
                                     <span id="btn-toggle-layanan-text">Lihat Detail</span>
-                                    <svg id="btn-toggle-layanan-icon" class="w-3.5 h-3.5 text-white transform transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <svg id="btn-toggle-layanan-icon" class="w-3.5 h-3.5 text-current transform transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </button>
@@ -108,7 +108,7 @@
             <div role="button"
                  tabindex="0"
                  aria-label="Delivery via WhatsApp"
-                 class="layanan-anim-card-2 layanan-interactive-card relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-3 md:col-span-1 lg:order-2">
+                 class="layanan-anim-card-2 layanan-interactive-card relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#D4D4D4] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-3 md:col-span-1 lg:order-2">
                 
                 <!-- Watermark Nomor Cantik 02 -->
                 <span class="absolute top-2 right-4 text-5xl sm:text-6xl font-heading font-extrabold text-black/[0.035] group-hover:text-black/[0.08] transition-colors duration-500 select-none pointer-events-none" aria-hidden="true">02</span>
@@ -148,9 +148,9 @@
                             <!-- Tombol Pesan Sekarang (Pill Gray di Kiri Bawah) -->
                             <div class="pt-4 mt-auto">
                                 <button type="button" onclick="setModalProcessMethod('zendo'); openCartModal();" 
-                                   class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
+                                   class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#D4D4D4] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
                                     <span>Pesan Sekarang</span>
-                                    <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <svg class="w-3.5 h-3.5 text-current group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </button>
@@ -173,7 +173,7 @@
             <div role="button"
                  tabindex="0"
                  aria-label="Pesan Menu di GrabFood"
-                 class="layanan-anim-card-3 layanan-interactive-card relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-4 md:col-span-1 lg:order-3">
+                 class="layanan-anim-card-3 layanan-interactive-card relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#D4D4D4] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-4 md:col-span-1 lg:order-3">
                 
                 <!-- Watermark Nomor Cantik 03 -->
                 <span class="absolute top-2 right-4 text-5xl sm:text-6xl font-heading font-extrabold text-black/[0.035] group-hover:text-black/[0.08] transition-colors duration-500 select-none pointer-events-none" aria-hidden="true">03</span>
@@ -215,9 +215,9 @@
                                 <a href="{{ $layananGrabfoodUrl }}" 
                                    target="_blank" 
                                    rel="noopener noreferrer"
-                                   class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
+                                   class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#D4D4D4] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
                                     <span>Pesan Sekarang</span>
-                                    <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <svg class="w-3.5 h-3.5 text-current group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </a>
@@ -610,6 +610,31 @@
                         e.preventDefault();
                         this.click();
                     }
+                });
+            });
+
+            // Tactile Button Ripple & Press Animation on all 3 action buttons
+            const actionBtns = document.querySelectorAll('.layanan-btn-action');
+            actionBtns.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    const rect = btn.getBoundingClientRect();
+                    const x = (e && typeof e.clientX === 'number' && e.clientX > 0) ? (e.clientX - rect.left) : (rect.width / 2);
+                    const y = (e && typeof e.clientY === 'number' && e.clientY > 0) ? (e.clientY - rect.top) : (rect.height / 2);
+                    const size = Math.max(rect.width, rect.height) * 2.2;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.className = 'btn-action-ripple';
+                    ripple.style.width = size + 'px';
+                    ripple.style.height = size + 'px';
+                    ripple.style.left = (x - size / 2) + 'px';
+                    ripple.style.top = (y - size / 2) + 'px';
+                    
+                    btn.appendChild(ripple);
+                    setTimeout(function() {
+                        if (ripple.parentNode) {
+                            ripple.remove();
+                        }
+                    }, 550);
                 });
             });
         });
