@@ -59,6 +59,7 @@
             'type' => 'product',
             'label' => '01 / SPECIALTY ROASTERY',
             'giant_headline' => 'FRESH BEANS',
+            'giant_headline_size' => 'text-[clamp(3.2rem,11vw,9.8rem)] tracking-tight',
             'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
@@ -79,6 +80,7 @@
             'type' => 'product',
             'label' => '02 / DAILY SIGNATURE DRINK',
             'giant_headline' => 'FRESH BREW',
+            'giant_headline_size' => 'text-[clamp(3.2rem,11.5vw,9.8rem)] tracking-tight',
             'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
@@ -187,6 +189,7 @@
             'type' => 'product',
             'label' => '03 / ARTISANAL PASTRY',
             'giant_headline' => 'SWEET MOMENT',
+            'giant_headline_size' => 'text-[clamp(2.1rem,7.4vw,6.8rem)] tracking-tight',
             'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
@@ -201,7 +204,92 @@
             'img_class' => 'w-[85vw] max-w-[330px] sm:max-w-[440px] lg:max-w-[490px] xl:max-w-[540px] max-h-[260px] sm:max-h-[340px] lg:max-h-[390px] xl:max-h-[420px] object-contain relative z-20 hero-float-rotate',
             'bg_color' => '#1A1A1A',
             'theme' => 'dark',
-            'floaters' => [],
+            'floaters' => [
+                // 1. Kiri atas (jauh) - Stroberi utuh segar melayang
+                [
+                    'src' => 'images/hero/strawberry-1.webp',
+                    'wrapper_class' => 'absolute -left-12 sm:-left-20 lg:-left-28 -top-6 sm:-top-10 w-9 sm:w-12 lg:w-15 z-25 hero-bean-anim-1 drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-25',
+                    'depth' => 24,
+                ],
+                // 2. Kiri atas (sedang) - Belahan stroberi juicy
+                [
+                    'src' => 'images/hero/strawberry-3.webp',
+                    'wrapper_class' => 'absolute -left-4 sm:-left-8 lg:-left-12 top-6 sm:top-10 w-8 sm:w-11 lg:w-13 z-25 hero-bean-anim-3 drop-shadow-[0_6px_14px_rgba(0,0,0,0.3)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-12',
+                    'depth' => 18,
+                ],
+                // 3. Atas tengah-kiri - Irisan bulat stroberi
+                [
+                    'src' => 'images/hero/strawberry-4.webp',
+                    'wrapper_class' => 'absolute left-1/4 -top-8 sm:-top-14 w-7 sm:w-9 lg:w-11 z-30 hero-bean-anim-2 drop-shadow-[0_6px_12px_rgba(0,0,0,0.28)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-35',
+                    'depth' => 26,
+                ],
+                // 4. Atas tengah-kanan melayang tinggi - Stroberi utuh di belakang
+                [
+                    'src' => 'images/hero/strawberry-2.webp',
+                    'wrapper_class' => 'absolute right-1/4 -top-10 sm:-top-16 w-8 sm:w-11 lg:w-13 z-15 hero-bean-anim-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.32)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-20',
+                    'depth' => 22,
+                ],
+                // 5. Kanan atas - Irisan melintang segar
+                [
+                    'src' => 'images/hero/strawberry-5.webp',
+                    'wrapper_class' => 'absolute -right-8 sm:-right-14 lg:-right-20 top-2 sm:top-6 w-8 sm:w-10 lg:w-12 z-25 hero-bean-anim-1 drop-shadow-[0_8px_14px_rgba(0,0,0,0.28)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-20',
+                    'depth' => 20,
+                ],
+                // 6. Kanan jauh memancar keluar - Stroberi belah
+                [
+                    'src' => 'images/hero/strawberry-3.webp',
+                    'wrapper_class' => 'absolute -right-14 sm:-right-22 lg:-right-30 top-24 sm:top-32 w-8 sm:w-11 lg:w-13 z-25 hero-bean-anim-3 drop-shadow-[0_8px_16px_rgba(0,0,0,0.32)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-40',
+                    'depth' => 16,
+                ],
+                // 7. Kanan tengah dekat kerak kue - Stroberi utuh
+                [
+                    'src' => 'images/hero/strawberry-1.webp',
+                    'wrapper_class' => 'absolute -right-8 sm:-right-14 lg:-right-18 bottom-12 sm:bottom-16 w-8 sm:w-11 lg:w-13 z-25 hero-bean-anim-2 drop-shadow-[0_6px_14px_rgba(0,0,0,0.3)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-15',
+                    'depth' => 25,
+                ],
+                // 8. Kanan bawah - Irisan bulat
+                [
+                    'src' => 'images/hero/strawberry-4.webp',
+                    'wrapper_class' => 'absolute -right-6 sm:-right-10 lg:-right-16 -bottom-6 sm:-bottom-10 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-2 drop-shadow-[0_6px_12px_rgba(0,0,0,0.28)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-30',
+                    'depth' => 15,
+                ],
+                // 9. Kanan bawah melayang keluar - Stroberi utuh di belakang kerak
+                [
+                    'src' => 'images/hero/strawberry-2.webp',
+                    'wrapper_class' => 'absolute right-1/4 -bottom-10 sm:-bottom-14 w-8 sm:w-10 lg:w-12 z-15 hero-bean-anim-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.32)]',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-10',
+                    'depth' => 19,
+                ],
+                // 10. Kiri bawah dekat ujung kue - Irisan bulat
+                [
+                    'src' => 'images/hero/strawberry-5.webp',
+                    'wrapper_class' => 'absolute left-1/4 -bottom-8 sm:-bottom-12 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-3 drop-shadow-[0_6px_12px_rgba(0,0,0,0.28)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-15',
+                    'depth' => 17,
+                ],
+                // 11. Kiri tengah-bawah - Belahan stroberi
+                [
+                    'src' => 'images/hero/strawberry-3.webp',
+                    'wrapper_class' => 'absolute -left-10 sm:-left-16 lg:-left-22 bottom-14 sm:bottom-20 w-8 sm:w-11 lg:w-13 z-25 hero-bean-anim-1 drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)]',
+                    'img_class' => 'w-full h-auto object-contain transform rotate-25',
+                    'depth' => 22,
+                ],
+                // 12. Depan bokeh (besar di depan kiri bawah cinematic DOF)
+                [
+                    'src' => 'images/hero/strawberry-1.webp',
+                    'wrapper_class' => 'absolute -left-16 sm:-left-28 lg:-left-36 -bottom-4 sm:-bottom-6 w-11 sm:w-14 lg:w-16 z-30 hero-bean-anim-4 drop-shadow-[0_14px_28px_rgba(0,0,0,0.45)] filter blur-[0.6px] opacity-90',
+                    'img_class' => 'w-full h-auto object-contain transform -rotate-15',
+                    'depth' => 32,
+                ],
+            ],
             'has_float_rotate' => true,
         ],
     ];
@@ -529,7 +617,7 @@
 
                     <!-- 1. Giant Headline Behind Product: FRESH BEANS (z-10) -->
                     <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                        <span class="font-sans font-extrabold uppercase text-[clamp(3.8rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap hero-giant-headline-text select-none">
+                        <span class="font-sans font-extrabold uppercase {{ $slide['giant_headline_size'] ?? 'text-[clamp(3.4rem,11.5vw,10rem)]' }} leading-none tracking-tight text-center whitespace-nowrap hero-giant-headline-text select-none">
                             FRESH BEANS
                         </span>
                     </div>
@@ -635,8 +723,8 @@
                         @endif
 
                         <!-- 1. Headline Raksasa (Di Belakang Produk, z-10) -->
-                        <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                            <span class="font-sans font-extrabold uppercase text-[clamp(3.6rem,13vw,11rem)] leading-none tracking-tight text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? 'hero-giant-headline-text' }} select-none">
+                        <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 sm:px-8 transition-transform duration-300">
+                            <span class="font-sans font-extrabold uppercase {{ $slide['giant_headline_size'] ?? 'text-[clamp(3.2rem,11.5vw,9.8rem)]' }} leading-none tracking-tight text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? 'hero-giant-headline-text' }} select-none">
                                 {{ $slide['giant_headline'] }}
                             </span>
                         </div>
