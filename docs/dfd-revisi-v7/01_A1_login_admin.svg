@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 840" width="1600" height="840" font-family="'Segoe UI', Arial, sans-serif">
+<defs>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr-flow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#334155"/>
+    </marker>
+    <marker id="arr-valid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#15803D"/>
+    </marker>
+    <marker id="arr-invalid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arr-ds" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+  </defs>
+<rect width="1600" height="840" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1600" height="68" fill="#F8FAFC"/>
+<line x1="0" y1="68" x2="1600" y2="68" stroke="#CBD5E1" stroke-width="1.2"/>
+<rect x="0" y="0" width="7" height="68" fill="#1E3A8A"/>
+<text x="24" y="30" font-size="19" font-weight="700" fill="#0F172A">Level 2 - Login Admin (turunan proses 1.0 Level 1)</text>
+<text x="24" y="52" font-size="12.5" font-weight="500" fill="#475569">Fitur A1 • Aktor: Admin • Langkah: 1.1–1.6 • Status: Berdasarkan kode, tidak teruji</text>
+<g transform="translate(1105, 13)">
+    <rect x="0" y="0" width="475" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <rect x="12" y="13" width="18" height="14" rx="2" fill="#EFF6FF" stroke="#1E293B" stroke-width="1.6"/>
+    <text x="36" y="24" font-size="11" font-weight="600" fill="#334155">Entitas</text>
+    <circle cx="96" cy="20" r="9" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+    <text x="110" y="24" font-size="11" font-weight="600" fill="#334155">Langkah</text>
+    <rect x="167" y="12" width="18" height="15" rx="3" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.6"/>
+    <ellipse cx="176" cy="13" rx="9" ry="3.2" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.3"/>
+    <text x="191" y="24" font-size="11" font-weight="600" fill="#334155">Data Store</text>
+    <line x1="258" y1="20" x2="282" y2="20" stroke="#15803D" stroke-width="2.2" marker-end="url(#arr-valid)"/>
+    <text x="288" y="24" font-size="11" font-weight="600" fill="#15803D">Valid</text>
+    <line x1="330" y1="20" x2="354" y2="20" stroke="#DC2626" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr-invalid)"/>
+    <text x="360" y="24" font-size="11" font-weight="600" fill="#B91C1C">Tidak Valid / Ulang</text>
+  </g>
+<path d="M 166.0 270.0 L 311.0 270.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 439.0 270.0 L 721.0 270.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 849.0 270.0 L 1151.0 270.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1215.0 334.0 L 1215.0 499.0" fill="none" stroke="#15803D" stroke-width="2.1" marker-end="url(#arr-valid)"/>
+<path d="M 1187.0 327.5 L 1187.0 385.0 Q 1187.0 395.0 1177.0 395.0 L 819.0 395.0 Q 809.0 395.0 809.0 385.0 L 809.0 329.3" fill="none" stroke="#DC2626" stroke-width="2.1" stroke-dasharray="6,4" marker-end="url(#arr-invalid)"/>
+<path d="M 1149.0 565.0 L 849.0 565.0" fill="none" stroke="#15803D" stroke-width="2.1" marker-end="url(#arr-valid)"/>
+<path d="M 1187.0 505.2 L 1187.0 475.0 Q 1187.0 465.0 1177.0 465.0 L 771.0 465.0 Q 761.0 465.0 761.0 455.0 L 761.0 329.3" fill="none" stroke="#DC2626" stroke-width="2.1" stroke-dasharray="6,4" marker-end="url(#arr-invalid)"/>
+<path d="M 721.0 565.0 L 439.0 565.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 311.0 565.0 L 110.0 565.0 Q 100.0 565.0 100.0 555.0 L 100.0 313.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1215.0 727.0 L 1215.0 631.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<g filter="url(#shadow)">
+        <rect x="34" y="227" width="132" height="86" rx="6" fill="#F8FAFC" stroke="#1E293B" stroke-width="2.4"/>
+        <rect x="34" y="227" width="132" height="23" rx="5" fill="#1E293B"/>
+        <rect x="34" y="243" width="132" height="7" fill="#1E293B"/>
+        <text x="100" y="242.5" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.8">AKTOR EKSTERNAL</text>
+        <text x="100" y="281" font-size="16" font-weight="700" fill="#0F172A" text-anchor="middle">Admin</text>
+        <text x="100" y="299" font-size="10.5" font-weight="500" fill="#475569" text-anchor="middle">Pengelola Kafe</text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="375" cy="270" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="348" y="236" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="375" y="248" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">1.1</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="375" y="273.0">Muat Halaman</tspan><tspan x="375" y="287.5">Form Login Admin</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="785" cy="270" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="758" y="230" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="785" y="242" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">1.2</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="785" y="266.0">Input Email,</tspan><tspan x="785" y="280.5">Password &amp;</tspan><tspan x="785" y="295.0">Remember</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1215" cy="270" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1188" y="236" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1215" y="248" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">1.3</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1215" y="273.0">Validasi Format</tspan><tspan x="1215" y="287.5">Email &amp; Password</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1215" cy="565" r="66" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1188" y="525" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1215" y="537" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">1.4</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1215" y="561.0">Cocokkan Email,</tspan><tspan x="1215" y="575.5">Password &amp;</tspan><tspan x="1215" y="590.0">Hak Akses Admin</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="785" cy="565" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="758" y="531" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="785" y="543" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">1.5</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="785" y="568.0">Simpan Status</tspan><tspan x="785" y="582.5">Login Admin</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="375" cy="565" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="348" y="531" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="375" y="543" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">1.6</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="375" y="568.0">Arahkan ke</tspan><tspan x="375" y="582.5">Dashboard Admin</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1150 736 L 1150 774 A 65 9 0 0 0 1280 774 L 1280 736 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1215" cy="736" rx="65" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1215" y="760" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D1</text>
+        <text x="1215" y="775" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">users</text>
+      </g>
+<g>
+      <rect x="164.5" y="237.5" width="147" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="238" y="251.0">Akses GET /admin/login</tspan></text>
+    </g>
+<g>
+      <rect x="524.5" y="237.5" width="111" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="580" y="251.0">Form login admin</tspan></text>
+    </g>
+<g>
+      <rect x="920.5" y="237.5" width="159" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="1000" y="251.0">Submit POST /admin/login</tspan></text>
+    </g>
+<g>
+      <rect x="1244.5" y="401.0" width="111" height="34" rx="5" fill="#F0FDF4" fill-opacity="0.96" stroke="#86EFAC" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#14532D" text-anchor="middle"><tspan x="1300" y="414.5">[Format valid]</tspan><tspan x="1300" y="427.5">Email &amp; password</tspan></text>
+    </g>
+<g>
+      <rect x="913.5" y="371.5" width="153" height="47" rx="5" fill="#FEF2F2" fill-opacity="0.96" stroke="#FCA5A5" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#991B1B" text-anchor="middle"><tspan x="990" y="385.0">[Format kosong/salah -&gt;</tspan><tspan x="990" y="398.0">ulang]</tspan><tspan x="990" y="411.0">Pesan error validasi</tspan></text>
+    </g>
+<g>
+      <rect x="932.5" y="523.0" width="135" height="34" rx="5" fill="#F0FDF4" fill-opacity="0.96" stroke="#86EFAC" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#14532D" text-anchor="middle"><tspan x="1000" y="536.5">[Cocok &amp; akun admin]</tspan><tspan x="1000" y="549.5">Data user sah</tspan></text>
+    </g>
+<g>
+      <rect x="883.5" y="435.0" width="153" height="60" rx="5" fill="#FEF2F2" fill-opacity="0.96" stroke="#FCA5A5" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#991B1B" text-anchor="middle"><tspan x="960" y="448.5">[Password salah / bukan</tspan><tspan x="960" y="461.5">admin -&gt; ulang]</tspan><tspan x="960" y="474.5">Error login (atau</tspan><tspan x="960" y="487.5">redirect kasir)</tspan></text>
+    </g>
+<g>
+      <rect x="518.5" y="532.5" width="123" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="580" y="546.0">Status login aktif</tspan></text>
+    </g>
+<g>
+      <rect x="78.5" y="448.0" width="123" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="140" y="461.5">Redirect Dashboard</tspan><tspan x="140" y="474.5">(/admin/dashboard)</tspan></text>
+    </g>
+<g>
+      <rect x="1138.5" y="661.0" width="153" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1215" y="674.5">Baca: email, password &amp;</tspan><tspan x="1215" y="687.5">hak akses</tspan></text>
+    </g>
+</svg>

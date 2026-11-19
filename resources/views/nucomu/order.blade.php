@@ -18,11 +18,11 @@
             theme: {
                 extend: {
                     colors: {
-                        obsidian: '#0c0c0f',
-                        goldAccent: '#f59e0b',
-                        violetAccent: '#8b5cf6',
-                        cyanAccent: '#06b6d4',
-                        roseAccent: '#f43f5e'
+                        obsidian: '#0C0C0C',
+                        goldAccent: '#F5F2EE',
+                        violetAccent: '#B5B5B5',
+                        cyanAccent: '#D4D4D4',
+                        roseAccent: '#B5B5B5'
                     },
                     fontFamily: {
                         sans: ['"Montserrat"', 'sans-serif'],
@@ -34,32 +34,32 @@
     </script>
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0c0c0f; }
-        ::-webkit-scrollbar-thumb { background: #272736; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+        ::-webkit-scrollbar-track { background: #0C0C0C; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #F5F2EE; }
 
         .custom-panel-scroll {
             scrollbar-width: thin;
-            scrollbar-color: rgba(245, 158, 11, 0.35) rgba(12, 12, 15, 0.4);
+            scrollbar-color: rgba(245, 242, 238, 0.35) rgba(12, 12, 12, 0.4);
         }
         .custom-panel-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-panel-scroll::-webkit-scrollbar-track { background: rgba(12, 12, 15, 0.4); border-radius: 9999px; }
-        .custom-panel-scroll::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.35); border-radius: 9999px; }
-        .custom-panel-scroll::-webkit-scrollbar-thumb:hover { background: rgba(245, 158, 11, 0.7); }
+        .custom-panel-scroll::-webkit-scrollbar-track { background: rgba(12, 12, 12, 0.4); border-radius: 9999px; }
+        .custom-panel-scroll::-webkit-scrollbar-thumb { background: rgba(245, 242, 238, 0.35); border-radius: 9999px; }
+        .custom-panel-scroll::-webkit-scrollbar-thumb:hover { background: rgba(245, 242, 238, 0.7); }
 
         .glass-card {
-            background: rgba(21, 21, 28, 0.82);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
         }
         .qty-btn { user-select: none; }
-        .menu-card.selected { border-color: rgba(245, 158, 11, 0.7) !important; background: rgba(245, 158, 11, 0.08); }
+        .menu-card.selected { border-color: rgba(245, 242, 238, 0.7) !important; background: rgba(255, 255, 255, 0.08); }
         #zendoMap { z-index: 10; }
         .leaflet-control-attribution { font-size: 9px !important; opacity: 0.7; }
     </style>
 </head>
-<body class="bg-obsidian text-gray-100 font-sans min-h-screen relative overflow-x-clip">
+<body class="bg-obsidian text-[#F5F5F5] font-sans min-h-screen relative overflow-x-clip">
     @php
         $transactionMode = $transactionMode ?? 'both';
         $zendoWhatsapp = $zendoWhatsapp ?? '6281234567890';
@@ -78,16 +78,16 @@
     @endphp
 
     {{-- Ambient Glow --}}
-    <div class="fixed top-10 left-1/4 w-96 h-96 rounded-full bg-goldAccent/10 pointer-events-none z-0 blur-3xl"></div>
-    <div class="fixed bottom-10 right-10 w-96 h-96 rounded-full bg-violetAccent/10 pointer-events-none z-0 blur-3xl"></div>
+    <div class="fixed top-10 left-1/4 w-96 h-96 rounded-full bg-white/[0.04] pointer-events-none z-0 blur-3xl"></div>
+    <div class="fixed bottom-10 right-10 w-96 h-96 rounded-full bg-white/[0.03] pointer-events-none z-0 blur-3xl"></div>
 
     {{-- HEADER --}}
-    <header class="sticky top-0 z-50 glass-card border-b border-white/5 px-4 sm:px-6 py-3.5">
+    <header class="sticky top-0 z-50 glass-card border-b border-white/10 px-4 sm:px-6 py-3.5">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
             <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-goldAccent via-amber-500 to-rose-500 p-0.5 shadow-lg shadow-goldAccent/20">
+                <div class="w-9 h-9 rounded-xl bg-white/15 border border-white/25 p-0.5 shadow-lg">
                     <div class="w-full h-full bg-obsidian rounded-[10px] flex items-center justify-center">
-                        <i class="fa-solid fa-mug-hot text-goldAccent text-sm"></i>
+                        <i class="fa-solid fa-mug-hot text-[#F5F2EE] text-sm"></i>
                     </div>
                 </div>
                 <div class="flex flex-col">
@@ -215,12 +215,12 @@
                                 @endif
 
                                 @if($menu->is_featured)
-                                    <span class="absolute top-2 left-2 bg-goldAccent text-black text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
+                                    <span class="absolute top-2 left-2 bg-[#F5F2EE] text-[#111111] text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
                                         Unggulan
                                     </span>
                                 @endif
                                 @if($menu->is_best_seller)
-                                    <span class="absolute top-2 right-2 bg-rose-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
+                                    <span class="absolute top-2 right-2 bg-white/15 backdrop-blur-md border border-white/25 text-[#F5F5F5] text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
                                         Best Seller
                                     </span>
                                 @endif
@@ -241,11 +241,11 @@
                                 @endif
 
                                 <div class="flex items-center justify-between mt-3">
-                                    <span class="text-goldAccent font-black text-base font-mono">
+                                    <span class="text-[#F5F2EE] font-black text-base font-mono tabular-nums">
                                         Rp {{ number_format($menu->price, 0, ',', '.') }}
                                     </span>
                                     <button type="button" onclick="addToCart({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }})"
-                                            class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-goldAccent text-black text-xs font-bold hover:bg-amber-400 active:scale-95 transition-all">
+                                            class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#F5F2EE] text-[#111111] text-xs font-bold hover:bg-white active:scale-95 transition-all">
                                         <i class="fa-solid fa-plus text-xs"></i> Tambah
                                     </button>
                                 </div>
@@ -552,7 +552,7 @@
 
                     {{-- 5. Submit Button --}}
                     <button type="button" onclick="submitOrder()" id="submitBtn"
-                        class="w-full py-4 rounded-2xl {{ $initialProcessMethod === 'zendo' ? 'bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 shadow-emerald-500/20' : 'bg-gradient-to-r from-goldAccent via-amber-400 to-yellow-300 shadow-goldAccent/20' }} text-black font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg disabled:opacity-50">
+                        class="w-full py-4 rounded-2xl {{ $initialProcessMethod === 'zendo' ? 'bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 shadow-emerald-500/20 text-black' : 'bg-[#F5F2EE] hover:bg-white text-[#111111]' }} font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg disabled:opacity-50">
                         @if($initialProcessMethod === 'zendo')
                             <i class="fa-solid fa-paper-plane mr-2"></i> Pesan Sekarang (Otomatis ke Zendo)
                         @else
@@ -1096,7 +1096,7 @@
                 submitBtn.className = 'w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 text-black font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50';
                 submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Pesan Sekarang (Otomatis ke Zendo)';
             } else {
-                submitBtn.className = 'w-full py-4 rounded-2xl bg-gradient-to-r from-goldAccent via-amber-400 to-yellow-300 text-black font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg shadow-goldAccent/20 disabled:opacity-50';
+                submitBtn.className = 'w-full py-4 rounded-2xl bg-[#F5F2EE] hover:bg-white text-[#111111] font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg disabled:opacity-50';
                 submitBtn.innerHTML = '<i class="fa-solid fa-qrcode mr-2"></i> Buat Slip Pesanan (Kasir)';
             }
         }

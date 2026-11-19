@@ -256,6 +256,26 @@
                                   class="w-full px-3.5 py-2.5 rounded-xl border text-[13.5px] leading-relaxed transition focus:outline-none focus:ring-2 focus:ring-[var(--admin-btn-primary-bg,#2F6B4F)] resize-none"
                                   style="background-color: var(--admin-bg-card, #FFFFFF); border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">{{ old('cafe_story_p2', $aboutData['cafe_story_p2']) }}</textarea>
                     </x-field>
+
+                    {{-- 2d. Slogan / Tagline bawah --}}
+                    <x-field for="about_tagline"
+                             label="Slogan / Tagline (tampil miring di bawah)"
+                             :required="false"
+                             hint="Kalimat penutup miring berukuran besar di bawah cerita kafe. Contoh: Find your favorite taste."
+                             recommendation="Saran: 3–6 kata (15–40 huruf) • Opsional"
+                             :defaultValue="'Find your favorite taste.'"
+                             :counter="true"
+                             :max="200">
+                        <input type="text" 
+                               name="about_tagline" 
+                               id="about_tagline" 
+                               value="{{ old('about_tagline', $aboutData['about_tagline'] ?? 'Find your favorite taste.') }}" 
+                               maxlength="200"
+                               placeholder="Contoh: Find your favorite taste."
+                               oninput="liveSyncText('previewTagline', this.value)"
+                               class="w-full px-3.5 py-2 rounded-xl border text-[13.5px] italic font-semibold transition focus:outline-none focus:ring-2 focus:ring-[var(--admin-btn-primary-bg,#2F6B4F)]"
+                               style="background-color: var(--admin-bg-card, #FFFFFF); border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">
+                    </x-field>
                 </x-form-section>
 
                 {{-- BAGIAN LIPAT (ACCORDION): Pengaturan tambahan --}}
@@ -364,7 +384,7 @@
                             <x-field for="about_quote"
                                      label="Kalimat pilihan (tampil di kotak bawah)"
                                      :required="false"
-                                     hint="Kutipan filosofis di kartu abu-abu bawah dengan tanda petik besar."
+                                     hint="Bagian kartu kutipan ini tidak lagi ditampilkan di halaman publik."
                                      recommendation="Saran: 1–2 kalimat bermakna (80–180 huruf) • Opsional"
                                      :defaultValue="'Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.'"
                                      :counter="true"
@@ -577,6 +597,11 @@
                         {{-- Paragraf 2 --}}
                         <p id="previewP2" class="text-[12.5px] text-[#666666] leading-relaxed line-clamp-2 m-0 {{ empty($aboutData['cafe_story_p2']) ? 'hidden' : '' }}">
                             {{ $aboutData['cafe_story_p2'] }}
+                        </p>
+
+                        {{-- Slogan / Tagline --}}
+                        <p id="previewTagline" class="text-[13px] italic text-[#1C1C1C] font-semibold m-0 pt-1">
+                            {{ $aboutData['about_tagline'] ?? 'Find your favorite taste.' }}
                         </p>
 
                         {{-- Tombol Aksi --}}

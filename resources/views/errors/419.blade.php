@@ -36,38 +36,38 @@
         }
     </script>
 </head>
-<body class="bg-warm-ivory text-ink-black font-sans min-h-screen flex items-center justify-center p-4 antialiased selection:bg-ink-black selection:text-white">
+<body class="bg-[#0C0C0C] text-[#F5F5F5] font-sans min-h-screen flex items-center justify-center p-4 antialiased selection:bg-[#F5F2EE] selection:text-[#111111]">
 
-    <div class="w-full max-w-md bg-white border border-hairline rounded-3xl p-8 sm:p-10 shadow-card text-center">
+    <div class="w-full max-w-md bg-white/[0.04] backdrop-blur-md border border-white/[0.14] rounded-3xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-center">
         
         {{-- Shield / Clock Icon --}}
-        <div class="w-16 h-16 bg-amber-50 text-amber-600 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xs">
+        <div class="w-16 h-16 bg-white/10 text-[#F5F2EE] border border-white/15 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xs">
             <i class="fa-solid fa-shield-halved text-2xl"></i>
         </div>
 
-        <div class="inline-block px-3 py-1 bg-warm-ivory border border-hairline rounded-full text-[11px] font-mono font-bold text-muted-text uppercase tracking-wider mb-3">
+        <div class="inline-block px-3 py-1 bg-white/[0.06] border border-white/[0.14] rounded-full text-[11px] font-mono font-bold text-[#B5B5B5] uppercase tracking-wider mb-3">
             Error 419 • Sesi Berakhir
         </div>
 
-        <h1 class="text-2xl font-black tracking-tight text-ink-black mb-2 uppercase">Sesi Keamanan Kedaluwarsa</h1>
-        <p class="text-muted-text text-xs leading-relaxed mb-6">
+        <h1 class="text-2xl font-black tracking-tight text-[#F5F5F5] mb-2 uppercase">Sesi Keamanan Kedaluwarsa</h1>
+        <p class="text-[#B5B5B5] text-xs leading-relaxed mb-6">
             Halaman ini tidak aktif dalam waktu yang cukup lama sehingga token keamanan (CSRF) telah kedaluwarsa untuk melindungi akun Anda.
         </p>
 
         <div class="space-y-3">
-            <button onclick="handleReload()" class="w-full bg-ink-black hover:bg-charcoal text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer">
+            <button onclick="handleReload()" class="w-full bg-[#F5F2EE] hover:bg-white text-[#111111] font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-arrow-rotate-right text-xs"></i>
                 <span id="btnText">Muat Ulang Halaman Baru</span>
             </button>
 
-            <a href="{{ url('/') }}" class="w-full bg-warm-ivory hover:bg-warm-stone text-charcoal font-semibold text-xs py-3 rounded-xl transition border border-hairline flex items-center justify-center gap-2">
+            <a href="{{ url('/') }}" class="w-full bg-white/[0.04] hover:bg-white/[0.08] text-[#F5F5F5] font-semibold text-xs py-3 rounded-xl transition border border-white/[0.14] flex items-center justify-center gap-2">
                 <i class="fa-solid fa-house text-xs"></i>
                 <span>Kembali ke Beranda Utama</span>
             </a>
         </div>
 
-        <p class="text-[11px] text-muted-text mt-6">
-            Otomatis memuat ulang dalam <span id="countdown" class="font-bold text-ink-black font-mono">5</span> detik...
+        <p class="text-[11px] text-[#8F8F8F] mt-6">
+            Otomatis memuat ulang dalam <span id="countdown" class="font-bold text-[#F5F5F5] font-mono">5</span> detik...
         </p>
 
     </div>

@@ -36,13 +36,35 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #F9F9F9; }
-        ::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 9999px; }
+        :root {
+            --bg-page: #0C0C0C;
+            --bg-section-alt: #101010;
+            --surface: rgba(255, 255, 255, 0.04);
+            --surface-strong: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.14);
+            --border-soft: rgba(255, 255, 255, 0.08);
+            --text: #F5F5F5;
+            --text-muted: #B5B5B5;
+            --text-faint: #8F8F8F;
+            --accent-solid: #F5F2EE;
+            --btn-outline: rgba(255, 255, 255, 0.50);
+            --field-bg: #0F0F0F;
+            --field-border: #434343;
+            --glow: radial-gradient(60% 60% at 50% 40%, rgba(190, 172, 182, 0.18), transparent 70%);
+            --shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
 
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0C0C0C; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 9999px; }
+
+        .nu-glass-card,
         .glass-card {
-            background: #FFFFFF;
-            border: 1px solid #E5E5E5;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
         }
 
         .wide-story-frame {
@@ -58,48 +80,48 @@
         }
     </style>
 </head>
-<body class="bg-[#F9F9F9] text-[#1C1C1C] font-sans selection:bg-[#1C1C1C] selection:text-white min-h-screen relative overflow-x-hidden">
+<body class="bg-[#0C0C0C] text-[#F5F5F5] font-sans selection:bg-[#F5F2EE] selection:text-[#111111] min-h-screen relative overflow-x-hidden">
 
     {{-- HEADER / NAVIGATION --}}
-    <header class="sticky top-0 z-50 bg-[#F9F9F9]/95 backdrop-blur-md border-b border-[#E5E5E5] px-6 py-4">
+    <header class="sticky top-0 z-50 bg-[#0C0C0C]/85 backdrop-blur-md border-b border-[var(--border-soft)] px-6 py-4">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-2xl bg-[#F5F5F5] border border-[#E5E5E5] p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-300">
-                    <div class="w-full h-full bg-white rounded-[14px] flex items-center justify-center">
-                        <i class="fa-solid fa-mug-hot text-[#1C1C1C] text-lg"></i>
+                <div class="w-10 h-10 rounded-2xl bg-[var(--surface)] border border-[var(--border)] p-0.5 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                    <div class="w-full h-full bg-[#141414] rounded-[14px] flex items-center justify-center">
+                        <i class="fa-solid fa-mug-hot text-[#F5F2EE] text-lg"></i>
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-bold tracking-tight text-[#1C1C1C] font-editorial">NUCOMU</span>
-                    <span class="text-[9px] uppercase tracking-widest text-[#8A8A8A] font-semibold -mt-1 font-body">Coffee &amp; Stories</span>
+                    <span class="text-xl font-bold tracking-tight text-[#F5F5F5] font-editorial">NUCOMU</span>
+                    <span class="text-[9px] uppercase tracking-widest text-[#B5B5B5] font-semibold -mt-1 font-body">Coffee &amp; Stories</span>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold text-[#666666] uppercase tracking-wider font-body">
-                <a href="#gallery" class="hover:text-[#1C1C1C] transition-colors">Galeri Story</a>
-                <a href="#reviews" class="hover:text-[#1C1C1C] transition-colors">Ulasan Pelanggan</a>
-                <a href="{{ route('nucomu.order') }}" class="hover:text-[#1C1C1C] transition-colors">
-                    <i class="fa-solid fa-utensils mr-1 text-[#1C1C1C]"></i> Pesan Menu
+            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold text-[#B5B5B5] uppercase tracking-wider font-body">
+                <a href="#gallery" class="hover:text-[#F5F5F5] transition-colors">Galeri Story</a>
+                <a href="#reviews" class="hover:text-[#F5F5F5] transition-colors">Ulasan Pelanggan</a>
+                <a href="{{ route('nucomu.order') }}" class="hover:text-[#F5F5F5] transition-colors">
+                    <i class="fa-solid fa-utensils mr-1 text-[#F5F2EE]"></i> Pesan Menu
                 </a>
             </nav>
 
-            <button onclick="openReviewModal()" class="px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider text-white bg-[#1C1C1C] hover:bg-black shadow-xs hover:scale-105 active:scale-95 transition-all font-body">
+            <button onclick="openReviewModal()" class="px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider text-[#111111] bg-[#F5F2EE] hover:bg-white shadow-xs hover:scale-105 active:scale-95 transition-all font-body">
                 <i class="fa-solid fa-pen-nib mr-1.5"></i> Tulis Ulasan
             </button>
         </div>
     </header>
 
     {{-- HERO --}}
-    <section class="pt-10 pb-6 px-6 text-center relative z-10">
+    <section class="pt-10 pb-6 px-6 text-center relative z-10 bg-[var(--bg-page)]">
         <div class="max-w-4xl mx-auto flex flex-col items-center">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E5E5E5] text-[11px] font-semibold text-[#1C1C1C] shadow-2xs font-body mb-3">
-                <span class="w-2 h-2 rounded-full bg-[#1C1C1C] animate-pulse"></span> Open Daily: 08:00 - 23:00 WIB
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[var(--surface)] border border-[var(--border)] text-[11px] font-semibold text-[#F5F5F5] shadow-2xs font-body mb-3">
+                <span class="w-2 h-2 rounded-full bg-[#F5F2EE] animate-pulse"></span> Open Daily: 08:00 - 23:00 WIB
             </div>
-            <h1 class="text-3xl sm:text-5xl font-bold tracking-tight leading-tight text-[#1C1C1C] font-editorial mx-auto">
+            <h1 class="text-3xl sm:text-5xl font-bold tracking-tight leading-tight text-[#F5F5F5] font-editorial mx-auto">
                 Suasana, Rasa, &amp; 
                 <span>Cerita Nucomu Cafe</span>
             </h1>
-            <p class="text-[#666666] text-xs sm:text-sm font-body max-w-3xl mx-auto mt-3.5 leading-relaxed">Nikmati momen harian dan ulasan pengunjung yang berganti otomatis.</p>
+            <p class="text-[#B5B5B5] text-xs sm:text-sm font-body max-w-3xl mx-auto mt-3.5 leading-relaxed">Nikmati momen harian dan ulasan pengunjung yang berganti otomatis.</p>
         </div>
     </section>
 
@@ -107,20 +129,20 @@
     @include('home.sections.gallery')
 
     {{-- CTA Pesan Menu --}}
-    <section class="py-4 px-4 relative z-10">
+    <section class="py-4 px-4 relative z-10 bg-[var(--bg-page)]">
         <div class="max-w-3xl mx-auto">
             <a href="{{ route('nucomu.order') }}"
-               class="flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-white border border-[#E5E5E5] hover:border-[#1C1C1C]/40 shadow-2xs hover:shadow-xs transition-all group font-body">
+               class="nu-glass-card flex items-center justify-between w-full px-6 py-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-white/30 shadow-2xs hover:shadow-xs transition-all group font-body">
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C]">
+                    <div class="w-10 h-10 rounded-xl bg-white/10 border border-[var(--border)] flex items-center justify-center text-[#F5F2EE]">
                         <i class="fa-solid fa-utensils"></i>
                     </div>
                     <div>
-                        <span class="font-bold text-[#1C1C1C] block text-sm">Pesan Menu Sekarang</span>
-                        <span class="text-xs text-[#666666]">Pilih menu, isi nama — tampilkan ke kasir</span>
+                        <span class="font-bold text-[#F5F5F5] block text-sm">Pesan Menu Sekarang</span>
+                        <span class="text-xs text-[#B5B5B5]">Pilih menu, isi nama — tampilkan ke kasir</span>
                     </div>
                 </div>
-                <i class="fa-solid fa-arrow-right text-[#1C1C1C] group-hover:translate-x-1 transition-transform"></i>
+                <i class="fa-solid fa-arrow-right text-[#F5F2EE] group-hover:translate-x-1 transition-transform"></i>
             </a>
         </div>
     </section>
@@ -129,33 +151,33 @@
     @include('home.sections.reviews', ['dynamicReviews' => $reviews])
 
     {{-- MODAL ULASAN (MONOCHROME) --}}
-    <div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1C1C]/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeReviewModal()">
-        <div class="bg-[#FAFAFA] w-full max-w-md rounded-3xl p-6 sm:p-8 border border-[#E5E5E5] shadow-2xl relative transform scale-95 transition-transform duration-300 max-h-[92vh] overflow-y-auto font-body" id="modalContent" onclick="event.stopPropagation()">
-            <button onclick="closeReviewModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] hover:bg-[#1C1C1C] hover:text-white transition-colors shadow-2xs">
+    <div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" onclick="closeReviewModal()">
+        <div class="bg-[#121212] w-full max-w-md rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-[var(--shadow)] relative transform scale-95 transition-transform duration-300 max-h-[92vh] overflow-y-auto font-body" id="modalContent" onclick="event.stopPropagation()">
+            <button onclick="closeReviewModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 border border-[var(--border)] flex items-center justify-center text-[#F5F5F5] hover:bg-[#F5F2EE] hover:text-[#111111] transition-colors shadow-2xs">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
 
             <div class="flex items-center gap-3 mb-5">
-                <div class="w-10 h-10 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C]">
+                <div class="w-10 h-10 rounded-xl bg-white/10 border border-[var(--border)] flex items-center justify-center text-[#F5F2EE]">
                     <i class="fa-solid fa-pen-to-square text-base"></i>
                 </div>
                 <div>
-                    <h3 class="text-base font-bold text-[#1C1C1C]">Tulis Ulasan Nucomu</h3>
-                    <p class="text-[11px] text-[#666666]">Bagikan kesan &amp; foto pengalaman Anda</p>
+                    <h3 class="text-base font-bold text-[#F5F5F5]">Tulis Ulasan Nucomu</h3>
+                    <p class="text-[11px] text-[#B5B5B5]">Bagikan kesan &amp; foto pengalaman Anda</p>
                 </div>
             </div>
 
             {{-- Flash success --}}
             @if(session('review_success'))
-                <div class="mb-4 p-3.5 bg-white border border-[#E5E5E5] text-[#1C1C1C] rounded-xl text-xs font-medium">
-                    <i class="fa-solid fa-circle-check mr-1.5 text-[#1C1C1C]"></i> {{ session('review_success') }}
+                <div class="mb-4 p-3.5 bg-white/[0.06] border border-[var(--border)] text-[#F5F5F5] rounded-xl text-xs font-medium">
+                    <i class="fa-solid fa-circle-check mr-1.5 text-[#F5F2EE]"></i> {{ session('review_success') }}
                 </div>
             @endif
 
             {{-- Validation or upload error --}}
             @if($errors->any() || session('error'))
-                <div class="mb-4 p-3.5 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-xs space-y-1">
-                    <div class="font-bold flex items-center gap-1.5 text-rose-700">
+                <div class="mb-4 p-3.5 bg-red-950/60 border border-red-400/30 text-red-200 rounded-xl text-xs space-y-1">
+                    <div class="font-bold flex items-center gap-1.5 text-red-200">
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         <span>{{ session('error') ? 'Terjadi kesalahan unggah:' : 'Terdapat kesalahan formulir:' }}</span>
                     </div>
@@ -179,43 +201,43 @@
             <form action="{{ route('nucomu.review.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3.5">
                 @csrf
                 <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Nama Lengkap *</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-1.5">Nama Lengkap *</label>
                     <input type="text" name="name" required placeholder="Nama Anda"
-                        class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors">
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs text-[#F5F5F5] placeholder-[#8F8F8F] focus:outline-none focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 transition-colors">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Status / Info Singkat</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-1.5">Status / Info Singkat</label>
                     <input type="text" name="handle" placeholder="Contoh: Local Guide / Pengunjung"
-                        class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors">
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs text-[#F5F5F5] placeholder-[#8F8F8F] focus:outline-none focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 transition-colors">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Pesanan Anda</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-1.5">Pesanan Anda</label>
                     <input type="text" name="order_tag" placeholder="Misal: Cheesecake & Nucomu Coffee"
-                        class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors">
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs text-[#F5F5F5] placeholder-[#8F8F8F] focus:outline-none focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 transition-colors">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Rating Bintang</label>
-                    <div class="flex gap-2 text-lg text-stone-300" id="starRating">
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-1.5">Rating Bintang</label>
+                    <div class="flex gap-2 text-lg text-[#434343]" id="starRating">
                         @for($i = 1; $i <= 5; $i++)
-                            <i class="fa-solid fa-star cursor-pointer hover:text-[#1C1C1C] transition-colors text-[#1C1C1C]" onclick="setRating({{ $i }})"></i>
+                            <i class="fa-solid fa-star cursor-pointer hover:text-[#F5F2EE] transition-colors text-[#F5F2EE]" onclick="setRating({{ $i }})"></i>
                         @endfor
                     </div>
                     <input type="hidden" name="rating" id="ratingInput" value="5">
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Ulasan Singkat *</label>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-1.5">Ulasan Singkat *</label>
                     <textarea name="content" rows="3" required placeholder="Tuliskan kesan rasa kopi, dessert, dan suasana di Nucomu Cafe..."
-                        class="w-full p-3 rounded-xl bg-white border border-[#E5E5E5] text-xs text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#1C1C1C] focus:ring-1 focus:ring-[#1C1C1C] transition-colors resize-none"></textarea>
+                        class="w-full p-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs text-[#F5F5F5] placeholder-[#8F8F8F] focus:outline-none focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 transition-colors resize-none"></textarea>
                 </div>
 
                 <div>
-                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">Upload Foto (Opsional)</label>
-                    <label class="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#F5F5F5] border border-dashed border-[#CCCCCC] hover:border-[#1C1C1C] text-xs text-[#666666] cursor-pointer transition-colors">
-                        <i class="fa-solid fa-camera text-[#1C1C1C]"></i>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#F5F5F5] mb-1.5">Upload Foto (Opsional)</label>
+                    <label class="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl bg-[var(--surface)] hover:bg-[var(--surface-strong)] border border-dashed border-[var(--border)] hover:border-white/40 text-xs text-[#B5B5B5] cursor-pointer transition-colors">
+                        <i class="fa-solid fa-camera text-[#F5F2EE]"></i>
                         <span id="nucomuReviewImageLabel">Pilih foto dari perangkat Anda...</span>
                         <input type="file" name="review_image" id="reviewImageInput" accept=".jpg,.jpeg,.png,.webp"
                                data-max-bytes="{{ $reviewLimits['effective_bytes'] ?? $reviewLimits['limit_bytes'] ?? 5242880 }}"
@@ -224,15 +246,15 @@
                                class="hidden" onchange="if(this.files && this.files[0]) document.getElementById('nucomuReviewImageLabel').innerText = this.files[0].name;">
                     </label>
                     <div id="reviewImageFeedback" class="mt-1 text-left"></div>
-                    <p class="text-[10.5px] text-[#888888] mt-1">Format: JPG, PNG, WebP &bull; Maksimal {{ $reviewLimits['formatted'] ?? $reviewLimits['limit_formatted'] ?? '5 MB' }}.</p>
+                    <p class="text-[10.5px] text-[#8F8F8F] mt-1">Format: JPG, PNG, WebP &bull; Maksimal {{ $reviewLimits['formatted'] ?? $reviewLimits['limit_formatted'] ?? '5 MB' }}.</p>
                     @if(!empty($reviewLimits['is_throttled'] ?? $reviewLimits['is_limited_by_server']))
-                        <p class="text-[10px] text-amber-800 font-medium mt-0.5">
-                            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Batas server PHP saat ini ({{ $reviewLimits['server_limit_formatted'] ?? '2 MB' }}) lebih kecil dari batas aplikasi (5 MB).
+                        <p class="text-[10px] text-amber-300 font-medium mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-300"></i> Batas server PHP saat ini ({{ $reviewLimits['server_limit_formatted'] ?? '2 MB' }}) lebih kecil dari batas aplikasi (5 MB).
                         </p>
                     @endif
                 </div>
 
-                <button type="submit" class="w-full py-3.5 rounded-full bg-[#1C1C1C] hover:bg-black text-white font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95">
+                <button type="submit" class="w-full py-3.5 rounded-full bg-[#F5F2EE] hover:bg-white text-[#111111] font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-md active:scale-95">
                     Kirim Ulasan Sekarang
                 </button>
             </form>
@@ -240,11 +262,11 @@
     </div>
 
     {{-- FOOTER --}}
-    <footer class="mt-12 border-t border-[#E5E5E5] py-8 px-6 text-center text-xs text-[#777777] relative z-10 font-body">
+    <footer class="mt-12 border-t border-[var(--border-soft)] py-8 px-6 text-center text-xs text-[#8F8F8F] relative z-10 font-body">
         <p>© {{ date('Y') }} Nucomu Cafe. Crafted for coffee lovers.</p>
         <div class="mt-3 flex items-center justify-center gap-6">
-            <a href="{{ route('home') }}" class="hover:text-[#1C1C1C] transition-colors">← Kembali ke Beranda</a>
-            <a href="{{ route('nucomu.order') }}" class="hover:text-[#1C1C1C] transition-colors">Pesan Menu</a>
+            <a href="{{ route('home') }}" class="hover:text-[#F5F5F5] transition-colors">← Kembali ke Beranda</a>
+            <a href="{{ route('nucomu.order') }}" class="hover:text-[#F5F5F5] transition-colors">Pesan Menu</a>
         </div>
     </footer>
 
@@ -269,7 +291,7 @@
             document.getElementById('reviewHandle').innerText = r.handle || 'Pengunjung Nucomu';
             document.getElementById('reviewAvatar').src = r.avatar_url || DEFAULT_AVATAR;
             document.getElementById('reviewText').innerText = '"' + r.content + '"';
-            document.getElementById('reviewOrderTag').innerHTML = '<i class="fa-solid fa-mug-saucer mr-1.5 text-[#1C1C1C]"></i> ' + (r.order_tag || 'Menu Spesial');
+            document.getElementById('reviewOrderTag').innerHTML = '<i class="fa-solid fa-mug-saucer mr-1.5 text-[#F5F2EE]"></i> ' + (r.order_tag || 'Menu Spesial');
 
             const photoWrap = document.getElementById('reviewPhotoWrap');
             const photoImg = document.getElementById('reviewPhotoImg');
@@ -330,11 +352,11 @@
             const stars = document.getElementById('starRating').children;
             for (let i = 0; i < stars.length; i++) {
                 if (i < rating) {
-                    stars[i].classList.add('text-[#1C1C1C]');
-                    stars[i].classList.remove('text-stone-300');
+                    stars[i].classList.add('text-[#F5F2EE]');
+                    stars[i].classList.remove('text-[#434343]');
                 } else {
-                    stars[i].classList.remove('text-[#1C1C1C]');
-                    stars[i].classList.add('text-stone-300');
+                    stars[i].classList.remove('text-[#F5F2EE]');
+                    stars[i].classList.add('text-[#434343]');
                 }
             }
         }

@@ -83,6 +83,7 @@ class AboutAdminTest extends TestCase
             'cafe_story_headline' => 'Kopi Hangat, Suasana Tenang di Tulungagung.',
             'cafe_story_p1' => 'Nucomu Cafe didirikan dengan cinta terhadap racikan kopi berkualitas dan kenyamanan bercengkerama.',
             'cafe_story_p2' => 'Setiap cangkir disajikan dengan biji kopi pilihan dan suasana tenang untuk melepas penat.',
+            'about_tagline' => 'Find your favorite taste here.',
             'about_quote' => 'Di sini, setiap tegukan adalah jeda yang menyegarkan pikiran Anda.',
             'about_button_text' => 'Lihat Menu Favorit',
             'about_button_link' => '#menu',
@@ -97,6 +98,9 @@ class AboutAdminTest extends TestCase
         // Verify settings in database
         $this->assertEquals('CERITA KAMI / SEJARAH', Setting::where('key', 'about_label')->value('value'));
         $this->assertEquals('Kopi Hangat, Suasana Tenang di Tulungagung.', Setting::where('key', 'cafe_story_headline')->value('value'));
+        $this->assertEquals('Nucomu Cafe didirikan dengan cinta terhadap racikan kopi berkualitas dan kenyamanan bercengkerama.', Setting::where('key', 'cafe_story_p1')->value('value'));
+        $this->assertEquals('Setiap cangkir disajikan dengan biji kopi pilihan dan suasana tenang untuk melepas penat.', Setting::where('key', 'cafe_story_p2')->value('value'));
+        $this->assertEquals('Find your favorite taste here.', Setting::where('key', 'about_tagline')->value('value'));
         $this->assertEquals('Lihat Menu Favorit', Setting::where('key', 'about_button_text')->value('value'));
         $this->assertEquals('#menu', Setting::where('key', 'about_button_link')->value('value'));
 
@@ -105,6 +109,9 @@ class AboutAdminTest extends TestCase
         $homeResponse->assertStatus(200);
         $homeResponse->assertSee('CERITA KAMI / SEJARAH');
         $homeResponse->assertSee('Kopi Hangat, Suasana Tenang di Tulungagung.');
+        $homeResponse->assertSee('Nucomu Cafe didirikan dengan cinta terhadap racikan kopi berkualitas dan kenyamanan bercengkerama.');
+        $homeResponse->assertSee('Setiap cangkir disajikan dengan biji kopi pilihan dan suasana tenang untuk melepas penat.');
+        $homeResponse->assertSee('Find your favorite taste here.');
         $homeResponse->assertDontSee('Lihat Menu Favorit');
     }
 
@@ -178,5 +185,30 @@ class AboutAdminTest extends TestCase
         // Follow redirect ke halaman form
         $followResponse = $this->actingAs($admin)->get(route('admin.about.index'));
         $followResponse->assertStatus(200);
+    }
+
+    public function test_admin_can_update_about_media_to_image_and_see_it_on_public_home(): void
+    {
+        $admin = $this->getAdminUser();
+
+        $payload = [
+            'about_label' => 'TENTANG KAMI',
+            'cafe_story_headline' => 'Nucomu Cafe',
+            'cafe_story_p1' => 'Paragraf pertama cerita kafe...',
+            'cafe_story_p2' => 'Paragraf kedua cerita kafe...',
+            'about_tagline' => 'Find your favorite taste.',
+            'media_type' => 'image',
+        ];
+
+        $response = $this->actingAs($admin)->post(route('admin.about.update'), $payload);
+        $response->assertRedirect(route('admin.about.index'));
+
+        $this->assertEquals('image', Setting::where('key', 'about_media_type')->value('value'));
+
+        $homeResponse = $this->get('/');
+        $homeResponse->assertStatus(200);
+        $homeResponse->assertSee('Foto Cafe');
+        $homeResponse->assertSee('NUCOMU SPACE');
+        $homeResponse->assertDontSee('id="about-room-tour-video"', false);
     }
 }

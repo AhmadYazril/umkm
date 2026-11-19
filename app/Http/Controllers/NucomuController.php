@@ -73,11 +73,17 @@ class NucomuController extends Controller
                 $brand['story_p1'] = $dbSettings['cafe_story_p1'];
                 $brand['cafe_story_p1'] = $dbSettings['cafe_story_p1'];
             }
-            $brand['story_p2'] = ! empty($dbSettings['cafe_story_p2'])
-                ? $dbSettings['cafe_story_p2']
-                : 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.';
+            if (! empty($dbSettings['cafe_story_p2'])) {
+                $brand['story_p2'] = $dbSettings['cafe_story_p2'];
+                $brand['cafe_story_p2'] = $dbSettings['cafe_story_p2'];
+            } else {
+                $brand['story_p2'] = 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.';
+            }
             if (! empty($dbSettings['about_label'])) {
                 $brand['about_label'] = $dbSettings['about_label'];
+            }
+            if (! empty($dbSettings['about_tagline'])) {
+                $brand['about_tagline'] = $dbSettings['about_tagline'];
             }
             if (! empty($dbSettings['about_quote'])) {
                 $brand['about_quote'] = $dbSettings['about_quote'];
@@ -101,7 +107,7 @@ class NucomuController extends Controller
                     $brand['about_media_url'] = asset($aboutMediaPath);
                 }
             } else {
-                $brand['about_media_url'] = asset('videos/tiramisu.mp4');
+                $brand['about_media_url'] = asset('videos/room-tour.mp4');
             }
             if (! empty($dbSettings['cafe_story'])) {
                 $brand['story'] = $dbSettings['cafe_story'];

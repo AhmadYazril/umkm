@@ -29,6 +29,16 @@
         html.nucomu-intro-seen #nucomu-intro-overlay { display: none !important; }
         html.nucomu-intro-active { overflow: hidden !important; }
         html.nucomu-intro-active body { overflow: hidden !important; }
+        html.nucomu-intro-active #nucomu-intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: #0C0C0C;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
     <noscript>
         <style>
@@ -37,8 +47,8 @@
         </style>
     </noscript>
 
-    <!-- LCP Preload for Hero Welcome Slide -->
-    <link rel="preload" as="image" href="{{ asset('images/hero/hero-welcome.webp') }}" type="image/webp" fetchpriority="high">
+    <!-- LCP Preload for First Hero Slide -->
+    <link rel="preload" as="image" href="{{ asset('images/hero/coffee-pack.webp') }}" type="image/webp" fetchpriority="high">
     @endif
 
     <!-- Google Fonts: Playfair Display (Serif) & Montserrat (Sans-Serif) - Modern Organic Typography -->

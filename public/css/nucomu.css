@@ -57,7 +57,7 @@
     --font-body: var(--font-sans);
 
     /* Hero Theme Color & Navbar Dynamic Frosted Glass Variables */
-    --hero-bg-color: #140E0A;
+    --hero-bg-color: #242424;
 
     /* ======================================================================
        Navbar Dynamic Monochrome Color Variables
@@ -608,58 +608,58 @@ p {
     transform: scale(1.04);
 }
 
-/* Subtle Scroll Reveal Animations */
+/* Subtle Scroll Reveal Animations (Fast Visibility + Slow Silky Glide) */
 .reveal-on-scroll {
     opacity: 0;
-    transform: translateY(18px);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(0, 22px, 0);
+    transition: opacity 0.7s ease-out, transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
 .reveal-on-scroll.is-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
 }
 
 /* Directional Editorial Reveal Animations for Facilities */
 .reveal-from-left {
     opacity: 0;
-    transform: translateX(-32px);
-    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(-28px, 0, 0);
+    transition: opacity 0.75s ease-out, transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
 .reveal-from-left.is-visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
 }
 
 .reveal-from-right {
     opacity: 0;
-    transform: translateX(32px);
-    transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(28px, 0, 0);
+    transition: opacity 0.75s ease-out, transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
 .reveal-from-right.is-visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
 }
 
 .reveal-fade-up {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(0, 28px, 0);
+    transition: opacity 0.72s ease-out, transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
 .reveal-fade-up.is-visible {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
 }
 
 .style-delay-2 {
-    transition-delay: 0.15s;
+    transition-delay: 0.08s;
 }
 
 /* Carousel & Fade Transitions */
@@ -1429,95 +1429,153 @@ p {
     transform: rotate(180deg);
 }
 
-/* Photo & Decoration: Fade In + Slide In From Left (0.8s Smooth Easing) */
+/* Photo & Decoration: Smooth Editorial Glide From Left */
+#our-story-section .story-anim-photo,
 .story-anim-photo {
     opacity: 0;
-    transform: translateX(-36px) rotate(0deg);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.3s ease;
+    transform: translate3d(-48px, 16px, 0) scale(0.95) rotate(1deg);
+    transition: opacity 0.72s ease-out,
+                transform 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s ease;
     will-change: opacity, transform;
 }
 
+#our-story-section .story-anim-deco,
 .story-anim-deco {
     opacity: 0;
-    transform: scale(0.92) translateX(-20px) rotate(-2.6deg);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(-40px, 22px, 0) scale(0.92) rotate(-6deg);
+    transition: opacity 0.75s ease-out 0.1s,
+                transform 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
     will-change: opacity, transform;
 }
 
-/* Badges: Scale In + Fade In */
+/* Badges & Caption: Staggered Pop & Glide In */
+#our-story-section .story-anim-badge-logo,
 .story-anim-badge-logo {
     opacity: 0;
-    transform: scale(0.85);
-    transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.35s,
-                transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.35s;
+    transform: translate3d(-14px, -14px, 0) scale(0.76);
+    transition: opacity 0.6s ease-out 0.28s,
+                transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.28s;
     will-change: opacity, transform;
 }
 
+#our-story-section .story-anim-badge-coffee,
 .story-anim-badge-coffee {
     opacity: 0;
-    transform: scale(0.85);
-    transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.45s,
-                transform 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.45s;
+    transform: translate3d(14px, 14px, 0) scale(0.76);
+    transition: opacity 0.6s ease-out 0.36s,
+                transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.36s,
+                background-color 0.2s ease;
     will-change: opacity, transform;
 }
 
-/* Right Column Items: Fade In + Slide In From Right with 0.15s Stagger */
+#our-story-section .story-anim-caption,
+.story-anim-caption {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+    transition: opacity 0.65s ease-out 0.32s,
+                transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.32s;
+    will-change: opacity, transform;
+}
+
+/* Right Column Items: Staggered Glide From Right */
+#our-story-section .story-anim-right,
 .story-anim-right {
     opacity: 0;
-    transform: translateX(32px);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(42px, 0, 0);
+    transition: opacity 0.72s ease-out,
+                transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
-.story-delay-1 { transition-delay: 0.1s; }   /* 1. Label OUR STORY */
-.story-delay-2 { transition-delay: 0.25s; }  /* 2. Headline */
-.story-delay-3 { transition-delay: 0.4s; }   /* 3. Deskripsi Paragraf 1 */
-.story-delay-4 { transition-delay: 0.48s; }  /* 4. Deskripsi Paragraf 2 */
-.story-delay-5 { transition-delay: 0.6s; }   /* 5. Tombol CTA */
+#our-story-section .story-delay-1,
+.story-delay-1 { transition-delay: 0.08s; }  /* 1. Label TENTANG KAMI */
+#our-story-section .story-delay-2,
+.story-delay-2 { transition-delay: 0.18s; }  /* 2. Headline */
+#our-story-section .story-delay-3,
+.story-delay-3 { transition-delay: 0.28s; }  /* 3. Deskripsi Paragraf 1 */
+#our-story-section .story-delay-4,
+.story-delay-4 { transition-delay: 0.36s; }  /* 4. Garis Pemisah */
+#our-story-section .story-delay-5,
+.story-delay-5 { transition-delay: 0.44s; }  /* 5. Deskripsi Paragraf 2 */
+#our-story-section .story-delay-6,
+.story-delay-6 { transition-delay: 0.54s; }  /* 6. Tagline */
 
-/* In-View Active State (Single-Trigger, No Layout Shift) */
+@media (max-width: 639px) {
+    #our-story-section .story-anim-photo,
+    .story-anim-photo {
+        transform: translate3d(-24px, 16px, 0) scale(0.96) rotate(0.5deg);
+    }
+    #our-story-section .story-anim-deco,
+    .story-anim-deco {
+        transform: translate3d(-18px, 20px, 0) scale(0.94) rotate(-4deg);
+    }
+    #our-story-section .story-anim-right,
+    .story-anim-right {
+        transform: translate3d(0, 24px, 0);
+    }
+}
+
+/* In-View Active State (Triggered when scrolled/navigated into view) */
+#our-story-section.story-in-view .story-anim-photo,
 .story-in-view .story-anim-photo {
     opacity: 1;
-    transform: translate(0, 0) rotate(-0.8deg);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.3s ease;
+    transform: translate3d(0, 0, 0) scale(1) rotate(-0.8deg);
+    transition: opacity 0.72s ease-out,
+                transform 0.95s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s ease;
 }
 
+#our-story-section.story-in-view .story-anim-right,
 .story-in-view .story-anim-right {
     opacity: 1;
-    transform: translate(0, 0);
+    transform: translate3d(0, 0, 0);
 }
 
+#our-story-section.story-in-view .story-anim-deco,
 .story-in-view .story-anim-deco {
     opacity: 1;
-    transform: scale(1) translate(0, 0) rotate(-2.6deg);
-    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(0, 0, 0) scale(1) rotate(-2.6deg);
+    transition: opacity 0.75s ease-out 0.1s,
+                transform 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+}
+
+#our-story-section.story-in-view .story-anim-caption,
+.story-in-view .story-anim-caption {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
 }
 
 /* Frame Hover Effect: 3px Lift, Deeper Shadow, Base Rotation Strictly Preserved */
-.group\/story-card:hover .story-anim-photo {
-    transform: translate(0, -3px) rotate(-0.8deg);
-    box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.28);
+#our-story-section.story-in-view .group\/story-card:hover .story-anim-photo,
+.story-in-view .group\/story-card:hover .story-anim-photo,
+.story-in-view.group\/story-card:hover .story-anim-photo {
+    transform: translate3d(0, -4px, 0) scale(1) rotate(-0.8deg);
+    box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.45);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
                 box-shadow 0.3s ease;
 }
 
-.group\/story-card:hover .story-anim-deco {
-    transform: scale(1.01) translate(0, -1px) rotate(-2.6deg);
+#our-story-section.story-in-view .group\/story-card:hover .story-anim-deco,
+.story-in-view .group\/story-card:hover .story-anim-deco {
+    transform: translate3d(0, -2px, 0) scale(1.015) rotate(-2.6deg);
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Stable Badges */
+#our-story-section.story-in-view .story-anim-badge-logo,
 .story-in-view .story-anim-badge-logo,
+#our-story-section.story-in-view .story-anim-badge-coffee,
 .story-in-view .story-anim-badge-coffee {
     opacity: 1;
-    transform: scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
+}
+
+#our-story-section.story-in-view .story-anim-badge-coffee:active,
+.story-in-view .story-anim-badge-coffee:active {
+    transform: scale(0.9);
+    transition-duration: 0.1s;
+    transition-delay: 0s;
 }
 
 /* ==========================================================================
@@ -1639,38 +1697,27 @@ p {
    ========================================================================== */
 .facility-anim-left {
     opacity: 0;
-    transform: translateX(-36px);
-    transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translate3d(-40px, 0, 0);
+    transition: opacity 0.72s ease-out,
+                transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: opacity, transform;
 }
 
-.facility-delay-1 { transition-delay: 0.1s; }   /* Category Tabs & Arrows */
-.facility-delay-2 { transition-delay: 0.22s; }  /* Badge / Label */
-.facility-delay-3 { transition-delay: 0.34s; }  /* Heading */
-.facility-delay-4 { transition-delay: 0.46s; }  /* Description */
-.facility-delay-5 { transition-delay: 0.58s; }  /* Checklist Features */
-.facility-delay-6 { transition-delay: 0.7s; }   /* Accessibility Hint */
-
-.facility-in-view .facility-anim-left {
-    opacity: 1;
-    transform: translateX(0);
-}
+.facility-delay-1 { transition-delay: 0.06s; }  /* Category Tabs & Arrows */
+.facility-delay-2 { transition-delay: 0.14s; }  /* Badge / Label */
+.facility-delay-3 { transition-delay: 0.22s; }  /* Heading */
+.facility-delay-4 { transition-delay: 0.30s; }  /* Description */
+.facility-delay-5 { transition-delay: 0.38s; }  /* Checklist Features */
+.facility-delay-6 { transition-delay: 0.46s; }  /* Accessibility Hint */
 
 .facility-anim-right {
     opacity: 0;
-    transform: translateX(40px);
-    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
-                transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+    transform: translate3d(42px, 14px, 0) scale(0.96);
+    transition: opacity 0.75s ease-out 0.12s,
+                transform 1s cubic-bezier(0.22, 1, 0.36, 1) 0.12s;
     will-change: opacity, transform;
 }
 
-.facility-in-view .facility-anim-right {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-/* Mobile Responsiveness for 2-Slot Gallery & Animations */
 @media (max-width: 639px) {
     .facility-frame-main {
         width: 72%;
@@ -1689,11 +1736,21 @@ p {
         border-width: 2.5px;
     }
     .facility-anim-left {
-        transform: translateX(-24px);
+        transform: translate3d(0, 22px, 0);
     }
     .facility-anim-right {
-        transform: translateX(24px);
+        transform: translate3d(0, 26px, 0) scale(0.97);
     }
+}
+
+.facility-in-view .facility-anim-left {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+}
+
+.facility-in-view .facility-anim-right {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
 }
 
 /* ==========================================================================
@@ -1796,6 +1853,7 @@ p {
     .story-anim-photo,
     .story-anim-badge-logo,
     .story-anim-badge-coffee,
+    .story-anim-caption,
     .story-anim-right,
     .reveal-on-scroll,
     .reveal-from-left,
@@ -1811,7 +1869,7 @@ p {
     }
     .story-anim-deco {
         opacity: 1 !important;
-        transform: rotate(-2.5deg) !important;
+        transform: rotate(-2.6deg) !important;
         transition: none !important;
     }
     .story-typing-cursor {
@@ -1941,6 +1999,14 @@ html.nucomu-intro-active body {
     overflow: hidden !important;
 }
 
+/* Pause background animations behind the opaque intro curtain so GPU/CPU stay dedicated to 60fps intro playback */
+html.nucomu-intro-active main *,
+html.nucomu-intro-active main *::before,
+html.nucomu-intro-active main *::after,
+html.nucomu-intro-active #main-navbar {
+    animation-play-state: paused !important;
+}
+
 .nucomu-intro-overlay {
     position: fixed;
     inset: 0;
@@ -1950,93 +2016,141 @@ html.nucomu-intro-active body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    will-change: transform, opacity;
-    transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1),
-                opacity 0.7s ease;
+    contain: layout style paint;
+    will-change: transform;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    transition: transform 0.75s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-/* Outro: Terangkat ke atas (translateY -100%) selama 0.7s */
+.nucomu-intro-content {
+    transform: translate3d(0, 0, 0);
+    will-change: transform, opacity;
+    transition: opacity 0.35s ease,
+                transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Outro: Tirai terangkat ke atas (pure GPU translate3d) selama 0.75s */
 .nucomu-intro-overlay.is-leaving {
-    transform: translateY(-100%);
-    opacity: 0.98;
+    transform: translate3d(0, -100%, 0);
     pointer-events: none;
 }
 
-/* Skip / Quick Outro: Fade out cepat 0.3s */
+.nucomu-intro-overlay.is-leaving .nucomu-intro-content,
+.nucomu-intro-overlay.is-leaving .nucomu-intro-skip {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0);
+}
+
+/* Skip / Quick Outro: Fade out cepat 0.32s */
 .nucomu-intro-overlay.is-fading {
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    will-change: opacity;
+    transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nucomu-intro-svg {
-    width: min(70vw, 290px);
+    width: min(70vw, 280px);
     height: auto;
     overflow: visible;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
-/* Ring Tipis Luar (1.5px, rgba(255, 255, 255, 0.18), drawn 0 to 1.2s) */
+@media (min-width: 640px) {
+    .nucomu-intro-svg {
+        width: min(60vw, 320px);
+    }
+}
+
+/* Ring Tipis Luar (1.5px, rgba(255, 255, 255, 0.18), drawn 0 to 1.15s) */
 .intro-ring {
     fill: none;
     stroke: rgba(255, 255, 255, 0.18);
     stroke-width: 1.5;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
+    stroke-dasharray: 1004;
+    stroke-dashoffset: 1004;
     transform-origin: 109px 118px;
     transform: rotate(-90deg);
+    opacity: 0;
 }
 
-.nucomu-intro-active .intro-ring {
-    animation: intro-draw-ring 1.2s ease-out forwards;
+html.nucomu-intro-play .intro-ring {
+    animation: intro-draw-ring 1.15s cubic-bezier(0.33, 1, 0.68, 1) forwards;
 }
 
-/* Goresan Logo Mark (#F5F5F5, drawn 0.6s to 2.2s, stroke-linecap: round) */
+/* Goresan Logo Mark (#F5F5F5, drawn 0.45s to 1.85s, stroke-linecap: round) */
 .intro-mark {
     fill: none;
     stroke: #F5F5F5;
     stroke-width: 12;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
+    stroke-dasharray: 1004;
+    stroke-dashoffset: 1004;
     stroke-linecap: round;
     stroke-linejoin: round;
+    opacity: 0;
 }
 
-.nucomu-intro-active .intro-mark {
-    animation: intro-draw-mark 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards;
+html.nucomu-intro-play .intro-mark {
+    animation: intro-draw-mark 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.45s forwards;
 }
 
-/* Titik Dot (#F5F5F5, drop 2.1s to 3.0s, transform-box fill-box, origin center) */
+/* Titik Dot (#F5F5F5, drop 1.70s to 2.45s, transform-box fill-box, origin center) */
 .intro-dot {
     fill: #F5F5F5;
     opacity: 0;
     transform-box: fill-box;
     transform-origin: center;
+    will-change: transform, opacity;
 }
 
-.nucomu-intro-active .intro-dot {
-    animation: intro-drop-dot 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) 2.1s forwards;
+html.nucomu-intro-play .intro-dot {
+    animation: intro-drop-dot 0.75s cubic-bezier(0.22, 1, 0.36, 1) 1.7s forwards;
 }
 
-/* Teks NUCOMU CAFE (muncul dengan fade + slide up 12px selama 0.5s saat font sudah siap / is-visible) */
+/* Teks NUCOMU CAFE (muncul dengan fade + glide up 12px tersinkron di 2.05s) */
 .intro-text {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translate3d(0, 12px, 0);
     will-change: opacity, transform;
 }
 
+html.nucomu-intro-play .intro-text {
+    animation: intro-text-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) 2.05s forwards;
+}
+
 .intro-text.is-visible {
-    animation: intro-text-fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: intro-text-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Keyframes */
 @keyframes intro-draw-ring {
-    to {
+    0% {
+        opacity: 0;
+        stroke-dashoffset: 1004;
+    }
+    3% {
+        opacity: 1;
+        stroke-dashoffset: 1004;
+    }
+    100% {
+        opacity: 1;
         stroke-dashoffset: 0;
     }
 }
 
 @keyframes intro-draw-mark {
-    to {
+    0% {
+        opacity: 0;
+        stroke-dashoffset: 1004;
+    }
+    2% {
+        opacity: 1;
+        stroke-dashoffset: 1004;
+    }
+    100% {
+        opacity: 1;
         stroke-dashoffset: 0;
     }
 }
@@ -2044,22 +2158,30 @@ html.nucomu-intro-active body {
 @keyframes intro-drop-dot {
     0% {
         opacity: 0;
-        transform: translateY(-40px) scale(0.6);
+        transform: translate3d(0, -34px, 0) scale(0.6);
+    }
+    55% {
+        opacity: 1;
+        transform: translate3d(0, 3px, 0) scale(1.06);
+    }
+    80% {
+        opacity: 1;
+        transform: translate3d(0, -1px, 0) scale(0.99);
     }
     100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translate3d(0, 0, 0) scale(1);
     }
 }
 
 @keyframes intro-text-fade-up {
     0% {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translate3d(0, 12px, 0);
     }
     100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
     }
 }
 
@@ -2068,12 +2190,18 @@ html.nucomu-intro-active body {
     cursor: pointer;
     font-family: var(--font-sans), sans-serif;
     letter-spacing: 0.12em;
+    will-change: opacity, transform;
+    transition: opacity 0.32s ease,
+                transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                color 0.2s ease,
+                border-color 0.2s ease;
 }
 
 /* Reduced Motion Override */
 @media (prefers-reduced-motion: reduce) {
     .intro-ring,
     .intro-mark {
+        opacity: 1 !important;
         stroke-dashoffset: 0 !important;
         animation: none !important;
     }

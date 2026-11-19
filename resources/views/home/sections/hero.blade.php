@@ -1,4 +1,4 @@
-<!-- SECTION 1: HOME / HERO (4 SLIDES: SLIDE 0 WELCOME LATTE + SLIDES 1-3 PRODUCT IN FRONT OF GIANT HEADLINE) -->
+<!-- SECTION 1: HOME / HERO (3 SLIDES: PRODUCT IN FRONT OF GIANT HEADLINE) -->
 @php
     $activeBanners = $activeBanners ?? ($banners ?? collect());
     $activeBanners = $activeBanners ?? ($banners ?? collect());
@@ -33,27 +33,6 @@
     ];
 
     $rawSlides = [
-        [
-            'id' => 'welcome',
-            'type' => 'welcome',
-            'label' => 'NUCOMU CAFE',
-            'headline_line1' => 'Your Everyday',
-            'headline_line2' => 'Coffee Spot.',
-            'paragraph' => 'Nikmati dessert manis, hidangan lezat, camilan favorit, serta kopi dan minuman menyegarkan dengan harga yang bersahabat.',
-            'cta_primary' => [
-                'text' => 'Lihat Menu',
-                'url' => route('home') . '#menu',
-            ],
-            'cta_secondary' => [
-                'text' => 'Tentang Kami',
-                'url' => route('home') . '#about',
-            ],
-            'image_webp' => 'images/hero/hero-welcome.webp',
-            'image_jpg' => 'images/hero/hero-welcome.jpg',
-            'bg_color' => '#140E0A',
-            'theme' => 'dark',
-            'product_image' => 'images/hero/hero-welcome.webp',
-        ],
         [
             'id' => 'fresh-beans',
             'type' => 'product',
@@ -209,9 +188,6 @@
     // Di environment lokal tampilkan semua slide
     // Di produksi, hanya render slide yang aset fotonya sudah ada di public/
     $slides = array_filter($rawSlides, function ($slide) {
-        if ($slide['type'] === 'welcome') {
-            return true;
-        }
         if (app()->isLocal()) {
             return true;
         }
@@ -226,7 +202,7 @@
 <section id="home" 
          data-navbar-theme="dark"
          class="relative min-h-[560px] sm:min-h-[600px] lg:min-h-[640px] flex items-center justify-center overflow-hidden border-b border-[var(--border-soft)] select-none group/hero pt-16 sm:pt-20"
-         style="background-color: #140E0A; transition: background-color 0.8s ease;">
+         style="background-color: #242424; transition: background-color 0.8s ease;">
 
     <!-- Soft feathered ambient glow for subtle dark depth -->
     <div class="absolute inset-0 pointer-events-none z-1" 
@@ -437,79 +413,7 @@
              aria-hidden="{{ $index === 0 ? 'false' : 'true' }}"
              {!! $index !== 0 ? 'inert' : '' !!}>
 
-            @if($slide['type'] === 'welcome')
-                <!-- -----------------------------------------------------------------
-                     SLIDE 0: SAMBUTAN (FOTO LATTE FULL-BLEED + UAP + KEN BURNS)
-                     ----------------------------------------------------------------- -->
-                <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-                    <picture>
-                        @if(file_exists(public_path($slide['image_webp'])))
-                            <source srcset="{{ asset($slide['image_webp']) }}" type="image/webp">
-                        @endif
-                        <img src="{{ asset($slide['image_jpg']) }}" 
-                             alt="Nucomu Cafe Specialty Coffee Latte" 
-                             width="1672" 
-                             height="941" 
-                             fetchpriority="high"
-                             decoding="async"
-                             class="hero-welcome-photo absolute inset-0 w-full h-full object-cover object-[72%_50%] max-md:object-[70%_40%] hero-ken-burns">
-                    </picture>
-
-                    <!-- Overlay Gradien Desktop (Kiri gelap ke transparan kanan) & Mobile (Bawah ke atas) -->
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#140E0A]/90 via-[#140E0A]/60 to-transparent max-md:bg-gradient-to-t max-md:from-[#140E0A]/95 max-md:via-[#140E0A]/70 max-md:to-transparent pointer-events-none z-10" aria-hidden="true"></div>
-
-                    <!-- Vinyet Halus Atas & Bawah -->
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50 pointer-events-none z-10" aria-hidden="true"></div>
-
-                    <!-- Efek Uap Tipis Responsif (Hanya aktif di desktop >= 1024px pada titik latte 72% x, 38% y) -->
-                    <div class="hero-steam-container hidden lg:block absolute pointer-events-none z-15"
-                         style="left: 72%; top: 38%; transform: translate(-50%, -100%);"
-                         aria-hidden="true">
-                        <div class="hero-steam-wisp hero-steam-1"></div>
-                        <div class="hero-steam-wisp hero-steam-2"></div>
-                        <div class="hero-steam-wisp hero-steam-3"></div>
-                    </div>
-                </div>
-
-                <!-- Konten Teks Sambutan (Rata Kiri, Vertikal Tengah) -->
-                <div class="relative z-20 max-w-7xl mx-auto px-5 sm:px-8 lg:px-14 py-12 sm:py-16 w-full flex items-center min-h-[560px] sm:min-h-[600px] lg:min-h-[640px]">
-                    <div class="hero-text-content text-left max-w-xl max-md:mt-auto max-md:pb-14">
-                        <!-- Label Kecil Monokrom -->
-                        <p class="font-body text-xs sm:text-sm font-semibold tracking-[0.25em] text-white/70 uppercase mb-3 flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-white/70"></span>
-                            <span>{{ $slide['label'] }}</span>
-                        </p>
-
-                        <!-- Headline Besar Playfair Display Bold (700) -->
-                        <h1 class="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] tracking-tight mb-4">
-                            {{ $slide['headline_line1'] }}<br>
-                            {{ $slide['headline_line2'] }}
-                        </h1>
-
-                        <!-- Garis Putih Tipis Pendek (~48px) -->
-                        <div class="w-12 h-0.5 bg-white/60 mb-4 sm:mb-5" aria-hidden="true"></div>
-
-                        <!-- Paragraf Sambutan Maks 46ch -->
-                        <p class="font-body text-xs sm:text-sm lg:text-base text-white/75 max-w-[46ch] leading-relaxed mb-7 sm:mb-8 font-normal">
-                            {{ $slide['paragraph'] }}
-                        </p>
-
-                        <!-- Tombol Aksi (Utama Putih, Kedua Outline Putih Tipis) -->
-                        <div class="flex flex-wrap items-center gap-3.5 max-sm:w-full">
-                            <a href="{{ $slide['cta_primary']['url'] }}" 
-                               class="inline-flex items-center justify-center bg-white hover:bg-neutral-100 text-[#242424] text-xs sm:text-sm font-semibold uppercase tracking-wider px-7 py-3.5 rounded-full shadow-lg shadow-black/25 transition-all duration-200 active:scale-95 group/btn max-sm:w-full gap-2 cursor-pointer">
-                                <span>{{ $slide['cta_primary']['text'] }}</span>
-                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1">arrow_forward</span>
-                            </a>
-                            <a href="{{ $slide['cta_secondary']['url'] }}" 
-                               class="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white border border-white/60 hover:border-white text-xs sm:text-sm font-semibold uppercase tracking-wider px-6 py-3.5 rounded-full backdrop-blur-sm transition-all duration-200 active:scale-95 max-sm:w-full cursor-pointer">
-                                <span>{{ $slide['cta_secondary']['text'] }}</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            @elseif($slide['id'] === 'fresh-beans')
+            @if($slide['id'] === 'fresh-beans')
                 <!-- -----------------------------------------------------------------
                      SLIDE 1: SPECIALTY ROASTERY - FRESH BEANS (DARK EDITORIAL POSTER + 3D ORBIT)
                      ----------------------------------------------------------------- -->
