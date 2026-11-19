@@ -1067,6 +1067,59 @@ p {
     background: radial-gradient(circle 540px at 50% 50%, rgba(220, 160, 100, 0.22) 0%, rgba(140, 85, 45, 0.10) 45%, transparent 75%);
 }
 
+/* Ambient Berry Glow behind strawberry dessert */
+.hero-glow-berry-center {
+    background: radial-gradient(circle 560px at 50% 50%, rgba(225, 29, 72, 0.20) 0%, rgba(160, 20, 50, 0.08) 45%, transparent 75%);
+}
+
+/* Berry Swoosh Curves */
+.hero-berry-swoosh {
+    filter: drop-shadow(0 0 8px rgba(225, 29, 72, 0.35));
+    animation: heroBerrySwooshDrift 7.5s ease-in-out infinite alternate;
+    will-change: transform, opacity;
+}
+@keyframes heroBerrySwooshDrift {
+    0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0.85;
+    }
+    50% {
+        transform: translate3d(8px, -6px, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate3d(-6px, 8px, 0);
+        opacity: 0.85;
+    }
+}
+
+/* Bayangan Lembut Hangat di Bawah Cheesecake */
+.hero-cake-shadow-warm {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 270px;
+    height: 30px;
+    background: radial-gradient(ellipse at center, rgba(60, 15, 25, 0.55) 0%, rgba(60, 15, 25, 0) 70%);
+    border-radius: 50%;
+    filter: blur(6px);
+    z-index: 18;
+    animation: heroWarmShadowPulse 5.5s ease-in-out infinite alternate;
+}
+
+/* Cheesecake 3D Levitation Float */
+.hero-cake-3d {
+    animation: heroCakeFloat3D 5.8s ease-in-out infinite alternate;
+    transform-origin: center bottom;
+    will-change: transform;
+}
+@keyframes heroCakeFloat3D {
+    0% { transform: translateY(0px) rotate(-0.5deg); }
+    50% { transform: translateY(-10px) rotate(0.8deg); }
+    100% { transform: translateY(0px) rotate(-0.5deg); }
+}
+
 /* Golden Light Silk Ribbons */
 .hero-light-ribbons {
     opacity: 0.8;
