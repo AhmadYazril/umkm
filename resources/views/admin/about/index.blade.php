@@ -224,7 +224,7 @@
                              :required="true"
                              hint="Paragraf pengantar filosofi rasa dan sajian kafe. Tampil tepat di bawah judul besar."
                              recommendation="Saran: 2–3 kalimat (100–250 huruf)"
-                             :defaultValue="'Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.'"
+                             :defaultValue="'Nucomu Cafe adalah tempat nongkrong yang nyaman di Tulungagung, Jawa Timur. Suasananya santai dan cocok untuk bersantai sendirian, ngobrol bareng teman, mengerjakan tugas, atau berkumpul bersama keluarga.'"
                              :counter="true"
                              :max="1500">
                         <textarea name="cafe_story_p1" 
@@ -242,22 +242,41 @@
                     <x-field for="cafe_story_p2"
                              label="Cerita cafe (paragraf 2)"
                              :required="false"
-                             hint="Paragraf lanjutan mengenai suasana ruang monokrom dan kenyamanan berkunjung."
+                             hint="Paragraf sajian menu dan fasilitas kafe."
                              recommendation="Saran: 2–3 kalimat (100–250 huruf) • Opsional"
-                             :defaultValue="'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.'"
+                             :defaultValue="'Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.'"
                              :counter="true"
                              :max="1500">
                         <textarea name="cafe_story_p2" 
                                   id="cafe_story_p2" 
                                   rows="3" 
                                   maxlength="1500"
-                                  placeholder="Tuliskan paragraf kedua mengenai suasana dan kenyamanan (opsional)..."
+                                  placeholder="Tuliskan paragraf kedua mengenai menu dan fasilitas (opsional)..."
                                   oninput="liveSyncText('previewP2', this.value)"
                                   class="w-full px-3.5 py-2.5 rounded-xl border text-[13.5px] leading-relaxed transition focus:outline-none focus:ring-2 focus:ring-[var(--admin-btn-primary-bg,#2F6B4F)] resize-none"
                                   style="background-color: var(--admin-bg-card, #FFFFFF); border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">{{ old('cafe_story_p2', $aboutData['cafe_story_p2']) }}</textarea>
                     </x-field>
 
-                    {{-- 2d. Slogan / Tagline bawah --}}
+                    {{-- 2d. Cerita cafe (paragraf 3) --}}
+                    <x-field for="cafe_story_p3"
+                             label="Cerita cafe (paragraf 3)"
+                             :required="false"
+                             hint="Paragraf penutup mengenai kehangatan suasana dan keramahan pelayanan kafe."
+                             recommendation="Saran: 1–2 kalimat (80–200 huruf) • Opsional"
+                             :defaultValue="'Dengan suasana yang hangat dan pelayanan yang ramah, Nucomu Cafe menjadi pilihan menarik untuk menghabiskan waktu, baik di siang hari maupun malam hari.'"
+                             :counter="true"
+                             :max="1500">
+                        <textarea name="cafe_story_p3" 
+                                  id="cafe_story_p3" 
+                                  rows="2" 
+                                  maxlength="1500"
+                                  placeholder="Tuliskan paragraf penutup kafe Anda (opsional)..."
+                                  oninput="liveSyncText('previewP3', this.value)"
+                                  class="w-full px-3.5 py-2.5 rounded-xl border text-[13.5px] leading-relaxed transition focus:outline-none focus:ring-2 focus:ring-[var(--admin-btn-primary-bg,#2F6B4F)] resize-none"
+                                  style="background-color: var(--admin-bg-card, #FFFFFF); border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);">{{ old('cafe_story_p3', $aboutData['cafe_story_p3'] ?? '') }}</textarea>
+                    </x-field>
+
+                    {{-- 2e. Slogan / Tagline bawah --}}
                     <x-field for="about_tagline"
                              label="Slogan / Tagline (tampil miring di bawah)"
                              :required="false"
@@ -599,6 +618,11 @@
                             {{ $aboutData['cafe_story_p2'] }}
                         </p>
 
+                        {{-- Paragraf 3 --}}
+                        <p id="previewP3" class="text-[12.5px] text-[#666666] leading-relaxed line-clamp-2 m-0 {{ empty($aboutData['cafe_story_p3'] ?? '') ? 'hidden' : '' }}">
+                            {{ $aboutData['cafe_story_p3'] ?? '' }}
+                        </p>
+
                         {{-- Slogan / Tagline --}}
                         <p id="previewTagline" class="text-[13px] italic text-[#1C1C1C] font-semibold m-0 pt-1">
                             {{ $aboutData['about_tagline'] ?? 'Find your favorite taste.' }}
@@ -639,8 +663,8 @@
         if (!el) return;
         el.textContent = value;
 
-        // Khusus paragraf 2 & quote box: sembunyikan jika kosong
-        if (targetId === 'previewP2') {
+        // Khusus paragraf 2, paragraf 3 & quote box: sembunyikan jika kosong
+        if (targetId === 'previewP2' || targetId === 'previewP3') {
             if (value && value.trim()) {
                 el.classList.remove('hidden');
             } else {
@@ -875,6 +899,8 @@
         liveSyncText('previewHeadline', document.getElementById('cafe_story_headline')?.value || '');
         liveSyncText('previewP1', document.getElementById('cafe_story_p1')?.value || '');
         liveSyncText('previewP2', document.getElementById('cafe_story_p2')?.value || '');
+        liveSyncText('previewP3', document.getElementById('cafe_story_p3')?.value || '');
+        liveSyncText('previewTagline', document.getElementById('about_tagline')?.value || '');
         liveSyncText('previewQuote', document.getElementById('about_quote')?.value || '');
         liveSyncText('previewBtnText', document.getElementById('about_button_text')?.value || 'Jelajahi Pilihan Menu');
         const sel = document.getElementById('aboutLinkSelector');

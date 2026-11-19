@@ -42,9 +42,9 @@
                 </h2>
 
                 <!-- 3-Tab Segmented Switcher & Prev/Next Arrows -->
-                <div class="flex items-center gap-3 mb-8">
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 mb-6 sm:mb-8">
                     <!-- Segmented Tab Pill Group with Smooth Sliding Highlight -->
-                    <div id="contact-tab-pill-container" class="relative inline-flex items-center p-1 bg-[var(--surface)] border border-[var(--border)] rounded-full shadow-2xs select-none" role="tablist" aria-label="Pilih Informasi Kontak">
+                    <div id="contact-tab-pill-container" class="relative inline-flex items-center p-1 bg-[var(--surface)] border border-[var(--border)] rounded-full shadow-2xs select-none max-w-full" role="tablist" aria-label="Pilih Informasi Kontak">
                         <!-- Sliding Black Pill Highlight Indicator -->
                         <span id="contact-tab-slider" 
                               class="absolute top-1 bottom-1 rounded-full bg-[#F5F2EE] shadow-xs pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-[left,width] z-0"
@@ -58,7 +58,7 @@
                                 role="tab"
                                 aria-selected="true"
                                 aria-controls="contact-panel-alamat"
-                                class="contact-tab-btn is-active relative z-10 min-w-[76px] sm:min-w-[90px] px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]">
+                                class="contact-tab-btn is-active relative z-10 min-w-[68px] sm:min-w-[90px] px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]">
                             ALAMAT
                         </button>
                         <button type="button" 
@@ -67,7 +67,7 @@
                                 role="tab"
                                 aria-selected="false"
                                 aria-controls="contact-panel-jam"
-                                class="contact-tab-btn is-inactive relative z-10 min-w-[76px] sm:min-w-[90px] px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]">
+                                class="contact-tab-btn is-inactive relative z-10 min-w-[64px] sm:min-w-[90px] px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]">
                             JAM
                         </button>
                         <button type="button" 
@@ -76,13 +76,13 @@
                                 role="tab"
                                 aria-selected="false"
                                 aria-controls="contact-panel-whatsapp"
-                                class="contact-tab-btn is-inactive relative z-10 min-w-[76px] sm:min-w-[90px] px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-semibold tracking-wider uppercase text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]">
+                                class="contact-tab-btn is-inactive relative z-10 min-w-[76px] sm:min-w-[90px] px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]">
                             WHATSAPP
                         </button>
                     </div>
 
                     <!-- Category Arrows: Navigasi Pindah Tab (< / >) -->
-                    <div class="flex items-center gap-1.5 ml-1" role="group" aria-label="Navigasi Tab Kontak">
+                    <div class="hidden sm:flex items-center gap-1.5 ml-1" role="group" aria-label="Navigasi Tab Kontak">
                         <button type="button" 
                                 onclick="navigateContactTab(-1)" 
                                 class="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] text-[#F5F5F5] hover:bg-[#F5F2EE] hover:text-[#111111] hover:border-[#F5F2EE] transition-all duration-200 flex items-center justify-center shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#F5F5F5] active:scale-95"
@@ -293,7 +293,7 @@
                     </div>
 
                     <!-- Bottom Address & Directions Quick Bar -->
-                    <div class="mt-3.5 px-3 flex items-center justify-between text-xs sm:text-[13px] text-[#B5B5B5] font-body">
+                    <div class="mt-3.5 px-2 sm:px-3 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 text-xs sm:text-[13px] text-[#B5B5B5] font-body">
                         <div class="flex items-center gap-1.5">
                             <svg class="w-4 h-4 text-[#F5F2EE] shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>

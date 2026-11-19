@@ -96,25 +96,25 @@
                     </div>
                 </div>
 
-                <!-- 3. RIGHT COLUMN: Interactive Vertical Stack of Pills (~3 cols) -->
-                <div class="lg:col-span-3 flex flex-col space-y-3 lg:-mr-14">
+                <!-- 3. RIGHT COLUMN: Interactive Vertical Stack of Pills on Desktop, Compact 2x2 Grid on Mobile -->
+                <div class="lg:col-span-3 grid grid-cols-2 gap-2.5 lg:flex lg:flex-col lg:gap-0 lg:space-y-3 lg:-mr-14">
                     @foreach($bestMenu as $idx => $m)
                         <div onclick="switchBestMenuItem({{ $idx }})" 
-                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#F5F2EE] text-[#111111] shadow-md' : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)] text-[#F5F5F5] border border-[var(--border)]' }} flex items-center justify-between p-2.5 pl-3 sm:pl-4 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group">
+                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#F5F2EE] text-[#111111] shadow-md' : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)] text-[#F5F5F5] border border-[var(--border)]' }} flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group">
                             
                             <!-- Left: Thumbnail in dark ring -->
-                            <div class="w-11 h-11 rounded-full overflow-hidden p-0.5 bg-[#141414] border border-[var(--border)] shadow-xs shrink-0">
+                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden p-0.5 bg-[#141414] border border-[var(--border)] shadow-xs shrink-0">
                                 <img src="{{ $m['image'] }}" 
                                      alt="{{ $m['name'] }}" 
                                      class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
                             </div>
 
                             <!-- Right Info: Title & Price -->
-                            <div class="flex-1 ml-3 mr-2 text-left">
-                                <span class="pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight {{ $idx === 0 ? 'text-[#111111]' : 'text-[#F5F5F5]' }}">
+                            <div class="flex-1 ml-2 sm:ml-3 mr-1 sm:mr-2 text-left min-w-0">
+                                <span class="pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate {{ $idx === 0 ? 'text-[#111111]' : 'text-[#F5F5F5]' }}">
                                     {{ $m['name'] }}
                                 </span>
-                                <span class="pill-price text-xs sm:text-sm font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-[#2A2A2A] font-semibold' : 'text-[#B5B5B5]' }}">
+                                <span class="pill-price text-[11px] sm:text-sm font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-[#2A2A2A] font-semibold' : 'text-[#B5B5B5]' }}">
                                     {{ $m['price_formatted'] }}
                                 </span>
                             </div>
@@ -151,18 +151,18 @@
         </div>
 
         <!-- Circular Category Items (Direct Filter Controls) -->
-        <div class="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-10 max-w-5xl mx-auto mb-8 reveal-on-scroll">
+        <div class="grid grid-cols-3 sm:flex sm:flex-wrap justify-items-center justify-center gap-3.5 sm:gap-8 md:gap-10 max-w-5xl mx-auto mb-8 reveal-on-scroll">
             @foreach($menuCategories as $cat)
                 <button type="button" 
                         onclick="handleCircularCategoryClick('{{ $cat['id'] }}', this)" 
                         class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
                         data-cat-id="{{ $cat['id'] }}">
-                    <div class="cat-circle-img-wrap w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-[#161616] border border-[var(--border)] shadow-[var(--shadow)] group-hover:border-[#F5F2EE] transition-all duration-300">
+                    <div class="cat-circle-img-wrap w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-[#161616] border border-[var(--border)] shadow-[var(--shadow)] group-hover:border-[#F5F2EE] transition-all duration-300">
                         <img src="{{ $cat['image'] }}" 
                              alt="{{ $cat['name'] }}" 
                              class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
                     </div>
-                    <span class="cat-circle-label mt-3 text-xs sm:text-sm font-semibold text-[#B5B5B5] tracking-wide text-center group-hover:text-[#F5F5F5] transition-colors">
+                    <span class="cat-circle-label mt-2 sm:mt-3 text-[11px] sm:text-sm font-semibold text-[#B5B5B5] tracking-wide text-center group-hover:text-[#F5F5F5] transition-colors leading-tight">
                         {{ $cat['name'] }}
                     </span>
                 </button>
@@ -348,6 +348,15 @@
             <span class="material-symbols-outlined text-[#B5B5B5] text-4xl mb-2">restaurant_menu</span>
             <p class="font-editorial text-xl font-bold text-[#F5F5F5]">Sajian Sedang Disiapkan</p>
             <p class="font-body text-xs text-[#B5B5B5] mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
+        </div>
+
+        <!-- Mobile Shortcut to Full Menu Catalog -->
+        <div class="md:hidden text-center pb-4">
+            <a href="{{ route('menu.all') }}"
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#191919] text-white text-xs font-bold uppercase tracking-wider shadow-md active:scale-95 transition-transform">
+                <span class="material-symbols-outlined text-base">menu_book</span>
+                <span>Buka Katalog Menu Lengkap</span>
+            </a>
         </div>
     </div>
 </section>

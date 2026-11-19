@@ -219,10 +219,15 @@
                             </span>
                         </div>
                         {{-- Text with Left Accent Line --}}
-                        <div class="border-l border-white/25 pl-4">
+                        <div class="border-l border-white/25 pl-4 space-y-3">
                             <p class="font-editorial text-[15px] sm:text-base text-[#E2DDD5] leading-[1.75] font-normal">
                                 {{ $brand['cafe_story_p2'] ?? 'Terletak di Plosokandang, Tulungagung, Nucomu punya area indoor dan outdoor yang luas, cocok untuk mahasiswa, nugas, atau WFC. Fasilitas lengkap: WiFi, toilet, dan mushola.' }}
                             </p>
+                            @if(!empty($brand['cafe_story_p3']))
+                                <p class="font-editorial text-[15px] sm:text-base text-[#D6D1C9] leading-[1.75] font-normal">
+                                    {{ $brand['cafe_story_p3'] }}
+                                </p>
+                            @endif
                         </div>
                     </div>
 

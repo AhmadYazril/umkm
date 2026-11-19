@@ -777,9 +777,89 @@
 
     </div>
 
-    {{-- 5. Tabel Pesanan Masuk --}}
+    {{-- 5. Tabel Pesanan Masuk (Kartu Responsif di Mobile, Tabel Penuh di Desktop) --}}
     <div class="bg-white border rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm anim-fade-up" style="border-color: var(--admin-border-card, #E6E8E4);">
-        <div class="overflow-x-auto">
+        {{-- Mobile Card List (< 768px) --}}
+        <div class="md:hidden divide-y" style="border-color: var(--admin-border-card, #E6E8E4);">
+            @forelse($orders as $order)
+                <div class="p-3.5 space-y-2.5 hover:bg-warm-stone/20 transition-colors">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-mono font-extrabold text-xs" style="color: var(--admin-text-main, #1B1F1D);">{{ $order->code }}</span>
+                                <span class="text-[10px] text-muted-text font-mono">{{ $order->created_at->format('d/m H:i') }} WIB</span>
+                            </div>
+                            <p class="font-bold text-xs mt-0.5 truncate" style="color: var(--admin-text-main, #1B1F1D);">{{ $order->customer_name }}</p>
+                            <span class="text-[10.5px] text-muted-text font-mono block">{{ $order->customer_phone && $order->customer_phone !== '-' ? $order->customer_phone : 'Slip QR / Kasir' }}</span>
+                            @if($order->delivery_address)
+                                <span class="text-[10px] text-charcoal/70 line-clamp-1 mt-0.5 block">📍 {{ $order->delivery_address }}</span>
+                            @endif
+                        </div>
+
+                        <div class="shrink-0 text-right">
+                            <span class="font-mono font-extrabold text-sm block" style="color: var(--admin-text-main, #1B1F1D);">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+                            <span class="text-[10px] font-bold {{ $order->payment_status === 'paid' ? 'text-emerald-700' : 'text-amber-700' }}">
+                                {{ $order->payment_status === 'paid' ? '● Lunas' : '○ Belum Bayar' }} ({{ $order->payment_method_label }})
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#E6E8E4]/70">
+                        <div>
+                            @if($order->kind === 'zendo_tracking')
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                                    <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Antar Zendo
+                                </span>
+                            @elseif($order->kind === 'zendo_chat')
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
+                                    <i class="fa-brands fa-whatsapp text-emerald-600"></i> Chat Zendo
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-100 text-charcoal border border-[#E6E8E4] text-[10px] font-bold">
+                                    <i class="fa-solid fa-store text-[#2F6B4F]"></i> {{ $order->order_type === 'take_away' ? 'Take Away' : 'Dine-In' }}
+                                </span>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center gap-1.5">
+                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="inline-block">
+                                @csrf
+                                <select name="status" 
+                                        data-prev="{{ $order->status }}"
+                                        onchange="handleQuickStatusChange(this, '{{ $order->code }}')" 
+                                        class="text-[11px] font-bold rounded-lg border px-2 py-1 cursor-pointer transition shadow-2xs focus:outline-none {{ $order->status === 'completed' ? 'bg-emerald-50 text-emerald-900 border-emerald-300' : ($order->status === 'processing' ? 'bg-blue-50 text-blue-900 border-blue-300' : ($order->status === 'ready' ? 'bg-purple-50 text-purple-900 border-purple-300' : ($order->status === 'cancelled' ? 'bg-rose-50 text-rose-900 border-rose-300' : 'bg-amber-50 text-amber-900 border-amber-300'))) }}">
+                                    <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Diproses</option>
+                                    <option value="ready" {{ $order->status === 'ready' ? 'selected' : '' }}>Siap Saji</option>
+                                    <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Selesai</option>
+                                    <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Batal</option>
+                                </select>
+                            </form>
+                            <a href="{{ route('admin.orders.show', $order->id) }}" 
+                               class="px-2.5 py-1 rounded-lg bg-warm-stone hover:bg-neutral-200 text-charcoal text-[11px] font-bold transition btn-press">
+                                Detail
+                            </a>
+                            <a href="{{ route('admin.orders.receipt', $order->id) }}" 
+                               target="_blank" 
+                               class="p-1.5 rounded-lg bg-warm-stone hover:bg-neutral-200 text-muted-text transition btn-press" 
+                               title="Cetak Nota">
+                                <i class="fa-solid fa-print text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="px-6 py-10 text-center text-muted-text">
+                    <div class="w-11 h-11 rounded-2xl bg-warm-stone flex items-center justify-center mx-auto mb-2.5 text-muted-text">
+                        <i class="fa-solid fa-receipt text-base"></i>
+                    </div>
+                    <p class="font-bold text-xs" style="color: var(--admin-text-main, #1B1F1D);">Tidak ada pesanan ditemukan</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop Table (>= 768px) --}}
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left text-xs text-charcoal">
                 <thead class="bg-warm-stone/50 text-muted-text uppercase text-[10px] font-mono tracking-widest border-b" style="border-color: var(--admin-border-card, #E6E8E4);">
                     <tr>

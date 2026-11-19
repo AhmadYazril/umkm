@@ -504,7 +504,7 @@ class SettingController extends Controller
             'cafe_concept', 'cafe_address', 'cafe_landmark', 'cafe_maps_url', 'cafe_whatsapp',
             'cafe_email', 'cafe_instagram', 'cafe_tiktok',
             'hero_title', 'hero_subtitle', 'hero_badge',
-            'cafe_story_headline', 'cafe_story_p1', 'cafe_story_p2',
+            'cafe_story_headline', 'cafe_story_p1', 'cafe_story_p2', 'cafe_story_p3',
             'cafe_badge_tag1', 'cafe_badge_tag2', 'cafe_badge_tag3',
             'services_reservasi_desc', 'services_delivery_desc', 'services_online_desc',
             'google_places_api_key', 'google_place_id',

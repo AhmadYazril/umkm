@@ -271,7 +271,61 @@
             @endif
         </div>
 
-        <div class="overflow-x-auto">
+        {{-- Mobile Card List (< 768px) --}}
+        <div class="md:hidden divide-y divide-hairline">
+            @forelse($connectedDevices as $dev)
+                <div class="p-4 space-y-2.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="font-bold text-xs text-ink-black flex items-center gap-1.5">
+                                <span class="w-5 h-5 rounded-md bg-ink-black text-white font-extrabold text-[10px] flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-user-check text-[9px]"></i>
+                                </span>
+                                <span class="truncate">{{ $dev['courier_name'] ?? 'Kurir Zendo' }}</span>
+                            </div>
+                            <span class="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-charcoal bg-warm-stone px-2 py-0.5 rounded border border-hairline mt-1">
+                                📱 +{{ $dev['courier_phone'] ?? '-' }}
+                            </span>
+                        </div>
+                        <div class="shrink-0 text-right">
+                            @if($dev['is_online'] ?? false)
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                    🟢 Online
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-warm-stone text-charcoal border border-hairline">
+                                    💤 Standby
+                                </span>
+                            @endif
+                            <p class="text-[10px] text-muted-text mt-0.5">{{ $dev['last_active_diff'] ?? '-' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 pt-2 border-t border-hairline/60 text-[11px]">
+                        <div class="text-muted-text truncate">
+                            <i class="fa-solid fa-mobile-screen mr-1"></i>
+                            <span class="font-semibold text-ink-black">{{ $dev['device_name'] ?? 'Perangkat Kurir' }}</span>
+                            <span class="font-mono text-[10px] ml-1">({{ $dev['ip_address'] ?? '-' }})</span>
+                        </div>
+                        <form method="POST" action="{{ route('admin.zendo.devices.reset', $dev['id']) }}"
+                              onsubmit="return confirm('Keluarkan perangkat {{ addslashes($dev['device_name'] ?? 'ini') }} dari Mode Kurir?');">
+                            @csrf
+                            <button type="submit"
+                                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-pure-white hover:bg-rose-50 text-rose-700 border border-hairline font-bold text-[11px] transition shadow-2xs btn-press shrink-0">
+                                <i class="fa-solid fa-arrow-right-from-bracket text-[10px]"></i>
+                                <span>Reset</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="py-8 px-4 text-center text-muted-text text-xs">
+                    <p class="font-bold text-ink-black">Belum ada perangkat kurir yang terhubung</p>
+                </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop Table (>= 768px) --}}
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left text-xs text-charcoal">
                 <thead class="bg-warm-stone/50 text-muted-text uppercase text-[10px] font-mono tracking-widest border-b border-hairline">
                     <tr>
@@ -397,7 +451,53 @@
             </form>
         </div>
 
-        <div class="overflow-x-auto">
+        {{-- Mobile Card List (< 768px) --}}
+        <div class="md:hidden divide-y divide-hairline">
+            @forelse($deliveries as $deliv)
+                <div class="p-4 space-y-2.5">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <span class="font-mono font-extrabold text-ink-black text-xs">#{{ $deliv->order_code }}</span>
+                            <span class="text-[10px] text-muted-text font-mono ml-1.5">{{ $deliv->created_at ? $deliv->created_at->format('d M, H:i') : '-' }}</span>
+                            <p class="font-bold text-xs text-ink-black mt-0.5">{{ $deliv->customer_name ?: 'Pelanggan' }}</p>
+                        </div>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-[10px] uppercase border shrink-0
+                            {{ $deliv->status === 'completed' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : ($deliv->status === 'almost_done' ? 'bg-amber-50 text-amber-900 border-amber-200' : ($deliv->status === 'picked_up' ? 'bg-blue-50 text-blue-900 border-blue-200' : 'bg-warm-stone text-charcoal border-hairline')) }}">
+                            {{ $deliv->status_label }}
+                        </span>
+                    </div>
+
+                    <p class="text-[11px] text-charcoal leading-snug bg-warm-stone/30 p-2 rounded-xl border border-hairline/60">
+                        📍 {{ $deliv->delivery_address ?: '-' }}
+                    </p>
+
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                        <div class="text-[11px]">
+                            <span class="font-bold text-ink-black block">{{ $deliv->courier_name }}</span>
+                            <span class="font-mono text-[10px] text-muted-text">+{{ $deliv->courier_phone }}</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <a href="{{ route('zendo.courier.show', $deliv->courier_token) }}" target="_blank"
+                               class="px-2.5 py-1.5 rounded-xl border border-hairline bg-warm-stone/60 text-ink-black font-bold text-[11px] transition btn-press">
+                                <i class="fa-solid fa-motorcycle text-[10px]"></i> Kurir
+                            </a>
+                            <a href="{{ route('zendo.track', $deliv->tracking_token) }}" target="_blank"
+                               class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-ink-black hover:bg-charcoal text-white font-bold text-[11px] shadow-xs transition btn-press">
+                                <i class="fa-solid fa-map-location-dot text-[10px]"></i>
+                                <span>Peta Live ↗</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="py-8 px-4 text-center text-muted-text text-xs">
+                    Belum ada pengantaran kurir Zendo yang sesuai filter.
+                </div>
+            @endforelse
+        </div>
+
+        {{-- Desktop Table (>= 768px) --}}
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left text-xs text-charcoal">
                 <thead class="bg-warm-stone/50 text-muted-text uppercase text-[10px] font-mono tracking-widest border-b border-hairline">
                     <tr>

@@ -33,6 +33,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'reservasi',
             'reservasi/*',
+            'api/*',
+            'transactions/*',
+            'pesan',
+            'pesan/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

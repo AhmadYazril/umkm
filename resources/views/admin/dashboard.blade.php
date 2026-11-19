@@ -271,7 +271,64 @@
                 </a>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Mobile Cards View (< 768px) --}}
+            <div class="md:hidden divide-y divide-hairline">
+                @forelse($recentOrders as $order)
+                    <div class="p-3.5 space-y-2.5 hover:bg-warm-stone/20 transition-colors">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-mono font-bold text-xs text-ink-black">{{ $order->code }}</span>
+                                    <span class="text-[10px] font-mono text-muted-text">{{ $order->created_at->format('H:i') }} WIB</span>
+                                </div>
+                                <p class="font-bold text-xs text-ink-black mt-0.5 truncate">{{ $order->customer_name }}</p>
+                                <span class="text-[10px] text-muted-text font-mono block">{{ $order->customer_phone && $order->customer_phone !== '-' ? $order->customer_phone : 'Scan Meja' }}</span>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                @if($order->status === 'pending')
+                                    <span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Pending</span>
+                                @elseif($order->status === 'processing')
+                                    <span class="bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Diproses</span>
+                                @elseif($order->status === 'completed')
+                                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Selesai</span>
+                                @else
+                                    <span class="bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Batal</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-hairline/60">
+                            <div class="flex items-center gap-2">
+                                @if(str_starts_with((string) $order->notes, '[KURIR ZENDO]'))
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                                        <i class="fa-brands fa-whatsapp"></i> Zendo
+                                    </span>
+                                @else
+                                    <span class="uppercase text-[10px] font-bold text-charcoal bg-warm-stone px-2 py-0.5 rounded-full border border-hairline">
+                                        {{ str_replace('_', ' ', $order->order_type) }}
+                                    </span>
+                                @endif
+                                <span class="font-mono font-extrabold text-xs text-ink-black">
+                                    Rp {{ number_format($order->total, 0, ',', '.') }}
+                                </span>
+                            </div>
+                            <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-warm-stone hover:bg-ink-black hover:text-white text-ink-black text-[11px] font-bold transition btn-press">
+                                <span>Detail</span>
+                                <i class="fa-solid fa-chevron-right text-[8px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="px-6 py-10 text-center text-muted-text">
+                        <div class="w-11 h-11 rounded-2xl bg-warm-stone flex items-center justify-center mx-auto mb-2.5 text-muted-text">
+                            <i class="fa-solid fa-inbox text-base"></i>
+                        </div>
+                        <p class="font-medium text-xs">Belum ada transaksi pesanan hari ini.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            {{-- Desktop Table View (>= 768px) --}}
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left text-xs text-charcoal">
                     <thead class="bg-warm-stone/50 text-muted-text uppercase text-[10px] font-mono tracking-widest border-b border-hairline">
                         <tr>

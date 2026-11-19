@@ -22,6 +22,7 @@ function initDeferredSections() {
 
 document.addEventListener('DOMContentLoaded', () => {
     initNucomuIntro();
+    initMobileHomePages();
     initHeroSlider();
     initNavbarScroll();
     initKeyboardShortcuts();
@@ -276,6 +277,111 @@ function getActiveHeroDots() {
     return document.querySelectorAll('.hero-dot-btn');
 }
 
+function sampleBannerMediaTopColor(mediaEl, isOverlay) {
+    try {
+        const srcW = mediaEl.naturalWidth || mediaEl.videoWidth || 0;
+        const srcH = mediaEl.naturalHeight || mediaEl.videoHeight || 0;
+        if (!srcW || !srcH) return null;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 16;
+        canvas.height = 4;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (!ctx) return null;
+
+        const sampleHeight = Math.max(1, Math.round(srcH * 0.14));
+        ctx.drawImage(mediaEl, 0, 0, srcW, sampleHeight, 0, 0, 16, 4);
+        const pixels = ctx.getImageData(0, 0, 16, 4).data;
+
+        let rSum = 0;
+        let gSum = 0;
+        let bSum = 0;
+        const pixelCount = pixels.length / 4;
+        for (let i = 0; i < pixels.length; i += 4) {
+            rSum += pixels[i];
+            gSum += pixels[i + 1];
+            bSum += pixels[i + 2];
+        }
+
+        let r = Math.round(rSum / pixelCount);
+        let g = Math.round(gSum / pixelCount);
+        let b = Math.round(bSum / pixelCount);
+
+        if (isOverlay) {
+            // Mode overlay memakai gradient gelap di atas media
+            const tint = 0.45;
+            return {
+                color: `rgb(${Math.round(r * tint)}, ${Math.round(g * tint)}, ${Math.round(b * tint)})`,
+                theme: 'dark'
+            };
+        }
+
+        const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        const theme = brightness < 0.52 ? 'dark' : 'light';
+
+        // Jaga kontras teks/logo navbar pada area banner bernuansa medium
+        if (theme === 'dark' && brightness > 0.28) {
+            const factor = 0.65;
+            r = Math.round(r * factor + 20 * (1 - factor));
+            g = Math.round(g * factor + 14 * (1 - factor));
+            b = Math.round(b * factor + 10 * (1 - factor));
+        } else if (theme === 'light' && brightness < 0.78) {
+            const factor = 0.55;
+            r = Math.round(r * factor + 249 * (1 - factor));
+            g = Math.round(g * factor + 249 * (1 - factor));
+            b = Math.round(b * factor + 249 * (1 - factor));
+        }
+
+        return {
+            color: `rgb(${r}, ${g}, ${b})`,
+            theme
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+function applyBannerTopThemeFromMedia(slide, mediaEl) {
+    if (!slide || !mediaEl) return;
+    const layoutMode = slide.getAttribute('data-layout-mode') || 'poster';
+    if (layoutMode === 'split') return;
+
+    const sampled = sampleBannerMediaTopColor(mediaEl, layoutMode === 'overlay');
+    if (!sampled) return;
+
+    slide.setAttribute('data-bg-color', sampled.color);
+    slide.setAttribute('data-theme', sampled.theme);
+
+    const activeSlides = getActiveHeroSlides();
+    if (activeSlides[heroCurrentIndex] === slide) {
+        syncHeroThemeAndColor(slide, heroCurrentIndex);
+    }
+}
+
+function bindBannerTopSampler(mediaEl, readyProp, readyEvent) {
+    const slide = mediaEl.closest('.hero-banner-slide');
+    if (!slide) return;
+    const layoutMode = slide.getAttribute('data-layout-mode') || 'poster';
+    if (layoutMode === 'split') return;
+
+    if (!mediaEl.dataset.topSampleBound) {
+        mediaEl.dataset.topSampleBound = '1';
+        mediaEl.addEventListener(readyEvent, () => {
+            if (readyProp === 'complete' && (!mediaEl.naturalWidth || mediaEl.src.startsWith('data:image/svg'))) {
+                return;
+            }
+            applyBannerTopThemeFromMedia(slide, mediaEl);
+        });
+    }
+
+    const isReady = readyProp === 'complete'
+        ? (mediaEl.complete && mediaEl.naturalWidth > 0 && !mediaEl.src.startsWith('data:image/svg'))
+        : (mediaEl.readyState >= 2);
+    if (isReady) {
+        applyBannerTopThemeFromMedia(slide, mediaEl);
+    }
+}
+
 function loadDesktopBannerMedia() {
     const isDesktop = window.matchMedia('(min-width: 768px)').matches;
     if (!isDesktop) return;
@@ -289,6 +395,7 @@ function loadDesktopBannerMedia() {
         if (src && img.src !== src) {
             img.src = src;
         }
+        bindBannerTopSampler(img, 'complete', 'load');
     });
 
     // Load and play videos only on desktop
@@ -299,6 +406,7 @@ function loadDesktopBannerMedia() {
             source.src = src;
             video.load();
         }
+        bindBannerTopSampler(video, 'readyState', 'loadeddata');
     });
 }
 
@@ -606,8 +714,30 @@ function resetHeroTimerIfActive() {
     }
 }
 
-function renderHeroSlide(index) {
+function syncHeroThemeAndColor(activeSlide, index) {
     const heroSection = document.getElementById('home');
+    if (!heroSection || !activeSlide) return;
+
+    const bgColor = activeSlide.getAttribute('data-bg-color') || HERO_BG_COLORS[index] || '#140E0A';
+    heroSection.style.backgroundColor = bgColor;
+    document.documentElement.style.setProperty('--hero-bg-color', bgColor);
+
+    const heroOffset = document.getElementById('hero-navbar-offset');
+    if (heroOffset) {
+        heroOffset.style.backgroundColor = bgColor;
+    }
+
+    // Sinkronisasi data-navbar-theme pada hero section dengan tema slide/banner aktif
+    const slideTheme = activeSlide.getAttribute('data-theme');
+    const navTheme = slideTheme === 'gold' ? 'gold' : (slideTheme === 'light' ? 'light' : 'dark');
+    heroSection.setAttribute('data-navbar-theme', navTheme);
+
+    if (typeof window.updateNavbarTheme === 'function') {
+        window.updateNavbarTheme();
+    }
+}
+
+function renderHeroSlide(index) {
     const slides = getActiveHeroSlides();
     const dots = getActiveHeroDots();
     if (!slides.length) return;
@@ -617,36 +747,28 @@ function renderHeroSlide(index) {
         heroCurrentIndex = 0;
     }
 
-    // 1. Dynamic Smooth Background Transition
-    if (heroSection) {
-        const bgColor = slides[index]?.getAttribute('data-bg-color') || HERO_BG_COLORS[index] || '#242424';
-        heroSection.style.backgroundColor = bgColor;
-        document.documentElement.style.setProperty('--hero-bg-color', bgColor);
+    // 1. Dynamic Smooth Background & Navbar Color Transition
+    syncHeroThemeAndColor(slides[index], index);
 
-        // Sinkronisasi data-navbar-theme pada hero section dengan tema slide aktif
-        const slideTheme = slides[index]?.getAttribute('data-theme');
-        // Hanya slide bertema 'dark' (Slide 0) yang mengaktifkan mode gelap navbar
-        // Slide bertema 'light' (seperti Slide 3 Strawberry Basque Cheesecake atau Slide 2) dan 'gold' menjadi 'light'
-        const navTheme = slideTheme === 'gold' ? 'gold' : (slideTheme === 'light' ? 'light' : 'dark');
-        heroSection.setAttribute('data-navbar-theme', navTheme);
-
-        if (typeof window.updateNavbarTheme === 'function') {
-            window.updateNavbarTheme();
-        }
-    }
-
-    // 2. Switch Slides & Update Accessibility
+    // 2. Switch Slides & Update Accessibility (also pause off-slide videos to keep mobile lightweight)
     slides.forEach((slide, idx) => {
+        const slideVid = slide.querySelector('video');
         if (idx === index) {
             slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
             slide.classList.add('active', 'opacity-100', 'z-10');
             slide.setAttribute('aria-hidden', 'false');
             slide.removeAttribute('inert');
+            if (slideVid && slideVid.paused && heroIsVisibleOnScreen && !document.hidden) {
+                slideVid.play().catch(() => {});
+            }
         } else {
             slide.classList.add('opacity-0', 'pointer-events-none', 'z-0');
             slide.classList.remove('active', 'opacity-100', 'z-10');
             slide.setAttribute('aria-hidden', 'true');
             slide.setAttribute('inert', '');
+            if (slideVid && !slideVid.paused) {
+                slideVid.pause();
+            }
         }
     });
 
@@ -686,12 +808,25 @@ function initNavbarScroll() {
     const scrollThreshold = 10;
 
     /**
-     * Menentukan tema ('dark' atau 'light') berdasarkan section yang berada tepat di bawah navbar.
-     * Menggunakan titik uji vertikal (probeY) sebesar 50% tinggi navbar.
+     * Menentukan tema ('dark' atau 'light') dan apakah hero berada tepat di bawah navbar.
+     * Ketika hero berada tepat di bawah navbar (belum ter-scroll ke belakang navbar),
+     * navbar menyesuaikan warna penuh dengan slide/banner hero aktif.
      */
-    function detectSectionThemeAtNavbar() {
+    function getNavbarStateAtScroll() {
         const navHeight = navbar.offsetHeight || 70;
         const probeY = navHeight * 0.5;
+        const heroSection = document.getElementById('home');
+
+        if (heroSection) {
+            const heroRect = heroSection.getBoundingClientRect();
+            if (heroRect.top > 0 && heroRect.top <= navHeight + 8 && heroRect.bottom > navHeight) {
+                const heroTheme = heroSection.getAttribute('data-navbar-theme');
+                return {
+                    theme: heroTheme === 'gold' ? 'gold' : (heroTheme === 'dark' ? 'dark' : 'light'),
+                    flushHero: true
+                };
+            }
+        }
 
         // Ambil seluruh section dan footer di halaman
         const candidateSections = document.querySelectorAll('section, footer, [data-navbar-theme]');
@@ -701,20 +836,27 @@ function initNavbarScroll() {
             // Cek apakah probeY berada dalam rentang batas atas & bawah section
             if (rect.top <= probeY && rect.bottom > probeY) {
                 const theme = sec.getAttribute('data-navbar-theme');
-                if (theme === 'gold') return 'gold';
-                return theme === 'dark' ? 'dark' : 'light';
+                return {
+                    theme: theme === 'gold' ? 'gold' : (theme === 'dark' ? 'dark' : 'light'),
+                    flushHero: false
+                };
             }
         }
 
         // Halaman tanpa hero atau tanpa section gelap default ke kondisi terang ('light')
-        return 'light';
+        return {
+            theme: 'light',
+            flushHero: false
+        };
     }
 
     /**
      * Terapkan tema navbar secara eksklusif (hanya satu kondisi aktif pada satu waktu)
      */
     function applyNavbarTheme() {
-        const theme = detectSectionThemeAtNavbar();
+        const { theme, flushHero } = getNavbarStateAtScroll();
+
+        navbar.classList.toggle('navbar--flush-hero', flushHero);
 
         if (theme === 'gold') {
             navbar.classList.add('navbar--over-hero-gold');
@@ -787,6 +929,7 @@ function initNavbarScroll() {
    ========================================================================== */
 function initScrollSpy() {
     const navLinks = document.querySelectorAll('.desktop-nav-link');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
     const sections = ['home', 'about', 'menu', 'gallery', 'contact', 'layanan'];
 
     const sectionElements = sections.map(id => document.getElementById(id)).filter(Boolean);
@@ -807,6 +950,16 @@ function initScrollSpy() {
                         link.classList.add('active');
                     } else {
                         link.classList.remove('active');
+                    }
+                });
+                mobileNavLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === `#${activeId}` || (href && href.endsWith(`#${activeId}`))) {
+                        link.classList.add('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
+                        link.classList.remove('text-[#C8C8C8]', 'font-semibold');
+                    } else if (href && href.includes('#')) {
+                        link.classList.remove('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
+                        link.classList.add('text-[#C8C8C8]', 'font-semibold');
                     }
                 });
             }
@@ -840,6 +993,166 @@ window.toggleMobileDrawer = function() {
         document.body.classList.add('overflow-hidden');
     }
 };
+
+/* ==========================================================================
+   3B. MOBILE PER-PAGE SWITCHER & GLASS BOTTOM LAY-UP BAR (< 768px)
+   Mengelompokkan beranda mobile menjadi 4 halaman:
+     1. home-about      -> Home + About & Fasilitas
+     2. menu            -> Menu (Sendiri)
+     3. gallery-reviews -> Galeri 3D + Ulasan Pelanggan
+     4. layanan-contact -> Layanan & Reservasi + Lokasi & Kontak
+   ========================================================================== */
+const MOBILE_SECTION_TO_PAGE = {
+    'home': 'home-about',
+    'about': 'home-about',
+    'our-story-section': 'home-about',
+    'facilities': 'home-about',
+    'menu': 'menu',
+    'gallery': 'gallery-reviews',
+    'reviews': 'gallery-reviews',
+    'layanan': 'layanan-contact',
+    'contact': 'layanan-contact'
+};
+
+window.switchMobileHomePage = function(pageKey, targetSectionId = null, shouldScroll = true) {
+    const pages = document.querySelectorAll('.mobile-home-page');
+    if (!pages.length) return;
+
+    const validPages = ['home-about', 'menu', 'gallery-reviews', 'layanan-contact'];
+    const resolvedPage = validPages.includes(pageKey) ? pageKey : 'home-about';
+
+    document.body.setAttribute('data-mobile-home-page', resolvedPage);
+
+    pages.forEach(pageEl => {
+        const isMatch = pageEl.getAttribute('data-mobile-page') === resolvedPage;
+        pageEl.classList.toggle('is-active-mobile-page', isMatch);
+
+        if (isMatch) {
+            // Pastikan elemen animasi reveal di halaman yang baru dibuka langsung tampil
+            pageEl.querySelectorAll('.reveal-on-scroll, .reveal-from-left, .reveal-from-right, .reveal-fade-up').forEach(el => {
+                el.classList.add('is-visible');
+            });
+            const layananSec = pageEl.querySelector('#layanan');
+            if (layananSec) layananSec.classList.add('layanan-in-view');
+            const storySec = pageEl.querySelector('#our-story-section, #about');
+            if (storySec) storySec.classList.add('story-in-view');
+            const facSec = pageEl.querySelector('#facilities-gallery-section');
+            if (facSec) facSec.classList.add('facility-in-view');
+        }
+    });
+
+    // Update tombol aktif pada Glass Lay-Up Bar bawah
+    document.querySelectorAll('#mobile-glass-layup-nav [data-mobile-page-btn]').forEach(btn => {
+        const isBtnActive = btn.getAttribute('data-mobile-page-btn') === resolvedPage;
+        btn.classList.toggle('is-active', isBtnActive);
+        if (isBtnActive) {
+            btn.setAttribute('aria-current', 'page');
+        } else {
+            btn.removeAttribute('aria-current');
+        }
+        const labelSpan = btn.querySelector('span:last-child');
+        if (labelSpan) {
+            labelSpan.classList.toggle('font-bold', isBtnActive);
+            labelSpan.classList.toggle('font-semibold', !isBtnActive);
+        }
+    });
+
+    // Rekalkulasi komponen dinamis sesuai halaman yang dibuka
+    if (resolvedPage === 'menu' && typeof window.distributeMenuCards === 'function') {
+        setTimeout(() => {
+            const activeCat = window.activeRecommendationCategory || 'all';
+            window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container', activeCat);
+        }, 20);
+    } else if (resolvedPage === 'gallery-reviews') {
+        setTimeout(() => {
+            if (typeof window.refreshNucomu3DGallery === 'function') {
+                window.refreshNucomu3DGallery();
+            }
+            window.dispatchEvent(new Event('resize'));
+        }, 30);
+    } else if (resolvedPage === 'layanan-contact') {
+        const footerNavList = document.getElementById('footer-nav-list');
+        if (footerNavList) {
+            footerNavList.classList.add('footer-nav-visible');
+        }
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 30);
+    }
+
+    // Pastikan navbar atas terlihat dan temanya sesuai dengan halaman baru
+    const navbar = document.getElementById('main-navbar');
+    if (navbar) {
+        navbar.classList.remove('navbar-hidden');
+        navbar.classList.add('navbar-visible');
+    }
+
+    if (shouldScroll && window.innerWidth < 768) {
+        if (targetSectionId && targetSectionId !== 'home' && targetSectionId !== 'menu' && targetSectionId !== 'gallery' && targetSectionId !== 'layanan') {
+            setTimeout(() => {
+                const targetEl = document.getElementById(targetSectionId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+                if (typeof window.updateNavbarTheme === 'function') window.updateNavbarTheme();
+            }, 40);
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+                if (typeof window.updateNavbarTheme === 'function') window.updateNavbarTheme();
+            }, 60);
+        }
+    } else if (typeof window.updateNavbarTheme === 'function') {
+        setTimeout(() => window.updateNavbarTheme(), 40);
+    }
+};
+
+function initMobileHomePages() {
+    const layupNav = document.getElementById('mobile-glass-layup-nav');
+    if (!layupNav) return;
+
+    // Set halaman awal berdasarkan URL hash jika ada
+    const rawHash = (window.location.hash || '').replace(/^#/, '').trim();
+    const initialPage = MOBILE_SECTION_TO_PAGE[rawHash] || 'home-about';
+    window.switchMobileHomePage(initialPage, rawHash || null, Boolean(rawHash));
+
+    // Tangkap klik link anchor (#home, #about, #menu, #gallery, #layanan, #contact) di layar mobile
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth >= 768) return;
+        const link = e.target.closest('a[href*="#"]');
+        if (!link) return;
+
+        const href = link.getAttribute('href') || '';
+        const hashIdx = href.indexOf('#');
+        if (hashIdx === -1) return;
+
+        const targetId = href.slice(hashIdx + 1).trim();
+        const mappedPage = MOBILE_SECTION_TO_PAGE[targetId];
+        if (!mappedPage) return;
+
+        e.preventDefault();
+        window.switchMobileHomePage(mappedPage, targetId, true);
+    });
+
+    // Saat ukuran layar berubah dari mobile ke desktop (atau sebaliknya), segarkan tata letak
+    let wasMobileViewport = window.innerWidth < 768;
+    window.addEventListener('resize', () => {
+        const isNowMobile = window.innerWidth < 768;
+        if (wasMobileViewport !== isNowMobile) {
+            wasMobileViewport = isNowMobile;
+            if (!isNowMobile) {
+                if (typeof window.distributeMenuCards === 'function') {
+                    window.distributeMenuCards('recommendations-cards-pool', 'recommendations-columns-container', window.activeRecommendationCategory || 'all');
+                }
+                if (typeof window.refreshNucomu3DGallery === 'function') {
+                    window.refreshNucomu3DGallery();
+                }
+            }
+        }
+    });
+}
 
 /* ==========================================================================
    4. SCROLL REVEAL OBSERVER
@@ -1802,13 +2115,13 @@ window.switchBestMenuItem = function(index) {
         const priceSpan = pill.querySelector('.pill-price');
         
         if (idx === index) {
-            pill.className = 'best-menu-pill active bg-[#F5F2EE] text-[#111111] shadow-[var(--shadow)] flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-[#111111]';
-            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-bold block mt-0.5 text-[#111111]';
+            pill.className = 'best-menu-pill active bg-[#F5F2EE] text-[#111111] shadow-[var(--shadow)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[#111111]';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-bold block mt-0.5 tabular-nums text-[#2A2A2A]';
         } else {
-            pill.className = 'best-menu-pill bg-[var(--surface)] text-[#F5F5F5] shadow-[var(--shadow)] hover:border-white/30 hover:-translate-x-1 border border-[var(--border)] flex items-center justify-between p-3 pl-3.5 sm:pl-5 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight text-[#F5F5F5]';
-            if (priceSpan) priceSpan.className = 'pill-price text-xs sm:text-sm font-medium block mt-0.5 text-[#B5B5B5]';
+            pill.className = 'best-menu-pill bg-[var(--surface)] text-[#F5F5F5] shadow-[var(--shadow)] hover:bg-[var(--surface-strong)] hover:border-white/30 hover:-translate-x-1 border border-[var(--border)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[#F5F5F5]';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-medium block mt-0.5 tabular-nums text-[#B5B5B5]';
         }
     });
 
@@ -2281,6 +2594,8 @@ window.toggleLayananDetailPanel = function() {
         panelWrapper.classList.remove('hidden');
         panelWrapper.setAttribute('aria-hidden', 'false');
         toggleBtn.setAttribute('aria-expanded', 'true');
+        toggleBtn.classList.add('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
+        toggleBtn.classList.remove('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
         if (toggleText) toggleText.textContent = 'Tutup Detail';
         if (toggleIcon) toggleIcon.classList.add('rotate-180');
 
@@ -2323,6 +2638,8 @@ window.closeLayananDetailPanel = function() {
     panelWrapper.setAttribute('aria-hidden', 'true');
     if (toggleBtn) {
         toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.classList.remove('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
+        toggleBtn.classList.add('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
         if (typeof toggleBtn.focus === 'function') {
             toggleBtn.focus();
         }

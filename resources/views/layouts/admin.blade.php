@@ -636,11 +636,14 @@
     <div id="admin-main-wrapper" class="flex-1 flex flex-col min-w-0 min-h-screen" style="background-color: var(--admin-bg-page);">
         <!-- Sticky Header Bar: Menyatu dengan latar halaman & Garis Pemisah Sejajar -->
         <header class="sticky top-0 z-40 h-[56px] min-h-[56px] max-h-[56px] px-3.5 sm:px-5 lg:px-6 flex items-center justify-between gap-3 box-border" style="height: var(--admin-header-height); min-height: var(--admin-header-height); background-color: var(--admin-bg-header); border-bottom: 1px solid var(--admin-border-header);">
-            <!-- Left Side: Mobile Hamburger (HP only) -->
-            <div class="flex items-center min-w-0">
-                <button type="button" onclick="toggleAdminDrawer()" class="md:hidden p-2 rounded-xl border opacity-80 hover:opacity-100 transition-opacity btn-press flex items-center justify-center min-w-[40px] min-h-[40px] shrink-0" style="border-color: var(--admin-border-header); background-color: var(--admin-bg-card); color: var(--admin-text-main);" aria-label="Buka Menu Admin">
-                    <i class="fa-solid fa-bars text-base"></i>
+            <!-- Left Side: Mobile Hamburger + Active Page Title (HP only) -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <button type="button" onclick="toggleAdminDrawer()" class="md:hidden p-2 rounded-xl border opacity-85 hover:opacity-100 transition-opacity btn-press flex items-center justify-center min-w-[38px] min-h-[38px] shrink-0" style="border-color: var(--admin-border-header); background-color: var(--admin-bg-card); color: var(--admin-text-main);" aria-label="Buka Menu Admin">
+                    <i class="fa-solid fa-bars text-sm"></i>
                 </button>
+                <span class="md:hidden font-heading font-bold text-[14.5px] tracking-tight truncate" style="color: var(--admin-text-main);">
+                    {{ $fallbackPageTitle }}
+                </span>
             </div>
 
             <!-- Right Side: Action Shortcuts, Notification Bell, User Menu (Tinggi Seragam 34px) -->
@@ -886,10 +889,72 @@
             </div>
         </header>
 
-        <!-- Main Content Flow Area (Padding Konten) -->
-        <main class="flex-1 p-4 sm:p-6 lg:p-7 w-full max-w-7xl mx-auto" id="admin-main">
+        <!-- Main Content Flow Area (Padding Konten + Ruang Bottom Nav di Mobile) -->
+        <main class="flex-1 p-3.5 sm:p-6 lg:p-7 pb-24 md:pb-7 w-full max-w-7xl mx-auto" id="admin-main">
             @yield('content')
         </main>
+
+        <!-- Mobile Bottom Navigation Bar (Hanya tampil di HP < 768px) -->
+        <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 h-[62px] bg-white/95 backdrop-blur-md border-t flex items-center justify-around px-1.5 select-none shadow-[0_-4px_20px_rgba(27,31,29,0.06)]"
+             style="border-top-color: var(--admin-border-header); background-color: var(--admin-bg-card);"
+             aria-label="Navigasi Bawah Admin">
+            @php
+                $isNavDash = request()->routeIs('admin.dashboard');
+                $isNavOrders = request()->routeIs('admin.orders.index', 'admin.orders.show', 'admin.zendo.*');
+                $isNavScan = request()->routeIs('admin.orders.scan*');
+                $isNavMenus = request()->routeIs('admin.menus.*', 'admin.categories.*');
+            @endphp
+            <a href="{{ route('admin.dashboard') }}"
+               class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors {{ $isNavDash ? 'font-bold' : 'font-medium opacity-70' }}"
+               style="color: {{ $isNavDash ? 'var(--admin-btn-primary-bg)' : 'var(--admin-text-sub)' }};">
+                <i class="fa-solid fa-table-columns text-[15px]"></i>
+                <span class="text-[10px] leading-tight">Beranda</span>
+            </a>
+
+            <a href="{{ route('admin.orders.index') }}"
+               class="relative flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors {{ $isNavOrders ? 'font-bold' : 'font-medium opacity-70' }}"
+               style="color: {{ $isNavOrders ? 'var(--admin-btn-primary-bg)' : 'var(--admin-text-sub)' }};">
+                <div class="relative">
+                    <i class="fa-solid fa-receipt text-[15px]"></i>
+                    @if($pendingOrderCount > 0)
+                        <span class="absolute -top-1.5 -right-2.5 min-w-[15px] h-[15px] px-1 rounded-full text-white text-[9px] font-extrabold flex items-center justify-center leading-none"
+                              style="background-color: var(--admin-status-danger-bg-solid, #C0392B);">
+                            {{ $pendingOrderCount > 9 ? '9+' : $pendingOrderCount }}
+                        </span>
+                    @endif
+                </div>
+                <span class="text-[10px] leading-tight">Transaksi</span>
+            </a>
+
+            <a href="{{ route('admin.orders.scan') }}"
+               class="flex flex-col items-center justify-center -mt-4 px-2"
+               aria-label="Scan QR Kasir">
+                <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white shadow-md transition-transform active:scale-95"
+                     style="background-color: var(--admin-btn-primary-bg); box-shadow: 0 6px 16px rgba(47, 107, 79, 0.28);">
+                    <i class="fa-solid fa-qrcode text-base"></i>
+                </div>
+                <span class="text-[9.5px] font-bold mt-0.5 leading-tight" style="color: {{ $isNavScan ? 'var(--admin-btn-primary-bg)' : 'var(--admin-text-sub)' }};">Scan QR</span>
+            </a>
+
+            <a href="{{ route('admin.menus.index') }}"
+               class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl transition-colors {{ $isNavMenus ? 'font-bold' : 'font-medium opacity-70' }}"
+               style="color: {{ $isNavMenus ? 'var(--admin-btn-primary-bg)' : 'var(--admin-text-sub)' }};">
+                <i class="fa-solid fa-utensils text-[15px]"></i>
+                <span class="text-[10px] leading-tight">Menu</span>
+            </a>
+
+            <button type="button" onclick="toggleAdminDrawer()"
+                    class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl font-medium opacity-75 hover:opacity-100 transition-opacity"
+                    style="color: var(--admin-text-sub);">
+                <div class="relative">
+                    <i class="fa-solid fa-grip text-[15px]"></i>
+                    @if($pendingReservationCount > 0)
+                        <span class="absolute -top-1 -right-2 w-2 h-2 rounded-full" style="background-color: var(--admin-status-expiring-bg-solid, #D9A441);"></span>
+                    @endif
+                </div>
+                <span class="text-[10px] leading-tight">Lainnya</span>
+            </button>
+        </nav>
     </div>
 
     <script>

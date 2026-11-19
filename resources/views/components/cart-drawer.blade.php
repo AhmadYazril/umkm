@@ -54,7 +54,7 @@
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        gap: 16px;
+        gap: 12px;
         width: 100%;
     }
     @media (min-width: 640px) {
@@ -69,11 +69,11 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 96px; /* 6rem gap-y-24 */
+        gap: 74px; /* Compact mobile vertical gap */
     }
     @media (min-width: 640px) {
         .menu-column {
-            gap: 112px; /* 7rem gap-y-28 */
+            gap: 112px; /* 7rem gap-y-28 on desktop/tablet */
         }
     }
 
@@ -89,10 +89,10 @@
         width: 100%;
         background-color: var(--surface-solid, #161616);
         background-image: var(--glow);
-        border-radius: 28px;
+        border-radius: 24px;
         border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
         box-shadow: var(--shadow, 0 20px 50px rgba(0, 0, 0, 0.6));
-        padding: 66px 14px 18px 14px;
+        padding: 56px 11px 14px 11px;
         text-align: center;
         box-sizing: border-box;
         transition: border-color 0.28s ease, box-shadow 0.28s ease, background-color 0.28s ease;
@@ -106,6 +106,8 @@
     }
     @media (min-width: 640px) {
         .menu-card {
+            border-radius: 28px;
+            box-shadow: var(--shadow, 0 20px 50px rgba(0, 0, 0, 0.6));
             padding: 72px 16px 20px 16px;
         }
     }
@@ -132,14 +134,14 @@
     /* Overhanging Large Circular Photo with Dark Border */
     .menu-card-avatar {
         position: absolute;
-        top: -52px;
+        top: -44px;
         left: 50%;
         transform: translateX(-50%) translateY(0) scale(1);
         transform-origin: center center;
-        width: 110px;
-        height: 110px;
+        width: 94px;
+        height: 94px;
         border-radius: 50%;
-        border: 5px solid #1E1E1E;
+        border: 4px solid #1E1E1E;
         box-shadow:
             0 6px 16px rgba(0, 0, 0, 0.55),
             0 16px 32px -4px rgba(0, 0, 0, 0.65);
@@ -164,7 +166,10 @@
             top: -62px;
             width: 126px;
             height: 126px;
-            border-width: 6px;
+            border-width: 5px;
+            box-shadow:
+                0 6px 16px rgba(0, 0, 0, 0.55),
+                0 16px 32px -4px rgba(0, 0, 0, 0.65);
         }
     }
     .menu-card-avatar img {
@@ -177,12 +182,12 @@
     /* Menu Title: bold with consistent min-height for clean row alignment */
     .menu-card-name {
         font-family: var(--font-sans), sans-serif;
-        font-size: 1.05rem;
+        font-size: 0.92rem;
         font-weight: 700;
         line-height: 1.22;
         color: #F5F5F5;
         margin-bottom: 4px;
-        min-height: 2.6rem;
+        min-height: 2.3rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -201,13 +206,19 @@
         display: flex;
         align-items: baseline;
         justify-content: center;
-        gap: 4px;
+        gap: 3px;
         font-family: var(--font-sans), sans-serif;
-        font-size: 1.05rem;
+        font-size: 0.94rem;
         font-weight: 700;
         color: #F5F5F5;
         white-space: nowrap;
         font-variant-numeric: tabular-nums;
+    }
+    @media (min-width: 640px) {
+        .menu-card-price-row {
+            gap: 4px;
+            font-size: 1.05rem;
+        }
     }
     .menu-card-unit {
         font-size: 0.75rem;
@@ -288,12 +299,18 @@
         pointer-events: auto;
     }
 
-    /* Radio Options 2-Columns */
+    /* Radio Options 2-Columns (1-Col on ultra-narrow mobile < 390px) */
     .options-columns {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        grid-template-columns: 1fr;
+        gap: 6px;
         text-align: left;
+    }
+    @media (min-width: 390px) {
+        .options-columns {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
     }
     .option-group-title {
         font-size: 0.72rem;
@@ -377,25 +394,38 @@
         box-shadow: none;
     }
 
-    /* Floating Cart Pill */
+    /* Floating Cart Pill (Full-width sleek bar on mobile < 640px, bottom-right pill on desktop >= 640px) */
     .floating-cart-pill {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
+        bottom: 14px;
+        left: 14px;
+        right: 14px;
         z-index: 45;
         display: flex;
         align-items: center;
-        gap: 8px;
+        justify-content: space-between;
+        gap: 10px;
         background-color: rgba(18, 18, 18, 0.92);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
-        border-radius: 9999px;
-        padding: 8px 18px 8px 12px;
+        border-radius: 18px;
+        padding: 11px 16px;
         box-shadow: var(--shadow, 0 20px 50px rgba(0, 0, 0, 0.6));
         cursor: pointer;
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.3s ease;
         color: #F5F5F5;
+    }
+    @media (min-width: 640px) {
+        .floating-cart-pill {
+            bottom: 24px;
+            left: auto;
+            right: 24px;
+            justify-content: flex-start;
+            gap: 8px;
+            border-radius: 9999px;
+            padding: 8px 18px 8px 12px;
+        }
     }
     .floating-cart-pill:hover {
         transform: translateY(-2px);
@@ -456,19 +486,24 @@
         onclick="openCartDrawer()" 
         class="floating-cart-pill opacity-0 pointer-events-none translate-y-4"
         aria-label="Lihat Keranjang Belanja">
-    <div class="relative flex items-center">
-        <span class="material-symbols-outlined text-[#F5F5F5] text-xl">shopping_cart</span>
-        <span id="floating-cart-badge" 
-              class="absolute -top-2 -right-2 bg-[#F5F2EE] text-[#111111] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
-            0
+    <div class="flex items-center gap-2.5 sm:gap-2">
+        <div class="relative flex items-center">
+            <span class="material-symbols-outlined text-[#F5F5F5] text-xl">shopping_cart</span>
+            <span id="floating-cart-badge" 
+                  class="absolute -top-2 -right-2 bg-[#F5F2EE] text-[#111111] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                0
+            </span>
+        </div>
+        <span class="font-body text-xs font-bold sm:font-semibold text-[#B5B5B5] tracking-wide">
+            My cart:
         </span>
     </div>
-    <span class="font-body text-xs font-semibold text-[#B5B5B5] tracking-wide">
-        My cart:
-    </span>
-    <span id="floating-cart-total" class="font-editorial-num text-xs font-bold text-[#F5F5F5]">
-        Rp 0
-    </span>
+    <div class="flex items-center gap-1.5">
+        <span id="floating-cart-total" class="font-editorial-num text-xs font-bold text-[#F5F5F5]">
+            Rp 0
+        </span>
+        <span class="material-symbols-outlined text-base text-white/80 sm:hidden">chevron_right</span>
+    </div>
 </button>
 @endif
 
@@ -748,6 +783,13 @@
 
         <!-- Actions -->
         <div class="space-y-2 pt-2">
+            <a id="success-wa-link" 
+               href="#" 
+               target="_blank" 
+               class="hidden w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-md shadow-emerald-600/20 active:scale-98">
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span>Kirim Pesanan ke WhatsApp Kurir Zendo</span>
+            </a>
             <a id="success-slip-link" 
                href="#" 
                target="_blank" 
@@ -893,10 +935,11 @@
 
     function triggerCartBadgeBump() {
         const navBadge = document.getElementById('nav-cart-badge');
+        const mobileNavBadge = document.getElementById('mobile-nav-cart-badge');
         const drawerBadge = document.getElementById('drawer-cart-badge');
         const floatingBadge = document.getElementById('floating-cart-badge');
 
-        [navBadge, drawerBadge, floatingBadge].forEach(b => {
+        [navBadge, mobileNavBadge, drawerBadge, floatingBadge].forEach(b => {
             if (b) {
                 b.classList.remove('cart-bump');
                 void b.offsetWidth; // force reflow
@@ -1011,7 +1054,7 @@
         const columns = [];
         for (let c = 0; c < numCols; c++) {
             const col = document.createElement('div');
-            col.className = 'menu-column flex-1 flex flex-col gap-y-24 sm:gap-y-28 min-w-0';
+            col.className = 'menu-column flex-1 flex flex-col gap-y-[74px] sm:gap-y-28 min-w-0';
             container.appendChild(col);
             columns.push(col);
         }
@@ -1192,6 +1235,7 @@
         const floatingBadge = document.getElementById('floating-cart-badge');
         const floatingTotal = document.getElementById('floating-cart-total');
         const navBadge = document.getElementById('nav-cart-badge');
+        const mobileNavBadge = document.getElementById('mobile-nav-cart-badge');
         const drawerBadge = document.getElementById('drawer-cart-badge');
 
         const keys = Object.keys(window.nucomuCart);
@@ -1215,6 +1259,10 @@
             if (navBadge) {
                 navBadge.innerText = '0';
                 navBadge.classList.add('hidden');
+            }
+            if (mobileNavBadge) {
+                mobileNavBadge.innerText = '0';
+                mobileNavBadge.classList.add('hidden');
             }
             if (drawerBadge) drawerBadge.innerText = '0';
             return;
@@ -1293,6 +1341,10 @@
             navBadge.innerText = totalQty;
             navBadge.classList.remove('hidden');
         }
+        if (mobileNavBadge) {
+            mobileNavBadge.innerText = totalQty;
+            mobileNavBadge.classList.remove('hidden');
+        }
         if (drawerBadge) drawerBadge.innerText = totalQty;
     };
     window.renderModalCart = window.renderCartDrawer;
@@ -1326,6 +1378,11 @@
         const fieldAddress = document.getElementById('drawer-field-address');
         const submitText = document.getElementById('drawer-submit-text');
 
+        const dotKasir = cardKasir ? cardKasir.querySelector('.method-dot') : null;
+        const dotZendo = cardZendo ? cardZendo.querySelector('.method-dot') : null;
+        const iconKasir = cardKasir ? cardKasir.querySelector('.material-symbols-outlined') : null;
+        const iconZendo = cardZendo ? cardZendo.querySelector('.material-symbols-outlined') : null;
+
         if (method === 'kasir') {
             if (cardKasir) {
                 cardKasir.classList.add('border-[#F5F5F5]');
@@ -1335,6 +1392,11 @@
                 cardZendo.classList.remove('border-[#F5F5F5]');
                 cardZendo.classList.add('border-[var(--border)]');
             }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+
             if (fieldTable) fieldTable.classList.remove('hidden');
             if (fieldAddress) fieldAddress.classList.add('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kasir)';
@@ -1347,11 +1409,17 @@
                 cardKasir.classList.remove('border-[#F5F5F5]');
                 cardKasir.classList.add('border-[var(--border)]');
             }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+
             if (fieldTable) fieldTable.classList.add('hidden');
             if (fieldAddress) fieldAddress.classList.remove('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kurir Zendo)';
         }
     };
+    window.setModalProcessMethod = window.selectDrawerMethod;
 
     // ============================================
     // CHECKOUT FORM SUBMISSION
@@ -1403,28 +1471,39 @@
             return;
         }
 
-        // Format items for payload
-        const payloadItems = items.map(it => ({
-            id: it.id,
-            name: it.name,
-            qty: it.qty,
-            price: it.price,
-            options: it.options || [],
-            notes: it.optionsStr || ''
-        }));
+        // Format items for payload with complete keys matching server validation
+        const payloadItems = items.map(it => {
+            const qty = parseInt(it.qty, 10) || 1;
+            const price = parseInt(it.price, 10) || 0;
+            return {
+                id: it.id,
+                menu_id: it.id,
+                name: it.name,
+                menu_name: it.name,
+                qty: qty,
+                price: price,
+                unit_price: price,
+                line_total: price * qty,
+                options: it.options || [],
+                notes: it.optionsStr || ''
+            };
+        });
 
         let subtotal = 0;
-        items.forEach(it => subtotal += (it.price * it.qty));
+        payloadItems.forEach(it => subtotal += it.line_total);
 
         const payload = {
             process_method: isZendo ? 'zendo' : 'kasir',
             customer_name: customerName,
             customer_phone: customerPhone,
+            table_no: tableNumber,
             table_number: tableNumber,
+            dine_type: tableNumber ? 'dine_in' : 'take_away',
             delivery_address: address,
             notes: notes,
             payment_method: 'cash',
             items: payloadItems,
+            total: subtotal,
             subtotal: subtotal,
             grand_total: subtotal
         };
@@ -1436,17 +1515,39 @@
 
         try {
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfMeta ? csrfMeta.content : '';
+            const csrfToken = csrfMeta ? csrfMeta.content : '{{ csrf_token() }}';
 
-            const res = await fetch('/api/transactions/process', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify(payload)
-            });
+            // Resolve endpoints dynamically so it works seamlessly on root domain or subdirectory (Laragon /umkm/public)
+            const primaryEndpoint = '{{ route("api.transactions.process", [], false) }}';
+            const fallbackEndpoint = '{{ route("nucomu.order.store", [], false) }}';
+
+            let res;
+            try {
+                res = await fetch(primaryEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (fetchErr) {
+                console.warn('Primary endpoint network error, falling back to /pesan:', fetchErr);
+            }
+
+            // Fallback to /pesan if primary endpoint returned 404 or failed
+            if (!res || res.status === 404) {
+                res = await fetch(fallbackEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
 
             const data = await res.json();
 
@@ -1465,25 +1566,44 @@
             const typeEl = document.getElementById('success-order-type');
             const totalEl = document.getElementById('success-total-amount');
             const slipLink = document.getElementById('success-slip-link');
+            const waLink = document.getElementById('success-wa-link');
             const subtextEl = document.getElementById('success-subtext');
+            const qrContainer = document.getElementById('drawer-qr-container');
 
             if (codeEl) codeEl.innerText = data.order_code || 'NCM-ORDER';
             if (nameEl) nameEl.innerText = customerName;
             if (typeEl) typeEl.innerText = isZendo ? 'Kurir Zendo' : (tableNumber ? `Kasir (Meja ${tableNumber})` : 'Kasir (Take Away)');
             if (totalEl) totalEl.innerText = 'Rp ' + (data.grand_total || subtotal).toLocaleString('id-ID');
-            if (subtextEl) {
-                subtextEl.innerText = isZendo 
-                    ? 'Kurir Zendo akan segera mengonfirmasi pesanan ke WhatsApp Anda.' 
-                    : 'Tunjukkan QR code ini ke kasir untuk proses pembayaran.';
-            }
 
-            if (slipLink && data.slip_url) {
-                slipLink.href = data.slip_url;
-                slipLink.classList.remove('hidden');
+            if (isZendo) {
+                if (subtextEl) {
+                    subtextEl.innerText = data.courier_name 
+                        ? `Pesanan Anda akan diantar oleh ${data.courier_name}. Klik tombol di bawah untuk konfirmasi WhatsApp.`
+                        : 'Pesanan Kurir Zendo berhasil dibuat. Silakan konfirmasi ke WhatsApp kurir.';
+                }
+                if (qrContainer) qrContainer.classList.add('hidden');
+                if (slipLink) slipLink.classList.add('hidden');
+                if (waLink && data.whatsapp_url) {
+                    waLink.href = data.whatsapp_url;
+                    waLink.classList.remove('hidden');
+                }
+            } else {
+                if (subtextEl) {
+                    subtextEl.innerText = 'Tunjukkan QR code ini ke kasir untuk proses pembayaran.';
+                }
+                if (qrContainer) qrContainer.classList.remove('hidden');
+                if (waLink) waLink.classList.add('hidden');
+                if (slipLink) {
+                    if (data.slip_url) {
+                        slipLink.href = data.slip_url;
+                        slipLink.classList.remove('hidden');
+                    } else {
+                        slipLink.classList.add('hidden');
+                    }
+                }
+                // Render QR code
+                generateDrawerQrCode(data.order_code || 'NCM-ORDER', data.slip_url || '');
             }
-
-            // Render QR code
-            generateDrawerQrCode(data.order_code || 'NCM-ORDER', data.slip_url || '');
 
             // Switch to success view
             switchCartView('success');

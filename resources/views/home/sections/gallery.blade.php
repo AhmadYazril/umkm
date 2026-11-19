@@ -459,7 +459,7 @@
              ============================================================== -->
         <div id="circularGalleryStage"
              class="relative w-full mt-0 mb-1 sm:mb-2"
-             style="height: clamp(430px, 52vh, 476px);">
+             style="height: clamp(340px, 48vh, 476px);">
 
             <!-- Soft Edge Fade Gradients -->
             <div class="circular-gallery-feather-left" aria-hidden="true"></div>
@@ -476,7 +476,7 @@
                         @endphp
                         <div class="carousel-3d-card group/c"
                              data-orig-idx="{{ $origIdx }}"
-                             style="width: clamp(210px, 22vw, 275px);">
+                             style="width: clamp(190px, 46vw, 275px);">
                             <!-- Foto Tiap Item dengan src lokal berbeda, alt deskriptif, loading lazy, object-fit cover, dan onerror fallback -->
                             <img src="{{ $it['src'] }}"
                                  alt="{{ $it['alt'] }}"
@@ -698,17 +698,27 @@ window.handleGalleryImgError = function(imgEl, fileName, cardNum, caption, categ
     });
 
     function recalculateLayout() {
-        viewportWidth = viewportEl.clientWidth || stageEl.clientWidth || 1000;
+        viewportWidth = viewportEl.clientWidth || stageEl.clientWidth || window.innerWidth || 1000;
         if (cards[0]) {
-            cardWidth = cards[0].offsetWidth || 250;
+            cardWidth = cards[0].offsetWidth || 210;
             cardStride = cardWidth + CONFIG.gap;
             totalTrackWidth = totalCards * cardStride;
             cards.forEach((card, idx) => {
                 card.baseX = idx * cardStride;
             });
         }
+        if (typeof renderFrame === 'function') {
+            renderFrame();
+        }
     }
     window.addEventListener('resize', recalculateLayout);
+    window.refreshNucomu3DGallery = function() {
+        recalculateLayout();
+        if (typeof startGalleryLoop === 'function') {
+            isGalleryInViewport = true;
+            startGalleryLoop();
+        }
+    };
 
     // Variabel gerak & interaksi
     let scrollX = 0;
@@ -806,19 +816,12 @@ window.handleGalleryImgError = function(imgEl, fileName, cardNum, caption, categ
         });
     });
 
-    // 3. Render Loop via requestAnimationFrame
+    // 3. Render Loop via requestAnimationFrame (Paused when offscreen to keep mobile lightweight)
     let rafId = null;
+    let isGalleryInViewport = false;
 
-    function render() {
-        // Auto-scroll pelan ke kiri (loop tanpa putus)
-        if (!isDown && !prefersReducedMotion) {
-            const currentAutoSpeed = isHovered ? (CONFIG.autoSpeed * 0.25) : CONFIG.autoSpeed;
-            targetScrollX += currentAutoSpeed;
-        }
-
-        // Kehalusan transisi (lerp)
-        scrollX += (targetScrollX - scrollX) * CONFIG.lerpEase;
-
+    function renderFrame() {
+        const isMobileScreen = viewportWidth < 768;
         const halfWidth = viewportWidth / 2;
         const centerX = halfWidth;
 
@@ -834,6 +837,18 @@ window.handleGalleryImgError = function(imgEl, fileName, cardNum, caption, categ
             const u = offset / halfWidth;
             const distAbs = Math.abs(u);
 
+            // Skip expensive 3D composition for cards far outside the viewport
+            if (distAbs > 1.45) {
+                if (card.style.visibility !== 'hidden') {
+                    card.style.visibility = 'hidden';
+                    card.style.pointerEvents = 'none';
+                }
+                continue;
+            }
+            if (card.style.visibility === 'hidden') {
+                card.style.visibility = 'visible';
+            }
+
             // 1. Lengkung 3D Silinder (rotateY): Kartu di kanan condong ke kiri, kartu di kiri condong ke kanan
             const rotY = Math.max(-CONFIG.maxAngle, Math.min(CONFIG.maxAngle, -u * CONFIG.maxAngle));
 
@@ -843,10 +858,7 @@ window.handleGalleryImgError = function(imgEl, fileName, cardNum, caption, categ
             // 3. Skala: Kartu tengah paling besar (1.0), makin ke tepi mengecil (0.88)
             const scale = Math.max(CONFIG.minScale, 1.0 - Math.min(distAbs, 1.0) * (1.0 - CONFIG.minScale));
 
-            // 4. Kecerahan (brightness): Kartu tengah terang penuh (1.0 / filter none), ke tepi memudar sangat halus
-            const brightness = Math.max(0.85, 1.0 - Math.min(distAbs, 1.2) * CONFIG.dimmingFactor);
-
-            // 5. Opacity penuh untuk kartu terlihat agar foto jernih, hanya memudar di tepi terluar
+            // 4. Opacity penuh untuk kartu terlihat agar foto jernih, hanya memudar di tepi terluar
             const opacity = distAbs > 0.90 ? Math.max(0, 1.0 - (distAbs - 0.90) * 2.2) : 1;
 
             // Posisi X di layar
@@ -855,20 +867,74 @@ window.handleGalleryImgError = function(imgEl, fileName, cardNum, caption, categ
             card.style.transform = `translate3d(${cardLeft.toFixed(1)}px, -50%, ${transZ.toFixed(1)}px) rotateY(${rotY.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
             card.style.opacity = opacity.toFixed(2);
 
-            // Kartu tengah dan sekitarnya tanpa filter brightness agar foto tetap tajam
-            if (distAbs < 0.25) {
-                card.style.filter = 'none';
+            // Di mobile, hindari filter brightness per-frame agar GPU 60fps ringan
+            if (isMobileScreen || distAbs < 0.25) {
+                if (card.style.filter !== 'none') card.style.filter = 'none';
             } else {
+                const brightness = Math.max(0.85, 1.0 - Math.min(distAbs, 1.2) * CONFIG.dimmingFactor);
                 card.style.filter = `brightness(${brightness.toFixed(2)})`;
             }
 
             card.style.pointerEvents = opacity < 0.1 ? 'none' : 'auto';
         }
+    }
+
+    function render() {
+        if (!isGalleryInViewport || document.hidden) {
+            rafId = null;
+            return;
+        }
+
+        // Auto-scroll pelan ke kiri (loop tanpa putus)
+        if (!isDown && !prefersReducedMotion) {
+            const currentAutoSpeed = isHovered ? (CONFIG.autoSpeed * 0.25) : CONFIG.autoSpeed;
+            targetScrollX += currentAutoSpeed;
+        }
+
+        // Kehalusan transisi (lerp)
+        scrollX += (targetScrollX - scrollX) * CONFIG.lerpEase;
+
+        renderFrame();
 
         rafId = requestAnimationFrame(render);
     }
 
-    rafId = requestAnimationFrame(render);
+    function startGalleryLoop() {
+        if (!rafId && isGalleryInViewport && !document.hidden) {
+            rafId = requestAnimationFrame(render);
+        }
+    }
+
+    // Initial static frame render
+    renderFrame();
+
+    if ('IntersectionObserver' in window) {
+        const gallerySectionEl = document.getElementById('gallery') || stageEl;
+        const galleryObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                isGalleryInViewport = entry.isIntersecting;
+                if (isGalleryInViewport) {
+                    startGalleryLoop();
+                } else if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+            });
+        }, { rootMargin: '120px 0px' });
+        galleryObserver.observe(gallerySectionEl);
+    } else {
+        isGalleryInViewport = true;
+        startGalleryLoop();
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        } else if (!document.hidden && isGalleryInViewport) {
+            startGalleryLoop();
+        }
+    });
 
 })();
 </script>
