@@ -2669,12 +2669,20 @@ html.nucomu-intro-active body {
     }
 
     body[data-mobile-home-page="layanan-contact"] #global-footer {
-        padding-bottom: 96px !important;
+        padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    html {
+        scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    #mobile-glass-layup-nav {
+        bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
     }
 
     /* Posisikan Floating Cart Bar tepat di atas Glass Bottom Lay-Up Bar agar tidak bertumpuk */
     body:has(#mobile-glass-layup-nav) .floating-cart-pill {
-        bottom: 82px !important;
+        bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px)) !important;
     }
 }
 

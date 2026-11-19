@@ -1019,6 +1019,14 @@ window.switchMobileHomePage = function(pageKey, targetSectionId = null, shouldSc
             }
             window.dispatchEvent(new Event('resize'));
         }, 30);
+    } else if (resolvedPage === 'layanan-contact') {
+        const footerNavList = document.getElementById('footer-nav-list');
+        if (footerNavList) {
+            footerNavList.classList.add('footer-nav-visible');
+        }
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 30);
     }
 
     // Pastikan navbar atas terlihat dan temanya sesuai dengan halaman baru

@@ -36,7 +36,7 @@
 
 <footer id="global-footer" 
         data-navbar-theme="dark"
-        class="relative bg-[#111113] text-zinc-300 pt-16 pb-8 border-t border-white/10 overflow-hidden font-body select-none-bg"
+        class="relative bg-[#111113] text-zinc-300 pt-10 md:pt-16 pb-8 border-t border-white/10 overflow-hidden font-body select-none-bg"
         style="background-color: #111113;">
 
     <!-- Background Artwork Layer (Monochrome Exact Match) -->
@@ -45,35 +45,37 @@
              alt="" 
              class="w-full h-full object-cover object-bottom opacity-100" 
              loading="lazy">
+        <!-- Mobile-only contrast scrim for crisper legibility on narrow screens -->
+        <div class="md:hidden absolute inset-0 bg-gradient-to-b from-[#111113]/80 via-[#111113]/65 to-[#111113]/92" aria-hidden="true"></div>
     </div>
 
     <!-- Main Footer Content -->
     <div class="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
         <!-- 4 Columns Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 pb-8 md:pb-12">
             
             <!-- Col 1: Brand & Identity (4 Cols) -->
-            <div class="lg:col-span-4 flex flex-col justify-between">
-                <div>
+            <div class="lg:col-span-4 flex flex-col justify-between pb-6 border-b border-white/10 md:pb-0 md:border-b-0">
+                <div class="flex flex-col items-center text-center md:block md:text-left">
                     <!-- Logo & Brand Header -->
-                    <a href="{{ route('home') }}#home" class="inline-flex items-center gap-3.5 group">
+                    <a href="{{ route('home') }}#home" class="inline-flex items-center gap-3 md:gap-3.5 group">
                         <img src="{{ asset('images/nucomu/footer_logo_monochrome.png') }}" 
                              alt="Nucomu Cafe Logo" 
-                             class="w-12 h-12 rounded-full object-contain shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-sm">
-                        <div class="flex flex-col">
-                            <span class="font-sans text-2xl lg:text-[26px] font-bold tracking-tight text-white leading-tight">Nucomu Cafe</span>
+                             class="w-11 h-11 md:w-12 md:h-12 rounded-full object-contain shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-sm ring-1 ring-white/15 md:ring-0">
+                        <div class="flex flex-col text-left">
+                            <span class="font-sans text-xl md:text-2xl lg:text-[26px] font-bold tracking-tight text-white leading-tight">Nucomu Cafe</span>
                             <span class="text-[9px] uppercase tracking-[0.22em] text-zinc-400 font-semibold mt-0.5">SLOW HOSPITALITY &amp; ROASTERY</span>
                         </div>
                     </a>
 
                     <!-- Description Text -->
-                    <p class="font-body text-xs text-zinc-300/90 leading-relaxed mt-5 max-w-sm font-normal">
+                    <p class="font-body text-xs text-zinc-300/90 leading-relaxed mt-3.5 md:mt-5 max-w-[330px] md:max-w-sm mx-auto md:mx-0 font-normal [text-wrap:pretty]">
                         Ruang santai bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan momen-momen sederhana yang berkesan.
                     </p>
 
-                    <!-- Luxury Editorial Quote Block with Liquid Gold Light Beam & Masked Stagger Reveal -->
-                    <div class="footer-quote-box mt-6 relative flex items-stretch gap-4 cursor-pointer group/quote select-none py-2 px-1 transition-all duration-500 hover:translate-x-1.5"
+                    <!-- Luxury Editorial Quote Block (Hidden on Mobile, Preserved on Desktop md+) -->
+                    <div class="footer-quote-box hidden md:flex mt-6 relative items-stretch gap-4 cursor-pointer group/quote select-none py-2 px-1 transition-all duration-500 hover:translate-x-1.5"
                          id="footer-quote-box"
                          role="region"
                          aria-label="Nucomu Cafe Slogan">
@@ -112,13 +114,13 @@
             </div>
 
             <!-- Col 2: Navigation Links (2 Cols) -->
-            <div class="lg:col-span-2">
-                <h4 class="text-xs font-bold tracking-[0.18em] text-white uppercase">
+            <div class="lg:col-span-2 text-center md:text-left">
+                <h4 class="text-[11px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.18em] text-white uppercase">
                     NAVIGASI
                 </h4>
-                <div class="w-7 h-[2px] bg-white mt-2 mb-6"></div>
+                <div class="w-7 h-[2px] bg-white mt-2 mb-4 md:mb-6 mx-auto md:mx-0"></div>
 
-                <ul class="space-y-3 font-body text-xs" id="footer-nav-list">
+                <ul class="flex flex-wrap items-center justify-center gap-2 md:block md:space-y-3 font-body text-xs" id="footer-nav-list">
                     @php
                         $footerNavLinks = [
                             ['label' => 'Home', 'url' => route('home').'#home'],
@@ -131,11 +133,11 @@
 
                     @foreach ($footerNavLinks as $idx => $link)
                         <li class="footer-nav-item" style="transition-delay: {{ $idx * 80 + 100 }}ms;">
-                            <a href="{{ $link['url'] }}" class="group relative inline-flex items-center text-zinc-300 hover:text-white transition-colors duration-200 py-0.5">
-                                <span class="text-zinc-500 mr-2 text-[11px] font-mono group-hover:text-white group-hover:translate-x-[3px] transition-all duration-200 inline-block">&gt;</span>
+                            <a href="{{ $link['url'] }}" class="group relative inline-flex items-center justify-center min-h-[40px] px-4 py-2 rounded-full bg-white/[0.05] border border-white/10 active:scale-95 active:bg-white/15 md:min-h-0 md:px-0 md:py-0.5 md:rounded-none md:bg-transparent md:border-0 md:active:scale-100 md:active:bg-transparent text-zinc-200 md:text-zinc-300 hover:text-white transition-all duration-200 font-medium md:font-normal">
+                                <span class="hidden md:inline-block text-zinc-500 mr-2 text-[11px] font-mono group-hover:text-white group-hover:translate-x-[3px] transition-all duration-200">&gt;</span>
                                 <span class="relative">
                                     <span>{{ $link['label'] }}</span>
-                                    <span class="absolute left-0 -bottom-0.5 w-0 h-[1.5px] bg-white group-hover:w-full transition-all duration-300 ease-out pointer-events-none rounded-full"></span>
+                                    <span class="hidden md:block absolute left-0 -bottom-0.5 w-0 h-[1.5px] bg-white group-hover:w-full transition-all duration-300 ease-out pointer-events-none rounded-full"></span>
                                 </span>
                             </a>
                         </li>
@@ -144,14 +146,14 @@
             </div>
 
             <!-- Col 3: Operational Hours (3 Cols) -->
-            <div class="lg:col-span-3">
-                <h4 class="text-xs font-bold tracking-[0.18em] text-white uppercase">
+            <div class="lg:col-span-3 text-center md:text-left">
+                <h4 class="text-[11px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.18em] text-white uppercase">
                     JAM BUKA
                 </h4>
-                <div class="w-7 h-[2px] bg-white mt-2 mb-4"></div>
+                <div class="w-7 h-[2px] bg-white mt-2 mb-3.5 md:mb-4 mx-auto md:mx-0"></div>
 
                 <!-- Real-time Status Badge with Pulsing Glow -->
-                <div id="footer-status-badge" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-white/10 text-[11px] text-zinc-300 backdrop-blur-sm mb-3.5 shadow-sm transition-all duration-300">
+                <div id="footer-status-badge" class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-zinc-900/90 border border-white/10 text-[11px] text-zinc-300 backdrop-blur-sm mb-3.5 shadow-sm transition-all duration-300 mx-auto md:mx-0">
                     <div class="relative flex items-center justify-center w-2.5 h-2.5 shrink-0">
                         <span id="footer-status-glow" class="absolute inset-0 rounded-full {{ $isOpen ? 'footer-pulse-open' : 'footer-pulse-closed' }}"></span>
                         <span id="footer-status-dot" class="w-2 h-2 rounded-full relative z-10 {{ $isOpen ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.95)]' : 'bg-zinc-400' }}"></span>
@@ -160,45 +162,45 @@
                 </div>
 
                 <!-- Hours Card with Elevation & Row Highlight & Icon Micro-Animations -->
-                <div class="footer-hours-card rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/10 p-3 sm:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)]">
+                <div class="footer-hours-card grid grid-cols-2 divide-x divide-white/10 md:block md:divide-x-0 rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/10 p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
                     <!-- Row: Senin – Sabtu -->
-                    <div class="footer-op-row group/row flex items-center gap-3 p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
-                        <div class="w-9 h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
-                            <svg class="footer-sun-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
+                        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
+                            <svg class="footer-sun-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <circle cx="12" cy="12" r="4"/>
                                 <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
                             </svg>
                         </div>
-                        <div>
-                            <p class="text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">SENIN – SABTU</p>
-                            <p class="text-sm font-bold text-white tracking-wide mt-0.5">11:00 – 21:00 WIB</p>
+                        <div class="min-w-0">
+                            <p class="text-[9.5px] md:text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">SENIN – SABTU</p>
+                            <p class="text-[12px] sm:text-[13px] md:text-sm font-bold text-white tracking-wide mt-0.5 tabular-nums whitespace-nowrap">11:00 – 21:00 WIB</p>
                         </div>
                     </div>
 
-                    <!-- Dashed Divider (animated dash-offset on card hover) -->
-                    <div class="my-2.5 overflow-hidden px-1">
+                    <!-- Dashed Divider (animated dash-offset on card hover, desktop only) -->
+                    <div class="hidden md:block my-2.5 overflow-hidden px-1">
                         <svg class="footer-dash-line w-full h-[2px] block text-white/20" preserveAspectRatio="none" viewBox="0 0 200 2">
                             <line x1="0" y1="1" x2="200" y2="1" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4, 4" />
                         </svg>
                     </div>
 
                     <!-- Row: Minggu -->
-                    <div class="footer-op-row group/row flex items-center gap-3 p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
-                        <div class="w-9 h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
-                            <svg class="footer-moon-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
+                        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
+                            <svg class="footer-moon-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
                             </svg>
                         </div>
-                        <div>
-                            <p class="text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">MINGGU</p>
-                            <p class="text-sm font-bold text-white tracking-wide mt-0.5">11:00 – 22:00 WIB</p>
+                        <div class="min-w-0">
+                            <p class="text-[9.5px] md:text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">MINGGU</p>
+                            <p class="text-[12px] sm:text-[13px] md:text-sm font-bold text-white tracking-wide mt-0.5 tabular-nums whitespace-nowrap">11:00 – 22:00 WIB</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Dining info -->
-                <div class="flex items-center gap-2 mt-3 text-xs text-zinc-400">
-                    <svg class="w-3.5 h-3.5 text-zinc-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <div class="flex items-center justify-center md:justify-start gap-2 mt-3 text-[11.5px] md:text-xs text-zinc-400">
+                    <svg class="w-3.5 h-3.5 text-zinc-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/>
                         <path d="M15 2v18"/>
                         <path d="M7 2v20"/>
@@ -209,22 +211,22 @@
             </div>
 
             <!-- Col 4: Contact & Social Media (3 Cols) -->
-            <div class="lg:col-span-3">
-                <h4 class="text-xs font-bold tracking-[0.18em] text-white uppercase">
+            <div class="lg:col-span-3 text-center md:text-left">
+                <h4 class="text-[11px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.18em] text-white uppercase">
                     HUBUNGI &amp; IKUTI KAMI
                 </h4>
-                <div class="w-7 h-[2px] bg-white mt-2 mb-5"></div>
+                <div class="w-7 h-[2px] bg-white mt-2 mb-4 md:mb-5 mx-auto md:mx-0"></div>
 
                 <!-- Dynamic Social Media Icon Circles (Only shown if filled by admin) -->
-                <div class="flex items-center gap-2.5 mb-5 flex-wrap">
+                <div class="flex items-center justify-center md:justify-start gap-3 md:gap-2.5 mb-4 md:mb-5 flex-wrap">
                     @if(!empty($footerInstagram))
                         <a href="{{ $footerInstagram }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           class="w-11 h-11 md:w-9 md:h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group active:scale-95"
                            aria-label="Instagram Nucomu Cafe"
                            title="Instagram Nucomu Cafe">
-                            <i class="fa-brands fa-instagram text-base group-hover:scale-110 transition-transform"></i>
+                            <i class="fa-brands fa-instagram text-base group-hover:scale-110 transition-transform" aria-hidden="true"></i>
                         </a>
                     @endif
 
@@ -232,10 +234,10 @@
                         <a href="{{ $footerTiktok }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           class="w-11 h-11 md:w-9 md:h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group active:scale-95"
                            aria-label="TikTok Nucomu Cafe"
                            title="TikTok Nucomu Cafe">
-                            <i class="fa-brands fa-tiktok text-sm group-hover:scale-110 transition-transform"></i>
+                            <i class="fa-brands fa-tiktok text-sm group-hover:scale-110 transition-transform" aria-hidden="true"></i>
                         </a>
                     @endif
 
@@ -243,19 +245,19 @@
                         <a href="{{ $footerGrabfood }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="w-9 h-9 rounded-full bg-[#00B14F]/90 hover:bg-[#00B14F] text-white border border-[#00B14F]/40 hover:border-[#00B14F] transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           class="w-11 h-11 md:w-9 md:h-9 rounded-full bg-[#00B14F]/90 hover:bg-[#00B14F] text-white border border-[#00B14F]/40 hover:border-[#00B14F] transition-all duration-200 flex items-center justify-center shadow-sm group active:scale-95"
                            aria-label="GrabFood Nucomu Cafe"
                            title="Kunjungi GrabFood Nucomu Cafe">
-                            <i class="fa-solid fa-bag-shopping text-sm group-hover:scale-110 transition-transform"></i>
+                            <i class="fa-solid fa-bag-shopping text-sm group-hover:scale-110 transition-transform" aria-hidden="true"></i>
                         </a>
                     @endif
 
                     @if(!empty($footerEmail))
                         <a href="mailto:{{ $footerEmail }}" 
-                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           class="w-11 h-11 md:w-9 md:h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group active:scale-95"
                            aria-label="Email Nucomu Cafe"
                            title="{{ $footerEmail }}">
-                            <i class="fa-solid fa-envelope text-xs group-hover:scale-110 transition-transform"></i>
+                            <i class="fa-solid fa-envelope text-xs group-hover:scale-110 transition-transform" aria-hidden="true"></i>
                         </a>
                     @endif
 
@@ -263,62 +265,77 @@
                         <a href="{{ $footerMapsUrl }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="w-9 h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group"
+                           class="w-11 h-11 md:w-9 md:h-9 rounded-full bg-zinc-800/80 hover:bg-white text-zinc-300 hover:text-black border border-white/10 hover:border-white transition-all duration-200 flex items-center justify-center shadow-sm group active:scale-95"
                            aria-label="Lokasi Google Maps"
                            title="Buka Google Maps">
-                            <i class="fa-solid fa-location-dot text-sm group-hover:scale-110 transition-transform"></i>
+                            <i class="fa-solid fa-location-dot text-sm group-hover:scale-110 transition-transform" aria-hidden="true"></i>
                         </a>
                     @endif
                 </div>
 
-                <!-- WhatsApp Contact Info -->
-                <div class="flex items-center gap-2.5 text-xs mb-3 text-zinc-300">
-                    <i class="fa-brands fa-whatsapp text-emerald-500 text-base shrink-0"></i>
-                    <span>
-                        WhatsApp: 
+                <!-- Mobile Glass Card Wrapper for Contact Details (Flat & Unchanged on Desktop md+) -->
+                <div class="rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/10 p-3.5 space-y-3 text-left md:rounded-none md:bg-transparent md:backdrop-blur-none md:border-0 md:p-0 md:space-y-0">
+                    <!-- WhatsApp Contact Info -->
+                    <div class="flex items-center gap-2.5 text-xs mb-0 md:mb-3 text-zinc-300 pb-3 border-b border-white/10 md:pb-0 md:border-b-0">
+                        <span class="w-8 h-8 rounded-full bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center shrink-0 md:w-auto md:h-auto md:bg-transparent md:border-0 md:rounded-none">
+                            <i class="fa-brands fa-whatsapp text-emerald-500 text-base shrink-0" aria-hidden="true"></i>
+                        </span>
+                        <span class="flex-1 min-w-0">
+                            <span class="block text-[10px] uppercase tracking-wider text-zinc-400 font-semibold md:inline md:text-xs md:normal-case md:tracking-normal md:text-zinc-300 md:font-normal">WhatsApp<span class="hidden md:inline">:</span></span>
+                            <a href="https://wa.me/{{ $footerWaClean }}" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="inline-flex items-center font-bold text-white hover:underline transition-colors md:ml-1 text-[13px] md:text-xs tabular-nums">
+                                {{ $footerWaDisplay }}
+                            </a>
+                        </span>
                         <a href="https://wa.me/{{ $footerWaClean }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 
-                           class="font-bold text-white hover:underline transition-colors ml-1">
-                            {{ $footerWaDisplay }}
+                           aria-label="Chat WhatsApp Nucomu Cafe"
+                           class="md:hidden shrink-0 inline-flex items-center justify-center px-3 min-h-[34px] rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold active:scale-95 transition-transform">
+                            Chat
                         </a>
-                    </span>
-                </div>
+                    </div>
 
-                <!-- Address Location Info -->
-                <div class="flex items-start gap-2.5 text-xs text-zinc-400">
-                    <i class="fa-solid fa-location-dot text-zinc-400 shrink-0 mt-0.5"></i>
-                    @if(!empty($footerMapsUrl))
-                        <a href="{{ $footerMapsUrl }}" 
-                           target="_blank" 
-                           rel="noopener noreferrer" 
-                           class="hover:text-zinc-200 transition-colors leading-relaxed">
-                            {{ $footerAddress }}
-                        </a>
-                    @else
-                        <span class="leading-relaxed">{{ $footerAddress }}</span>
-                    @endif
-                </div>
+                    <!-- Address Location Info -->
+                    <div class="flex items-start gap-2.5 text-xs text-zinc-400">
+                        <span class="w-8 h-8 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 mt-0.5 md:w-auto md:h-auto md:bg-transparent md:border-0 md:rounded-none">
+                            <i class="fa-solid fa-location-dot text-zinc-400 shrink-0" aria-hidden="true"></i>
+                        </span>
+                        @if(!empty($footerMapsUrl))
+                            <a href="{{ $footerMapsUrl }}" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="hover:text-zinc-200 transition-colors leading-relaxed text-[12px] md:text-xs text-zinc-300/90 md:text-zinc-400 [text-wrap:pretty]">
+                                {{ $footerAddress }}
+                            </a>
+                        @else
+                            <span class="leading-relaxed text-[12px] md:text-xs text-zinc-300/90 md:text-zinc-400 [text-wrap:pretty]">{{ $footerAddress }}</span>
+                        @endif
+                    </div>
                 </div>
             </div>
 
         </div>
 
         <!-- Copyright & Bottom Row -->
-        <div class="pt-10 pb-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <div class="pt-6 md:pt-10 pb-2 md:pb-4 border-t border-white/10 md:border-t-0 flex flex-col-reverse md:flex-row items-center justify-between gap-4 text-xs">
             <!-- Copyright Left -->
-            <p class="text-zinc-400 text-xs tracking-normal text-center sm:text-left">
+            <p class="text-zinc-400 text-[11px] md:text-xs tracking-normal text-center md:text-left leading-relaxed max-w-[300px] md:max-w-none [text-wrap:pretty]">
                 &copy; {{ date('Y') }} Nucomu Cafe. Seluruh Hak Cipta Dilindungi. Tulungagung, Jawa Timur.
             </p>
 
             <!-- Back to Top Right -->
             <div class="flex items-center">
-                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+                <button type="button"
+                        onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
                         aria-label="Kembali ke atas" 
-                        class="w-9 h-9 rounded-full bg-zinc-900/90 hover:bg-white text-zinc-300 hover:text-[#111113] border border-white/15 hover:border-white transition-all duration-200 flex items-center justify-center shadow-md shrink-0 group">
-                    <svg class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        class="inline-flex items-center justify-center gap-2 px-4 h-11 md:w-9 md:h-9 md:px-0 rounded-full bg-zinc-900/90 hover:bg-white text-zinc-200 md:text-zinc-300 hover:text-[#111113] border border-white/15 hover:border-white transition-all duration-200 shadow-md shrink-0 group active:scale-95">
+                    <svg class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="m18 15-6-6-6 6"/>
                     </svg>
+                    <span class="md:hidden text-[11px] font-semibold tracking-wider uppercase">Kembali ke Atas</span>
                 </button>
             </div>
         </div>
@@ -546,6 +563,18 @@
             display: none !important;
         }
         .footer-quote-content {
+            animation: none !important;
+        }
+    }
+
+    /* Mobile-only Footer Polish (<= 767px ONLY; Desktop >= 768px untouched) */
+    @media (max-width: 767px) {
+        #global-footer .footer-nav-item {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+        #global-footer #footer-quote-box,
+        #global-footer #footer-quote-box * {
             animation: none !important;
         }
     }
