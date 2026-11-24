@@ -139,9 +139,9 @@
                         <div class="sr-only">
                             <h2>{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : ($brand['story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.') }}</h2>
                             <p>Berawal dari Rasa, Kembali karena Rindu.</p>
-                            <p>Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.</p>
-                            <p>Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.</p>
-                            <p>Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.</p>
+                            <p>{{ $brand['cafe_story_p1'] ?? 'Nucomu Cafe adalah tempat nongkrong yang nyaman di Tulungagung, Jawa Timur. Suasananya santai dan cocok untuk bersantai sendirian, ngobrol bareng teman, mengerjakan tugas, atau berkumpul bersama keluarga.' }}</p>
+                            <p>{{ $brand['cafe_story_p2'] ?? 'Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.' }}</p>
+                            <p>{{ $brand['cafe_story_p3'] ?? 'Dengan suasana yang hangat dan pelayanan yang ramah, Nucomu Cafe menjadi pilihan menarik untuk menghabiskan waktu, baik di siang hari maupun malam hari.' }}</p>
                             <img src="{{ asset('images/nucomu_story_1.png') }}" alt="Nucomu Cafe Story" />
                         </div>
                     </div>
@@ -149,11 +149,16 @@
                     {{-- 3. Paragraf Deskripsi Profil Nucomu Cafe (Statis Server-Side) --}}
                     <div class="space-y-4 max-w-xl text-[15px] sm:text-base text-[var(--color-about-body,#666666)] leading-[1.8] font-body">
                         <p class="story-anim-right story-delay-3">
-                            {{ $brand['cafe_story_p1'] ?? 'Kafe adalah tempat bersantai untuk menikmati kopi, makanan ringan, dan dessert sambil bertemu teman, bekerja, atau belajar. Nucomu Cafe (Coffee & Dessert) hadir dengan konsep itu: ruang yang nyaman dan bersih, kopi yang diracik segar, dan dessert andalan seperti cheesecake, tiramisu, donut butter cream, dan banana toffee.' }}
+                            {{ $brand['cafe_story_p1'] ?? 'Nucomu Cafe adalah tempat nongkrong yang nyaman di Tulungagung, Jawa Timur. Suasananya santai dan cocok untuk bersantai sendirian, ngobrol bareng teman, mengerjakan tugas, atau berkumpul bersama keluarga.' }}
                         </p>
                         <p class="story-anim-right story-delay-4">
-                            {{ $brand['cafe_story_p2'] ?? 'Terletak di Plosokandang, Tulungagung, Nucomu punya area indoor dan outdoor yang luas, cocok untuk mahasiswa, nugas, atau WFC. Fasilitas lengkap: WiFi, toilet, dan mushola. Find your favorite taste.' }}
+                            {{ $brand['cafe_story_p2'] ?? 'Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.' }}
                         </p>
+                        @if(!empty($brand['cafe_story_p3']) || !isset($brand['cafe_story_p3']))
+                            <p class="story-anim-right story-delay-4">
+                                {{ $brand['cafe_story_p3'] ?? 'Dengan suasana yang hangat dan pelayanan yang ramah, Nucomu Cafe menjadi pilihan menarik untuk menghabiskan waktu, baik di siang hari maupun malam hari.' }}
+                            </p>
+                        @endif
                     </div>
 
                 </div>

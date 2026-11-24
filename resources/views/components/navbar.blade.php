@@ -69,10 +69,20 @@
 
 
 
-        <!-- Mobile Hamburger Button (Only on small screens) -->
-        <div class="md:hidden flex items-center">
-            <button onclick="toggleMobileDrawer()" class="mobile-hamburger-btn p-2 focus:outline-none transition-colors" aria-label="Buka Menu Navigasi">
-                <span class="material-symbols-outlined text-2xl">menu</span>
+        <!-- Mobile Quick Cart & Hamburger Button (Only on small screens) -->
+        <div class="md:hidden flex items-center gap-2">
+            @if($isAnyOrderModeActive)
+            <button type="button"
+                    onclick="openCartModal()"
+                    id="mobile-nav-cart-btn"
+                    class="nav-cart-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                    aria-label="Buka Keranjang Pesanan">
+                <i class="fa-solid fa-bag-shopping text-[11px]"></i>
+                <span id="mobile-nav-cart-badge" class="nav-cart-badge-el px-1.5 py-0.5 rounded-full text-[10px] font-black leading-none">0</span>
+            </button>
+            @endif
+            <button onclick="toggleMobileDrawer()" class="mobile-hamburger-btn p-2 rounded-xl focus:outline-none transition-colors active:scale-95" aria-label="Buka Menu Navigasi">
+                <span class="material-symbols-outlined text-2xl leading-none">menu</span>
             </button>
         </div>
 
@@ -80,52 +90,87 @@
 </header>
 
 <!-- Mobile Navigation Drawer -->
-<div id="mobile-drawer" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
+<div id="mobile-drawer" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden">
     <!-- Click backdrop to close -->
     <div class="absolute inset-0" onclick="toggleMobileDrawer()"></div>
 
-    <!-- Slide-in Drawer Panel (Monochrome Dark) -->
-    <div id="mobile-drawer-panel" class="absolute top-0 right-0 w-4/5 max-w-sm h-full bg-[#121212] shadow-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-[var(--border)]">
+    <!-- Slide-in Drawer Panel (Monochrome Dark Editorial) -->
+    <div id="mobile-drawer-panel" class="absolute top-0 right-0 w-[84%] max-w-[340px] h-full bg-[#121212] shadow-2xl p-5 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out border-l border-white/10 overflow-y-auto">
         <div>
             <!-- Drawer Header -->
-            <div class="flex items-center justify-between pb-5 border-b border-[var(--border-soft)]">
-                <img src="{{ asset('images/nucomu/nucomu_logo_brand.png') }}" 
-                     alt="NUCOMU CAFE" 
-                     class="h-6 w-auto object-contain brightness-0 invert">
-                <button onclick="toggleMobileDrawer()" class="p-2 text-[#F5F5F5] hover:text-white transition-colors" aria-label="Tutup Menu">
-                    <span class="material-symbols-outlined text-2xl">close</span>
+            <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                <div class="flex items-center gap-2.5">
+                    <img src="{{ asset('images/nucomu/nucomu_logo_brand.png') }}" 
+                         alt="NUCOMU CAFE" 
+                         class="h-6 w-auto object-contain brightness-0 invert">
+                </div>
+                <button onclick="toggleMobileDrawer()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 text-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95" aria-label="Tutup Menu">
+                    <span class="material-symbols-outlined text-xl">close</span>
                 </button>
             </div>
 
             <!-- Drawer Links -->
-            <nav class="flex flex-col space-y-1.5 mt-6">
-                <a href="{{ route('home') }}#home" onclick="toggleMobileDrawer()" class="text-sm font-bold text-[#F5F5F5] py-2.5 border-b border-[var(--border-soft)] hover:text-white transition-colors">Home</a>
-                <a href="{{ route('home') }}#about" onclick="toggleMobileDrawer()" class="text-sm font-semibold text-[#B5B5B5] py-2.5 border-b border-[var(--border-soft)] hover:text-[#F5F5F5] transition-colors">About</a>
-                <a href="{{ route('home') }}#menu" onclick="toggleMobileDrawer()" class="text-sm font-semibold text-[#B5B5B5] py-2.5 border-b border-[var(--border-soft)] hover:text-[#F5F5F5] transition-colors">Menu</a>
-                <a href="{{ route('home') }}#gallery" onclick="toggleMobileDrawer()" class="text-sm font-semibold text-[#B5B5B5] py-2.5 border-b border-[var(--border-soft)] hover:text-[#F5F5F5] transition-colors">Gallery</a>
-                <a href="{{ route('home') }}#layanan" onclick="toggleMobileDrawer()" class="text-sm font-semibold text-[#B5B5B5] py-2.5 border-b border-[var(--border-soft)] hover:text-[#F5F5F5] transition-colors">Layanan</a>
-                <a href="{{ route('home') }}#contact" onclick="toggleMobileDrawer()" class="text-sm font-semibold text-[#B5B5B5] py-2.5 border-b border-[var(--border-soft)] hover:text-[#F5F5F5] transition-colors">Contact</a>
+            <nav class="flex flex-col space-y-1 mt-4" aria-label="Menu Mobile">
+                <a href="{{ route('home') }}#home" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('home-about','home');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-[#F5F5F5] bg-white/8 hover:bg-white/12 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px] text-white/80">home</span>
+                        <span>Home &amp; About</span>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 1</span>
+                </a>
+                <a href="{{ route('home') }}#menu" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('menu','menu');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px] text-white/60">restaurant_menu</span>
+                        <span>Menu Favorit</span>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 2</span>
+                </a>
+                <a href="{{ route('home') }}#gallery" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('gallery-reviews','gallery');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px] text-white/60">photo_library</span>
+                        <span>Galeri &amp; Ulasan</span>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 3</span>
+                </a>
+                <a href="{{ route('home') }}#layanan" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('layanan-contact','layanan');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px] text-white/60">concierge</span>
+                        <span>Layanan &amp; Kontak</span>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 4</span>
+                </a>
+                <a href="{{ route('menu.all') }}" onclick="toggleMobileDrawer()" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                    <span class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-[18px] text-white/60">menu_book</span>
+                        <span>Katalog Menu Lengkap</span>
+                    </span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/80">All</span>
+                </a>
             </nav>
         </div>
 
         <!-- Drawer Bottom Actions -->
-        <div class="pt-6 border-t border-[var(--border-soft)] flex flex-col space-y-3">
+        <div class="pt-5 mt-4 border-t border-white/10 flex flex-col space-y-2.5">
             @if($isAnyOrderModeActive)
             <button type="button" 
                     onclick="toggleMobileDrawer(); openCartModal();" 
-                    class="w-full py-3.5 bg-[#F5F2EE] hover:bg-white text-[#111111] border border-white/25 text-xs font-bold uppercase tracking-wider rounded-xl text-center transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-bag-shopping"></i>
-                <span>Buka Keranjang Pesanan</span>
+                    class="w-full py-3 px-4 bg-[#F5F2EE] hover:bg-white text-[#111111] border border-white/25 text-xs font-bold uppercase tracking-wider rounded-xl text-center transition-all shadow-sm active:scale-95 flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Keranjang Pesanan</span>
+                </span>
                 <span id="drawer-cart-badge" class="px-2 py-0.5 rounded-full bg-[#111111] text-[#F5F5F5] text-[10px] font-black">0</span>
             </button>
             @endif
             <button type="button" 
                     onclick="toggleMobileDrawer(); openReservationModal('Mobile Drawer');" 
-                    class="w-full py-3 bg-transparent hover:bg-white/10 text-[#F5F5F5] border border-[var(--btn-outline)] text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95">
-                Reservasi Tempat
+                    class="w-full py-3 px-4 bg-white/5 hover:bg-white/12 text-[#F5F5F5] border border-white/20 text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-base">event_seat</span>
+                <span>Reservasi Tempat</span>
             </button>
-            <div class="text-center text-xs text-[var(--text-muted)] font-medium">
-                {{ config('nucomu.contact.hours') }}
+            <div class="pt-1 text-center text-[11px] text-white/50 font-medium flex items-center justify-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span>{{ config('nucomu.contact.hours') }}</span>
             </div>
         </div>
     </div>

@@ -611,10 +611,13 @@ if (isset($_GET['api']) && $_GET['api'] === 'menu') {
                     <span class="section-label">TENTANG KAMI</span>
                     <h2 class="section-title">Dedikasi Pada Setiap Tetes & Rasa</h2>
                     <p style="color: var(--mono-medium); font-size: 0.95rem; margin-bottom: 16px; line-height: 1.7;">
-                        Nucomu Cafe berakar dari kecintaan terhadap hasil tani kopi lereng Gunung Wilis Sendang, Tulungagung. Kami mempertemukan biji kopi pilihan lokal dengan teknik seduh presisi dan bakery buatan tangan yang dipanggang segar setiap pagi.
+                        Nucomu Cafe adalah tempat nongkrong yang nyaman di Tulungagung, Jawa Timur. Suasananya santai dan cocok untuk bersantai sendirian, ngobrol bareng teman, mengerjakan tugas, atau berkumpul bersama keluarga.
+                    </p>
+                    <p style="color: var(--mono-medium); font-size: 0.95rem; margin-bottom: 16px; line-height: 1.7;">
+                        Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.
                     </p>
                     <p style="color: var(--mono-medium); font-size: 0.95rem; margin-bottom: 28px; line-height: 1.7;">
-                        Dengan atmosfer minimalis bernuansa hangat, Nucomu diciptakan bukan hanya untuk menikmati sajian nikmat, tetapi sebagai ruang tenang untuk singgah, berkarya, dan bercerita.
+                        Dengan suasana yang hangat dan pelayanan yang ramah, Nucomu Cafe menjadi pilihan menarik untuk menghabiskan waktu, baik di siang hari maupun malam hari.
                     </p>
                     <div style="display: flex; gap: 28px;">
                         <div>

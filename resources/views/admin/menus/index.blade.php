@@ -325,8 +325,9 @@
 
     {{-- =========================================================================
          TAMPILAN 1: KARTU (CARD GRID VISUAL DENGAN FOTO 1:1 KOTAK & STATUS CEPAT)
+         2 Kolom Ringkas di Mobile, 3 Kolom di Tablet, 4 Kolom di Desktop
          ========================================================================= --}}
-    <div id="menuCardContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 anim-fade-up">
+    <div id="menuCardContainer" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-5 anim-fade-up">
         @forelse($menus as $menu)
             @php
                 $hasImage = !empty($menu->image);
@@ -405,45 +406,45 @@
                     </div>
 
                     {{-- Informasi Menu (Nama, Harga, Penjelasan) --}}
-                    <div class="p-3.5 sm:p-4 space-y-1.5">
-                        <div class="flex items-start justify-between gap-2">
-                            <h3 class="font-bold text-[14.5px] leading-snug line-clamp-1" style="color: var(--admin-text-main, #1B1F1D);" title="{{ $menu->name }}">
+                    <div class="p-2.5 sm:p-4 space-y-1 sm:space-y-1.5">
+                        <div class="flex items-start justify-between gap-1.5 sm:gap-2">
+                            <h3 class="font-bold text-[12.5px] sm:text-[14.5px] leading-snug line-clamp-1" style="color: var(--admin-text-main, #1B1F1D);" title="{{ $menu->name }}">
                                 {{ $menu->name }}
                             </h3>
                         </div>
 
                         {{-- Harga & Shortcut Varian --}}
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="text-[15.5px] font-extrabold tracking-tight tabular-nums" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
+                        <div class="flex flex-wrap items-center justify-between gap-1 sm:gap-2">
+                            <div class="text-[13px] sm:text-[15.5px] font-extrabold tracking-tight tabular-nums" style="color: var(--admin-btn-primary-bg, #2F6B4F);">
                                 Rp {{ number_format($menu->price, 0, ',', '.') }}
                             </div>
                             @if(!$menu->trashed())
                                 <a href="{{ route('admin.menus.edit', $menu->id) }}#menu-variants-section"
-                                   class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-semibold border transition hover:border-[#2F6B4F] shrink-0"
+                                   class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-semibold border transition hover:border-[#2F6B4F] shrink-0"
                                    style="{{ ($menu->options_count ?? 0) > 0 ? 'background-color: var(--admin-bg-sidebar-active, #E6F0EA); border-color: #C3DCD0; color: #164E33;' : 'background-color: #F7F8F6; border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-sub, #555D58);' }}"
                                    title="Atur varian dan opsi tambahan menu">
-                                    <i class="fa-solid fa-sliders text-[9px]" aria-hidden="true"></i>
+                                    <i class="fa-solid fa-sliders text-[8px] sm:text-[9px]" aria-hidden="true"></i>
                                     <span>{{ ($menu->options_count ?? 0) > 0 ? $menu->options_count . ' Varian' : '+ Varian' }}</span>
                                 </a>
                             @endif
                         </div>
 
                         {{-- Deskripsi Singkat 2 Baris --}}
-                        <p class="text-[12px] leading-relaxed line-clamp-2 min-h-[36px] m-0" style="color: var(--admin-text-sub, #555D58);">
+                        <p class="hidden sm:line-clamp-2 text-[12px] leading-relaxed min-h-[36px] m-0" style="color: var(--admin-text-sub, #555D58);">
                             {{ $menu->description ?: 'Pilihan racikan istimewa Nucomu Cafe' }}
                         </p>
                     </div>
                 </div>
 
                 {{-- Bagian Bawah Kartu: Kontrol Stok Cepat & Tombol Aksi Teks --}}
-                <div class="px-3.5 sm:px-4 py-2.5 border-t bg-[#FAFBF9] flex items-center justify-between gap-2"
+                <div class="px-2.5 sm:px-4 py-2 sm:py-2.5 border-t bg-[#FAFBF9] flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2"
                      style="border-color: var(--admin-border-card, #E6E8E4);">
                     @if($menu->trashed())
-                        <span class="text-[11px] font-medium text-stone-500">Nonaktif di katalog</span>
+                        <span class="text-[10.5px] sm:text-[11px] font-medium text-stone-500">Nonaktif di katalog</span>
                         <form action="{{ route('admin.menus.restore', $menu->id) }}" method="POST" class="inline">
                             @csrf
                             <button type="submit"
-                                    class="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition shadow-2xs btn-press inline-flex items-center gap-1.5"
+                                    class="w-full sm:w-auto px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition shadow-2xs btn-press inline-flex items-center justify-center gap-1.5"
                                     title="Pulihkan menu ke katalog">
                                 <i class="fa-solid fa-rotate-left text-[11px]" aria-hidden="true"></i>
                                 <span>Pulihkan</span>
@@ -451,7 +452,7 @@
                         </form>
                     @else
                         {{-- Kontrol Stok Cepat (- / +) --}}
-                        <div class="inline-flex items-center gap-1 bg-white border rounded-lg p-0.5 shadow-2xs"
+                        <div class="inline-flex items-center justify-between sm:justify-start gap-1 bg-white border rounded-lg p-0.5 shadow-2xs w-full sm:w-auto"
                              style="border-color: var(--admin-border-card, #E6E8E4);"
                              title="Atur stok porsi menu (otomatis sinkron dengan POS Kasir)">
                             <button type="button"
@@ -477,9 +478,9 @@
                             </button>
                         </div>
 
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center justify-between sm:justify-end gap-1 w-full sm:w-auto">
                             <a href="{{ route('admin.menus.edit', $menu->id) }}"
-                               class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition shadow-2xs btn-press"
+                               class="flex-1 sm:flex-initial text-center px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold border bg-white hover:bg-[#F0F4F1] transition shadow-2xs btn-press"
                                style="border-color: var(--admin-border-card, #E6E8E4); color: var(--admin-text-main, #1B1F1D);"
                                title="Edit rincian menu">
                                 Edit
@@ -487,7 +488,7 @@
 
                             <button type="button"
                                     onclick="confirmDeleteMenu({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->order_items_count ?? 0 }})"
-                                    class="px-2 py-1 rounded-lg text-xs font-semibold hover:bg-rose-50 text-rose-700 transition cursor-pointer btn-press"
+                                    class="px-2 py-1 rounded-lg text-[11px] sm:text-xs font-semibold hover:bg-rose-50 text-rose-700 transition cursor-pointer btn-press"
                                     title="Hapus menu">
                                 Hapus
                             </button>

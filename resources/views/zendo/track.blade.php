@@ -625,6 +625,46 @@
                 display: none !important;
             }
         }
+
+        /* Mobile Lightweight & Compact Viewport Optimization */
+        @media (max-width: 639px) {
+            .verify-blob {
+                display: none !important;
+            }
+            .verify-card-box {
+                max-height: 92dvh;
+                overflow-y: auto;
+                padding: 22px 16px 18px;
+                border-radius: 22px;
+            }
+            .verify-icon-wrap {
+                width: 64px;
+                height: 64px;
+                margin-bottom: 10px;
+            }
+            .verify-icon-badge {
+                width: 48px;
+                height: 48px;
+            }
+            .verify-title {
+                font-size: 18px;
+            }
+            .verify-subtitle {
+                font-size: 12px;
+                margin-bottom: 14px;
+            }
+            .verify-keypad-grid {
+                gap: 6px;
+                margin-top: 10px;
+            }
+            .verify-key-btn {
+                min-height: 42px;
+                border-radius: 11px;
+            }
+            .verify-key-num {
+                font-size: 17px;
+            }
+        }
     </style>
 </head>
 <body class="bg-[#121216] text-white antialiased flex flex-col h-screen overflow-hidden">
@@ -702,8 +742,22 @@
         {{-- MODE 1: WORKSPACE KURIR AKTIF (JIKA DIAKSES DARI LINK KURIR) --}}
         {{-- ======================================================== --}}
         @if($isCourier)
-            <div class="absolute inset-x-0 bottom-0 z-10 max-w-xl mx-auto p-3 sm:p-4 max-h-[75vh] overflow-y-auto">
-                <div class="bg-[#1c1c24]/95 backdrop-blur-xl border border-white/15 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-3.5">
+            <div class="absolute inset-x-0 bottom-0 z-10 max-w-xl mx-auto p-2.5 sm:p-4 max-h-[78vh] overflow-y-auto">
+                <div class="bg-[#1c1c24]/95 backdrop-blur-xl border border-white/15 rounded-3xl p-3.5 sm:p-5 shadow-2xl space-y-3">
+
+                    {{-- Mobile Drag Handle & Minimize Sheet Toggle --}}
+                    <button type="button" onclick="toggleZendoBottomSheet()"
+                            class="w-full flex items-center justify-between gap-2 pb-1 text-[11px] font-bold text-gray-400 hover:text-white cursor-pointer select-none">
+                        <span class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-motorcycle text-emerald-400 text-xs"></i>
+                            <span>Panel Kerja Kurir</span>
+                        </span>
+                        <span class="w-9 h-1 rounded-full bg-white/25 mx-auto"></span>
+                        <span id="zendoSheetToggleLabel" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 text-[10px] text-gray-200">
+                            <span>Intip Peta</span>
+                            <i id="zendoSheetToggleIcon" class="fa-solid fa-chevron-down text-[9px] transition-transform"></i>
+                        </span>
+                    </button>
 
                     {{-- GPS Status Bar --}}
                     <div id="gpsBanner" class="bg-emerald-500/15 border border-emerald-500/30 rounded-2xl p-3 text-xs flex items-center justify-between gap-3">
@@ -719,6 +773,7 @@
                         </span>
                     </div>
 
+                    <div id="zendoSheetCollapsibleBody" class="space-y-3">
                     {{-- Fake GPS Warning Alert --}}
                     <div id="fakeGpsWarning" class="hidden bg-rose-500/20 border-2 border-rose-500 text-rose-200 rounded-2xl p-3 text-xs space-y-1">
                         <p class="font-extrabold text-white text-xs flex items-center gap-1.5">
@@ -786,6 +841,7 @@
                             @endif
                         </div>
                     </div>
+                    </div>
 
                 </div>
             </div>
@@ -794,25 +850,40 @@
         {{-- MODE 2: TAMPILAN PELACAKAN PELANGGAN (LIVE TRACKING GRAB) --}}
         {{-- ======================================================== --}}
         @else
-            <div class="absolute inset-x-0 bottom-0 z-10 max-w-xl mx-auto p-3 sm:p-4 max-h-[75vh] overflow-y-auto">
-                <div class="bg-[#1c1c24]/95 backdrop-blur-xl border border-white/15 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-4">
+            <div class="absolute inset-x-0 bottom-0 z-10 max-w-xl mx-auto p-2.5 sm:p-4 max-h-[78vh] overflow-y-auto">
+                <div class="bg-[#1c1c24]/95 backdrop-blur-xl border border-white/15 rounded-3xl p-3.5 sm:p-5 shadow-2xl space-y-3.5">
+
+                    {{-- Mobile Drag Handle & Minimize Sheet Toggle --}}
+                    <button type="button" onclick="toggleZendoBottomSheet()"
+                            class="w-full flex items-center justify-between gap-2 pb-0.5 text-[11px] font-bold text-gray-400 hover:text-white cursor-pointer select-none">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>Status Pengantaran Live</span>
+                        </span>
+                        <span class="w-9 h-1 rounded-full bg-white/25 mx-auto"></span>
+                        <span id="zendoSheetToggleLabel" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 text-[10px] text-gray-200">
+                            <span>Intip Peta</span>
+                            <i id="zendoSheetToggleIcon" class="fa-solid fa-chevron-down text-[9px] transition-transform"></i>
+                        </span>
+                    </button>
 
                     {{-- ETA & Jarak Sisa --}}
                     <div class="flex items-center justify-between pb-3 border-b border-white/10">
                         <div>
                             <p class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Estimasi Tiba (ETA)</p>
-                            <p id="etaText" class="text-2xl font-black text-amber-400 font-mono mt-0.5">
+                            <p id="etaText" class="text-xl sm:text-2xl font-black text-amber-400 font-mono mt-0.5">
                                 {{ $initialPayload['eta_minutes'] ? '~'.$initialPayload['eta_minutes'].' Menit' : ($delivery->status === 'completed' ? 'Tiba di Lokasi' : 'Menghitung...') }}
                             </p>
                         </div>
                         <div class="text-right">
                             <p class="text-[10px] uppercase tracking-wider text-gray-400 font-bold">Jarak Sisa</p>
-                            <p id="remainingText" class="text-base font-extrabold text-white font-mono mt-0.5">
+                            <p id="remainingText" class="text-sm sm:text-base font-extrabold text-white font-mono mt-0.5">
                                 {{ $initialPayload['remaining_label'] ?? '-' }}
                             </p>
                         </div>
                     </div>
 
+                    <div id="zendoSheetCollapsibleBody" class="space-y-3.5">
                     {{-- Kurir Profile & Kontak WhatsApp --}}
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 min-w-0">
@@ -880,6 +951,7 @@
                             @endif
                         </div>
                     </details>
+                    </div>
 
                 </div>
             </div>
@@ -888,6 +960,17 @@
 
     {{-- JAVASCRIPT ENGINE (MAP, GPS, CLIENT HAIVERSINE, REALTIME STREAMING) --}}
     <script>
+        function toggleZendoBottomSheet() {
+            const bodyEl = document.getElementById('zendoSheetCollapsibleBody');
+            const labelEl = document.getElementById('zendoSheetToggleLabel');
+            if (!bodyEl) return;
+            const isHidden = bodyEl.classList.toggle('hidden');
+            if (labelEl) {
+                labelEl.innerHTML = isHidden
+                    ? '<span>Buka Detail</span><i class="fa-solid fa-chevron-up text-[9px]"></i>'
+                    : '<span>Intip Peta</span><i class="fa-solid fa-chevron-down text-[9px]"></i>';
+            }
+        }
         const isCourierMode = {{ $isCourier ? 'true' : 'false' }};
         const initialData = @json($initialPayload);
         const dataUrl = '{{ route("zendo.track.data", $delivery->tracking_token, false) }}';

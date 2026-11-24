@@ -54,7 +54,7 @@
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        gap: 16px;
+        gap: 12px;
         width: 100%;
     }
     @media (min-width: 640px) {
@@ -69,11 +69,11 @@
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 96px; /* 6rem gap-y-24 */
+        gap: 74px; /* Compact mobile vertical gap */
     }
     @media (min-width: 640px) {
         .menu-column {
-            gap: 112px; /* 7rem gap-y-28 */
+            gap: 112px; /* 7rem gap-y-28 on desktop/tablet */
         }
     }
 
@@ -83,25 +83,29 @@
         position: relative;
     }
 
-    /* Menu Card: Compact monochrome rounded card matching sleek desktop & mobile proportions */
+    /* Menu Card: In-flow card with rounded corners, layered 3D shadow, and smooth border transitions */
     .menu-card {
         position: relative;
         width: 100%;
         background-color: #ffffff;
-        border-radius: 22px;
-        border: 1px solid rgba(17, 17, 17, 0.07);
+        border-radius: 24px;
+        border: 1.5px solid #ece7de;
         box-shadow:
-            0 2px 8px rgba(17, 17, 17, 0.04),
-            0 10px 26px -6px rgba(17, 17, 17, 0.07);
-        padding: 58px 12px 16px 12px;
+            0 2px 5px rgba(44, 40, 37, 0.05),
+            0 8px 18px -4px rgba(44, 40, 37, 0.10);
+        padding: 56px 11px 14px 11px;
         text-align: center;
         box-sizing: border-box;
         transition: border-color 0.28s ease, box-shadow 0.28s ease;
     }
     @media (min-width: 640px) {
         .menu-card {
-            border-radius: 26px;
-            padding: 74px 16px 20px 16px;
+            border-radius: 28px;
+            box-shadow:
+                0 2px 6px rgba(44, 40, 37, 0.06),
+                0 10px 24px -4px rgba(44, 40, 37, 0.12),
+                0 22px 42px -10px rgba(44, 40, 37, 0.14);
+            padding: 72px 16px 20px 16px;
         }
     }
 
@@ -124,22 +128,22 @@
         border-radius: 16px;
     }
 
-    /* Overhanging Circular Photo with Thin White Border & Soft Natural Shadow */
+    /* Overhanging Large Circular Photo with Thick White Border (Overhangs card top edge) */
     .menu-card-avatar {
         position: absolute;
         top: -44px;
         left: 50%;
         transform: translateX(-50%) translateY(0) scale(1);
         transform-origin: center center;
-        width: 90px;
-        height: 90px;
+        width: 94px;
+        height: 94px;
         border-radius: 50%;
-        border: 3px solid #ffffff;
+        border: 4px solid #ffffff;
         box-shadow:
-            0 4px 12px rgba(17, 17, 17, 0.08),
-            0 10px 22px -6px rgba(17, 17, 17, 0.12);
+            0 4px 10px rgba(44, 40, 37, 0.10),
+            0 10px 20px -4px rgba(44, 40, 37, 0.18);
         overflow: hidden;
-        background-color: #f5f5f5;
+        background-color: #faf7f2;
         padding: 0;
         margin: 0;
         display: block;
@@ -156,10 +160,14 @@
     }
     @media (min-width: 640px) {
         .menu-card-avatar {
-            top: -58px;
-            width: 122px;
-            height: 122px;
-            border-width: 4px;
+            top: -62px;
+            width: 126px;
+            height: 126px;
+            border-width: 6px;
+            box-shadow:
+                0 4px 10px rgba(44, 40, 37, 0.10),
+                0 12px 24px -4px rgba(44, 40, 37, 0.22),
+                0 20px 36px -8px rgba(44, 40, 37, 0.16);
         }
     }
     .menu-card-avatar img {
@@ -169,75 +177,51 @@
         display: block;
     }
 
-    /* Menu Title: Plus Jakarta Sans SemiBold (600) with compact single/two-line proportion */
+    /* Menu Title: Nunito bold with consistent min-height for clean row alignment */
     .menu-card-name {
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 1.3;
-        letter-spacing: -0.015em;
-        color: #111111;
-        width: 100%;
+        font-family: var(--font-sans), sans-serif;
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1.22;
+        color: #191919;
         margin-bottom: 4px;
-        min-height: 2.1rem;
+        min-height: 2.3rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        word-break: normal;
-        overflow-wrap: break-word;
-        text-wrap: balance;
+        word-break: break-word;
         text-align: center;
     }
     @media (min-width: 640px) {
         .menu-card-name {
-            font-size: 15.5px;
-            min-height: 2.35rem;
-            margin-bottom: 6px;
-        }
-    }
-    @media (min-width: 1024px) {
-        .menu-card-name {
-            font-size: 16px;
+            font-size: 1.15rem;
+            min-height: 2.8rem;
         }
     }
 
-    /* Price & Unit Row (Plus Jakarta Sans, tabular-nums) */
+    /* Price & Unit Row (font-variant-numeric: tabular-nums) */
     .menu-card-price-row {
         display: flex;
         align-items: baseline;
         justify-content: center;
-        flex-wrap: wrap;
-        gap: 4px;
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        font-size: 13.5px;
-        font-weight: 600;
-        line-height: 1.25;
-        color: #111111;
+        gap: 3px;
+        font-family: var(--font-sans), sans-serif;
+        font-size: 0.94rem;
+        font-weight: 700;
+        color: #191919;
         white-space: nowrap;
         font-variant-numeric: tabular-nums;
     }
     @media (min-width: 640px) {
         .menu-card-price-row {
-            font-size: 15px;
+            gap: 4px;
+            font-size: 1.05rem;
         }
-    }
-    .menu-card-price-row .font-editorial-num {
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-        color: #111111;
     }
     .menu-card-unit {
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        font-size: 11px;
-        font-weight: 400;
-        line-height: 1.25;
-        color: #888888;
-    }
-    @media (min-width: 640px) {
-        .menu-card-unit {
-            font-size: 12px;
-        }
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #8a8a86;
     }
 
     /* Drawer Container: in-flow collapsible section */
@@ -252,10 +236,10 @@
     /* Divider Line: becomes visible inside drawer when opened */
     .menu-card-divider {
         height: 1px;
-        background-color: rgba(17, 17, 17, 0.08);
-        margin: 14px auto 12px auto;
+        background-color: #ded8ce;
+        margin: 10px auto 10px auto;
         width: 80%;
-        opacity: 0.9;
+        opacity: 0.85;
     }
 
     /* Drawer Inner Content: options, description, and action button */
@@ -266,57 +250,63 @@
         padding-top: 2px;
     }
 
-    /* Keadaan 1: HOVER (Kursor di atas kartu: foto membesar halus & naik 3px, shadow lembut) */
+    /* Keadaan 1: HOVER (Kursor di atas kartu: foto membesar 1.10x & naik 3px, kartu tidak berubah ukuran sama sekali) */
     @media (hover: hover) and (pointer: fine) {
         .menu-card:hover {
             z-index: 25;
             cursor: pointer;
         }
         .menu-card:not(.is-open):hover {
-            border-color: rgba(17, 17, 17, 0.12);
+            border-color: #ffffff;
             box-shadow:
-                0 6px 14px rgba(17, 17, 17, 0.05),
-                0 16px 32px -8px rgba(17, 17, 17, 0.10);
+                0 4px 10px rgba(44, 40, 37, 0.08),
+                0 14px 30px -4px rgba(44, 40, 37, 0.18),
+                0 26px 48px -10px rgba(44, 40, 37, 0.18);
         }
-        /* Foto bulat membesar halus dengan shadow lembut */
+        /* Foto bulat membesar mendekat ke depan dan bayangan lebih tegas */
         .menu-card:hover .menu-card-avatar {
-            transform: translateX(-50%) translateY(-3px) scale(1.06);
+            transform: translateX(-50%) translateY(-3px) scale(1.10);
             box-shadow:
-                0 8px 18px rgba(17, 17, 17, 0.10),
-                0 14px 28px -6px rgba(17, 17, 17, 0.14);
+                0 6px 14px rgba(44, 40, 37, 0.12),
+                0 16px 32px -4px rgba(44, 40, 37, 0.26),
+                0 24px 44px -8px rgba(44, 40, 37, 0.20);
             z-index: 30;
         }
     }
 
     /* Fokus Keyboard (:has(:focus-visible)) hanya memberi zoom saat navigasi keyboard, bukan klik mouse */
     .menu-card:has(:focus-visible):not(.is-open) {
-        border-color: rgba(17, 17, 17, 0.14);
+        border-color: #ffffff;
         box-shadow:
-            0 6px 14px rgba(17, 17, 17, 0.05),
-            0 16px 32px -8px rgba(17, 17, 17, 0.10);
+            0 4px 10px rgba(44, 40, 37, 0.08),
+            0 14px 30px -4px rgba(44, 40, 37, 0.18),
+            0 26px 48px -10px rgba(44, 40, 37, 0.18);
         z-index: 25;
     }
     .menu-card:has(:focus-visible) .menu-card-avatar {
-        transform: translateX(-50%) translateY(-3px) scale(1.06);
+        transform: translateX(-50%) translateY(-3px) scale(1.10);
         box-shadow:
-            0 8px 18px rgba(17, 17, 17, 0.10),
-            0 14px 28px -6px rgba(17, 17, 17, 0.14);
+            0 6px 14px rgba(44, 40, 37, 0.12),
+            0 16px 32px -4px rgba(44, 40, 37, 0.26),
+            0 24px 44px -8px rgba(44, 40, 37, 0.20);
         z-index: 30;
     }
 
-    /* Keadaan 2: KLIK (Kartu terbuka penuh: shadow lembut natural, foto tetap proporsional selama kartu terbuka) */
+    /* Keadaan 2: KLIK (Kartu terbuka penuh: border putih #ffffff, bayangan netral 3D lembut, foto TETAP membesar selama kartu terbuka) */
     .menu-card.is-open {
         z-index: 35;
-        border-color: rgba(17, 17, 17, 0.12) !important;
+        border-color: #ffffff !important;
         box-shadow:
-            0 8px 18px rgba(17, 17, 17, 0.06),
-            0 20px 38px -8px rgba(17, 17, 17, 0.12) !important;
+            0 4px 12px rgba(0, 0, 0, 0.08),
+            0 18px 36px -4px rgba(0, 0, 0, 0.18),
+            0 28px 54px -10px rgba(0, 0, 0, 0.18) !important;
     }
     .menu-card.is-open .menu-card-avatar {
-        transform: translateX(-50%) translateY(-3px) scale(1.06);
+        transform: translateX(-50%) translateY(-3px) scale(1.10);
         box-shadow:
-            0 8px 18px rgba(17, 17, 17, 0.10),
-            0 14px 28px -6px rgba(17, 17, 17, 0.14);
+            0 6px 14px rgba(44, 40, 37, 0.12),
+            0 16px 32px -4px rgba(44, 40, 37, 0.26),
+            0 24px 44px -8px rgba(44, 40, 37, 0.20);
         z-index: 30;
     }
     .menu-card.is-open .menu-card-drawer-content {
@@ -324,12 +314,18 @@
         pointer-events: auto;
     }
 
-    /* Radio Options 2-Columns */
+    /* Radio Options 2-Columns (1-Col on ultra-narrow mobile < 390px) */
     .options-columns {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        grid-template-columns: 1fr;
+        gap: 6px;
         text-align: left;
+    }
+    @media (min-width: 390px) {
+        .options-columns {
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
     }
     .option-group-title {
         font-size: 0.72rem;
@@ -412,23 +408,40 @@
         box-shadow: none;
     }
 
-    /* Floating Cart Pill (Exact match to video reference) */
+    /* Floating Cart Pill (Full-width sleek bar on mobile < 640px, bottom-right pill on desktop >= 640px) */
     .floating-cart-pill {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
+        bottom: 14px;
+        left: 14px;
+        right: 14px;
         z-index: 45;
         display: flex;
         align-items: center;
-        gap: 8px;
-        background-color: #ffffff;
-        border: 1.5px solid #ded8ce;
-        border-radius: 9999px;
-        padding: 8px 18px 8px 12px;
-        box-shadow: 0 10px 30px rgba(44, 40, 37, 0.12), 0 2px 6px rgba(44, 40, 37, 0.04);
+        justify-content: space-between;
+        gap: 10px;
+        background-color: #191919;
+        border: 1.5px solid rgba(255, 255, 255, 0.14);
+        border-radius: 18px;
+        padding: 11px 16px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.12);
         cursor: pointer;
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.3s ease;
-        color: #191919;
+        color: #ffffff;
+    }
+    @media (min-width: 640px) {
+        .floating-cart-pill {
+            bottom: 24px;
+            left: auto;
+            right: 24px;
+            justify-content: flex-start;
+            gap: 8px;
+            background-color: #ffffff;
+            border: 1.5px solid #ded8ce;
+            border-radius: 9999px;
+            padding: 8px 18px 8px 12px;
+            box-shadow: 0 10px 30px rgba(44, 40, 37, 0.12), 0 2px 6px rgba(44, 40, 37, 0.04);
+            color: #191919;
+        }
     }
     .floating-cart-pill:hover {
         transform: translateY(-2px);
@@ -489,19 +502,24 @@
         onclick="openCartDrawer()" 
         class="floating-cart-pill opacity-0 pointer-events-none translate-y-4"
         aria-label="Lihat Keranjang Belanja">
-    <div class="relative flex items-center">
-        <span class="material-symbols-outlined text-neutral-900 text-xl">shopping_cart</span>
-        <span id="floating-cart-badge" 
-              class="absolute -top-2 -right-2 bg-neutral-900 text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
-            0
+    <div class="flex items-center gap-2.5 sm:gap-2">
+        <div class="relative flex items-center">
+            <span class="material-symbols-outlined text-white sm:text-neutral-900 text-xl">shopping_cart</span>
+            <span id="floating-cart-badge" 
+                  class="absolute -top-2 -right-2 bg-white text-neutral-900 sm:bg-neutral-900 sm:text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                0
+            </span>
+        </div>
+        <span class="font-body text-xs font-bold sm:font-semibold text-white sm:text-neutral-800 tracking-wide">
+            My cart:
         </span>
     </div>
-    <span class="font-body text-xs font-semibold text-neutral-800 tracking-wide">
-        My cart:
-    </span>
-    <span id="floating-cart-total" class="font-editorial-num text-xs font-bold text-neutral-900">
-        Rp 0
-    </span>
+    <div class="flex items-center gap-1.5">
+        <span id="floating-cart-total" class="font-editorial-num text-xs sm:text-xs font-bold text-white sm:text-neutral-900">
+            Rp 0
+        </span>
+        <span class="material-symbols-outlined text-base text-white/80 sm:hidden">chevron_right</span>
+    </div>
 </button>
 @endif
 
@@ -782,6 +800,13 @@
 
         <!-- Actions -->
         <div class="space-y-2 pt-2">
+            <a id="success-wa-link" 
+               href="#" 
+               target="_blank" 
+               class="hidden w-full py-3.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-md shadow-emerald-600/20 active:scale-98">
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span>Kirim Pesanan ke WhatsApp Kurir Zendo</span>
+            </a>
             <a id="success-slip-link" 
                href="#" 
                target="_blank" 
@@ -927,10 +952,11 @@
 
     function triggerCartBadgeBump() {
         const navBadge = document.getElementById('nav-cart-badge');
+        const mobileNavBadge = document.getElementById('mobile-nav-cart-badge');
         const drawerBadge = document.getElementById('drawer-cart-badge');
         const floatingBadge = document.getElementById('floating-cart-badge');
 
-        [navBadge, drawerBadge, floatingBadge].forEach(b => {
+        [navBadge, mobileNavBadge, drawerBadge, floatingBadge].forEach(b => {
             if (b) {
                 b.classList.remove('cart-bump');
                 void b.offsetWidth; // force reflow
@@ -972,264 +998,12 @@
         return 2;
     };
 
-    const buildMenuColumns = (parentEl, cards, numCols) => {
-        const columns = [];
-        for (let c = 0; c < numCols; c++) {
-            const col = document.createElement('div');
-            col.className = 'menu-column flex-1 flex flex-col gap-y-24 sm:gap-y-28 min-w-0';
-            parentEl.appendChild(col);
-            columns.push(col);
-        }
-
-        cards.forEach((wrap, idx) => {
-            columns[idx % numCols].appendChild(wrap);
-        });
-    };
-
-    const syncOpenMenuCard = (container, openCardId, allowedParent = null) => {
-        if (!openCardId) {
-            return;
-        }
-        const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
-        if (!restoredCard) {
-            return;
-        }
-        if (allowedParent && !allowedParent.contains(restoredCard)) {
-            if (typeof window.closeMenuCard === 'function') {
-                window.closeMenuCard(restoredCard);
-            } else {
-                restoredCard.classList.remove('is-open');
-            }
-            return;
-        }
-        restoredCard.classList.add('is-open');
-        const drawer = restoredCard.querySelector('.menu-card-drawer');
-        if (drawer) {
-            drawer.style.height = drawer.scrollHeight + 'px';
-        }
-    };
-
-    const bindMenuViewportSwipe = () => {
-        const viewport = document.getElementById('recommendations-viewport');
-        if (!viewport || viewport.dataset.swipeBound === 'true') {
-            return;
-        }
-        viewport.dataset.swipeBound = 'true';
-
-        let startX = 0;
-        let startY = 0;
-        let tracking = false;
-
-        viewport.addEventListener('touchstart', (e) => {
-            if (!e.touches || e.touches.length !== 1) {
-                tracking = false;
-                return;
-            }
-            if (e.target && e.target.closest('input, label, select, textarea')) {
-                tracking = false;
-                return;
-            }
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            tracking = true;
-        }, { passive: true });
-
-        viewport.addEventListener('touchcancel', () => {
-            tracking = false;
-        }, { passive: true });
-
-        viewport.addEventListener('touchend', (e) => {
-            if (!tracking || !e.changedTouches || e.changedTouches.length !== 1) {
-                tracking = false;
-                return;
-            }
-            tracking = false;
-            const dx = e.changedTouches[0].clientX - startX;
-            const dy = e.changedTouches[0].clientY - startY;
-            if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-                if (dx < 0) {
-                    window.nextMenuPage();
-                } else {
-                    window.prevMenuPage();
-                }
-            }
-        }, { passive: true });
-    };
-
-    window.updateMenuCarouselControls = function(currentPage, totalPages) {
-        const controls = document.getElementById('recommendations-carousel-controls');
-        if (!controls) {
-            return;
-        }
-
-        const prevBtn = document.getElementById('rec-prev-btn');
-        const nextBtn = document.getElementById('rec-next-btn');
-        const dotsContainer = document.getElementById('rec-page-dots');
-        const counter = document.getElementById('rec-page-counter');
-
-        if (totalPages <= 1) {
-            controls.classList.add('hidden');
-            controls.classList.remove('flex');
-            if (dotsContainer) {
-                dotsContainer.innerHTML = '';
-            }
-            if (counter) {
-                counter.textContent = '';
-            }
-            if (prevBtn) {
-                prevBtn.disabled = true;
-            }
-            if (nextBtn) {
-                nextBtn.disabled = true;
-            }
-            return;
-        }
-
-        controls.classList.remove('hidden');
-        controls.classList.add('flex');
-
-        if (prevBtn) {
-            prevBtn.disabled = currentPage <= 0;
-        }
-        if (nextBtn) {
-            nextBtn.disabled = currentPage >= totalPages - 1;
-        }
-        if (counter) {
-            const activeStr = String(currentPage + 1).padStart(2, '0');
-            const totalStr = String(totalPages).padStart(2, '0');
-            counter.textContent = `${activeStr} / ${totalStr}`;
-        }
-
-        if (dotsContainer) {
-            dotsContainer.innerHTML = '';
-            for (let p = 0; p < totalPages; p++) {
-                const dot = document.createElement('button');
-                dot.type = 'button';
-                dot.className = 'nucomu-menu-dot' + (p === currentPage ? ' is-active' : '');
-                dot.setAttribute('aria-label', `Halaman menu ${p + 1} dari ${totalPages}`);
-                dot.setAttribute('aria-current', p === currentPage ? 'true' : 'false');
-                dot.addEventListener('click', () => {
-                    if (typeof window.goToMenuPage === 'function') {
-                        window.goToMenuPage(p);
-                    }
-                });
-                dotsContainer.appendChild(dot);
-            }
-        }
-    };
-
-    window.goToMenuPage = function(targetIndex) {
-        const container = document.getElementById('recommendations-columns-container');
-        if (!container) {
-            return;
-        }
-        const track = container.querySelector('.menu-slide-track');
-        if (!track) {
-            return;
-        }
-
-        const slides = Array.from(track.querySelectorAll('.menu-page-slide'));
-        const totalPages = slides.length;
-        if (totalPages <= 1) {
-            return;
-        }
-
-        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
-        const parsedTarget = parseInt(targetIndex, 10);
-        const safeTarget = Number.isNaN(parsedTarget) ? 0 : parsedTarget;
-        const clampedTarget = Math.max(0, Math.min(totalPages - 1, safeTarget));
-
-        if (clampedTarget === currentPage) {
-            return;
-        }
-
-        container.querySelectorAll('.menu-card.is-open').forEach(openCard => {
-            if (typeof window.closeMenuCard === 'function') {
-                window.closeMenuCard(openCard);
-            } else {
-                openCard.classList.remove('is-open');
-            }
-        });
-
-        if (container._collapseTimer) {
-            clearTimeout(container._collapseTimer);
-            container._collapseTimer = null;
-        }
-
-        const minIdx = Math.min(currentPage, clampedTarget);
-        const maxIdx = Math.max(currentPage, clampedTarget);
-
-        slides.forEach((slide, idx) => {
-            const isTarget = idx === clampedTarget;
-            if (idx >= minIdx && idx <= maxIdx) {
-                slide.classList.remove('is-collapsed-page');
-            }
-            slide.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
-            slide.inert = !isTarget;
-        });
-
-        void track.offsetWidth;
-
-        container.dataset.currentPage = String(clampedTarget);
-        track.style.transform = clampedTarget === 0
-            ? 'translate3d(0, 0, 0)'
-            : `translate3d(calc(-${clampedTarget} * (100% + 24px)), 0, 0)`;
-
-        window.updateMenuCarouselControls(clampedTarget, totalPages);
-
-        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const finalizeSlides = () => {
-            const settledPage = parseInt(container.dataset.currentPage || '0', 10);
-            slides.forEach((slide, idx) => {
-                if (idx !== settledPage) {
-                    slide.classList.add('is-collapsed-page');
-                } else {
-                    slide.classList.remove('is-collapsed-page');
-                }
-            });
-            container._collapseTimer = null;
-        };
-
-        if (prefersReducedMotion) {
-            finalizeSlides();
-        } else {
-            container._collapseTimer = setTimeout(finalizeSlides, 480);
-        }
-    };
-
-    window.nextMenuPage = function() {
-        const container = document.getElementById('recommendations-columns-container');
-        if (!container) {
-            return;
-        }
-        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
-        const totalPages = parseInt(container.dataset.totalPages || '1', 10);
-        if (currentPage < totalPages - 1) {
-            window.goToMenuPage(currentPage + 1);
-        }
-    };
-
-    window.prevMenuPage = function() {
-        const container = document.getElementById('recommendations-columns-container');
-        if (!container) {
-            return;
-        }
-        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
-        if (currentPage > 0) {
-            window.goToMenuPage(currentPage - 1);
-        }
-    };
-
     window.distributeMenuCards = function(poolId, containerId, categoryFilter = 'all') {
         const pool = document.getElementById(poolId);
         const container = document.getElementById(containerId);
         if (!container) return;
 
-        const isHomepageCarousel = containerId === 'recommendations-columns-container';
         const numCols = window.getMenuBreakpointColumns();
-        const previousCategory = container.dataset.activeCategory || null;
-        const categoryChanged = previousCategory !== null && previousCategory !== categoryFilter;
-        container.dataset.activeCategory = categoryFilter;
 
         // Collect all card wrappers from pool and container
         let wrappers = [];
@@ -1238,12 +1012,7 @@
         }
         wrappers = wrappers.concat(Array.from(container.querySelectorAll('.menu-card-wrapper')));
 
-        if (wrappers.length === 0) {
-            if (isHomepageCarousel) {
-                window.updateMenuCarouselControls(0, 0);
-            }
-            return;
-        }
+        if (wrappers.length === 0) return;
 
         // Deduplicate wrappers by dataset index and id
         const seen = new Set();
@@ -1274,17 +1043,13 @@
                 visibleCards.push(w);
             } else {
                 w.style.display = 'none';
-                const cardEl = w.querySelector('.menu-card.is-open');
-                if (cardEl && typeof window.closeMenuCard === 'function') {
-                    window.closeMenuCard(cardEl);
-                }
                 if (pool) pool.appendChild(w);
             }
         });
 
         // Empty state toggling
-        const emptyStateId = isHomepageCarousel
-            ? 'recommendations-empty-state'
+        const emptyStateId = containerId === 'recommendations-columns-container' 
+            ? 'recommendations-empty-state' 
             : (containerId === 'catalog-columns-container' ? 'catalog-empty-state' : null);
         if (emptyStateId) {
             const emptyState = document.getElementById(emptyStateId);
@@ -1299,83 +1064,35 @@
             }
         }
 
-        if (isHomepageCarousel) {
-            if (container._collapseTimer) {
-                clearTimeout(container._collapseTimer);
-                container._collapseTimer = null;
-            }
-
-            container.innerHTML = '';
-            container.dataset.renderedCols = String(numCols);
-
-            const pageSize = numCols * 2;
-            const totalPages = visibleCards.length > 0 ? Math.ceil(visibleCards.length / pageSize) : 0;
-
-            if (totalPages === 0) {
-                container.dataset.currentPage = '0';
-                container.dataset.totalPages = '0';
-                window.updateMenuCarouselControls(0, 0);
-                return;
-            }
-
-            let currentPage = categoryChanged ? 0 : parseInt(container.dataset.currentPage || '0', 10);
-            if (Number.isNaN(currentPage)) {
-                currentPage = 0;
-            }
-
-            if (!categoryChanged && openCardId) {
-                const openMatchIndex = visibleCards.findIndex(wrap => {
-                    return Boolean(wrap.querySelector(`.menu-card[data-card-id="${openCardId}"]`));
-                });
-                if (openMatchIndex !== -1) {
-                    currentPage = Math.floor(openMatchIndex / pageSize);
-                }
-            }
-
-            currentPage = Math.max(0, Math.min(totalPages - 1, currentPage));
-            container.dataset.currentPage = String(currentPage);
-            container.dataset.totalPages = String(totalPages);
-
-            const track = document.createElement('div');
-            track.className = 'menu-slide-track';
-            track.style.transition = 'none';
-            track.style.transform = currentPage === 0
-                ? 'translate3d(0, 0, 0)'
-                : `translate3d(calc(-${currentPage} * (100% + 24px)), 0, 0)`;
-            container.appendChild(track);
-
-            let activeSlide = null;
-            for (let pageIdx = 0; pageIdx < totalPages; pageIdx++) {
-                const isActivePage = pageIdx === currentPage;
-                const slide = document.createElement('div');
-                slide.className = 'menu-page-slide menu-columns-container' + (isActivePage ? '' : ' is-collapsed-page');
-                slide.dataset.pageIndex = String(pageIdx);
-                slide.setAttribute('aria-hidden', isActivePage ? 'false' : 'true');
-                slide.inert = !isActivePage;
-                track.appendChild(slide);
-
-                if (isActivePage) {
-                    activeSlide = slide;
-                }
-
-                const pageItems = visibleCards.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
-                buildMenuColumns(slide, pageItems, numCols);
-            }
-
-            void track.offsetWidth;
-            track.style.transition = '';
-
-            syncOpenMenuCard(container, openCardId, activeSlide);
-            window.updateMenuCarouselControls(currentPage, totalPages);
-            bindMenuViewportSwipe();
-            return;
-        }
-
-        // Rebuild independent vertical flex columns (/menu full catalog)
+        // Rebuild independent vertical flex columns
         container.innerHTML = '';
         container.dataset.renderedCols = String(numCols);
-        buildMenuColumns(container, visibleCards, numCols);
-        syncOpenMenuCard(container, openCardId);
+
+        const columns = [];
+        for (let c = 0; c < numCols; c++) {
+            const col = document.createElement('div');
+            col.className = 'menu-column flex-1 flex flex-col gap-y-[74px] sm:gap-y-28 min-w-0';
+            container.appendChild(col);
+            columns.push(col);
+        }
+
+        // Distribute card i into column (i mod numCols)
+        visibleCards.forEach((wrap, idx) => {
+            const targetCol = idx % numCols;
+            columns[targetCol].appendChild(wrap);
+        });
+
+        // Restore drawer height for open card
+        if (openCardId) {
+            const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
+            if (restoredCard) {
+                restoredCard.classList.add('is-open');
+                const drawer = restoredCard.querySelector('.menu-card-drawer');
+                if (drawer) {
+                    drawer.style.height = drawer.scrollHeight + 'px';
+                }
+            }
+        }
     };
 
     window.openMenuCard = function(cardEl) {
@@ -1535,6 +1252,7 @@
         const floatingBadge = document.getElementById('floating-cart-badge');
         const floatingTotal = document.getElementById('floating-cart-total');
         const navBadge = document.getElementById('nav-cart-badge');
+        const mobileNavBadge = document.getElementById('mobile-nav-cart-badge');
         const drawerBadge = document.getElementById('drawer-cart-badge');
 
         const keys = Object.keys(window.nucomuCart);
@@ -1558,6 +1276,10 @@
             if (navBadge) {
                 navBadge.innerText = '0';
                 navBadge.classList.add('hidden');
+            }
+            if (mobileNavBadge) {
+                mobileNavBadge.innerText = '0';
+                mobileNavBadge.classList.add('hidden');
             }
             if (drawerBadge) drawerBadge.innerText = '0';
             return;
@@ -1636,6 +1358,10 @@
             navBadge.innerText = totalQty;
             navBadge.classList.remove('hidden');
         }
+        if (mobileNavBadge) {
+            mobileNavBadge.innerText = totalQty;
+            mobileNavBadge.classList.remove('hidden');
+        }
         if (drawerBadge) drawerBadge.innerText = totalQty;
     };
     window.renderModalCart = window.renderCartDrawer;
@@ -1669,6 +1395,11 @@
         const fieldAddress = document.getElementById('drawer-field-address');
         const submitText = document.getElementById('drawer-submit-text');
 
+        const dotKasir = cardKasir ? cardKasir.querySelector('.method-dot') : null;
+        const dotZendo = cardZendo ? cardZendo.querySelector('.method-dot') : null;
+        const iconKasir = cardKasir ? cardKasir.querySelector('.material-symbols-outlined') : null;
+        const iconZendo = cardZendo ? cardZendo.querySelector('.material-symbols-outlined') : null;
+
         if (method === 'kasir') {
             if (cardKasir) {
                 cardKasir.classList.add('border-neutral-900');
@@ -1678,6 +1409,11 @@
                 cardZendo.classList.remove('border-neutral-900');
                 cardZendo.classList.add('border-stone-200');
             }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+
             if (fieldTable) fieldTable.classList.remove('hidden');
             if (fieldAddress) fieldAddress.classList.add('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kasir)';
@@ -1690,11 +1426,17 @@
                 cardKasir.classList.remove('border-neutral-900');
                 cardKasir.classList.add('border-stone-200');
             }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+
             if (fieldTable) fieldTable.classList.add('hidden');
             if (fieldAddress) fieldAddress.classList.remove('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kurir Zendo)';
         }
     };
+    window.setModalProcessMethod = window.selectDrawerMethod;
 
     // ============================================
     // CHECKOUT FORM SUBMISSION
@@ -1746,28 +1488,39 @@
             return;
         }
 
-        // Format items for payload
-        const payloadItems = items.map(it => ({
-            id: it.id,
-            name: it.name,
-            qty: it.qty,
-            price: it.price,
-            options: it.options || [],
-            notes: it.optionsStr || ''
-        }));
+        // Format items for payload with complete keys matching server validation
+        const payloadItems = items.map(it => {
+            const qty = parseInt(it.qty, 10) || 1;
+            const price = parseInt(it.price, 10) || 0;
+            return {
+                id: it.id,
+                menu_id: it.id,
+                name: it.name,
+                menu_name: it.name,
+                qty: qty,
+                price: price,
+                unit_price: price,
+                line_total: price * qty,
+                options: it.options || [],
+                notes: it.optionsStr || ''
+            };
+        });
 
         let subtotal = 0;
-        items.forEach(it => subtotal += (it.price * it.qty));
+        payloadItems.forEach(it => subtotal += it.line_total);
 
         const payload = {
             process_method: isZendo ? 'zendo' : 'kasir',
             customer_name: customerName,
             customer_phone: customerPhone,
+            table_no: tableNumber,
             table_number: tableNumber,
+            dine_type: tableNumber ? 'dine_in' : 'take_away',
             delivery_address: address,
             notes: notes,
             payment_method: 'cash',
             items: payloadItems,
+            total: subtotal,
             subtotal: subtotal,
             grand_total: subtotal
         };
@@ -1779,17 +1532,39 @@
 
         try {
             const csrfMeta = document.querySelector('meta[name="csrf-token"]');
-            const csrfToken = csrfMeta ? csrfMeta.content : '';
+            const csrfToken = csrfMeta ? csrfMeta.content : '{{ csrf_token() }}';
 
-            const res = await fetch('/api/transactions/process', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                },
-                body: JSON.stringify(payload)
-            });
+            // Resolve endpoints dynamically so it works seamlessly on root domain or subdirectory (Laragon /umkm/public)
+            const primaryEndpoint = '{{ route("api.transactions.process", [], false) }}';
+            const fallbackEndpoint = '{{ route("nucomu.order.store", [], false) }}';
+
+            let res;
+            try {
+                res = await fetch(primaryEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+            } catch (fetchErr) {
+                console.warn('Primary endpoint network error, falling back to /pesan:', fetchErr);
+            }
+
+            // Fallback to /pesan if primary endpoint returned 404 or failed
+            if (!res || res.status === 404) {
+                res = await fetch(fallbackEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                });
+            }
 
             const data = await res.json();
 
@@ -1808,25 +1583,44 @@
             const typeEl = document.getElementById('success-order-type');
             const totalEl = document.getElementById('success-total-amount');
             const slipLink = document.getElementById('success-slip-link');
+            const waLink = document.getElementById('success-wa-link');
             const subtextEl = document.getElementById('success-subtext');
+            const qrContainer = document.getElementById('drawer-qr-container');
 
             if (codeEl) codeEl.innerText = data.order_code || 'NCM-ORDER';
             if (nameEl) nameEl.innerText = customerName;
             if (typeEl) typeEl.innerText = isZendo ? 'Kurir Zendo' : (tableNumber ? `Kasir (Meja ${tableNumber})` : 'Kasir (Take Away)');
             if (totalEl) totalEl.innerText = 'Rp ' + (data.grand_total || subtotal).toLocaleString('id-ID');
-            if (subtextEl) {
-                subtextEl.innerText = isZendo 
-                    ? 'Kurir Zendo akan segera mengonfirmasi pesanan ke WhatsApp Anda.' 
-                    : 'Tunjukkan QR code ini ke kasir untuk proses pembayaran.';
-            }
 
-            if (slipLink && data.slip_url) {
-                slipLink.href = data.slip_url;
-                slipLink.classList.remove('hidden');
+            if (isZendo) {
+                if (subtextEl) {
+                    subtextEl.innerText = data.courier_name 
+                        ? `Pesanan Anda akan diantar oleh ${data.courier_name}. Klik tombol di bawah untuk konfirmasi WhatsApp.`
+                        : 'Pesanan Kurir Zendo berhasil dibuat. Silakan konfirmasi ke WhatsApp kurir.';
+                }
+                if (qrContainer) qrContainer.classList.add('hidden');
+                if (slipLink) slipLink.classList.add('hidden');
+                if (waLink && data.whatsapp_url) {
+                    waLink.href = data.whatsapp_url;
+                    waLink.classList.remove('hidden');
+                }
+            } else {
+                if (subtextEl) {
+                    subtextEl.innerText = 'Tunjukkan QR code ini ke kasir untuk proses pembayaran.';
+                }
+                if (qrContainer) qrContainer.classList.remove('hidden');
+                if (waLink) waLink.classList.add('hidden');
+                if (slipLink) {
+                    if (data.slip_url) {
+                        slipLink.href = data.slip_url;
+                        slipLink.classList.remove('hidden');
+                    } else {
+                        slipLink.classList.add('hidden');
+                    }
+                }
+                // Render QR code
+                generateDrawerQrCode(data.order_code || 'NCM-ORDER', data.slip_url || '');
             }
-
-            // Render QR code
-            generateDrawerQrCode(data.order_code || 'NCM-ORDER', data.slip_url || '');
 
             // Switch to success view
             switchCartView('success');

@@ -32,6 +32,35 @@
         ['src' => 'images/hero/bean-3.webp', 'x' => 105, 'y' => -185, 'z' => -35, 'w' => 52, 'rot' => 45, 'blur' => 1.2, 'opacity' => 0.85, 'zIndex' => 14, 'animType' => 2, 'animDur' => 5.7, 'animDelay' => -1.4, 'entranceDelay' => 0.35, 'depth' => 12, 'extraClass' => 'max-sm:scale-75'],
     ];
 
+    // 3D Orbiting Strawberries for Slide 3 (Sweet Moment / Artisanal Pastry) matching 3D vortex orbit design
+    $vortexStrawberries = [
+        // Bokeh foreground (large & depth-of-field blurred)
+        ['src' => 'images/hero/strawberry-4.webp', 'x' => -340, 'y' => 170, 'z' => 95, 'w' => 140, 'rot' => -22, 'blur' => 3.8, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 1, 'animDur' => 6.4, 'animDelay' => 0.0, 'entranceDelay' => 0.15, 'depth' => 46, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/strawberry-1.webp', 'x' => 320, 'y' => 145, 'z' => 90, 'w' => 135, 'rot' => 28, 'blur' => 3.4, 'opacity' => 0.95, 'zIndex' => 35, 'animType' => 2, 'animDur' => 6.0, 'animDelay' => -1.2, 'entranceDelay' => 0.25, 'depth' => 42, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/strawberry-5.webp', 'x' => 330, 'y' => -160, 'z' => 80, 'w' => 100, 'rot' => 32, 'blur' => 2.6, 'opacity' => 0.92, 'zIndex' => 35, 'animType' => 3, 'animDur' => 5.4, 'animDelay' => -2.0, 'entranceDelay' => 0.35, 'depth' => 36, 'extraClass' => 'max-sm:hidden'],
+        ['src' => 'images/hero/strawberry-3.webp', 'x' => 180, 'y' => 215, 'z' => 75, 'w' => 88, 'rot' => 40, 'blur' => 2.0, 'opacity' => 0.90, 'zIndex' => 32, 'animType' => 4, 'animDur' => 5.8, 'animDelay' => -0.8, 'entranceDelay' => 0.2, 'depth' => 32, 'extraClass' => 'max-sm:hidden'],
+
+        // Midground sharp swirl along cake base & spiraling curving up-right
+        ['src' => 'images/hero/strawberry-4.webp', 'x' => -160, 'y' => 120, 'z' => 35, 'w' => 58, 'rot' => -18, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 25, 'animType' => 1, 'animDur' => 5.0, 'animDelay' => -0.5, 'entranceDelay' => 0.1, 'depth' => 22, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-3.webp', 'x' => -80, 'y' => 150, 'z' => 45, 'w' => 62, 'rot' => 22, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 26, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -1.0, 'entranceDelay' => 0.15, 'depth' => 24, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-1.webp', 'x' => 15, 'y' => 155, 'z' => 50, 'w' => 62, 'rot' => -15, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 26, 'animType' => 3, 'animDur' => 4.8, 'animDelay' => -1.5, 'entranceDelay' => 0.2, 'depth' => 25, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-5.webp', 'x' => 100, 'y' => 135, 'z' => 45, 'w' => 56, 'rot' => 32, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 25, 'animType' => 4, 'animDur' => 5.1, 'animDelay' => -2.0, 'entranceDelay' => 0.25, 'depth' => 23, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-2.webp', 'x' => 175, 'y' => 105, 'z' => 35, 'w' => 54, 'rot' => 24, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 1, 'animDur' => 4.9, 'animDelay' => -2.5, 'entranceDelay' => 0.3, 'depth' => 20, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-3.webp', 'x' => 210, 'y' => 50, 'z' => 25, 'w' => 50, 'rot' => -20, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 2, 'animDur' => 5.2, 'animDelay' => -3.0, 'entranceDelay' => 0.35, 'depth' => 18, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-4.webp', 'x' => 210, 'y' => -10, 'z' => 15, 'w' => 46, 'rot' => 15, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 23, 'animType' => 3, 'animDur' => 5.5, 'animDelay' => -3.5, 'entranceDelay' => 0.4, 'depth' => 16, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-1.webp', 'x' => 180, 'y' => -65, 'z' => 5, 'w' => 42, 'rot' => -12, 'blur' => 0, 'opacity' => 0.95, 'zIndex' => 22, 'animType' => 4, 'animDur' => 5.0, 'animDelay' => -4.0, 'entranceDelay' => 0.45, 'depth' => 14, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-5.webp', 'x' => 140, 'y' => -100, 'z' => -10, 'w' => 38, 'rot' => -28, 'blur' => 0.4, 'opacity' => 0.9, 'zIndex' => 18, 'animType' => 1, 'animDur' => 4.7, 'animDelay' => -4.5, 'entranceDelay' => 0.5, 'depth' => 12, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-3.webp', 'x' => 90, 'y' => -125, 'z' => -25, 'w' => 34, 'rot' => 30, 'blur' => 0.8, 'opacity' => 0.85, 'zIndex' => 16, 'animType' => 2, 'animDur' => 5.3, 'animDelay' => -5.0, 'entranceDelay' => 0.55, 'depth' => 10, 'extraClass' => 'max-sm:scale-75'],
+
+        // Strawberries along lower-left curve (framing cake tip)
+        ['src' => 'images/hero/strawberry-2.webp', 'x' => -245, 'y' => 85, 'z' => 30, 'w' => 56, 'rot' => 38, 'blur' => 0, 'opacity' => 1.0, 'zIndex' => 24, 'animType' => 3, 'animDur' => 5.6, 'animDelay' => -1.8, 'entranceDelay' => 0.2, 'depth' => 20, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-4.webp', 'x' => -305, 'y' => 65, 'z' => 20, 'w' => 50, 'rot' => -25, 'blur' => 0.2, 'opacity' => 0.95, 'zIndex' => 23, 'animType' => 4, 'animDur' => 4.9, 'animDelay' => -2.3, 'entranceDelay' => 0.25, 'depth' => 18, 'extraClass' => 'max-sm:scale-75'],
+
+        // Background floating strawberries (behind cake)
+        ['src' => 'images/hero/strawberry-1.webp', 'x' => -195, 'y' => -160, 'z' => -40, 'w' => 68, 'rot' => 20, 'blur' => 1.6, 'opacity' => 0.85, 'zIndex' => 14, 'animType' => 1, 'animDur' => 6.2, 'animDelay' => -0.7, 'entranceDelay' => 0.3, 'depth' => 14, 'extraClass' => 'max-sm:scale-75'],
+        ['src' => 'images/hero/strawberry-3.webp', 'x' => 105, 'y' => -185, 'z' => -35, 'w' => 54, 'rot' => -25, 'blur' => 1.2, 'opacity' => 0.85, 'zIndex' => 14, 'animType' => 2, 'animDur' => 5.7, 'animDelay' => -1.4, 'entranceDelay' => 0.35, 'depth' => 12, 'extraClass' => 'max-sm:scale-75'],
+    ];
+
     $rawSlides = [
         [
             'id' => 'welcome',
@@ -59,7 +88,8 @@
             'type' => 'product',
             'label' => '01 / SPECIALTY ROASTERY',
             'giant_headline' => 'FRESH BEANS',
-            'giant_headline_class' => 'text-white/18',
+            'giant_headline_size' => 'text-[clamp(3.2rem,11vw,9.8rem)] tracking-tight',
+            'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -79,7 +109,8 @@
             'type' => 'product',
             'label' => '02 / DAILY SIGNATURE DRINK',
             'giant_headline' => 'FRESH BREW',
-            'giant_headline_class' => 'text-[#1C1C1C]/25',
+            'giant_headline_size' => 'text-[clamp(3.2rem,11.5vw,9.8rem)] tracking-tight',
+            'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -91,8 +122,8 @@
             'img_height' => 1157,
             'aspect_ratio' => 'auto',
             'img_class' => 'w-auto max-h-[250px] sm:max-h-[340px] lg:max-h-[410px] xl:max-h-[430px] object-contain relative z-20 hero-float-idle',
-            'bg_color' => '#EDEDED',
-            'theme' => 'light',
+            'bg_color' => '#141414',
+            'theme' => 'dark',
             'has_ambient_glow' => false,
             'floaters' => [
                 // 1. Kiri atas (jauh)
@@ -187,7 +218,8 @@
             'type' => 'product',
             'label' => '03 / ARTISANAL PASTRY',
             'giant_headline' => 'SWEET MOMENT',
-            'giant_headline_class' => 'text-[#1C1C1C]/22',
+            'giant_headline_size' => 'text-[clamp(3.2rem,11vw,9.8rem)] tracking-tight',
+            'giant_headline_class' => 'hero-giant-headline-text',
             'subtext' => null,
             'cta_primary' => [
                 'text' => 'Lihat Menu',
@@ -198,11 +230,9 @@
             'img_width' => 730,
             'img_height' => 667,
             'aspect_ratio' => 'auto',
-            'img_class' => 'w-[85vw] max-w-[330px] sm:max-w-[440px] lg:max-w-[490px] xl:max-w-[540px] max-h-[260px] sm:max-h-[340px] lg:max-h-[390px] xl:max-h-[420px] object-contain relative z-20 hero-float-rotate',
-            'bg_color' => '#FAFAFA',
-            'theme' => 'light',
+            'bg_color' => '#1E1B1C',
+            'theme' => 'dark',
             'floaters' => [],
-            'has_float_rotate' => true,
         ],
     ];
 
@@ -221,12 +251,11 @@
     $totalSlides = count($slides);
 
     $hasActiveHeroBanners = isset($activeBanners) && $activeBanners->count() > 0;
-    $firstHeroBannerMode = $hasActiveHeroBanners ? ($activeBanners->first()->layout_mode ?: 'poster') : null;
     $initialHeroBgColor = $hasActiveHeroBanners
-        ? ($firstHeroBannerMode === 'overlay' ? '#191919' : '#F9F9F9')
+        ? '#0C0C0C'
         : ($slides[0]['bg_color'] ?? '#140E0A');
     $initialHeroNavbarTheme = $hasActiveHeroBanners
-        ? ($firstHeroBannerMode === 'overlay' ? 'dark' : 'light')
+        ? 'dark'
         : ($slides[0]['theme'] ?? 'dark');
 @endphp
 
@@ -235,12 +264,12 @@
      style="background-color: var(--hero-bg-color, {{ $initialHeroBgColor }}); transition: background-color 0.8s cubic-bezier(0.16, 1, 0.3, 1);">
 <section id="home" 
          data-navbar-theme="{{ $initialHeroNavbarTheme }}"
-         class="relative min-h-[560px] sm:min-h-[580px] lg:min-h-[600px] flex items-center justify-center overflow-hidden border-b border-[#E5E5E5]/60 select-none group/hero"
+         class="relative min-h-[560px] sm:min-h-[580px] lg:min-h-[600px] flex items-center justify-center overflow-hidden border-b border-[var(--border-soft)] select-none group/hero"
          style="background-color: {{ $initialHeroBgColor }}; transition: background-color 0.8s ease;">
 
-    <!-- Soft feathered ambient glow for warmth and depth -->
+    <!-- Soft feathered ambient glow for subtle dark depth -->
     <div class="absolute inset-0 pointer-events-none z-1" 
-         style="background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.15) 60%, transparent 100%);">
+         style="background: radial-gradient(ellipse 70% 70% at 50% 50%, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 60%, transparent 100%);">
     </div>
 
     @if(isset($activeBanners) && $activeBanners->count() > 0)
@@ -250,16 +279,11 @@
              ========================================================================= -->
         <div class="hidden md:block w-full h-full absolute inset-0" id="desktop-hero-banners-wrapper">
             @foreach($activeBanners as $banner)
-                @php
-                    $bannerMode = $banner->layout_mode ?: 'poster';
-                    $bannerBgColor = $bannerMode === 'overlay' ? '#191919' : '#F9F9F9';
-                    $bannerTheme = $bannerMode === 'overlay' ? 'dark' : 'light';
-                @endphp
                 <div class="hero-slide-item hero-banner-slide absolute inset-0 w-full h-full flex items-center justify-center {{ $loop->first ? 'active z-10' : 'opacity-0 pointer-events-none z-0' }}"
                      data-slide-index="{{ $loop->index }}"
-                     data-layout-mode="{{ $bannerMode }}"
-                     data-theme="{{ $bannerTheme }}"
-                     data-bg-color="{{ $bannerBgColor }}">
+                     data-layout-mode="{{ $banner->layout_mode ?: 'poster' }}"
+                     data-bg-color="#0C0C0C"
+                     data-theme="dark">
                     
                     @if(($banner->layout_mode ?: 'poster') === 'poster')
                         <!-- -----------------------------------------------------------------
@@ -320,7 +344,7 @@
                                     </p>
                                 @endif
 
-                                <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] mb-3 tracking-tight drop-shadow-sm max-w-2xl" style="font-variant-numeric: lining-nums;">
+                                <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] mb-3 tracking-tight drop-shadow-sm max-w-2xl">
                                     {{ $banner->title }}
                                 </h1>
 
@@ -340,11 +364,11 @@
 
                                 <div class="flex flex-wrap items-center gap-3">
                                     <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                       class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
+                                       class="inline-flex items-center justify-center bg-[#F5F2EE] hover:bg-white text-[#111111] text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                         {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                     </a>
                                     <a href="#menu" 
-                                       class="inline-flex items-center justify-center bg-white/20 hover:bg-white text-white hover:text-[#1F1F1F] border border-white/40 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
+                                       class="inline-flex items-center justify-center bg-black/40 hover:bg-white/15 text-[#F5F5F5] border border-white/45 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95 backdrop-blur-xs">
                                         DAFTAR MENU
                                     </a>
                                 </div>
@@ -362,36 +386,36 @@
                                 <!-- Text Column (Left) -->
                                 <div class="hero-text-content lg:col-span-7 text-left order-2 lg:order-1">
                                     @if($banner->subtitle)
-                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#555555] mb-1.5 leading-tight">
+                                        <p class="font-script text-2xl sm:text-3xl lg:text-4xl text-[#B5B5B5] mb-1.5 leading-tight">
                                             {{ $banner->subtitle }}
                                         </p>
                                     @endif
 
-                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#1F1F1F] leading-[1.08] mb-3 tracking-tight" style="font-variant-numeric: lining-nums;">
+                                    <h1 class="font-editorial text-3xl sm:text-5xl lg:text-6xl font-bold text-[#F5F5F5] leading-[1.08] mb-3 tracking-tight">
                                         {{ $banner->title }}
                                     </h1>
 
-                                    <div class="inline-flex items-center space-x-2 mb-3 bg-white/70 backdrop-blur-sm px-3.5 py-1 rounded-full border border-neutral-200 shadow-2xs">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
-                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#555555]">
+                                    <div class="inline-flex items-center space-x-2 mb-3 bg-[var(--surface-strong)] backdrop-blur-sm px-3.5 py-1 rounded-full border border-[var(--border)] shadow-2xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
+                                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-editorial-widest text-[#B5B5B5]">
                                             Nucomu Promo • Tulungagung
                                         </span>
-                                        <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
                                     </div>
 
                                     @if($banner->description)
-                                        <p class="font-body text-xs sm:text-sm text-[#555555] max-w-lg leading-relaxed mb-6 font-normal">
+                                        <p class="font-body text-xs sm:text-sm text-[#B5B5B5] max-w-lg leading-relaxed mb-6 font-normal">
                                             {{ $banner->description }}
                                         </p>
                                     @endif
 
                                     <div class="flex flex-wrap items-center gap-3">
                                         <a href="{{ $banner->button_link ?: '#menu' }}" 
-                                           class="inline-flex items-center justify-center bg-[#1F1F1F] hover:bg-[#333333] text-white text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
+                                           class="inline-flex items-center justify-center bg-[#F5F2EE] hover:bg-white text-[#111111] text-xs font-bold uppercase tracking-widest px-7 py-3 rounded-full shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                                             {{ $banner->button_text ?: 'PESAN SEKARANG' }}
                                         </a>
                                         <a href="#menu" 
-                                           class="inline-flex items-center justify-center bg-white/90 hover:bg-white text-[#1F1F1F] border border-neutral-300 text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
+                                           class="inline-flex items-center justify-center bg-transparent hover:bg-white/10 text-[#F5F5F5] border border-[var(--btn-outline)] text-xs font-bold uppercase tracking-widest px-6 py-3 rounded-full shadow-sm hover:shadow transition-all duration-200 active:scale-95">
                                             DAFTAR MENU
                                         </a>
                                     </div>
@@ -412,8 +436,8 @@
                                                  alt="{{ $banner->title }}"
                                                  class="w-full h-full object-cover rounded-[24px] desktop-banner-img">
                                         @endif
-                                        <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#252525] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[#555555]"></span>
+                                        <div class="absolute bottom-3 left-3 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#F5F5F5] border border-[var(--border)] shadow-sm flex items-center space-x-1.5">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
                                             <span>{{ $banner->subtitle ?: 'Special Banner' }}</span>
                                         </div>
                                     </div>
@@ -495,8 +519,8 @@
                             <span>{{ $slide['label'] }}</span>
                         </p>
 
-                        <!-- Headline Besar Manrope Semibold -->
-                        <h1 class="font-body text-3xl sm:text-5xl lg:text-6xl font-semibold text-white leading-[1.12] tracking-tight mb-4">
+                        <!-- Headline Besar Playfair Display Bold (700) -->
+                        <h1 class="font-heading text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.08] tracking-tight mb-4">
                             {{ $slide['headline_line1'] }}<br>
                             {{ $slide['headline_line2'] }}
                         </h1>
@@ -535,7 +559,7 @@
 
                     <!-- 1. Giant Headline Behind Product: FRESH BEANS (z-10) -->
                     <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                        <span class="font-body font-black uppercase text-[clamp(4.2rem,13.8vw,11.5rem)] leading-none tracking-tighter text-center whitespace-nowrap text-white/18 select-none">
+                        <span class="font-sans font-extrabold uppercase {{ $slide['giant_headline_size'] ?? 'text-[clamp(3.4rem,11.5vw,10rem)]' }} leading-none tracking-tight text-center whitespace-nowrap hero-giant-headline-text select-none">
                             FRESH BEANS
                         </span>
                     </div>
@@ -627,19 +651,144 @@
 
                 </div>
 
+            @elseif($slide['id'] === 'sweet-moment')
+                <!-- -----------------------------------------------------------------
+                     SLIDE 3: ARTISANAL PASTRY - SWEET MOMENT (DARK EDITORIAL POSTER + SCATTERED STRAWBERRIES)
+                     ----------------------------------------------------------------- -->
+                <div class="relative w-full h-full flex items-center justify-center overflow-hidden select-none"
+                     style="background: linear-gradient(145deg, #1A1113 0%, #110C0E 55%, #0A0608 100%);">
+
+                    <!-- Crimson Spotlight Glow (subtle) -->
+                    <div class="absolute inset-0 pointer-events-none z-5" style="background: radial-gradient(circle 480px at 50% 48%, rgba(180,20,40,0.13) 0%, rgba(120,10,25,0.05) 45%, transparent 72%);" aria-hidden="true"></div>
+
+                    <!-- 1. Giant Headline Behind Product: SWEET MOMENT (z-10) -->
+                    <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
+                        <span class="font-sans font-extrabold uppercase {{ $slide['giant_headline_size'] ?? 'text-[clamp(3.2rem,11vw,9.8rem)]' }} leading-none tracking-tight text-center whitespace-nowrap hero-giant-headline-text select-none">
+                            SWEET MOMENT
+                        </span>
+                    </div>
+
+                    <!-- 2 & 3. Central Cheesecake + Scattered Strawberries (7 items) + Slay Jam Drips (z-20) -->
+                    <div class="hero-product-layer relative z-20 flex flex-col items-center justify-center px-4 transition-transform duration-300 max-md:mb-24 max-md:-mt-6">
+                        <div class="relative flex items-center justify-center">
+
+                            <!-- Scattered Strawberries — 7 items -->
+
+                            {{-- 1. Far top-left --}}
+                            <div class="hero-floater absolute -left-16 sm:-left-28 lg:-left-36 top-4 sm:top-8 w-10 sm:w-14 lg:w-16 z-25 hero-bean-anim-1 drop-shadow-[0_8px_18px_rgba(0,0,0,0.3)] pointer-events-none select-none" data-depth="24" aria-hidden="true">
+                                <img src="{{ asset('images/hero/strawberry-1.webp') }}" alt="" loading="eager" decoding="async" class="w-full h-auto object-contain transform -rotate-12">
+                            </div>
+
+                            {{-- 2. Top-right --}}
+                            <div class="hero-floater absolute -right-10 sm:-right-18 lg:-right-24 top-8 sm:top-12 w-9 sm:w-12 lg:w-14 z-25 hero-bean-anim-3 drop-shadow-[0_6px_14px_rgba(0,0,0,0.28)] pointer-events-none select-none" data-depth="20" aria-hidden="true">
+                                <img src="{{ asset('images/hero/strawberry-4.webp') }}" alt="" loading="eager" decoding="async" class="w-full h-auto object-contain transform rotate-20">
+                            </div>
+
+                            {{-- 3. High above, center-right --}}
+                            <div class="hero-floater absolute left-1/2 translate-x-10 sm:translate-x-16 -top-10 sm:-top-14 w-7 sm:w-9 lg:w-11 z-25 hero-bean-anim-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.22)] pointer-events-none select-none" data-depth="22" aria-hidden="true">
+                                <img src="{{ asset('images/hero/strawberry-2.webp') }}" alt="" loading="eager" decoding="async" class="w-full h-auto object-contain transform -rotate-25">
+                            </div>
+
+                            {{-- 4. Far right mid --}}
+                            <div class="hero-floater absolute -right-16 sm:-right-26 lg:-right-34 top-1/2 w-9 sm:w-12 lg:w-14 z-25 hero-bean-anim-2 drop-shadow-[0_6px_14px_rgba(0,0,0,0.25)] pointer-events-none select-none" data-depth="16" aria-hidden="true">
+                                <img src="{{ asset('images/hero/strawberry-5.webp') }}" alt="" loading="eager" decoding="async" class="w-full h-auto object-contain transform rotate-40">
+                            </div>
+
+                            {{-- 5. Bottom-right --}}
+                            <div class="hero-floater absolute -right-12 sm:-right-20 lg:-right-28 -bottom-8 sm:-bottom-12 w-10 sm:w-13 lg:w-15 z-20 hero-bean-anim-4 drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)] pointer-events-none select-none" data-depth="19" aria-hidden="true">
+                                <img src="{{ asset('images/hero/strawberry-3.webp') }}" alt="" loading="eager" decoding="async" class="w-full h-auto object-contain transform rotate-15">
+                            </div>
+
+                            {{-- 6. Bottom-left close --}}
+                            <div class="hero-floater absolute -left-8 sm:-left-14 lg:-left-18 -bottom-6 sm:-bottom-10 w-9 sm:w-12 lg:w-14 z-25 hero-bean-anim-1 drop-shadow-[0_8px_16px_rgba(0,0,0,0.28)] pointer-events-none select-none" data-depth="17" aria-hidden="true">
+                                <img src="{{ asset('images/hero/strawberry-1.webp') }}" alt="" loading="eager" decoding="async" class="w-full h-auto object-contain transform -rotate-30">
+                            </div>
+
+                            {{-- 7. Far bottom-left bokeh (large, blurred) --}}
+                            <div class="hero-floater absolute -left-20 sm:-left-34 lg:-left-42 bottom-10 sm:bottom-16 w-12 sm:w-15 lg:w-17 z-30 hero-bean-anim-3 drop-shadow-[0_14px_28px_rgba(0,0,0,0.35)] blur-[0.5px] opacity-85 pointer-events-none select-none" data-depth="32" aria-hidden="true">
+                                <img src="{{ asset('images/hero/strawberry-2.webp') }}" alt="" loading="eager" decoding="async" class="w-full h-auto object-contain transform -rotate-10">
+                            </div>
+
+                            <!-- Central Cheesecake with Float + Slay Jam Drip Animations -->
+                            <div class="relative z-20 select-none">
+                                <img src="{{ asset($slide['product_image']) }}"
+                                     alt="{{ $slide['product_name'] }}"
+                                     width="{{ $slide['img_width'] ?? 730 }}"
+                                     height="{{ $slide['img_height'] ?? 667 }}"
+                                     loading="eager"
+                                     decoding="async"
+                                     class="w-auto max-h-[220px] sm:max-h-[300px] lg:max-h-[360px] xl:max-h-[400px] object-contain hero-float-cake select-none">
+
+                                <!-- Slay Jam Drip Stream 1 — Main front drop (deepest, longest fall) -->
+                                <div class="hero-jam-stream" style="left: 51%; top: 22%;" aria-hidden="true">
+                                    <div class="hero-jam-nodule hero-jam-nodule-1"></div>
+                                    <div class="hero-jam-drop hero-jam-drop-1" style="background: radial-gradient(ellipse at 38% 20%, #FF5570 0%, #D10A24 55%, #7A0210 100%); border-radius: 40% 40% 55% 55%;"></div>
+                                    <div class="hero-jam-micro-1" style="left: 5px;"></div>
+                                </div>
+
+                                <!-- Slay Jam Drip Stream 2 — Center-left drop -->
+                                <div class="hero-jam-stream" style="left: 42%; top: 20%;" aria-hidden="true">
+                                    <div class="hero-jam-nodule hero-jam-nodule-2"></div>
+                                    <div class="hero-jam-drop hero-jam-drop-2" style="background: radial-gradient(ellipse at 38% 20%, #FF4466 0%, #C8081E 55%, #720010 100%); border-radius: 40% 40% 55% 55%;"></div>
+                                </div>
+
+                                <!-- Slay Jam Drip Stream 3 — Left corner micro drop -->
+                                <div class="hero-jam-stream" style="left: 35%; top: 24%;" aria-hidden="true">
+                                    <div class="hero-jam-nodule hero-jam-nodule-3"></div>
+                                    <div class="hero-jam-drop hero-jam-drop-3" style="background: radial-gradient(ellipse at 38% 20%, #FF3850 0%, #BE0820 55%, #680010 100%); border-radius: 40% 40% 55% 55%;"></div>
+                                </div>
+
+                                <!-- Slay Jam Drip Stream 4 — Center-right slope drop -->
+                                <div class="hero-jam-stream" style="left: 60%; top: 21%;" aria-hidden="true">
+                                    <div class="hero-jam-nodule hero-jam-nodule-4"></div>
+                                    <div class="hero-jam-drop hero-jam-drop-4" style="background: radial-gradient(ellipse at 38% 20%, #FF5060 0%, #C80A22 55%, #720012 100%); border-radius: 40% 40% 55% 55%;"></div>
+                                </div>
+
+                                <!-- Slay Jam Drip Stream 5 — Right crust flank -->
+                                <div class="hero-jam-stream" style="left: 68%; top: 26%;" aria-hidden="true">
+                                    <div class="hero-jam-nodule hero-jam-nodule-5"></div>
+                                    <div class="hero-jam-drop hero-jam-drop-5" style="background: radial-gradient(ellipse at 38% 20%, #FF3850 0%, #BE0820 55%, #620010 100%); border-radius: 40% 40% 55% 55%;"></div>
+                                </div>
+                            </div>
+                            <div class="hero-cake-shadow-warm" aria-hidden="true"></div>
+
+                        </div>
+                    </div>
+
+                    <!-- 4. Left Product Information & CTA in Bottom Left (z-30) -->
+                    <div class="hero-product-info absolute max-sm:bottom-[80px] bottom-10 lg:bottom-14 left-5 sm:left-8 lg:left-14 z-30 text-left max-w-xs sm:max-w-sm pointer-events-auto">
+                        <!-- Label with baseline divider -->
+                        <div class="flex items-center gap-2.5 sm:gap-3 mb-2.5 sm:mb-3.5">
+                            <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.22em] sm:tracking-[0.25em] text-white/70">
+                                {{ $slide['label'] }}
+                            </p>
+                            <span class="hidden sm:block w-16 lg:w-24 h-[1px] bg-white/20"></span>
+                        </div>
+
+                        <!-- CTA Button (White Pill with Right Arrow) -->
+                        <div>
+                            <a href="{{ $slide['cta_primary']['url'] }}"
+                               class="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white text-[#1C1C1C] hover:bg-neutral-100 transition-all duration-200 active:scale-95 shadow-lg group/btn cursor-pointer">
+                                <span>{{ $slide['cta_primary']['text'] }}</span>
+                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1" aria-hidden="true">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
             @else
                 <!-- -----------------------------------------------------------------
-                     SLIDES 2-3: PRODUK DI DEPAN HEADLINE RAKSASA (EDITORIAL POSTER)
+                     SLIDE 2: DAILY SIGNATURE DRINK - FRESH BREW (EDITORIAL POSTER)
                      ----------------------------------------------------------------- -->
-                <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
-                        <!-- Ambient Warm Glow (Other Slides) -->
-                        @if(!empty($slide['has_ambient_glow']))
-                            <div class="hero-glow-amber absolute inset-0 pointer-events-none z-10" aria-hidden="true"></div>
-                        @endif
+                <div class="relative w-full h-full flex items-center justify-center overflow-hidden"
+                     style="background: linear-gradient(145deg, #181818 0%, #101010 55%, #0B0B0B 100%);">
+                        <!-- Radial Charcoal Spotlight behind center product -->
+                        <div class="absolute inset-0 pointer-events-none z-5" style="background: radial-gradient(circle 420px at 50% 48%, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 45%, transparent 72%);" aria-hidden="true"></div>
 
                         <!-- 1. Headline Raksasa (Di Belakang Produk, z-10) -->
-                        <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 transition-transform duration-300">
-                            <span class="font-body font-black uppercase text-[clamp(3.8rem,14vw,11.5rem)] leading-none tracking-tighter text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? ($slide['theme'] === 'dark' ? 'text-white/20' : 'text-[#1C1C1C]/22') }}">
+                        <div class="hero-giant-headline absolute inset-0 flex items-center justify-center z-10 pointer-events-none select-none px-4 sm:px-8 transition-transform duration-300">
+                            <span class="font-sans font-extrabold uppercase {{ $slide['giant_headline_size'] ?? 'text-[clamp(3.2rem,11.5vw,9.8rem)]' }} leading-none tracking-tight text-center whitespace-nowrap {{ $slide['giant_headline_class'] ?? 'hero-giant-headline-text' }} select-none">
                                 {{ $slide['giant_headline'] }}
                             </span>
                         </div>
@@ -647,7 +796,7 @@
                         <!-- 2 & 3. Produk di Tengah dengan Floating Elements di Sekelilingnya (z-20) -->
                         <div class="hero-product-layer relative z-20 flex flex-col items-center justify-center px-4 transition-transform duration-300 max-md:mb-24 max-md:-mt-6">
                             @if(file_exists(public_path($slide['product_image'])))
-                                <div class="relative flex items-center justify-center {{ $slide['id'] === 'sweet-moment' ? 'w-[85vw] max-w-[330px] sm:max-w-[440px] lg:max-w-[490px] xl:max-w-[540px]' : '' }}">
+                                <div class="relative flex items-center justify-center">
                                     
                                     <!-- Floating Elements (Slide 2) -->
                                     @if(!empty($slide['floaters']))
@@ -674,62 +823,31 @@
                                          decoding="async"
                                          class="{{ $slide['img_class'] ?? 'w-full h-auto object-contain relative z-20 hero-float-idle' }}">
 
-                                    @if($slide['id'] === 'sweet-moment')
-                                        <!-- Animasi Tetesan Slay (Strawberry Jam Drip) yang Menetes Jatuh -->
-                                        <div class="hero-jam-drip-wrapper absolute pointer-events-none select-none z-25"
-                                             style="left: 31%; top: 60%; width: 22px; height: 32px;"
-                                             aria-hidden="true">
-                                            <!-- Tetesan Utama Selai Stroberi Berkilap -->
-                                            <svg class="hero-jam-drop-main w-full h-full" viewBox="0 0 24 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <defs>
-                                                    <radialGradient id="jamGradHero" cx="35%" cy="30%" r="65%">
-                                                        <stop offset="0%" stop-color="#FF3848" />
-                                                        <stop offset="40%" stop-color="#D11224" />
-                                                        <stop offset="85%" stop-color="#880816" />
-                                                        <stop offset="100%" stop-color="#55030D" />
-                                                    </radialGradient>
-                                                    <linearGradient id="jamGlossHero" x1="0" y1="0" x2="1" y2="1">
-                                                        <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.85" />
-                                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-                                                    </linearGradient>
-                                                </defs>
-                                                <path d="M12 0 C12 4, 2 15, 2 23 C2 29.5 6.5 35 12 35 C17.5 35 22 29.5 22 23 C22 15, 12 4, 12 0 Z" fill="url(#jamGradHero)" filter="drop-shadow(0 3px 6px rgba(130, 10, 20, 0.45))" />
-                                                <ellipse cx="8" cy="18" rx="2" ry="5.5" transform="rotate(-18 8 18)" fill="url(#jamGlossHero)" />
-                                                <circle cx="14" cy="27" r="1.3" fill="#FFFFFF" opacity="0.5" />
-                                            </svg>
-
-                                            <!-- Tetesan Tambahan Kecil (Trailing Micro Drip) -->
-                                            <div class="hero-jam-drop-trail absolute left-1/2 -translate-x-1/2 -top-2 w-2 h-2.5 rounded-full bg-[#C51224] opacity-0" aria-hidden="true"></div>
-                                        </div>
-                                    @endif
-
-                                    <div class="hero-product-shadow {{ $slide['id'] === 'sweet-moment' ? 'hero-product-shadow-wide' : '' }} {{ $slide['theme'] === 'dark' ? 'opacity-40' : 'opacity-25' }}" aria-hidden="true"></div>
+                                    <div class="hero-product-shadow opacity-40" aria-hidden="true"></div>
                                 </div>
                             @endif
                         </div>
 
                     <!-- 4. Informasi Produk & CTA di Kiri Bawah (z-30) -->
-                    <div class="hero-product-info absolute max-sm:bottom-[88px] bottom-10 lg:bottom-14 left-5 sm:left-8 lg:left-14 z-30 text-left max-w-xs sm:max-w-sm">
-                        <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.25em] {{ $slide['theme'] === 'dark' ? 'text-white/70' : 'text-[#666666]' }}">
-                            {{ $slide['label'] }}
-                        </p>
-                        @if(!empty($slide['subtext']))
-                            <p class="text-xs sm:text-sm font-medium mt-1 {{ $slide['theme'] === 'dark' ? 'text-white/90' : 'text-[#242424]' }}">
-                                {{ $slide['subtext'] }}
+                    <div class="hero-product-info absolute max-sm:bottom-[80px] bottom-10 lg:bottom-14 left-5 sm:left-8 lg:left-14 z-30 text-left max-w-xs sm:max-w-sm pointer-events-auto">
+                        <!-- Label with baseline divider -->
+                        <div class="flex items-center gap-2.5 sm:gap-3 mb-2.5 sm:mb-3.5">
+                            <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.22em] sm:tracking-[0.25em] text-white/70">
+                                {{ $slide['label'] }}
                             </p>
-                        @endif
-                        <div class="mt-3.5">
+                            <span class="hidden sm:block w-16 lg:w-24 h-[1px] bg-white/20"></span>
+                        </div>
+                        <div>
                             <a href="{{ $slide['cta_primary']['url'] }}" 
-                               class="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-7 py-3 rounded-full transition-all duration-200 active:scale-95 shadow-md group/btn cursor-pointer {{ $slide['theme'] === 'dark' ? 'bg-white text-[#242424] hover:bg-neutral-100' : 'bg-[#242424] text-white hover:bg-black' }}">
+                               class="inline-flex items-center gap-2 font-semibold text-xs sm:text-sm uppercase tracking-wider px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-full bg-white text-[#1C1C1C] hover:bg-neutral-100 transition-all duration-200 active:scale-95 shadow-lg group/btn cursor-pointer">
                                 <span>{{ $slide['cta_primary']['text'] }}</span>
-                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1">arrow_forward</span>
+                                <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover/btn:translate-x-1" aria-hidden="true">arrow_forward</span>
                             </a>
                         </div>
                     </div>
 
                 </div>
             @endif
-
         </div>
     @endforeach
 
@@ -748,13 +866,13 @@
         @if($activeBanners->count() > 1)
             <button type="button" 
                     onclick="prevHeroSlide()" 
-                    class="hero-nav-arrow hero-prev-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                    class="hero-nav-arrow hero-prev-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_4px_16px_rgba(0,0,0,0.45)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                     aria-label="Slide Sebelumnya">
                 <span class="material-symbols-outlined text-xl">chevron_left</span>
             </button>
             <button type="button" 
                     onclick="nextHeroSlide()" 
-                    class="hero-nav-arrow hero-next-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 hover:bg-white text-neutral-900 border border-stone-300/80 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_2px_10px_rgba(0,0,0,0.12)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                    class="hero-nav-arrow hero-next-arrow hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 shadow-[0_4px_16px_rgba(0,0,0,0.45)] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                     aria-label="Slide Berikutnya">
                 <span class="material-symbols-outlined text-xl">chevron_right</span>
             </button>
@@ -762,26 +880,26 @@
 
         <!-- Desktop Indicator Dots -->
         @if($activeBanners->count() > 1)
-            <div class="hero-controls-bar hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="desktop-hero-dots">
+            <div class="hero-controls-bar hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/60 hover:bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="desktop-hero-dots">
                 @foreach($activeBanners as $b)
-                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-[#1F1F1F]' : 'w-2 bg-neutral-600/40 hover:bg-neutral-800' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
+                    <button type="button" onclick="goToHeroSlide({{ $loop->index }})" class="hero-dot-btn {{ $loop->first ? 'w-6 bg-white' : 'w-2 bg-white/35 hover:bg-white/70' }} h-1.5 rounded-full transition-all duration-300" aria-label="Slide {{ $loop->iteration }}"></button>
                 @endforeach
             </div>
         @endif
 
         <!-- Mobile Indicator Dots (4 Slide Hero Bawaan) -->
-        <div class="hero-controls-bar flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/45 hover:bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="mobile-hero-dots">
-            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-[#1F1F1F] transition-all duration-300" aria-label="Slide 1"></button>
-            <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 2"></button>
-            <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 3"></button>
-            <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300" aria-label="Slide 4"></button>
+        <div class="hero-controls-bar flex md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-30 items-center space-x-2 bg-black/60 hover:bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-md text-white select-none" id="mobile-hero-dots">
+            <button type="button" onclick="goToHeroSlide(0)" class="hero-dot-btn w-6 h-1.5 rounded-full bg-white transition-all duration-300" aria-label="Slide 1"></button>
+            <button type="button" onclick="goToHeroSlide(1)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all duration-300" aria-label="Slide 2"></button>
+            <button type="button" onclick="goToHeroSlide(2)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all duration-300" aria-label="Slide 3"></button>
+            <button type="button" onclick="goToHeroSlide(3)" class="hero-dot-btn w-2 h-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all duration-300" aria-label="Slide 4"></button>
         </div>
     @else
         @if($totalSlides > 1)
         <!-- Left Carousel Arrow -->
         <button type="button" 
                 onclick="prevHeroSlide()" 
-                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-prev-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.45)] absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                 aria-label="Slide Sebelumnya">
             <span class="material-symbols-outlined text-xl">chevron_left</span>
         </button>
@@ -789,7 +907,7 @@
         <!-- Right Carousel Arrow -->
         <button type="button" 
                 onclick="nextHeroSlide()" 
-                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-white/90 hover:bg-white text-[#1C1C1C] border border-stone-300/80 backdrop-blur-md shadow-[0_2px_10px_rgba(0,0,0,0.12)] absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1C1C1C]"
+                class="hero-nav-arrow hero-next-arrow hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full bg-black/65 hover:bg-black/85 text-[#F5F5F5] border border-white/25 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.45)] absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-30 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
                 aria-label="Slide Berikutnya">
             <span class="material-symbols-outlined text-xl">chevron_right</span>
         </button>

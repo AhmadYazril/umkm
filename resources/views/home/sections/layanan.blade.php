@@ -5,19 +5,24 @@
     $rawGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
     $layananGrabfoodUrl = !empty(trim((string) $rawGrabfoodUrl)) ? trim((string) $rawGrabfoodUrl) : 'https://food.grab.com';
 @endphp
-<section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] border-b border-[#E5E5E5] overflow-hidden">
-    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+<section id="layanan" class="relative py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] border-b border-[#E5E5E5] overflow-hidden">
+    <!-- Background Ambient Glow & Blueprint Dot Matrix Texture -->
+    <div class="absolute inset-0 pointer-events-none opacity-35 bg-[radial-gradient(#1c1c1c_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_35%,#000_60%,transparent_100%)]" aria-hidden="true"></div>
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[650px] h-[320px] bg-gradient-to-b from-black/[0.035] to-transparent rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 z-1">
         
         <!-- Section Header (Vertikal & Rata Tengah) -->
         <div class="layanan-anim-header mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#E5E5E5]">
             <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
-                <span class="text-[11px] font-semibold text-[#8A8A8A] uppercase tracking-[0.22em] font-body block mb-3 pl-[0.22em]">
-                    KEMUDAHAN AKSES &amp; RESERVASI
-                </span>
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/[0.04] border border-black/[0.08] text-[10.5px] font-semibold text-[#555555] uppercase tracking-[0.2em] font-body mb-3">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#1C1C1C] animate-pulse"></span>
+                    <span>Kemudahan Akses &amp; Reservasi</span>
+                </div>
                 <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1C1C1C] tracking-tight font-heading leading-tight mx-auto">
                     Layanan &amp; Pemesanan
                 </h2>
-                <p class="font-body text-xs sm:text-sm text-[#666666] max-w-3xl font-normal leading-relaxed mx-auto mt-3.5">
+                <p class="font-body text-xs sm:text-sm text-[#666666] max-w-3xl font-normal leading-relaxed mx-auto mt-3">
                     Pilih cara terbaik untuk menikmati sajian kopi dan suasana hangat Nucomu Cafe sesuai kebutuhan Anda.
                 </p>
             </div>
@@ -31,13 +36,22 @@
             
             <!-- KARTU 1 (01 / RESERVASI) - WHITE CARD DENGAN FOTO ORGANIK BLOB DI KANAN -->
             <div id="layanan-card-reservasi" 
-                 class="layanan-card-reservasi layanan-anim-card-1 relative bg-white text-[#1C1C1C] rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-1 {{ $orderModeZendo ? 'md:col-span-2 lg:col-span-1' : 'md:col-span-1 lg:col-span-1' }} lg:order-1">
+                 role="button"
+                 tabindex="0"
+                 aria-label="Reservasi Meja & Acara Privat"
+                 class="layanan-card-reservasi layanan-interactive-card layanan-anim-card-1 relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#D4D4D4] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-1 {{ $orderModeZendo ? 'md:col-span-2 lg:col-span-1' : 'md:col-span-1 lg:col-span-1' }} lg:order-1">
                 
-                <div class="h-full flex flex-col justify-between">
-                    <!-- Header Kartu: Label Nomor (Tanpa Badge) -->
-                    <div class="mb-3">
+                <!-- Watermark Nomor Cantik 01 -->
+                <span class="absolute top-2 right-4 text-5xl sm:text-6xl font-heading font-extrabold text-black/[0.035] group-hover:text-black/[0.08] transition-colors duration-500 select-none pointer-events-none" aria-hidden="true">01</span>
+
+                <div class="h-full flex flex-col justify-between relative z-1">
+                    <!-- Header Kartu: Label Nomor & Badge Minimalis -->
+                    <div class="flex items-center justify-between mb-3">
                         <span class="text-[10px] sm:text-[10.5px] font-semibold text-[#8A8A8A] uppercase tracking-[0.16em] font-body block">
                             01 / RESERVASI
+                        </span>
+                        <span class="text-[9.5px] font-medium text-[#666666] bg-black/[0.04] px-2.5 py-0.5 rounded-full border border-black/[0.06] uppercase tracking-wider">
+                            Dine-in &amp; Event
                         </span>
                     </div>
 
@@ -46,11 +60,13 @@
                         <div class="flex-1 min-w-0 flex flex-col justify-between h-full">
                             <div>
                                 <!-- Ikon Kalender -->
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] shrink-0 shadow-2xs group-hover:scale-105 transition-transform mb-3" aria-hidden="true">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] shrink-0 shadow-2xs group-hover:scale-105 group-hover:border-black/20 transition-all duration-300 mb-2.5" aria-hidden="true">
                                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[#1C1C1C]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
                                     </svg>
                                 </div>
+                                <!-- Accent line -->
+                                <div class="w-6 h-[2px] bg-black/15 group-hover:w-12 group-hover:bg-[#1C1C1C] transition-all duration-300 rounded-full mb-2"></div>
                                 <h3 class="font-body text-lg sm:text-xl font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-2">
                                     Reservasi Meja &amp; Acara Privat
                                     <span class="sr-only">Reservasi Tempat &amp; Acara</span>
@@ -60,16 +76,16 @@
                                 </p>
                             </div>
 
-                            <!-- Tombol Lihat Detail (Pill Hitam di Kiri Bawah) -->
+                            <!-- Tombol Lihat Detail (Pill Abu-abu dengan Border, berubah hitam saat aktif/diklik) -->
                             <div class="pt-4 mt-auto">
                                 <button type="button" 
                                         id="btn-toggle-layanan-detail"
                                         onclick="toggleLayananDetailPanel()" 
                                         aria-expanded="false" 
                                         aria-controls="layanan-detail-panel"
-                                        class="inline-flex items-center gap-2 bg-[#242424] hover:bg-[#1C1C1C] text-white font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
+                                        class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#D4D4D4] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
                                     <span id="btn-toggle-layanan-text">Lihat Detail</span>
-                                    <svg id="btn-toggle-layanan-icon" class="w-3.5 h-3.5 text-white transform transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <svg id="btn-toggle-layanan-icon" class="w-3.5 h-3.5 text-current transform transition-transform duration-300 group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </button>
@@ -77,7 +93,7 @@
                         </div>
 
                         <!-- Visual Kanan: Foto Cafe Nucomu (Sistem - Arch/Kubah Seimbang dengan Card 3) -->
-                        <div class="w-[95px] h-[135px] sm:w-[110px] sm:h-[155px] rounded-l-full overflow-hidden shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-500 self-center">
+                        <div class="w-[95px] h-[135px] sm:w-[110px] sm:h-[155px] rounded-l-full overflow-hidden shrink-0 ring-1 ring-black/10 ring-offset-2 ring-offset-white shadow-2xs group-hover:scale-105 group-hover:rotate-1 transition-all duration-500 self-center">
                             <img src="{{ asset('images/nucomu/nucomu_outdoor_2.png') }}" 
                                  alt="Area Meja Reservasi Nucomu" 
                                  class="w-full h-full object-cover" 
@@ -89,12 +105,23 @@
 
             @if($orderModeZendo)
             <!-- KARTU 2 (02 / DELIVERY) - WHITE CARD DENGAN LOGO KURIR ZENDO DI KANAN -->
-            <div class="layanan-anim-card-2 bg-white rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-3 md:col-span-1 lg:order-2">
-                <div class="h-full flex flex-col justify-between">
-                    <!-- Header Kartu: Label Nomor (Tanpa Badge) -->
-                    <div class="mb-3">
+            <div role="button"
+                 tabindex="0"
+                 aria-label="Delivery via WhatsApp"
+                 class="layanan-anim-card-2 layanan-interactive-card relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#D4D4D4] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-3 md:col-span-1 lg:order-2">
+                
+                <!-- Watermark Nomor Cantik 02 -->
+                <span class="absolute top-2 right-4 text-5xl sm:text-6xl font-heading font-extrabold text-black/[0.035] group-hover:text-black/[0.08] transition-colors duration-500 select-none pointer-events-none" aria-hidden="true">02</span>
+
+                <div class="h-full flex flex-col justify-between relative z-1">
+                    <!-- Header Kartu: Label Nomor & Badge Minimalis -->
+                    <div class="flex items-center justify-between mb-3">
                         <span class="text-[10px] sm:text-[10.5px] font-semibold text-[#8A8A8A] uppercase tracking-[0.16em] font-body block">
                             02 / DELIVERY
+                        </span>
+                        <span class="text-[9.5px] font-medium text-[#15803d] bg-[#25D366]/10 px-2.5 py-0.5 rounded-full border border-[#25D366]/20 uppercase tracking-wider flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse"></span>
+                            <span>Kurir Nucomu</span>
                         </span>
                     </div>
 
@@ -103,11 +130,13 @@
                         <div class="flex-1 min-w-0 flex flex-col justify-between h-full">
                             <div>
                                 <!-- Ikon WhatsApp Hijau -->
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white shrink-0 shadow-2xs group-hover:scale-105 transition-transform mb-3" aria-hidden="true">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white shrink-0 shadow-xs group-hover:scale-105 group-hover:shadow-[#25D366]/30 transition-all duration-300 mb-2.5" aria-hidden="true">
                                     <svg class="w-5 h-5 text-white fill-current" viewBox="0 0 24 24">
                                         <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.067-2.228-.567-1.78-.737-2.909-2.544-2.998-2.663-.088-.119-.724-.962-.724-1.834 0-.872.457-1.302.62-1.479.163-.177.356-.222.475-.222.119 0 .238.002.341.008.109.006.255-.041.399.305.148.356.505 1.233.549 1.322.044.089.073.193.015.311-.059.119-.089.193-.178.297-.089.104-.187.232-.267.311-.089.089-.182.185-.078.363.104.178.462.763.992 1.235.684.609 1.261.798 1.439.887.178.089.282.074.386-.044.104-.119.444-.518.563-.696.119-.178.238-.148.399-.089.163.059 1.034.488 1.212.577.178.089.297.133.341.207.044.074.044.43-.1.835z"/>
                                     </svg>
                                 </div>
+                                <!-- Accent line -->
+                                <div class="w-6 h-[2px] bg-black/15 group-hover:w-12 group-hover:bg-[#1C1C1C] transition-all duration-300 rounded-full mb-2"></div>
                                 <h4 class="font-body text-lg sm:text-xl font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-2">
                                     Delivery via WhatsApp (Zendo)
                                 </h4>
@@ -119,9 +148,9 @@
                             <!-- Tombol Pesan Sekarang (Pill Gray di Kiri Bawah) -->
                             <div class="pt-4 mt-auto">
                                 <button type="button" onclick="setModalProcessMethod('zendo'); openCartModal();" 
-                                   class="inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
+                                   class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#D4D4D4] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
                                     <span>Pesan Sekarang</span>
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <svg class="w-3.5 h-3.5 text-current group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </button>
@@ -129,7 +158,7 @@
                         </div>
 
                         <!-- Visual Kanan: Kurir Zendo Lingkaran Abu-abu -->
-                        <div class="w-[95px] h-[95px] sm:w-[110px] sm:h-[110px] rounded-full overflow-hidden shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-500 self-center">
+                        <div class="w-[95px] h-[95px] sm:w-[110px] sm:h-[110px] rounded-full overflow-hidden shrink-0 ring-1 ring-black/10 ring-offset-2 ring-offset-white shadow-2xs group-hover:scale-105 group-hover:-rotate-2 transition-all duration-500 self-center">
                             <img src="{{ asset('images/logos/courier_monochrome.png') }}" 
                                  alt="Kurir Zendo" 
                                  class="w-full h-full object-cover rounded-full" 
@@ -141,12 +170,23 @@
             @endif
 
             <!-- KARTU 3 (03 / ONLINE ORDER) - WHITE CARD DENGAN FOTO ARCH LATTE DI KANAN -->
-            <div class="layanan-anim-card-3 bg-white rounded-[20px] p-6 sm:p-7 border border-[#E5E5E5] shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between text-left group overflow-hidden order-4 md:col-span-1 lg:order-3">
-                <div class="h-full flex flex-col justify-between">
-                    <!-- Header Kartu: Label Nomor (Tanpa Badge) -->
-                    <div class="mb-3">
+            <div role="button"
+                 tabindex="0"
+                 aria-label="Pesan Menu di GrabFood"
+                 class="layanan-anim-card-3 layanan-interactive-card relative bg-white/95 backdrop-blur-xs text-[#1C1C1C] rounded-[22px] p-6 sm:p-7 border border-[#D4D4D4] shadow-xs flex flex-col justify-between text-left group overflow-hidden order-4 md:col-span-1 lg:order-3">
+                
+                <!-- Watermark Nomor Cantik 03 -->
+                <span class="absolute top-2 right-4 text-5xl sm:text-6xl font-heading font-extrabold text-black/[0.035] group-hover:text-black/[0.08] transition-colors duration-500 select-none pointer-events-none" aria-hidden="true">03</span>
+
+                <div class="h-full flex flex-col justify-between relative z-1">
+                    <!-- Header Kartu: Label Nomor & Badge Minimalis -->
+                    <div class="flex items-center justify-between mb-3">
                         <span class="text-[10px] sm:text-[10.5px] font-semibold text-[#8A8A8A] uppercase tracking-[0.16em] font-body block">
                             {{ $orderModeZendo ? '03 / ONLINE ORDER' : '02 / ONLINE ORDER' }}
+                        </span>
+                        <span class="text-[9.5px] font-medium text-[#047857] bg-[#00B14F]/10 px-2.5 py-0.5 rounded-full border border-[#00B14F]/20 uppercase tracking-wider flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#00B14F] animate-pulse"></span>
+                            <span>GrabFood</span>
                         </span>
                     </div>
 
@@ -155,11 +195,13 @@
                         <div class="flex-1 min-w-0 flex flex-col justify-between h-full">
                             <div>
                                 <!-- Ikon GrabFood Hijau -->
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#00B14F] flex items-center justify-center text-white shrink-0 shadow-2xs group-hover:scale-105 transition-transform mb-3" aria-hidden="true">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#00B14F] flex items-center justify-center text-white shrink-0 shadow-xs group-hover:scale-105 group-hover:shadow-[#00B14F]/30 transition-all duration-300 mb-2.5" aria-hidden="true">
                                     <svg class="w-5 h-5 text-white fill-current" viewBox="0 0 24 24">
                                         <path d="M19 17h2c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1h-1V9c0-.55-.45-1-1-1h-4V6c0-.55-.45-1-1-1H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h1.18c.41 1.16 1.52 2 2.82 2s2.41-.84 2.82-2h4.36c.41 1.16 1.52 2 2.82 2s2.41-.84 2.82-2H19c.55 0 1-.45 1-1s-.45-1-1-1zm-11 2c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm10 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zM4 8h10v6H4V8zm12 2h3v4h-3v-4z"/>
                                     </svg>
                                 </div>
+                                <!-- Accent line -->
+                                <div class="w-6 h-[2px] bg-black/15 group-hover:w-12 group-hover:bg-[#1C1C1C] transition-all duration-300 rounded-full mb-2"></div>
                                 <h4 class="font-body text-lg sm:text-xl font-semibold text-[#1C1C1C] leading-snug tracking-tight mb-2">
                                     Pesan Menu Favoritmu di GrabFood
                                 </h4>
@@ -173,9 +215,9 @@
                                 <a href="{{ $layananGrabfoodUrl }}" 
                                    target="_blank" 
                                    rel="noopener noreferrer"
-                                   class="inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#E5E5E5] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
+                                   class="layanan-btn-action inline-flex items-center gap-2 bg-[#F0F0F0] hover:bg-[#242424] text-[#1C1C1C] hover:text-white border border-[#D4D4D4] hover:border-[#242424] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-md transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 cursor-pointer">
                                     <span>Pesan Sekarang</span>
-                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                                    <svg class="w-3.5 h-3.5 text-current group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </a>
@@ -183,7 +225,7 @@
                         </div>
 
                         <!-- Visual Kanan: Foto Arch/Dome Kopi Latte (Sesuai Referensi Pengguna) -->
-                        <div class="w-[95px] h-[135px] sm:w-[110px] sm:h-[155px] rounded-l-full overflow-hidden shrink-0 shadow-2xs group-hover:scale-105 transition-transform duration-500 self-center">
+                        <div class="w-[95px] h-[135px] sm:w-[110px] sm:h-[155px] rounded-l-full overflow-hidden shrink-0 ring-1 ring-black/10 ring-offset-2 ring-offset-white shadow-2xs group-hover:scale-105 group-hover:rotate-1 transition-all duration-500 self-center">
                             <img src="{{ asset('images/nucomu/latte_grabfood.jpg') }}" 
                                  alt="Kopi Latte Nucomu di GrabFood" 
                                  class="w-full h-full object-cover" 
@@ -505,5 +547,96 @@
                 }
             ]
         };
+    </script>
+
+    <!-- Interactive Card Click Ripple & Tactile Feedback Animation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.layanan-interactive-card');
+            
+            function triggerCardRipple(e, card) {
+                const rect = card.getBoundingClientRect();
+                const x = (e && typeof e.clientX === 'number' && e.clientX > 0) ? (e.clientX - rect.left) : (rect.width / 2);
+                const y = (e && typeof e.clientY === 'number' && e.clientY > 0) ? (e.clientY - rect.top) : (rect.height / 2);
+                const size = Math.max(rect.width, rect.height) * 2.2;
+                
+                const ripple = document.createElement('span');
+                ripple.className = 'layanan-card-ripple';
+                ripple.style.width = size + 'px';
+                ripple.style.height = size + 'px';
+                ripple.style.left = (x - size / 2) + 'px';
+                ripple.style.top = (y - size / 2) + 'px';
+                
+                card.appendChild(ripple);
+                card.classList.add('is-clicked');
+                
+                setTimeout(function() {
+                    if (ripple.parentNode) {
+                        ripple.remove();
+                    }
+                    card.classList.remove('is-clicked');
+                }, 650);
+            }
+
+            cards.forEach(function(card) {
+                card.addEventListener('click', function(e) {
+                    const isInsideAction = e.target.closest('button, a, input, select, textarea');
+                    triggerCardRipple(e, this);
+                    
+                    if (isInsideAction) return;
+                    
+                    // Card-level primary actions when clicking the card itself
+                    if (this.id === 'layanan-card-reservasi') {
+                        if (typeof window.toggleLayananDetailPanel === 'function') {
+                            window.toggleLayananDetailPanel();
+                        }
+                    } else if (this.classList.contains('layanan-anim-card-2')) {
+                        if (typeof window.setModalProcessMethod === 'function' && typeof window.openCartModal === 'function') {
+                            window.setModalProcessMethod('zendo');
+                            window.openCartModal();
+                        }
+                    } else if (this.classList.contains('layanan-anim-card-3')) {
+                        var link = this.querySelector('a');
+                        if (link && link.href) {
+                            window.open(link.href, link.target || '_blank');
+                        }
+                    }
+                });
+
+                // Keyboard accessible (Enter or Space)
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.target.closest('button, a, input, select, textarea')) return;
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            // Tactile Button Ripple & Press Animation on all 3 action buttons
+            const actionBtns = document.querySelectorAll('.layanan-btn-action');
+            actionBtns.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    const rect = btn.getBoundingClientRect();
+                    const x = (e && typeof e.clientX === 'number' && e.clientX > 0) ? (e.clientX - rect.left) : (rect.width / 2);
+                    const y = (e && typeof e.clientY === 'number' && e.clientY > 0) ? (e.clientY - rect.top) : (rect.height / 2);
+                    const size = Math.max(rect.width, rect.height) * 2.2;
+                    
+                    const ripple = document.createElement('span');
+                    ripple.className = 'btn-action-ripple';
+                    ripple.style.width = size + 'px';
+                    ripple.style.height = size + 'px';
+                    ripple.style.left = (x - size / 2) + 'px';
+                    ripple.style.top = (y - size / 2) + 'px';
+                    
+                    btn.appendChild(ripple);
+                    setTimeout(function() {
+                        if (ripple.parentNode) {
+                            ripple.remove();
+                        }
+                    }, 550);
+                });
+            });
+        });
     </script>
 </section>

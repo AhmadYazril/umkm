@@ -97,25 +97,25 @@
                     </div>
                 </div>
 
-                <!-- 3. RIGHT COLUMN: Interactive Vertical Stack of Pills (~3 cols) -->
-                <div class="lg:col-span-3 flex flex-col space-y-2.5 lg:-mr-14">
+                <!-- 3. RIGHT COLUMN: Interactive Vertical Stack of Pills on Desktop, Compact 2x2 Grid on Mobile -->
+                <div class="lg:col-span-3 grid grid-cols-2 gap-2.5 lg:flex lg:flex-col lg:gap-0 lg:space-y-2.5 lg:-mr-14">
                     @foreach($bestMenu as $idx => $m)
                         <div onclick="switchBestMenuItem({{ $idx }})" 
-                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#191919] text-white shadow-md' : 'bg-[#FFFFFF] hover:bg-[#F5F5F5] text-[#191919] border border-[#E5E4E0]' }} flex items-center justify-between p-2.5 pl-3 sm:pl-4 rounded-2xl sm:rounded-l-full transition-all duration-300 cursor-pointer group hover:-translate-x-1">
+                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#191919] text-white shadow-md' : 'bg-[#FFFFFF] hover:bg-[#F5F5F5] text-[#191919] border border-[#E5E4E0]' }} flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group hover:-translate-x-1">
                             
                             <!-- Left: Thumbnail in white circle -->
-                            <div class="w-11 h-11 rounded-full overflow-hidden p-0.5 bg-[#FFFFFF] border border-[#E5E4E0] shadow-2xs shrink-0">
+                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden p-0.5 bg-[#FFFFFF] border border-[#E5E4E0] shadow-2xs shrink-0">
                                 <img src="{{ $m['image'] }}" 
                                      alt="{{ $m['name'] }}" 
                                      class="w-full h-full object-cover rounded-full group-hover:scale-[1.06] transition-transform duration-300">
                             </div>
 
                             <!-- Right Info: Title & Price -->
-                            <div class="flex-1 ml-3 mr-2 text-left min-w-0">
-                                <span class="pill-title nucomu-sans text-[11px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate {{ $idx === 0 ? 'text-white' : 'text-[#191919]' }}">
+                            <div class="flex-1 ml-2 sm:ml-3 mr-1 sm:mr-2 text-left min-w-0">
+                                <span class="pill-title nucomu-sans text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate {{ $idx === 0 ? 'text-white' : 'text-[#191919]' }}">
                                     {{ $m['name'] }}
                                 </span>
-                                <span class="pill-price nucomu-sans text-xs sm:text-[13px] font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-white/80' : 'text-[#8A8A86]' }}">
+                                <span class="pill-price nucomu-sans text-[11px] sm:text-[13px] font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-white/80' : 'text-[#8A8A86]' }}">
                                     {{ $m['price_formatted'] }}
                                 </span>
                             </div>
@@ -674,6 +674,9 @@
                     </span>
                 @endif
             </div>
+                    </span>
+                @endif
+            </div>
 
             <!-- Right: Editorial Horizontal Pager Controls (Counter + Arrows + Capsule Dots) -->
             <div id="recommendations-carousel-controls"
@@ -1000,6 +1003,15 @@
             <span class="material-symbols-outlined text-[#8A8A86] text-4xl mb-2">restaurant_menu</span>
             <p class="nucomu-serif-display text-2xl font-semibold text-[#191919]">Sajian Sedang Disiapkan</p>
             <p class="nucomu-sans text-[13px] text-[#8A8A86] mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
+        </div>
+
+        <!-- Mobile Shortcut to Full Menu Catalog -->
+        <div class="md:hidden text-center pb-4">
+            <a href="{{ route('menu.all') }}"
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#191919] text-white text-xs font-bold uppercase tracking-wider shadow-md active:scale-95 transition-transform">
+                <span class="material-symbols-outlined text-base">menu_book</span>
+                <span>Buka Katalog Menu Lengkap</span>
+            </a>
         </div>
     </div>
 </section>
