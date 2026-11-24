@@ -583,7 +583,7 @@
 
 <section id="reviews"
          data-anim-mode="stacked-3d"
-         class="pt-6 sm:pt-8 lg:pt-10 pb-16 sm:pb-20 lg:pb-24 relative z-10 overflow-hidden border-b border-[#E5E5E5] select-none">
+         class="pt-12 sm:pt-14 lg:pt-16 pb-16 sm:pb-20 lg:pb-24 relative z-10 overflow-hidden border-b border-[#E5E5E5] select-none">
 
     <!-- =========================================================================
          SECTION HEADER (SPLIT 1 BARIS DESKTOP) & STAGE CONTAINER

@@ -83,25 +83,25 @@
         position: relative;
     }
 
-    /* Menu Card: In-flow card with rounded corners, layered 3D shadow, and smooth border transitions */
+    /* Menu Card: Compact monochrome rounded card matching sleek desktop & mobile proportions */
     .menu-card {
         position: relative;
         width: 100%;
         background-color: #ffffff;
-        border-radius: 28px;
-        border: 1.5px solid #ece7de;
+        border-radius: 22px;
+        border: 1px solid rgba(17, 17, 17, 0.07);
         box-shadow:
-            0 2px 6px rgba(44, 40, 37, 0.06),
-            0 10px 24px -4px rgba(44, 40, 37, 0.12),
-            0 22px 42px -10px rgba(44, 40, 37, 0.14);
-        padding: 66px 14px 18px 14px;
+            0 2px 8px rgba(17, 17, 17, 0.04),
+            0 10px 26px -6px rgba(17, 17, 17, 0.07);
+        padding: 58px 12px 16px 12px;
         text-align: center;
         box-sizing: border-box;
         transition: border-color 0.28s ease, box-shadow 0.28s ease;
     }
     @media (min-width: 640px) {
         .menu-card {
-            padding: 72px 16px 20px 16px;
+            border-radius: 26px;
+            padding: 74px 16px 20px 16px;
         }
     }
 
@@ -124,23 +124,22 @@
         border-radius: 16px;
     }
 
-    /* Overhanging Large Circular Photo with Thick White Border (Overhangs card top edge) */
+    /* Overhanging Circular Photo with Thin White Border & Soft Natural Shadow */
     .menu-card-avatar {
         position: absolute;
-        top: -52px;
+        top: -44px;
         left: 50%;
         transform: translateX(-50%) translateY(0) scale(1);
         transform-origin: center center;
-        width: 110px;
-        height: 110px;
+        width: 90px;
+        height: 90px;
         border-radius: 50%;
-        border: 5px solid #ffffff;
+        border: 3px solid #ffffff;
         box-shadow:
-            0 4px 10px rgba(44, 40, 37, 0.10),
-            0 12px 24px -4px rgba(44, 40, 37, 0.22),
-            0 20px 36px -8px rgba(44, 40, 37, 0.16);
+            0 4px 12px rgba(17, 17, 17, 0.08),
+            0 10px 22px -6px rgba(17, 17, 17, 0.12);
         overflow: hidden;
-        background-color: #faf7f2;
+        background-color: #f5f5f5;
         padding: 0;
         margin: 0;
         display: block;
@@ -157,10 +156,10 @@
     }
     @media (min-width: 640px) {
         .menu-card-avatar {
-            top: -62px;
-            width: 126px;
-            height: 126px;
-            border-width: 6px;
+            top: -58px;
+            width: 122px;
+            height: 122px;
+            border-width: 4px;
         }
     }
     .menu-card-avatar img {
@@ -170,45 +169,75 @@
         display: block;
     }
 
-    /* Menu Title: Nunito bold with consistent min-height for clean row alignment */
+    /* Menu Title: Plus Jakarta Sans SemiBold (600) with compact single/two-line proportion */
     .menu-card-name {
-        font-family: var(--font-sans), sans-serif;
-        font-size: 1.05rem;
-        font-weight: 700;
-        line-height: 1.22;
-        color: #191919;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.3;
+        letter-spacing: -0.015em;
+        color: #111111;
+        width: 100%;
         margin-bottom: 4px;
-        min-height: 2.6rem;
+        min-height: 2.1rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        word-break: break-word;
+        word-break: normal;
+        overflow-wrap: break-word;
+        text-wrap: balance;
         text-align: center;
     }
     @media (min-width: 640px) {
         .menu-card-name {
-            font-size: 1.15rem;
-            min-height: 2.8rem;
+            font-size: 15.5px;
+            min-height: 2.35rem;
+            margin-bottom: 6px;
+        }
+    }
+    @media (min-width: 1024px) {
+        .menu-card-name {
+            font-size: 16px;
         }
     }
 
-    /* Price & Unit Row (font-variant-numeric: tabular-nums) */
+    /* Price & Unit Row (Plus Jakarta Sans, tabular-nums) */
     .menu-card-price-row {
         display: flex;
         align-items: baseline;
         justify-content: center;
+        flex-wrap: wrap;
         gap: 4px;
-        font-family: var(--font-sans), sans-serif;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #191919;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.25;
+        color: #111111;
         white-space: nowrap;
         font-variant-numeric: tabular-nums;
     }
+    @media (min-width: 640px) {
+        .menu-card-price-row {
+            font-size: 15px;
+        }
+    }
+    .menu-card-price-row .font-editorial-num {
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: #111111;
+    }
     .menu-card-unit {
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: #8a8a86;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-size: 11px;
+        font-weight: 400;
+        line-height: 1.25;
+        color: #888888;
+    }
+    @media (min-width: 640px) {
+        .menu-card-unit {
+            font-size: 12px;
+        }
     }
 
     /* Drawer Container: in-flow collapsible section */
@@ -223,10 +252,10 @@
     /* Divider Line: becomes visible inside drawer when opened */
     .menu-card-divider {
         height: 1px;
-        background-color: #ded8ce;
-        margin: 10px auto 10px auto;
+        background-color: rgba(17, 17, 17, 0.08);
+        margin: 14px auto 12px auto;
         width: 80%;
-        opacity: 0.85;
+        opacity: 0.9;
     }
 
     /* Drawer Inner Content: options, description, and action button */
@@ -237,63 +266,57 @@
         padding-top: 2px;
     }
 
-    /* Keadaan 1: HOVER (Kursor di atas kartu: foto membesar 1.10x & naik 3px, kartu tidak berubah ukuran sama sekali) */
+    /* Keadaan 1: HOVER (Kursor di atas kartu: foto membesar halus & naik 3px, shadow lembut) */
     @media (hover: hover) and (pointer: fine) {
         .menu-card:hover {
             z-index: 25;
             cursor: pointer;
         }
         .menu-card:not(.is-open):hover {
-            border-color: #ffffff;
+            border-color: rgba(17, 17, 17, 0.12);
             box-shadow:
-                0 4px 10px rgba(44, 40, 37, 0.08),
-                0 14px 30px -4px rgba(44, 40, 37, 0.18),
-                0 26px 48px -10px rgba(44, 40, 37, 0.18);
+                0 6px 14px rgba(17, 17, 17, 0.05),
+                0 16px 32px -8px rgba(17, 17, 17, 0.10);
         }
-        /* Foto bulat membesar mendekat ke depan dan bayangan lebih tegas */
+        /* Foto bulat membesar halus dengan shadow lembut */
         .menu-card:hover .menu-card-avatar {
-            transform: translateX(-50%) translateY(-3px) scale(1.10);
+            transform: translateX(-50%) translateY(-3px) scale(1.06);
             box-shadow:
-                0 6px 14px rgba(44, 40, 37, 0.12),
-                0 16px 32px -4px rgba(44, 40, 37, 0.26),
-                0 24px 44px -8px rgba(44, 40, 37, 0.20);
+                0 8px 18px rgba(17, 17, 17, 0.10),
+                0 14px 28px -6px rgba(17, 17, 17, 0.14);
             z-index: 30;
         }
     }
 
     /* Fokus Keyboard (:has(:focus-visible)) hanya memberi zoom saat navigasi keyboard, bukan klik mouse */
     .menu-card:has(:focus-visible):not(.is-open) {
-        border-color: #ffffff;
+        border-color: rgba(17, 17, 17, 0.14);
         box-shadow:
-            0 4px 10px rgba(44, 40, 37, 0.08),
-            0 14px 30px -4px rgba(44, 40, 37, 0.18),
-            0 26px 48px -10px rgba(44, 40, 37, 0.18);
+            0 6px 14px rgba(17, 17, 17, 0.05),
+            0 16px 32px -8px rgba(17, 17, 17, 0.10);
         z-index: 25;
     }
     .menu-card:has(:focus-visible) .menu-card-avatar {
-        transform: translateX(-50%) translateY(-3px) scale(1.10);
+        transform: translateX(-50%) translateY(-3px) scale(1.06);
         box-shadow:
-            0 6px 14px rgba(44, 40, 37, 0.12),
-            0 16px 32px -4px rgba(44, 40, 37, 0.26),
-            0 24px 44px -8px rgba(44, 40, 37, 0.20);
+            0 8px 18px rgba(17, 17, 17, 0.10),
+            0 14px 28px -6px rgba(17, 17, 17, 0.14);
         z-index: 30;
     }
 
-    /* Keadaan 2: KLIK (Kartu terbuka penuh: border putih #ffffff, bayangan netral 3D lembut, foto TETAP membesar selama kartu terbuka) */
+    /* Keadaan 2: KLIK (Kartu terbuka penuh: shadow lembut natural, foto tetap proporsional selama kartu terbuka) */
     .menu-card.is-open {
         z-index: 35;
-        border-color: #ffffff !important;
+        border-color: rgba(17, 17, 17, 0.12) !important;
         box-shadow:
-            0 4px 12px rgba(0, 0, 0, 0.08),
-            0 18px 36px -4px rgba(0, 0, 0, 0.18),
-            0 28px 54px -10px rgba(0, 0, 0, 0.18) !important;
+            0 8px 18px rgba(17, 17, 17, 0.06),
+            0 20px 38px -8px rgba(17, 17, 17, 0.12) !important;
     }
     .menu-card.is-open .menu-card-avatar {
-        transform: translateX(-50%) translateY(-3px) scale(1.10);
+        transform: translateX(-50%) translateY(-3px) scale(1.06);
         box-shadow:
-            0 6px 14px rgba(44, 40, 37, 0.12),
-            0 16px 32px -4px rgba(44, 40, 37, 0.26),
-            0 24px 44px -8px rgba(44, 40, 37, 0.20);
+            0 8px 18px rgba(17, 17, 17, 0.10),
+            0 14px 28px -6px rgba(17, 17, 17, 0.14);
         z-index: 30;
     }
     .menu-card.is-open .menu-card-drawer-content {
@@ -949,12 +972,264 @@
         return 2;
     };
 
+    const buildMenuColumns = (parentEl, cards, numCols) => {
+        const columns = [];
+        for (let c = 0; c < numCols; c++) {
+            const col = document.createElement('div');
+            col.className = 'menu-column flex-1 flex flex-col gap-y-24 sm:gap-y-28 min-w-0';
+            parentEl.appendChild(col);
+            columns.push(col);
+        }
+
+        cards.forEach((wrap, idx) => {
+            columns[idx % numCols].appendChild(wrap);
+        });
+    };
+
+    const syncOpenMenuCard = (container, openCardId, allowedParent = null) => {
+        if (!openCardId) {
+            return;
+        }
+        const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
+        if (!restoredCard) {
+            return;
+        }
+        if (allowedParent && !allowedParent.contains(restoredCard)) {
+            if (typeof window.closeMenuCard === 'function') {
+                window.closeMenuCard(restoredCard);
+            } else {
+                restoredCard.classList.remove('is-open');
+            }
+            return;
+        }
+        restoredCard.classList.add('is-open');
+        const drawer = restoredCard.querySelector('.menu-card-drawer');
+        if (drawer) {
+            drawer.style.height = drawer.scrollHeight + 'px';
+        }
+    };
+
+    const bindMenuViewportSwipe = () => {
+        const viewport = document.getElementById('recommendations-viewport');
+        if (!viewport || viewport.dataset.swipeBound === 'true') {
+            return;
+        }
+        viewport.dataset.swipeBound = 'true';
+
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+
+        viewport.addEventListener('touchstart', (e) => {
+            if (!e.touches || e.touches.length !== 1) {
+                tracking = false;
+                return;
+            }
+            if (e.target && e.target.closest('input, label, select, textarea')) {
+                tracking = false;
+                return;
+            }
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            tracking = true;
+        }, { passive: true });
+
+        viewport.addEventListener('touchcancel', () => {
+            tracking = false;
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', (e) => {
+            if (!tracking || !e.changedTouches || e.changedTouches.length !== 1) {
+                tracking = false;
+                return;
+            }
+            tracking = false;
+            const dx = e.changedTouches[0].clientX - startX;
+            const dy = e.changedTouches[0].clientY - startY;
+            if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+                if (dx < 0) {
+                    window.nextMenuPage();
+                } else {
+                    window.prevMenuPage();
+                }
+            }
+        }, { passive: true });
+    };
+
+    window.updateMenuCarouselControls = function(currentPage, totalPages) {
+        const controls = document.getElementById('recommendations-carousel-controls');
+        if (!controls) {
+            return;
+        }
+
+        const prevBtn = document.getElementById('rec-prev-btn');
+        const nextBtn = document.getElementById('rec-next-btn');
+        const dotsContainer = document.getElementById('rec-page-dots');
+        const counter = document.getElementById('rec-page-counter');
+
+        if (totalPages <= 1) {
+            controls.classList.add('hidden');
+            controls.classList.remove('flex');
+            if (dotsContainer) {
+                dotsContainer.innerHTML = '';
+            }
+            if (counter) {
+                counter.textContent = '';
+            }
+            if (prevBtn) {
+                prevBtn.disabled = true;
+            }
+            if (nextBtn) {
+                nextBtn.disabled = true;
+            }
+            return;
+        }
+
+        controls.classList.remove('hidden');
+        controls.classList.add('flex');
+
+        if (prevBtn) {
+            prevBtn.disabled = currentPage <= 0;
+        }
+        if (nextBtn) {
+            nextBtn.disabled = currentPage >= totalPages - 1;
+        }
+        if (counter) {
+            const activeStr = String(currentPage + 1).padStart(2, '0');
+            const totalStr = String(totalPages).padStart(2, '0');
+            counter.textContent = `${activeStr} / ${totalStr}`;
+        }
+
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            for (let p = 0; p < totalPages; p++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'nucomu-menu-dot' + (p === currentPage ? ' is-active' : '');
+                dot.setAttribute('aria-label', `Halaman menu ${p + 1} dari ${totalPages}`);
+                dot.setAttribute('aria-current', p === currentPage ? 'true' : 'false');
+                dot.addEventListener('click', () => {
+                    if (typeof window.goToMenuPage === 'function') {
+                        window.goToMenuPage(p);
+                    }
+                });
+                dotsContainer.appendChild(dot);
+            }
+        }
+    };
+
+    window.goToMenuPage = function(targetIndex) {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const track = container.querySelector('.menu-slide-track');
+        if (!track) {
+            return;
+        }
+
+        const slides = Array.from(track.querySelectorAll('.menu-page-slide'));
+        const totalPages = slides.length;
+        if (totalPages <= 1) {
+            return;
+        }
+
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        const parsedTarget = parseInt(targetIndex, 10);
+        const safeTarget = Number.isNaN(parsedTarget) ? 0 : parsedTarget;
+        const clampedTarget = Math.max(0, Math.min(totalPages - 1, safeTarget));
+
+        if (clampedTarget === currentPage) {
+            return;
+        }
+
+        container.querySelectorAll('.menu-card.is-open').forEach(openCard => {
+            if (typeof window.closeMenuCard === 'function') {
+                window.closeMenuCard(openCard);
+            } else {
+                openCard.classList.remove('is-open');
+            }
+        });
+
+        if (container._collapseTimer) {
+            clearTimeout(container._collapseTimer);
+            container._collapseTimer = null;
+        }
+
+        const minIdx = Math.min(currentPage, clampedTarget);
+        const maxIdx = Math.max(currentPage, clampedTarget);
+
+        slides.forEach((slide, idx) => {
+            const isTarget = idx === clampedTarget;
+            if (idx >= minIdx && idx <= maxIdx) {
+                slide.classList.remove('is-collapsed-page');
+            }
+            slide.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
+            slide.inert = !isTarget;
+        });
+
+        void track.offsetWidth;
+
+        container.dataset.currentPage = String(clampedTarget);
+        track.style.transform = clampedTarget === 0
+            ? 'translate3d(0, 0, 0)'
+            : `translate3d(calc(-${clampedTarget} * (100% + 24px)), 0, 0)`;
+
+        window.updateMenuCarouselControls(clampedTarget, totalPages);
+
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const finalizeSlides = () => {
+            const settledPage = parseInt(container.dataset.currentPage || '0', 10);
+            slides.forEach((slide, idx) => {
+                if (idx !== settledPage) {
+                    slide.classList.add('is-collapsed-page');
+                } else {
+                    slide.classList.remove('is-collapsed-page');
+                }
+            });
+            container._collapseTimer = null;
+        };
+
+        if (prefersReducedMotion) {
+            finalizeSlides();
+        } else {
+            container._collapseTimer = setTimeout(finalizeSlides, 480);
+        }
+    };
+
+    window.nextMenuPage = function() {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        const totalPages = parseInt(container.dataset.totalPages || '1', 10);
+        if (currentPage < totalPages - 1) {
+            window.goToMenuPage(currentPage + 1);
+        }
+    };
+
+    window.prevMenuPage = function() {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        if (currentPage > 0) {
+            window.goToMenuPage(currentPage - 1);
+        }
+    };
+
     window.distributeMenuCards = function(poolId, containerId, categoryFilter = 'all') {
         const pool = document.getElementById(poolId);
         const container = document.getElementById(containerId);
         if (!container) return;
 
+        const isHomepageCarousel = containerId === 'recommendations-columns-container';
         const numCols = window.getMenuBreakpointColumns();
+        const previousCategory = container.dataset.activeCategory || null;
+        const categoryChanged = previousCategory !== null && previousCategory !== categoryFilter;
+        container.dataset.activeCategory = categoryFilter;
 
         // Collect all card wrappers from pool and container
         let wrappers = [];
@@ -963,7 +1238,12 @@
         }
         wrappers = wrappers.concat(Array.from(container.querySelectorAll('.menu-card-wrapper')));
 
-        if (wrappers.length === 0) return;
+        if (wrappers.length === 0) {
+            if (isHomepageCarousel) {
+                window.updateMenuCarouselControls(0, 0);
+            }
+            return;
+        }
 
         // Deduplicate wrappers by dataset index and id
         const seen = new Set();
@@ -994,13 +1274,17 @@
                 visibleCards.push(w);
             } else {
                 w.style.display = 'none';
+                const cardEl = w.querySelector('.menu-card.is-open');
+                if (cardEl && typeof window.closeMenuCard === 'function') {
+                    window.closeMenuCard(cardEl);
+                }
                 if (pool) pool.appendChild(w);
             }
         });
 
         // Empty state toggling
-        const emptyStateId = containerId === 'recommendations-columns-container' 
-            ? 'recommendations-empty-state' 
+        const emptyStateId = isHomepageCarousel
+            ? 'recommendations-empty-state'
             : (containerId === 'catalog-columns-container' ? 'catalog-empty-state' : null);
         if (emptyStateId) {
             const emptyState = document.getElementById(emptyStateId);
@@ -1015,35 +1299,83 @@
             }
         }
 
-        // Rebuild independent vertical flex columns
-        container.innerHTML = '';
-        container.dataset.renderedCols = String(numCols);
+        if (isHomepageCarousel) {
+            if (container._collapseTimer) {
+                clearTimeout(container._collapseTimer);
+                container._collapseTimer = null;
+            }
 
-        const columns = [];
-        for (let c = 0; c < numCols; c++) {
-            const col = document.createElement('div');
-            col.className = 'menu-column flex-1 flex flex-col gap-y-24 sm:gap-y-28 min-w-0';
-            container.appendChild(col);
-            columns.push(col);
-        }
+            container.innerHTML = '';
+            container.dataset.renderedCols = String(numCols);
 
-        // Distribute card i into column (i mod numCols)
-        visibleCards.forEach((wrap, idx) => {
-            const targetCol = idx % numCols;
-            columns[targetCol].appendChild(wrap);
-        });
+            const pageSize = numCols * 2;
+            const totalPages = visibleCards.length > 0 ? Math.ceil(visibleCards.length / pageSize) : 0;
 
-        // Restore drawer height for open card
-        if (openCardId) {
-            const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
-            if (restoredCard) {
-                restoredCard.classList.add('is-open');
-                const drawer = restoredCard.querySelector('.menu-card-drawer');
-                if (drawer) {
-                    drawer.style.height = drawer.scrollHeight + 'px';
+            if (totalPages === 0) {
+                container.dataset.currentPage = '0';
+                container.dataset.totalPages = '0';
+                window.updateMenuCarouselControls(0, 0);
+                return;
+            }
+
+            let currentPage = categoryChanged ? 0 : parseInt(container.dataset.currentPage || '0', 10);
+            if (Number.isNaN(currentPage)) {
+                currentPage = 0;
+            }
+
+            if (!categoryChanged && openCardId) {
+                const openMatchIndex = visibleCards.findIndex(wrap => {
+                    return Boolean(wrap.querySelector(`.menu-card[data-card-id="${openCardId}"]`));
+                });
+                if (openMatchIndex !== -1) {
+                    currentPage = Math.floor(openMatchIndex / pageSize);
                 }
             }
+
+            currentPage = Math.max(0, Math.min(totalPages - 1, currentPage));
+            container.dataset.currentPage = String(currentPage);
+            container.dataset.totalPages = String(totalPages);
+
+            const track = document.createElement('div');
+            track.className = 'menu-slide-track';
+            track.style.transition = 'none';
+            track.style.transform = currentPage === 0
+                ? 'translate3d(0, 0, 0)'
+                : `translate3d(calc(-${currentPage} * (100% + 24px)), 0, 0)`;
+            container.appendChild(track);
+
+            let activeSlide = null;
+            for (let pageIdx = 0; pageIdx < totalPages; pageIdx++) {
+                const isActivePage = pageIdx === currentPage;
+                const slide = document.createElement('div');
+                slide.className = 'menu-page-slide menu-columns-container' + (isActivePage ? '' : ' is-collapsed-page');
+                slide.dataset.pageIndex = String(pageIdx);
+                slide.setAttribute('aria-hidden', isActivePage ? 'false' : 'true');
+                slide.inert = !isActivePage;
+                track.appendChild(slide);
+
+                if (isActivePage) {
+                    activeSlide = slide;
+                }
+
+                const pageItems = visibleCards.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
+                buildMenuColumns(slide, pageItems, numCols);
+            }
+
+            void track.offsetWidth;
+            track.style.transition = '';
+
+            syncOpenMenuCard(container, openCardId, activeSlide);
+            window.updateMenuCarouselControls(currentPage, totalPages);
+            bindMenuViewportSwipe();
+            return;
         }
+
+        // Rebuild independent vertical flex columns (/menu full catalog)
+        container.innerHTML = '';
+        container.dataset.renderedCols = String(numCols);
+        buildMenuColumns(container, visibleCards, numCols);
+        syncOpenMenuCard(container, openCardId);
     };
 
     window.openMenuCard = function(cardEl) {

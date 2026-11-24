@@ -30,7 +30,8 @@ class NucomuFeatureTest extends TestCase
         $response->assertSee('OUR STORY / TENTANG KAMI');
         $response->assertSee('Berawal dari Rasa,');
         $response->assertSee('BEST MENU');
-        $response->assertSee('OUR MENU CATEGORIES');
+        $response->assertSee('Explore Our Menu');
+        $response->assertSee('Cara Pemesanan');
         $response->assertSee('Layanan');
         $response->assertSee('Pemesanan');
         $response->assertSee('Basque Burnt Cheesecake');

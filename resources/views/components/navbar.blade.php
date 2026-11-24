@@ -3,11 +3,13 @@
     $isAnyOrderModeActive = (bool) ($navTxSettings['is_any_mode_active'] ?? true);
     $isHomeWithHero = request()->routeIs('home') || request()->is('/');
     $hasHeroBanners = isset($activeBanners) && $activeBanners->count() > 0;
+    $firstHeroBannerMode = $hasHeroBanners ? ($activeBanners->first()->layout_mode ?: 'poster') : null;
+    $isInitialHeroDark = $isHomeWithHero && (!$hasHeroBanners || $firstHeroBannerMode === 'overlay');
     $initialHeroNavbarBg = !$isHomeWithHero
         ? '#0C0C0C'
-        : ($hasHeroBanners ? '#0C0C0C' : '#140E0A');
+        : ($hasHeroBanners ? ($firstHeroBannerMode === 'overlay' ? '#191919' : '#F9F9F9') : '#140E0A');
     $initialNavbarThemeClass = $isHomeWithHero
-        ? 'navbar--over-hero navbar--flush-hero'
+        ? ($isInitialHeroDark ? 'navbar--over-hero navbar--flush-hero' : 'navbar--scrolled navbar--flush-hero')
         : 'navbar--scrolled';
 @endphp
 @if($isHomeWithHero)

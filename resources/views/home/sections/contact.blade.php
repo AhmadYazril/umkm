@@ -16,7 +16,7 @@
         ? asset($contact['map_poster']) 
         : asset(config('nucomu.contact.map_animation_poster', 'images/nucomu/nucomu_3d_map_poster.jpg'));
 @endphp
-<section id="contact" class="py-16 sm:py-20 lg:py-24 bg-[#FAFAFA] border-b border-[#E5E5E5] overflow-hidden relative">
+<section id="contact" class="py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] border-b border-[#E5E5E5] overflow-hidden relative">
     
     <!-- Subtle Elegant Watermark in Background (Matching Reference Mockup) -->
     <div class="absolute inset-0 flex items-center justify-start pointer-events-none select-none overflow-hidden -z-0 opacity-[0.025]" aria-hidden="true">

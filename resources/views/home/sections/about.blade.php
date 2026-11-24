@@ -1,11 +1,11 @@
 <!-- SECTION 2: ABOUT NUCOMU CAFE -->
 <section id="about" 
          class="relative pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 overflow-hidden border-b border-[var(--color-about-divider,#E5E5E5)]"
-         style="background-color: var(--color-about-bg, #FAFAFA); transition: background-color 0.8s ease;">
+         style="background-color: var(--color-about-bg, #FFFFFF); transition: background-color 0.8s ease;">
 
     <style>
         #about {
-            --color-about-bg: #FAFAFA;
+            --color-about-bg: #FFFFFF;
             --color-about-backplate: #A5A5A5;
             --color-about-badge-dot: #242424;
             --color-about-label: #737373;

@@ -5,7 +5,7 @@
     $rawGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
     $layananGrabfoodUrl = !empty(trim((string) $rawGrabfoodUrl)) ? trim((string) $rawGrabfoodUrl) : 'https://food.grab.com';
 @endphp
-<section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FAFAFA] border-b border-[#E5E5E5] overflow-hidden">
+<section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] border-b border-[#E5E5E5] overflow-hidden">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
         
         <!-- Section Header (Vertikal & Rata Tengah) -->

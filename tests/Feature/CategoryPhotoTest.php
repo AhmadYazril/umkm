@@ -206,7 +206,8 @@ class CategoryPhotoTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('OUR MENU CATEGORIES');
+        $response->assertSee('Explore Our Menu');
+        $response->assertSee('Cara Pemesanan');
         $response->assertSee('Dessert Box');
         $response->assertSee('uploads/categories/'.$withPhoto->image);
         $response->assertSee('Kopi');
