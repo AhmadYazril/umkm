@@ -1,14 +1,17 @@
 @php
     $navTxSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
     $isAnyOrderModeActive = (bool) ($navTxSettings['is_any_mode_active'] ?? true);
+    $isDarkTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark';
     $isHomeWithHero = request()->routeIs('home') || request()->is('/');
     $hasHeroBanners = isset($activeBanners) && $activeBanners->count() > 0;
+    $firstHeroBannerMode = $hasHeroBanners ? ($activeBanners->first()->layout_mode ?: 'poster') : null;
+    $isInitialHeroDark = $isHomeWithHero && (!$hasHeroBanners || $firstHeroBannerMode === 'overlay' || $isDarkTheme);
     $initialHeroNavbarBg = !$isHomeWithHero
-        ? '#0C0C0C'
-        : ($hasHeroBanners ? '#0C0C0C' : '#140E0A');
+        ? ($isDarkTheme ? '#0C0C0C' : '#FFFFFF')
+        : ($hasHeroBanners ? ($firstHeroBannerMode === 'overlay' ? '#191919' : ($isDarkTheme ? '#0C0C0C' : '#F9F9F9')) : '#140E0A');
     $initialNavbarThemeClass = $isHomeWithHero
-        ? 'navbar--over-hero navbar--flush-hero'
-        : 'navbar--scrolled';
+        ? ($isInitialHeroDark ? 'navbar--over-hero navbar--flush-hero' : 'navbar--scrolled navbar--flush-hero')
+        : ($isDarkTheme ? 'navbar--over-hero' : 'navbar--scrolled');
 @endphp
 @if($isHomeWithHero)
 <script>

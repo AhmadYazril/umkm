@@ -107,7 +107,7 @@
        Navbar Dynamic Monochrome Color Variables (Light Mode Default)
        ====================================================================== */
     /* Condition 1: Di atas hero gelap (.navbar--over-hero) */
-    --navbar-hero-bg: rgba(20, 14, 10, 0.50);
+    --navbar-hero-bg: var(--navbar-section-bg, rgba(20, 14, 10, 0.50));
     --navbar-hero-blur: 12px;
     --navbar-hero-border: rgba(255, 255, 255, 0.12);
     --navbar-hero-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
@@ -123,7 +123,7 @@
     --navbar-hero-badge-text: #FFFFFF;
 
     /* Condition 2: Melewati hero / Section terang (.navbar--scrolled) */
-    --navbar-scrolled-bg: rgba(255, 255, 255, 0.82);
+    --navbar-scrolled-bg: var(--navbar-section-bg, rgba(255, 255, 255, 0.82));
     --navbar-scrolled-blur: 14px;
     --navbar-scrolled-border: rgba(0, 0, 0, 0.08);
     --navbar-scrolled-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
@@ -232,8 +232,8 @@
     --quote-border: var(--border);
     --backplate-gray: rgba(255, 255, 255, 0.10);
 
-    /* Condition 1: Di atas hero gelap (.navbar--over-hero) */
-    --navbar-hero-bg: rgba(12, 12, 12, 0.52);
+    /* Condition 1: Di atas hero / section gelap (.navbar--over-hero) */
+    --navbar-hero-bg: var(--navbar-section-bg, rgba(12, 12, 12, 0.52));
     --navbar-hero-blur: 12px;
     --navbar-hero-border: rgba(255, 255, 255, 0.12);
     --navbar-hero-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45);
@@ -248,21 +248,21 @@
     --navbar-hero-badge-bg: #111111;
     --navbar-hero-badge-text: #F5F5F5;
 
-    /* Condition 2: Melewati hero / Section gelap (.navbar--scrolled) */
-    --navbar-scrolled-bg: rgba(12, 12, 12, 0.78);
-    --navbar-scrolled-blur: 14px;
-    --navbar-scrolled-border: rgba(255, 255, 255, 0.10);
-    --navbar-scrolled-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.50);
-    --navbar-scrolled-text: rgba(245, 245, 245, 0.76);
-    --navbar-scrolled-text-hover: #FFFFFF;
-    --navbar-scrolled-text-active: #F5F5F5;
-    --navbar-scrolled-underline: #F5F5F5;
-    --navbar-scrolled-logo-filter: brightness(0) invert(1);
-    --navbar-scrolled-cart-bg: #F5F2EE;
-    --navbar-scrolled-cart-text: #111111;
-    --navbar-scrolled-cart-border: rgba(255, 255, 255, 0.24);
-    --navbar-scrolled-badge-bg: #111111;
-    --navbar-scrolled-badge-text: #F5F5F5;
+    /* Condition 2: Melewati hero / Section terang (.navbar--scrolled) */
+    --navbar-scrolled-bg: var(--navbar-section-bg, #FFFFFF);
+    --navbar-scrolled-blur: 0px;
+    --navbar-scrolled-border: rgba(0, 0, 0, 0.08);
+    --navbar-scrolled-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+    --navbar-scrolled-text: #4A4A4A;
+    --navbar-scrolled-text-hover: #111111;
+    --navbar-scrolled-text-active: #111111;
+    --navbar-scrolled-underline: #111111;
+    --navbar-scrolled-logo-filter: none;
+    --navbar-scrolled-cart-bg: #111111;
+    --navbar-scrolled-cart-text: #FFFFFF;
+    --navbar-scrolled-cart-border: rgba(17, 17, 17, 0.20);
+    --navbar-scrolled-badge-bg: #FFFFFF;
+    --navbar-scrolled-badge-text: #111111;
 }
 
 @media (prefers-contrast: more) {
@@ -456,8 +456,8 @@ p {
 
 /* ==========================================================================
    Navbar Adaptive Frosted Glass & Section-Based State Transitions
-   - Base / Default & Condition 2 (.navbar--scrolled): Clean white frosted glass
-   - Condition 1 (.navbar--over-hero): Dark frosted glass over dark hero/section
+   - Base / Default & Condition 2 (.navbar--scrolled): Clean solid light bar matching underlying section
+   - Condition 1 (.navbar--over-hero): Clean solid dark bar over dark hero/section
    - Visibility (.navbar-visible / .navbar-hidden): Hide on scroll down, show on scroll up
    ========================================================================== */
 #main-navbar {
@@ -467,14 +467,12 @@ p {
     right: 0;
     z-index: 40;
     background-color: var(--navbar-scrolled-bg);
-    backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
-    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom: 1px solid var(--navbar-scrolled-border);
     box-shadow: var(--navbar-scrolled-shadow);
     transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
                 background-color 0.3s ease,
-                backdrop-filter 0.3s ease,
-                -webkit-backdrop-filter 0.3s ease,
                 border-color 0.3s ease,
                 box-shadow 0.3s ease;
 }
@@ -534,8 +532,8 @@ p {
    ========================================================================== */
 #main-navbar.navbar--over-hero {
     background-color: var(--navbar-hero-bg);
-    backdrop-filter: blur(var(--navbar-hero-blur, 12px));
-    -webkit-backdrop-filter: blur(var(--navbar-hero-blur, 12px));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom: 1px solid var(--navbar-hero-border);
     box-shadow: var(--navbar-hero-shadow);
 }
@@ -645,8 +643,8 @@ p {
 #main-navbar.navbar-scrolled,
 #main-navbar.navbar--past-hero {
     background-color: var(--navbar-scrolled-bg);
-    backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
-    -webkit-backdrop-filter: blur(var(--navbar-scrolled-blur, 14px));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border-bottom: 1px solid var(--navbar-scrolled-border);
     box-shadow: var(--navbar-scrolled-shadow);
 }
@@ -789,7 +787,9 @@ p {
 }
 
 #main-navbar.navbar--flush-hero.navbar--scrolled .mobile-hamburger-btn,
-#main-navbar.navbar--flush-hero.navbar--scrolled button[aria-label="Buka Menu Navigasi"] {
+#main-navbar.navbar--flush-hero.navbar--scrolled .mobile-hamburger-btn:hover,
+#main-navbar.navbar--flush-hero.navbar--scrolled button[aria-label="Buka Menu Navigasi"],
+#main-navbar.navbar--flush-hero.navbar--scrolled button[aria-label="Buka Menu Navigasi"]:hover {
     color: #111111;
 }
 
@@ -797,6 +797,11 @@ p {
     background-color: #111111;
     color: #FFFFFF;
     border-color: rgba(0, 0, 0, 0.15);
+}
+
+#main-navbar.navbar--flush-hero.navbar--scrolled .nav-cart-btn:hover {
+    background-color: #222222;
+    color: #FFFFFF;
 }
 
 #main-navbar.navbar--flush-hero.navbar--scrolled .nav-cart-btn #nav-cart-badge,
@@ -1921,8 +1926,8 @@ p {
 #home .hero-nav-arrow {
     opacity: 0;
     pointer-events: none;
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.06);
     transition: opacity 0.3s ease,
                 transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
                 background-color 0.2s ease,
@@ -1981,7 +1986,7 @@ p {
     opacity: 1;
     pointer-events: auto;
     transform: translate(0, -50%);
-    outline: 2px solid #F5F5F5;
+    outline: 2px solid #1C1C1C;
     outline-offset: 2px;
 }
 

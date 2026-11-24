@@ -812,41 +812,126 @@ function initNavbarScroll() {
      * Ketika hero berada tepat di bawah navbar (belum ter-scroll ke belakang navbar),
      * navbar menyesuaikan warna penuh dengan slide/banner hero aktif.
      */
+    function parseRgbColor(colorStr) {
+        if (!colorStr || colorStr === 'transparent') return null;
+        const match = colorStr.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,/\s]+([\d.]+))?\s*\)$/i);
+        if (!match) return null;
+        const alpha = match[4] !== undefined ? parseFloat(match[4]) : 1;
+        if (Number.isNaN(alpha) || alpha < 0.85) return null;
+        return {
+            r: Math.round(parseFloat(match[1])),
+            g: Math.round(parseFloat(match[2])),
+            b: Math.round(parseFloat(match[3]))
+        };
+    }
+
+    function parseHexColor(hex) {
+        const clean = (hex || '').trim();
+        const match = clean.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+        if (!match) return null;
+        let digits = match[1];
+        if (digits.length === 3) {
+            digits = digits.split('').map(c => c + c).join('');
+        }
+        return {
+            r: parseInt(digits.slice(0, 2), 16),
+            g: parseInt(digits.slice(2, 4), 16),
+            b: parseInt(digits.slice(4, 6), 16)
+        };
+    }
+
+    function isDarkRgb(rgb) {
+        if (!rgb) return false;
+        const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+        return brightness < 145;
+    }
+
+    function resolveSectionBackground(el) {
+        if (el && el.id === 'home') {
+            const heroBg = getComputedStyle(document.documentElement).getPropertyValue('--hero-bg-color').trim();
+            const rgb = parseHexColor(heroBg) || parseRgbColor(heroBg);
+            if (rgb) {
+                return { rgb, css: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` };
+            }
+        }
+
+        let node = el;
+        while (node && node !== document.documentElement) {
+            const rgb = parseRgbColor(getComputedStyle(node).backgroundColor);
+            if (rgb) {
+                return { rgb, css: `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})` };
+            }
+            node = node.parentElement;
+        }
+        return null;
+    }
+
+    function findSectionAtProbeY(probeY) {
+        const selectors = ['section, footer, [data-navbar-theme]', 'main > div, main'];
+        for (let s = 0; s < selectors.length; s++) {
+            const candidates = document.querySelectorAll(selectors[s]);
+            let matched = null;
+            for (let i = 0; i < candidates.length; i++) {
+                const el = candidates[i];
+                const rect = el.getBoundingClientRect();
+                if (rect.width <= 0 || rect.height < 24) continue;
+                if (rect.top <= probeY && rect.bottom > probeY && getComputedStyle(el).visibility !== 'hidden') {
+                    matched = el;
+                }
+            }
+            if (matched) return matched;
+        }
+        return null;
+    }
+
     function getNavbarStateAtScroll() {
         const navHeight = navbar.offsetHeight || 70;
-        const probeY = navHeight * 0.5;
+        const probeY = Math.max(12, navHeight * 0.5);
         const heroSection = document.getElementById('home');
 
         if (heroSection) {
             const heroRect = heroSection.getBoundingClientRect();
-            if (heroRect.top > 0 && heroRect.top <= navHeight + 8 && heroRect.bottom > navHeight) {
+            if (heroRect.top > 0 && heroRect.top <= navHeight + 12 && heroRect.bottom > navHeight) {
                 const heroTheme = heroSection.getAttribute('data-navbar-theme');
                 return {
                     theme: heroTheme === 'gold' ? 'gold' : (heroTheme === 'dark' ? 'dark' : 'light'),
-                    flushHero: true
+                    flushHero: true,
+                    bgColor: null
                 };
             }
         }
 
-        // Ambil seluruh section dan footer di halaman
-        const candidateSections = document.querySelectorAll('section, footer, [data-navbar-theme]');
-        for (let i = 0; i < candidateSections.length; i++) {
-            const sec = candidateSections[i];
-            const rect = sec.getBoundingClientRect();
-            // Cek apakah probeY berada dalam rentang batas atas & bawah section
-            if (rect.top <= probeY && rect.bottom > probeY) {
-                const theme = sec.getAttribute('data-navbar-theme');
-                return {
-                    theme: theme === 'gold' ? 'gold' : (theme === 'dark' ? 'dark' : 'light'),
-                    flushHero: false
-                };
+        const isDarkDoc = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
+        const matchedSection = findSectionAtProbeY(probeY);
+        if (!matchedSection) {
+            return {
+                theme: isDarkDoc ? 'dark' : 'light',
+                flushHero: false,
+                bgColor: null
+            };
+        }
+
+        const resolvedBg = resolveSectionBackground(matchedSection);
+        let theme = isDarkDoc ? 'dark' : 'light';
+        if (matchedSection.hasAttribute('data-navbar-theme')) {
+            const attrTheme = matchedSection.getAttribute('data-navbar-theme');
+            theme = attrTheme === 'gold' ? 'gold' : (attrTheme === 'dark' ? 'dark' : 'light');
+        } else if (resolvedBg) {
+            theme = isDarkRgb(resolvedBg.rgb) ? 'dark' : 'light';
+        }
+
+        let bgColor = null;
+        if (resolvedBg) {
+            const bgIsDark = isDarkRgb(resolvedBg.rgb);
+            if ((theme === 'dark' && bgIsDark) || (theme === 'light' && !bgIsDark)) {
+                bgColor = resolvedBg.css;
             }
         }
 
-        // Halaman tanpa hero atau tanpa section gelap default ke kondisi terang ('light')
         return {
-            theme: 'light',
-            flushHero: false
+            theme,
+            flushHero: false,
+            bgColor
         };
     }
 
@@ -854,9 +939,15 @@ function initNavbarScroll() {
      * Terapkan tema navbar secara eksklusif (hanya satu kondisi aktif pada satu waktu)
      */
     function applyNavbarTheme() {
-        const { theme, flushHero } = getNavbarStateAtScroll();
+        const { theme, flushHero, bgColor } = getNavbarStateAtScroll();
 
         navbar.classList.toggle('navbar--flush-hero', flushHero);
+
+        if (!flushHero && bgColor) {
+            navbar.style.setProperty('--navbar-section-bg', bgColor);
+        } else {
+            navbar.style.removeProperty('--navbar-section-bg');
+        }
 
         if (theme === 'gold') {
             navbar.classList.add('navbar--over-hero-gold');

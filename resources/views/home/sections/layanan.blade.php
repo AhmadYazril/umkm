@@ -5,7 +5,7 @@
     $rawGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
     $layananGrabfoodUrl = !empty(trim((string) $rawGrabfoodUrl)) ? trim((string) $rawGrabfoodUrl) : 'https://food.grab.com';
 @endphp
-<section id="layanan" class="relative py-16 sm:py-20 lg:py-24 bg-[var(--bg-page)] border-b border-[var(--border-soft)] overflow-hidden">
+<section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] dark:bg-[var(--bg-page)] relative border-b border-[var(--border-soft)] overflow-hidden">
     <!-- Background Ambient Glow & Blueprint Dot Matrix Texture -->
     <div class="absolute inset-0 pointer-events-none opacity-30 [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_35%,#000_60%,transparent_100%)]" style="background-image: radial-gradient(var(--dot-pattern-color) 1px, transparent 1px);" aria-hidden="true"></div>
     <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[650px] h-[320px] rounded-full blur-3xl pointer-events-none" style="background: linear-gradient(to bottom, var(--ambient-glow-top), transparent);" aria-hidden="true"></div>

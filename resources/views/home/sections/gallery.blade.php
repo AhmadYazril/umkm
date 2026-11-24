@@ -455,7 +455,7 @@
 </style>
 
 <section id="gallery"
-         class="pt-10 sm:pt-12 lg:pt-14 pb-4 sm:pb-6 lg:pb-8 relative z-10 bg-[var(--bg-section-alt)] text-[var(--text)] overflow-hidden select-none">
+         class="pt-10 sm:pt-12 lg:pt-14 pb-12 sm:pb-14 lg:pb-16 relative z-10 bg-[#FFFFFF] dark:bg-[var(--bg-section-alt)] text-[var(--text)] border-b border-[var(--border-soft)] overflow-hidden select-none">
 
     <div class="w-full max-w-[1840px] mx-auto px-3 sm:px-4 lg:px-5 relative z-10">
 

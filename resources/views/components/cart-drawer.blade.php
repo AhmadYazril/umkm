@@ -1020,7 +1020,7 @@
     window.removeModalCartItem = window.removeDrawerCartItem;
 
     // ============================================
-    // MENU CARD RESPONSIVE N-COLUMN & EXPANSION ENGINE
+    // MENU CARD RESPONSIVE N-COLUMN, PAGINATED CAROUSEL & EXPANSION ENGINE
     // ============================================
     window.getMenuBreakpointColumns = function() {
         if (window.innerWidth >= 1280) return 5;
@@ -1028,12 +1028,264 @@
         return 2;
     };
 
+    const buildMenuColumns = (parentEl, cards, numCols) => {
+        const columns = [];
+        for (let c = 0; c < numCols; c++) {
+            const col = document.createElement('div');
+            col.className = 'menu-column flex-1 flex flex-col gap-y-24 sm:gap-y-28 min-w-0';
+            parentEl.appendChild(col);
+            columns.push(col);
+        }
+
+        cards.forEach((wrap, idx) => {
+            columns[idx % numCols].appendChild(wrap);
+        });
+    };
+
+    const syncOpenMenuCard = (container, openCardId, allowedParent = null) => {
+        if (!openCardId) {
+            return;
+        }
+        const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
+        if (!restoredCard) {
+            return;
+        }
+        if (allowedParent && !allowedParent.contains(restoredCard)) {
+            if (typeof window.closeMenuCard === 'function') {
+                window.closeMenuCard(restoredCard);
+            } else {
+                restoredCard.classList.remove('is-open');
+            }
+            return;
+        }
+        restoredCard.classList.add('is-open');
+        const drawer = restoredCard.querySelector('.menu-card-drawer');
+        if (drawer) {
+            drawer.style.height = drawer.scrollHeight + 'px';
+        }
+    };
+
+    const bindMenuViewportSwipe = () => {
+        const viewport = document.getElementById('recommendations-viewport');
+        if (!viewport || viewport.dataset.swipeBound === 'true') {
+            return;
+        }
+        viewport.dataset.swipeBound = 'true';
+
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+
+        viewport.addEventListener('touchstart', (e) => {
+            if (!e.touches || e.touches.length !== 1) {
+                tracking = false;
+                return;
+            }
+            if (e.target && e.target.closest('input, label, select, textarea')) {
+                tracking = false;
+                return;
+            }
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            tracking = true;
+        }, { passive: true });
+
+        viewport.addEventListener('touchcancel', () => {
+            tracking = false;
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', (e) => {
+            if (!tracking || !e.changedTouches || e.changedTouches.length !== 1) {
+                tracking = false;
+                return;
+            }
+            tracking = false;
+            const dx = e.changedTouches[0].clientX - startX;
+            const dy = e.changedTouches[0].clientY - startY;
+            if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+                if (dx < 0) {
+                    window.nextMenuPage();
+                } else {
+                    window.prevMenuPage();
+                }
+            }
+        }, { passive: true });
+    };
+
+    window.updateMenuCarouselControls = function(currentPage, totalPages) {
+        const controls = document.getElementById('recommendations-carousel-controls');
+        if (!controls) {
+            return;
+        }
+
+        const prevBtn = document.getElementById('rec-prev-btn');
+        const nextBtn = document.getElementById('rec-next-btn');
+        const dotsContainer = document.getElementById('rec-page-dots');
+        const counter = document.getElementById('rec-page-counter');
+
+        if (totalPages <= 1) {
+            controls.classList.add('hidden');
+            controls.classList.remove('flex');
+            if (dotsContainer) {
+                dotsContainer.innerHTML = '';
+            }
+            if (counter) {
+                counter.textContent = '';
+            }
+            if (prevBtn) {
+                prevBtn.disabled = true;
+            }
+            if (nextBtn) {
+                nextBtn.disabled = true;
+            }
+            return;
+        }
+
+        controls.classList.remove('hidden');
+        controls.classList.add('flex');
+
+        if (prevBtn) {
+            prevBtn.disabled = currentPage <= 0;
+        }
+        if (nextBtn) {
+            nextBtn.disabled = currentPage >= totalPages - 1;
+        }
+        if (counter) {
+            const activeStr = String(currentPage + 1).padStart(2, '0');
+            const totalStr = String(totalPages).padStart(2, '0');
+            counter.textContent = `${activeStr} / ${totalStr}`;
+        }
+
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            for (let p = 0; p < totalPages; p++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'nucomu-menu-dot' + (p === currentPage ? ' is-active' : '');
+                dot.setAttribute('aria-label', `Halaman menu ${p + 1} dari ${totalPages}`);
+                dot.setAttribute('aria-current', p === currentPage ? 'true' : 'false');
+                dot.addEventListener('click', () => {
+                    if (typeof window.goToMenuPage === 'function') {
+                        window.goToMenuPage(p);
+                    }
+                });
+                dotsContainer.appendChild(dot);
+            }
+        }
+    };
+
+    window.goToMenuPage = function(targetIndex) {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const track = container.querySelector('.menu-slide-track');
+        if (!track) {
+            return;
+        }
+
+        const slides = Array.from(track.querySelectorAll('.menu-page-slide'));
+        const totalPages = slides.length;
+        if (totalPages <= 1) {
+            return;
+        }
+
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        const parsedTarget = parseInt(targetIndex, 10);
+        const safeTarget = Number.isNaN(parsedTarget) ? 0 : parsedTarget;
+        const clampedTarget = Math.max(0, Math.min(totalPages - 1, safeTarget));
+
+        if (clampedTarget === currentPage) {
+            return;
+        }
+
+        container.querySelectorAll('.menu-card.is-open').forEach(openCard => {
+            if (typeof window.closeMenuCard === 'function') {
+                window.closeMenuCard(openCard);
+            } else {
+                openCard.classList.remove('is-open');
+            }
+        });
+
+        if (container._collapseTimer) {
+            clearTimeout(container._collapseTimer);
+            container._collapseTimer = null;
+        }
+
+        const minIdx = Math.min(currentPage, clampedTarget);
+        const maxIdx = Math.max(currentPage, clampedTarget);
+
+        slides.forEach((slide, idx) => {
+            const isTarget = idx === clampedTarget;
+            if (idx >= minIdx && idx <= maxIdx) {
+                slide.classList.remove('is-collapsed-page');
+            }
+            slide.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
+            slide.inert = !isTarget;
+        });
+
+        void track.offsetWidth;
+
+        container.dataset.currentPage = String(clampedTarget);
+        track.style.transform = clampedTarget === 0
+            ? 'translate3d(0, 0, 0)'
+            : `translate3d(calc(-${clampedTarget} * (100% + 24px)), 0, 0)`;
+
+        window.updateMenuCarouselControls(clampedTarget, totalPages);
+
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const finalizeSlides = () => {
+            const settledPage = parseInt(container.dataset.currentPage || '0', 10);
+            slides.forEach((slide, idx) => {
+                if (idx !== settledPage) {
+                    slide.classList.add('is-collapsed-page');
+                } else {
+                    slide.classList.remove('is-collapsed-page');
+                }
+            });
+            container._collapseTimer = null;
+        };
+
+        if (prefersReducedMotion) {
+            finalizeSlides();
+        } else {
+            container._collapseTimer = setTimeout(finalizeSlides, 480);
+        }
+    };
+
+    window.nextMenuPage = function() {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        const totalPages = parseInt(container.dataset.totalPages || '1', 10);
+        if (currentPage < totalPages - 1) {
+            window.goToMenuPage(currentPage + 1);
+        }
+    };
+
+    window.prevMenuPage = function() {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        if (currentPage > 0) {
+            window.goToMenuPage(currentPage - 1);
+        }
+    };
+
     window.distributeMenuCards = function(poolId, containerId, categoryFilter = 'all') {
         const pool = document.getElementById(poolId);
         const container = document.getElementById(containerId);
         if (!container) return;
 
+        const isHomepageCarousel = containerId === 'recommendations-columns-container';
         const numCols = window.getMenuBreakpointColumns();
+        const previousCategory = container.dataset.activeCategory || null;
+        const categoryChanged = previousCategory !== null && previousCategory !== categoryFilter;
+        container.dataset.activeCategory = categoryFilter;
 
         // Collect all card wrappers from pool and container
         let wrappers = [];
@@ -1042,7 +1294,12 @@
         }
         wrappers = wrappers.concat(Array.from(container.querySelectorAll('.menu-card-wrapper')));
 
-        if (wrappers.length === 0) return;
+        if (wrappers.length === 0) {
+            if (isHomepageCarousel) {
+                window.updateMenuCarouselControls(0, 0);
+            }
+            return;
+        }
 
         // Deduplicate wrappers by dataset index and id
         const seen = new Set();
@@ -1073,13 +1330,17 @@
                 visibleCards.push(w);
             } else {
                 w.style.display = 'none';
+                const cardEl = w.querySelector('.menu-card.is-open');
+                if (cardEl && typeof window.closeMenuCard === 'function') {
+                    window.closeMenuCard(cardEl);
+                }
                 if (pool) pool.appendChild(w);
             }
         });
 
         // Empty state toggling
-        const emptyStateId = containerId === 'recommendations-columns-container' 
-            ? 'recommendations-empty-state' 
+        const emptyStateId = isHomepageCarousel
+            ? 'recommendations-empty-state'
             : (containerId === 'catalog-columns-container' ? 'catalog-empty-state' : null);
         if (emptyStateId) {
             const emptyState = document.getElementById(emptyStateId);
@@ -1094,35 +1355,83 @@
             }
         }
 
-        // Rebuild independent vertical flex columns
-        container.innerHTML = '';
-        container.dataset.renderedCols = String(numCols);
+        if (isHomepageCarousel) {
+            if (container._collapseTimer) {
+                clearTimeout(container._collapseTimer);
+                container._collapseTimer = null;
+            }
 
-        const columns = [];
-        for (let c = 0; c < numCols; c++) {
-            const col = document.createElement('div');
-            col.className = 'menu-column flex-1 flex flex-col gap-y-[74px] sm:gap-y-28 min-w-0';
-            container.appendChild(col);
-            columns.push(col);
-        }
+            container.innerHTML = '';
+            container.dataset.renderedCols = String(numCols);
 
-        // Distribute card i into column (i mod numCols)
-        visibleCards.forEach((wrap, idx) => {
-            const targetCol = idx % numCols;
-            columns[targetCol].appendChild(wrap);
-        });
+            const pageSize = numCols * 2;
+            const totalPages = visibleCards.length > 0 ? Math.ceil(visibleCards.length / pageSize) : 0;
 
-        // Restore drawer height for open card
-        if (openCardId) {
-            const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
-            if (restoredCard) {
-                restoredCard.classList.add('is-open');
-                const drawer = restoredCard.querySelector('.menu-card-drawer');
-                if (drawer) {
-                    drawer.style.height = drawer.scrollHeight + 'px';
+            if (totalPages === 0) {
+                container.dataset.currentPage = '0';
+                container.dataset.totalPages = '0';
+                window.updateMenuCarouselControls(0, 0);
+                return;
+            }
+
+            let currentPage = categoryChanged ? 0 : parseInt(container.dataset.currentPage || '0', 10);
+            if (Number.isNaN(currentPage)) {
+                currentPage = 0;
+            }
+
+            if (!categoryChanged && openCardId) {
+                const openMatchIndex = visibleCards.findIndex(wrap => {
+                    return Boolean(wrap.querySelector(`.menu-card[data-card-id="${openCardId}"]`));
+                });
+                if (openMatchIndex !== -1) {
+                    currentPage = Math.floor(openMatchIndex / pageSize);
                 }
             }
+
+            currentPage = Math.max(0, Math.min(totalPages - 1, currentPage));
+            container.dataset.currentPage = String(currentPage);
+            container.dataset.totalPages = String(totalPages);
+
+            const track = document.createElement('div');
+            track.className = 'menu-slide-track';
+            track.style.transition = 'none';
+            track.style.transform = currentPage === 0
+                ? 'translate3d(0, 0, 0)'
+                : `translate3d(calc(-${currentPage} * (100% + 24px)), 0, 0)`;
+            container.appendChild(track);
+
+            let activeSlide = null;
+            for (let pageIdx = 0; pageIdx < totalPages; pageIdx++) {
+                const isActivePage = pageIdx === currentPage;
+                const slide = document.createElement('div');
+                slide.className = 'menu-page-slide menu-columns-container' + (isActivePage ? '' : ' is-collapsed-page');
+                slide.dataset.pageIndex = String(pageIdx);
+                slide.setAttribute('aria-hidden', isActivePage ? 'false' : 'true');
+                slide.inert = !isActivePage;
+                track.appendChild(slide);
+
+                if (isActivePage) {
+                    activeSlide = slide;
+                }
+
+                const pageItems = visibleCards.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
+                buildMenuColumns(slide, pageItems, numCols);
+            }
+
+            void track.offsetWidth;
+            track.style.transition = '';
+
+            syncOpenMenuCard(container, openCardId, activeSlide);
+            window.updateMenuCarouselControls(currentPage, totalPages);
+            bindMenuViewportSwipe();
+            return;
         }
+
+        // Rebuild independent vertical flex columns (/menu full catalog)
+        container.innerHTML = '';
+        container.dataset.renderedCols = String(numCols);
+        buildMenuColumns(container, visibleCards, numCols);
+        syncOpenMenuCard(container, openCardId);
     };
 
     window.openMenuCard = function(cardEl) {

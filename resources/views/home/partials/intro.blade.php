@@ -17,7 +17,7 @@
             <!-- Ring Luar -->
             <circle class="intro-ring" cx="109" cy="118" r="81" pathLength="1000"/>
             
-            <!-- Logo Mark & Dot -->
+            <!-- Logo Mark (#1C1C1C) & Dot (#1C1C1C) -->
             <g class="intro-logo">
                 <path class="intro-mark" pathLength="1000" d="M89 122V98Q89 88 99 88H104Q114 88 114 98V152A8 8 0 0 0 130 152V124"/>
                 <circle class="intro-dot" cx="130" cy="106" r="6.5"/>
@@ -25,7 +25,7 @@
         </svg>
 
         <!-- Teks Branding "NUCOMU CAFE" -->
-        <span class="intro-text mt-4 sm:mt-5 text-[13px] sm:text-[14px] font-bold text-[var(--text)] uppercase tracking-[0.28em] font-sans">
+        <span class="intro-text mt-4 sm:mt-5 text-[13px] sm:text-[14px] font-semibold text-[var(--text)] uppercase tracking-[0.28em] font-body">
             NUCOMU CAFE
         </span>
     </div>
@@ -34,7 +34,7 @@
     <button type="button"
             id="nucomu-intro-skip-btn"
             onclick="window.skipNucomuIntro?.()"
-            class="nucomu-intro-skip absolute bottom-6 right-6 sm:bottom-8 sm:right-8 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] hover:text-[var(--text)] px-3.5 py-1.5 rounded-full border border-transparent hover:border-[var(--border)] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--field-focus)]"
+            class="nucomu-intro-skip absolute bottom-6 right-6 sm:bottom-8 sm:right-8 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] hover:text-[var(--text)] px-3.5 py-1.5 rounded-full border border-transparent hover:border-[var(--border)] transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--field-focus)]"
             aria-label="Lewati animasi pembukaan">
         Lewati
     </button>
