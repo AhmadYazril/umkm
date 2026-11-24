@@ -827,25 +827,54 @@
                 <div class="lg:col-span-7">
                     <div id="scannedOrderResultContainer" class="bg-white border border-line rounded-xl p-5 min-h-[360px] flex flex-col justify-center">
                         @if($scannedOrder)
+                            @php
+                                $scannedIsZendo = $scannedOrder->isZendo();
+                                $scannedServiceBadgeClass = $scannedIsZendo
+                                    ? 'bg-sky-50 text-sky-800 border border-sky-200'
+                                    : ($scannedOrder->order_type === 'dine_in'
+                                        ? 'bg-canvas text-ink border border-line'
+                                        : 'bg-stone-100 text-sub border border-line');
+                                $scannedServiceIcon = $scannedIsZendo
+                                    ? 'fa-motorcycle'
+                                    : ($scannedOrder->order_type === 'dine_in' ? 'fa-utensils' : 'fa-bag-shopping');
+                            @endphp
                             <div class="space-y-4">
                                 <div class="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-line">
                                     <div>
-                                        <span class="text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedOrder->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
-                                            {{ $scannedOrder->payment_status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }}
-                                        </span>
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <span class="text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedOrder->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
+                                                {{ $scannedOrder->payment_status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }} ({{ $scannedOrder->status_label }})
+                                            </span>
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedServiceBadgeClass }}">
+                                                <i class="fa-solid {{ $scannedServiceIcon }} text-[10px]"></i>
+                                                <span>{{ $scannedOrder->service_type_label }}</span>
+                                            </span>
+                                        </div>
                                         <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#{{ $scannedOrder->code }}</h3>
                                         <p class="text-xs font-normal text-sub mt-0.5">
                                             {{ $scannedOrder->customer_name ?: 'Pelanggan Kasir' }}
-                                            • {{ $scannedOrder->order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang' }}
+                                            @if($scannedOrder->table)
+                                                • Meja {{ $scannedOrder->table->number }}
+                                            @endif
+                                            @if($scannedOrder->customer_phone && $scannedOrder->customer_phone !== '-')
+                                                • {{ $scannedOrder->customer_phone }}
+                                            @endif
                                         </p>
+                                        @if($scannedIsZendo && $scannedOrder->delivery_address)
+                                            <p class="text-xs text-sky-900 bg-sky-50/70 border border-sky-200/80 rounded-lg px-2.5 py-1.5 mt-2">
+                                                <i class="fa-solid fa-location-dot text-sky-700 mr-1"></i>{{ $scannedOrder->delivery_address }}
+                                            </p>
+                                        @endif
                                     </div>
-                                    <a
-                                        href="{{ route('kasir.orders.receipt', $scannedOrder->id) }}"
-                                        target="_blank"
-                                        class="min-h-[44px] px-4 rounded-xl bg-canvas border border-line text-ink text-xs font-bold flex items-center"
-                                    >
-                                        Cetak Struk
-                                    </a>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <a
+                                            href="{{ route('kasir.orders.receipt', $scannedOrder->id) }}"
+                                            target="_blank"
+                                            class="min-h-[44px] px-4 rounded-xl bg-canvas border border-line text-ink text-xs font-bold flex items-center"
+                                        >
+                                            Cetak Struk
+                                        </a>
+                                    </div>
                                 </div>
 
                                 <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -860,21 +889,56 @@
                                     @endforeach
                                 </div>
 
-                                <div class="flex items-center justify-between pt-3 border-t border-line">
-                                    <span class="text-xs font-normal text-sub">Total</span>
-                                    <span class="text-2xl font-bold text-ink tabular-nums">Rp {{ number_format($scannedOrder->total, 0, ',', '.') }}</span>
+                                <div class="pt-3 border-t border-line space-y-1.5">
+                                    @if($scannedOrder->effective_delivery_fee > 0)
+                                        <div class="flex items-center justify-between text-xs text-sub">
+                                            <span>Subtotal Menu (Bayar ke Kafe)</span>
+                                            <span class="font-bold tabular-nums text-ink">Rp {{ number_format($scannedOrder->effective_subtotal, 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="flex items-center justify-between text-xs text-sky-800">
+                                            <span>Ongkir Kurir Zendo</span>
+                                            <span class="font-bold tabular-nums">Rp {{ number_format($scannedOrder->effective_delivery_fee, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endif
+                                    <div class="flex items-center justify-between pt-1">
+                                        <span class="text-xs font-normal text-sub">{{ $scannedIsZendo ? 'Total Pelanggan' : 'Total' }}</span>
+                                        <span class="text-2xl font-bold text-ink tabular-nums">Rp {{ number_format($scannedOrder->total, 0, ',', '.') }}</span>
+                                    </div>
                                 </div>
 
-                                <div class="pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'processing', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">
-                                        Set Diproses & Lunas
-                                    </button>
-                                    <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'ready', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">
-                                        Set Siap Disajikan
-                                    </button>
-                                    <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'completed', 'paid')" class="min-h-[48px] px-3 rounded-xl bg-forest text-white text-xs font-bold cursor-pointer">
-                                        Selesaikan Pesanan
-                                    </button>
+                                @php
+                                    $scannedBucket = match (true) {
+                                        $scannedOrder->status === 'cancelled' => 'cancelled',
+                                        $scannedOrder->status === 'completed' || (in_array($scannedOrder->status, ['processing', 'ready'], true) && $scannedOrder->payment_status === 'paid') => 'completed',
+                                        default => 'unpaid',
+                                    };
+                                @endphp
+                                <div class="pt-4 border-t border-line">
+                                    @if($scannedBucket === 'unpaid')
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <button type="button" onclick="openPayOrderModal({{ $scannedOrder->id }})" class="flex-1 min-h-[48px] px-4 rounded-xl bg-forest hover:bg-forest-dark text-white text-xs font-bold cursor-pointer">
+                                                Bayar &amp; Selesai
+                                            </button>
+                                            @if($scannedOrder->canBeEditedAtKasir())
+                                                <button type="button" onclick="openEditOrderModal({{ $scannedOrder->id }})" class="min-h-[48px] px-4 rounded-xl bg-warning-soft text-warning-ink border border-warning/40 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                                                    <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                                    <span>Ubah Pesanan</span>
+                                                </button>
+                                            @endif
+                                            <button type="button" onclick="openCancelOrderConfirm({{ $scannedOrder->id }})" class="min-h-[48px] px-4 rounded-xl bg-danger-soft text-danger text-xs font-bold cursor-pointer">
+                                                Batalkan
+                                            </button>
+                                        </div>
+                                    @elseif($scannedBucket === 'completed')
+                                        <div class="flex items-center justify-between gap-3 rounded-xl bg-forest-soft px-4 py-3 text-xs font-bold text-forest-dark">
+                                            <span>Transaksi Selesai • Lunas ({{ $scannedOrder->payment_method_label }})</span>
+                                            <a href="{{ route('kasir.orders.receipt', $scannedOrder->id) }}" target="_blank" class="underline">Cetak Struk</a>
+                                        </div>
+                                    @else
+                                        <div class="rounded-xl bg-danger-soft px-4 py-3 text-xs font-bold text-danger">
+                                            Pesanan ini sudah dibatalkan.
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @else
@@ -892,50 +956,108 @@
         </section>
 
         {{-- =====================================================================
-             TAB 4: PESANAN (Perbaikan filter, auto-sync & status dikerjakan di Tahap 4)
+             TAB 4: PESANAN (3 Tab Ringkas: Belum Bayar | Selesai | Batal + Filter Jenis)
              ===================================================================== --}}
         <section id="kasirMainPanel-orders" class="{{ $activeTab === 'orders' ? '' : 'hidden' }} space-y-4 pb-24 sm:pb-8">
 
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                    <button type="button" onclick="filterKasirOrderStatus('pending')" data-ord-filter="pending" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-bold bg-forest text-white cursor-pointer shrink-0">Pending</button>
-                    <button type="button" onclick="filterKasirOrderStatus('processing')" data-ord-filter="processing" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Diproses</button>
-                    <button type="button" onclick="filterKasirOrderStatus('ready')" data-ord-filter="ready" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Siap Saji</button>
-                    <button type="button" onclick="filterKasirOrderStatus('completed')" data-ord-filter="completed" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Selesai</button>
+            <div class="space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                        <button type="button" onclick="filterKasirOrderStatus('unpaid')" data-ord-filter="unpaid" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-bold bg-forest text-white cursor-pointer shrink-0">Belum Bayar</button>
+                        <button type="button" onclick="filterKasirOrderStatus('completed')" data-ord-filter="completed" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Selesai</button>
+                        <button type="button" onclick="filterKasirOrderStatus('cancelled')" data-ord-filter="cancelled" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Batal</button>
+                    </div>
+
+                    <input
+                        type="search"
+                        id="kasirOrderSearchInput"
+                        oninput="searchKasirOrderRows(this.value)"
+                        placeholder="Cari kode, nama, atau alamat..."
+                        class="w-full sm:w-64 min-h-[44px] bg-white border border-line rounded-xl px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-forest"
+                    >
                 </div>
 
-                <input
-                    type="search"
-                    oninput="searchKasirOrderRows(this.value)"
-                    placeholder="Cari kode atau nama pelanggan..."
-                    class="w-full sm:w-64 min-h-[44px] bg-white border border-line rounded-xl px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-forest"
-                >
+                {{-- Filter Jenis Layanan: Semua / Kurir Zendo / Makan di Sini / Bawa Pulang --}}
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <button type="button" onclick="filterKasirOrderService('all')" data-service-filter="all" class="kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-bold bg-ink text-white cursor-pointer shrink-0">Semua Jenis</button>
+                    <button type="button" onclick="filterKasirOrderService('zendo')" data-service-filter="zendo" class="kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-normal bg-white text-sky-800 border border-sky-200 cursor-pointer shrink-0 inline-flex items-center gap-1.5">
+                        <i class="fa-solid fa-motorcycle text-[10px]"></i>
+                        <span>Kurir Zendo</span>
+                    </button>
+                    <button type="button" onclick="filterKasirOrderService('dine_in')" data-service-filter="dine_in" class="kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0 inline-flex items-center gap-1.5">
+                        <i class="fa-solid fa-utensils text-[10px]"></i>
+                        <span>Makan di Sini</span>
+                    </button>
+                    <button type="button" onclick="filterKasirOrderService('take_away')" data-service-filter="take_away" class="kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0 inline-flex items-center gap-1.5">
+                        <i class="fa-solid fa-bag-shopping text-[10px]"></i>
+                        <span>Bawa Pulang</span>
+                    </button>
+                </div>
             </div>
 
             <div id="kasirOrdersGridContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @forelse($recentOrders as $ord)
+                    @php
+                        $ordIsZendo = $ord->isZendo();
+                        $ordServiceKey = $ordIsZendo ? 'zendo' : ($ord->order_type === 'dine_in' ? 'dine_in' : 'take_away');
+                        $ordBucket = match (true) {
+                            $ord->status === 'cancelled' => 'cancelled',
+                            $ord->status === 'completed' || (in_array($ord->status, ['processing', 'ready'], true) && $ord->payment_status === 'paid') => 'completed',
+                            default => 'unpaid',
+                        };
+                        $ordServiceBadgeClass = $ordIsZendo
+                            ? 'bg-sky-50 text-sky-800 border border-sky-200'
+                            : ($ord->order_type === 'dine_in'
+                                ? 'bg-canvas text-ink border border-line'
+                                : 'bg-stone-100 text-sub border border-line');
+                        $ordServiceIcon = $ordIsZendo
+                            ? 'fa-motorcycle'
+                            : ($ord->order_type === 'dine_in' ? 'fa-utensils' : 'fa-bag-shopping');
+                    @endphp
                     <div
-                        class="kasir-order-card bg-white border border-line rounded-xl p-4 flex flex-col justify-between gap-4"
+                        class="kasir-order-card bg-white border {{ $ordIsZendo ? 'border-sky-200' : 'border-line' }} rounded-xl p-4 flex flex-col justify-between gap-4 {{ $ordBucket === 'unpaid' ? '' : 'hidden' }}"
+                        data-order-id="{{ $ord->id }}"
+                        data-order-bucket="{{ $ordBucket }}"
                         data-order-status="{{ $ord->status }}"
-                        data-order-search="{{ strtolower($ord->code . ' ' . $ord->customer_name) }}"
+                        data-order-service="{{ $ordServiceKey }}"
+                        data-order-search="{{ strtolower($ord->code . ' ' . $ord->customer_name . ' ' . ($ord->delivery_address ?? '')) }}"
                     >
                         <div>
                             <div class="flex items-start justify-between gap-2 pb-3 border-b border-line">
-                                <div>
-                                    <div class="flex items-center gap-2">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-1.5">
                                         <span class="text-xs font-bold text-ink tabular-nums">#{{ $ord->code }}</span>
-                                        <span class="text-xs font-bold px-2 py-0.5 rounded-md {{ $ord->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
-                                            {{ $ord->payment_status === 'paid' ? 'Lunas' : 'Belum Bayar' }}
+                                        <span class="text-xs font-bold px-2 py-0.5 rounded-md {{ $ordBucket === 'completed' ? 'bg-forest-soft text-forest-dark' : ($ordBucket === 'cancelled' ? 'bg-danger-soft text-danger' : 'bg-warning-soft text-warning-ink') }}">
+                                            {{ $ordBucket === 'completed' ? 'Selesai • ' . $ord->payment_method_label : ($ordBucket === 'cancelled' ? 'Batal' : 'Belum Bayar') }}
                                         </span>
                                     </div>
-                                    <p class="text-xs font-bold text-ink mt-1">
-                                        {{ $ord->customer_name ?: 'Pelanggan Kasir' }}
-                                        <span class="font-normal text-sub">• {{ $ord->order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang' }}</span>
-                                    </p>
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md {{ $ordServiceBadgeClass }}">
+                                            <i class="fa-solid {{ $ordServiceIcon }} text-[10px]"></i>
+                                            <span>{{ $ord->service_type_label }}</span>
+                                        </span>
+                                        <span class="text-xs font-bold text-ink truncate">
+                                            {{ $ord->customer_name ?: 'Pelanggan Kasir' }}
+                                            @if($ord->table)
+                                                <span class="font-normal text-sub">• Meja {{ $ord->table->number }}</span>
+                                            @endif
+                                        </span>
+                                    </div>
+                                    @if($ordBucket === 'unpaid')
+                                        <p class="text-[11px] text-sub mt-1">
+                                            @if($ordIsZendo)
+                                                Pembayaran: <strong class="text-sky-800">Pilih saat kurir tiba</strong>
+                                            @else
+                                                Pembayaran: <strong class="text-ink">{{ $ord->payment_method_label }}</strong>
+                                            @endif
+                                        </p>
+                                    @endif
+                                    @if($ordIsZendo && $ord->delivery_address)
+                                        <p class="text-[11px] text-sky-900 bg-sky-50/70 border border-sky-200/70 rounded-lg px-2 py-1 mt-2 line-clamp-2">
+                                            <i class="fa-solid fa-location-dot text-sky-700 mr-1"></i>{{ $ord->delivery_address }}
+                                        </p>
+                                    @endif
                                 </div>
-                                <span id="orderCardStatusBadge-{{ $ord->id }}" class="text-xs font-normal px-2.5 py-1 rounded-lg bg-canvas text-ink">
-                                    {{ $ord->status_label }}
-                                </span>
                             </div>
 
                             <div class="py-3 space-y-1.5 max-h-36 overflow-y-auto text-xs">
@@ -949,30 +1071,63 @@
                         </div>
 
                         <div class="pt-3 border-t border-line space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-normal text-sub tabular-nums">{{ $ord->created_at?->format('d M H:i') }}</span>
-                                <span class="text-sm font-bold text-ink tabular-nums">Rp {{ number_format($ord->total, 0, ',', '.') }}</span>
+                            <div class="space-y-1">
+                                @if($ord->effective_delivery_fee > 0)
+                                    <div class="flex items-center justify-between text-[11px] text-sky-800">
+                                        <span>Ongkir Kurir Zendo</span>
+                                        <span class="font-bold tabular-nums">Rp {{ number_format($ord->effective_delivery_fee, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-normal text-sub tabular-nums">{{ $ord->created_at?->format('d M H:i') }}</span>
+                                    <span class="text-sm font-bold text-ink tabular-nums">Rp {{ number_format($ord->total, 0, ',', '.') }}</span>
+                                </div>
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <select
-                                    onchange="updateKasirOrderStatus({{ $ord->id }}, this.value, 'paid')"
-                                    class="flex-1 min-h-[44px] bg-canvas border border-line rounded-xl px-3 py-2 text-xs font-bold text-ink focus:outline-none focus:border-forest cursor-pointer"
-                                >
-                                    <option value="pending" @selected($ord->status === 'pending')>Status: Pending</option>
-                                    <option value="processing" @selected($ord->status === 'processing')>Status: Diproses</option>
-                                    <option value="ready" @selected($ord->status === 'ready')>Status: Siap Saji</option>
-                                    <option value="completed" @selected($ord->status === 'completed')>Status: Selesai</option>
-                                    <option value="cancelled" @selected($ord->status === 'cancelled')>Status: Batal</option>
-                                </select>
-
-                                <a
-                                    href="{{ route('kasir.orders.receipt', $ord->id) }}"
-                                    target="_blank"
-                                    class="min-h-[44px] px-4 rounded-xl bg-forest text-white text-xs font-bold flex items-center"
-                                >
-                                    Struk
-                                </a>
+                                @if($ordBucket === 'unpaid')
+                                    <button
+                                        type="button"
+                                        onclick="openPayOrderModal({{ $ord->id }})"
+                                        class="flex-1 min-h-[44px] px-3.5 rounded-xl bg-forest hover:bg-forest-dark text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                                    >
+                                        <i class="fa-solid fa-check text-[11px]"></i>
+                                        <span>Bayar &amp; Selesai</span>
+                                    </button>
+                                    @if($ord->canBeEditedAtKasir())
+                                        <button
+                                            type="button"
+                                            onclick="openEditOrderModal({{ $ord->id }})"
+                                            class="min-h-[44px] px-3 rounded-xl bg-warning-soft text-warning-ink border border-warning/40 text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0"
+                                            title="Ubah item pesanan"
+                                        >
+                                            <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                            <span>Ubah</span>
+                                        </button>
+                                    @endif
+                                    <button
+                                        type="button"
+                                        onclick="openCancelOrderConfirm({{ $ord->id }})"
+                                        class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-danger-soft text-danger text-xs font-bold flex items-center justify-center cursor-pointer shrink-0"
+                                        title="Batalkan pesanan"
+                                        aria-label="Batalkan pesanan"
+                                    >
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                @elseif($ordBucket === 'completed')
+                                    <a
+                                        href="{{ route('kasir.orders.receipt', $ord->id) }}"
+                                        target="_blank"
+                                        class="flex-1 min-h-[44px] px-3.5 rounded-xl bg-forest text-white text-xs font-bold flex items-center justify-center gap-1.5"
+                                    >
+                                        <i class="fa-solid fa-print text-[11px]"></i>
+                                        <span>Cetak Struk</span>
+                                    </a>
+                                @else
+                                    <span class="flex-1 min-h-[44px] px-3.5 rounded-xl bg-canvas text-muted text-xs font-bold flex items-center justify-center">
+                                        Pesanan Dibatalkan
+                                    </span>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -1192,7 +1347,7 @@
                     <span class="text-sub font-normal">Total</span>
                     <span id="modalSuccessTotalText" class="font-bold text-ink text-sm tabular-nums">Rp 0</span>
                 </div>
-                <div class="flex items-center justify-between pt-2 border-t border-line">
+                <div id="modalSuccessChangeRow" class="flex items-center justify-between pt-2 border-t border-line">
                     <span class="text-sub font-normal">Kembalian</span>
                     <span id="modalSuccessChangeText" class="font-bold text-forest-dark text-sm tabular-nums">Rp 0</span>
                 </div>
@@ -1219,6 +1374,307 @@
     </div>
 
     {{-- =========================================================================
+         MODAL UBAH ITEM PESANAN (Solusi A: Edit Pesanan Pending saat Kurir Datang)
+         ========================================================================= --}}
+    <div
+        id="kasirEditOrderModal"
+        onclick="if (event.target === this) closeEditOrderModal()"
+        class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/45 backdrop-blur-[2px] p-0 sm:p-4"
+    >
+        <div class="bg-white border border-line rounded-t-2xl sm:rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden animate-sheet-up sm:animate-modal-pop flex flex-col max-h-[92vh]">
+            {{-- Header --}}
+            <div class="p-4 border-b border-line flex items-start justify-between gap-3 bg-white shrink-0">
+                <div class="min-w-0 space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 id="editOrderModalTitle" class="text-sm font-bold text-ink tabular-nums">Ubah Pesanan #NCM-000</h3>
+                        <span id="editOrderModalServiceBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200">
+                            Kurir Zendo
+                        </span>
+                    </div>
+                    <p id="editOrderModalSubtitle" class="text-xs font-normal text-sub truncate">Pelanggan</p>
+                </div>
+                <button
+                    type="button"
+                    onclick="closeEditOrderModal()"
+                    aria-label="Tutup ubah pesanan"
+                    class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-sub flex items-center justify-center cursor-pointer shrink-0"
+                >
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            {{-- Body --}}
+            <div class="p-4 overflow-y-auto space-y-5 flex-1">
+                {{-- Info Alamat (jika Zendo) --}}
+                <div id="editOrderAddressBox" class="hidden text-xs text-sky-900 bg-sky-50/70 border border-sky-200/80 rounded-xl px-3 py-2">
+                    <i class="fa-solid fa-location-dot text-sky-700 mr-1.5"></i>
+                    <span id="editOrderAddressText"></span>
+                </div>
+
+                {{-- Daftar Item Pesanan --}}
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-ink">Item Pesanan Saat Ini</span>
+                        <span id="editOrderItemCountLabel" class="text-xs font-normal text-muted tabular-nums">0 item</span>
+                    </div>
+                    <div id="editOrderItemsList" class="space-y-2"></div>
+                </div>
+
+                {{-- Tambah Menu Pengganti / Tambahan --}}
+                <div class="pt-4 border-t border-line space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span class="text-xs font-bold text-ink">Tambah Menu Pengganti / Tambahan</span>
+                        <input
+                            type="search"
+                            id="editOrderCatalogSearch"
+                            oninput="renderEditOrderCatalog(this.value)"
+                            placeholder="Cari nama menu..."
+                            class="w-full sm:w-60 min-h-[40px] bg-canvas border border-line rounded-xl px-3 py-1.5 text-xs text-ink placeholder-muted focus:outline-none focus:border-forest focus:bg-white"
+                        >
+                    </div>
+                    <div id="editOrderCatalogList" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1"></div>
+                </div>
+            </div>
+
+            {{-- Footer --}}
+            <div class="p-4 border-t border-line bg-canvas/50 space-y-3 shrink-0">
+                <div class="space-y-1 text-xs">
+                    <div class="flex items-center justify-between text-sub">
+                        <span>Subtotal Menu Baru</span>
+                        <span id="editOrderSubtotalText" class="font-bold text-ink tabular-nums">Rp 0</span>
+                    </div>
+                    <div id="editOrderDeliveryFeeRow" class="hidden flex items-center justify-between text-sky-800">
+                        <span>Ongkir Kurir Zendo</span>
+                        <span id="editOrderDeliveryFeeText" class="font-bold tabular-nums">Rp 0</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-1.5 border-t border-line">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-ink text-xs">Total Baru</span>
+                            <span id="editOrderDiffBadge" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-md tabular-nums"></span>
+                        </div>
+                        <span id="editOrderTotalText" class="text-lg font-bold text-ink tabular-nums">Rp 0</span>
+                    </div>
+                </div>
+
+                <div id="editOrderErrorBox" class="hidden text-xs font-bold text-danger bg-danger-soft border border-danger/20 rounded-xl px-3 py-2"></div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <button
+                        type="button"
+                        onclick="closeEditOrderModal()"
+                        class="min-h-[46px] px-4 rounded-xl bg-white border border-line text-xs font-bold text-sub cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="button"
+                        id="btnSaveEditOrderOnly"
+                        onclick="submitEditKasirOrder(false)"
+                        class="min-h-[46px] px-4 rounded-xl bg-white border border-forest text-xs font-bold text-forest-dark cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Simpan Perubahan
+                    </button>
+                    <button
+                        type="button"
+                        id="btnSaveEditOrderAndPay"
+                        onclick="submitEditKasirOrder(true)"
+                        class="min-h-[46px] px-4 rounded-xl bg-forest hover:bg-forest-dark text-xs font-bold text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Simpan &amp; Bayar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================================
+         MODAL PEMBAYARAN PESANAN (Dine-In/Take Away sesuai pilihan | Zendo pilih metode dulu)
+         ========================================================================= --}}
+    <div
+        id="kasirPayOrderModal"
+        onclick="if (event.target === this) closePayOrderModal()"
+        class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/45 backdrop-blur-[2px] p-0 sm:p-4"
+    >
+        <div class="bg-white border border-line rounded-t-2xl sm:rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-sheet-up sm:animate-modal-pop flex flex-col max-h-[92vh]">
+            {{-- Header --}}
+            <div class="p-4 border-b border-line flex items-start justify-between gap-3 bg-white shrink-0">
+                <div class="min-w-0 space-y-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 id="payOrderModalTitle" class="text-sm font-bold text-ink tabular-nums">Pembayaran #NCM-000</h3>
+                        <span id="payOrderModalServiceBadge" class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-50 text-sky-800 border border-sky-200">
+                            Kurir Zendo
+                        </span>
+                    </div>
+                    <p id="payOrderModalSubtitle" class="text-xs font-normal text-sub truncate">Pelanggan</p>
+                </div>
+                <button
+                    type="button"
+                    onclick="closePayOrderModal()"
+                    aria-label="Tutup pembayaran"
+                    class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl text-sub flex items-center justify-center cursor-pointer shrink-0"
+                >
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            {{-- Body --}}
+            <div class="p-4 overflow-y-auto space-y-4 flex-1">
+                {{-- Ringkasan Tagihan --}}
+                <div class="bg-canvas border border-line rounded-xl p-3.5 space-y-1.5 text-xs">
+                    <div id="payOrderZendoFeeNotice" class="hidden space-y-1 pb-2 mb-1 border-b border-line">
+                        <div class="flex items-center justify-between text-sky-800">
+                            <span>Ongkir Kurir Zendo (untuk kurir)</span>
+                            <span id="payOrderDeliveryFeeText" class="font-bold tabular-nums">Rp 0</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sub">
+                            <span>Total di Struk Pelanggan</span>
+                            <span id="payOrderCustomerTotalText" class="font-bold tabular-nums text-ink">Rp 0</span>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline justify-between">
+                        <span id="payOrderAmountLabel" class="text-xs font-bold text-sub">Total Tagihan</span>
+                        <span id="payOrderPayableAmountText" class="text-2xl font-bold text-ink tabular-nums">Rp 0</span>
+                    </div>
+                </div>
+
+                {{-- Pilihan Metode Pembayaran --}}
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <span id="payOrderMethodHint" class="text-xs font-bold text-ink">Pilih Metode Pembayaran</span>
+                        <span id="payOrderCustomerChoiceBadge" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-md bg-canvas border border-line text-sub"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button
+                            type="button"
+                            onclick="selectPayOrderMethod('cash')"
+                            data-pay-modal-btn="cash"
+                            class="pay-modal-method-btn min-h-[48px] px-2 rounded-xl border border-line bg-canvas text-xs font-bold text-sub flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors"
+                        >
+                            <i class="fa-solid fa-money-bill-wave text-xs"></i>
+                            <span>Tunai</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick="selectPayOrderMethod('qris')"
+                            data-pay-modal-btn="qris"
+                            class="pay-modal-method-btn min-h-[48px] px-2 rounded-xl border border-line bg-canvas text-xs font-bold text-sub flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors"
+                        >
+                            <i class="fa-solid fa-qrcode text-xs"></i>
+                            <span>QRIS</span>
+                        </button>
+                        <button
+                            type="button"
+                            onclick="selectPayOrderMethod('transfer')"
+                            data-pay-modal-btn="transfer"
+                            class="pay-modal-method-btn min-h-[48px] px-2 rounded-xl border border-line bg-canvas text-xs font-bold text-sub flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors"
+                        >
+                            <i class="fa-solid fa-building-columns text-xs"></i>
+                            <span>Transfer</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Bagian Hitung Kembalian (HANYA tampil jika metode = Tunai) --}}
+                <div id="payOrderCashSection" class="hidden space-y-2.5 pt-1">
+                    <label for="payOrderCashReceived" class="block text-xs font-bold text-ink">
+                        Uang Tunai Diterima
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-muted">Rp</span>
+                        <input
+                            type="number"
+                            id="payOrderCashReceived"
+                            min="0"
+                            step="1000"
+                            oninput="calculatePayOrderChange()"
+                            placeholder="Masukkan nominal uang..."
+                            class="w-full min-h-[48px] bg-canvas border border-line rounded-xl pl-10 pr-3.5 py-2 text-base font-bold tabular-nums text-ink placeholder-muted focus:outline-none focus:border-forest focus:bg-white"
+                        >
+                    </div>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" onclick="setPayOrderQuickCash('exact')" class="min-h-[42px] px-2 rounded-xl bg-canvas border border-line text-xs font-bold text-ink cursor-pointer">Pas</button>
+                        <button type="button" onclick="setPayOrderQuickCash(20000)" class="min-h-[42px] px-2 rounded-xl bg-canvas border border-line text-xs font-bold text-ink tabular-nums cursor-pointer">20K</button>
+                        <button type="button" onclick="setPayOrderQuickCash(50000)" class="min-h-[42px] px-2 rounded-xl bg-canvas border border-line text-xs font-bold text-ink tabular-nums cursor-pointer">50K</button>
+                        <button type="button" onclick="setPayOrderQuickCash(100000)" class="min-h-[42px] px-2 rounded-xl bg-canvas border border-line text-xs font-bold text-ink tabular-nums cursor-pointer">100K</button>
+                    </div>
+                    <div class="flex items-center justify-between rounded-xl bg-canvas px-3.5 py-2.5 text-xs">
+                        <span class="text-sub font-normal">Kembalian</span>
+                        <span id="payOrderChangeDisplay" class="text-base font-bold tabular-nums text-ink">Rp 0</span>
+                    </div>
+                </div>
+
+                {{-- Bagian Info Non-Tunai (QRIS / Transfer — tanpa hitung kembalian) --}}
+                <div id="payOrderNonCashSection" class="hidden rounded-xl bg-forest-soft/60 border border-forest/20 p-3.5 space-y-2.5 text-xs text-forest-dark">
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-circle-check mt-0.5 shrink-0"></i>
+                        <span id="payOrderNonCashText" class="leading-relaxed font-normal">Pembayaran non-tunai tidak memerlukan perhitungan kembalian.</span>
+                    </div>
+                    <div id="payOrderQrisPreviewWrap" class="hidden pt-1 text-center">
+                        <img id="payOrderQrisPreviewImg" src="{{ $qrisImageUrl ?? '' }}" alt="QRIS Nucomu Cafe" class="w-40 h-40 object-contain mx-auto rounded-xl bg-white p-2 border border-line">
+                    </div>
+                </div>
+
+                <div id="payOrderErrorBox" class="hidden text-xs font-bold text-danger bg-danger-soft border border-danger/20 rounded-xl px-3 py-2"></div>
+            </div>
+
+            {{-- Footer --}}
+            <div class="p-4 border-t border-line bg-white grid grid-cols-3 gap-2 shrink-0">
+                <button
+                    type="button"
+                    onclick="closePayOrderModal()"
+                    class="min-h-[48px] px-3 rounded-xl bg-canvas border border-line text-xs font-bold text-sub cursor-pointer"
+                >
+                    Batal
+                </button>
+                <button
+                    type="button"
+                    id="btnConfirmPayOrder"
+                    onclick="submitPayKasirOrder()"
+                    class="col-span-2 min-h-[48px] px-4 rounded-xl bg-forest hover:bg-forest-dark disabled:bg-line disabled:text-muted text-white text-xs font-bold cursor-pointer disabled:cursor-not-allowed transition-colors"
+                >
+                    Bayar &amp; Selesai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================================
+         MODAL KONFIRMASI BATALKAN PESANAN
+         ========================================================================= --}}
+    <div
+        id="kasirCancelOrderModal"
+        onclick="if (event.target === this) closeCancelOrderConfirm()"
+        class="fixed inset-0 z-50 hidden items-center justify-center bg-black/45 backdrop-blur-[2px] p-4"
+    >
+        <div class="bg-white border border-line rounded-2xl max-w-sm w-full p-5 shadow-2xl animate-modal-pop space-y-4">
+            <div class="space-y-1">
+                <h3 id="cancelOrderModalTitle" class="text-sm font-bold text-ink">Batalkan Pesanan?</h3>
+                <p id="cancelOrderModalDesc" class="text-xs font-normal text-sub leading-relaxed">
+                    Pesanan akan dipindahkan ke daftar Batal dan stok menu akan dikembalikan otomatis.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5 pt-1">
+                <button
+                    type="button"
+                    onclick="closeCancelOrderConfirm()"
+                    class="min-h-[48px] px-4 rounded-xl bg-canvas text-sm font-bold text-ink cursor-pointer"
+                >
+                    Kembali
+                </button>
+                <button
+                    type="button"
+                    id="btnConfirmCancelOrder"
+                    onclick="executeCancelKasirOrder()"
+                    class="min-h-[48px] px-4 rounded-xl bg-danger text-white text-sm font-bold cursor-pointer"
+                >
+                    Ya, Batalkan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================================
          TOAST NOTIFIKASI TENANG
          ========================================================================= --}}
     <div
@@ -1233,15 +1689,28 @@
          ========================================================================= --}}
     <script>
         const KASIR_CATALOG = @json($catalogJsMap);
+        const KASIR_QRIS_IMAGE_URL = @json($qrisImageUrl ?? null);
+        const INITIAL_RECENT_ORDERS = @json($recentOrdersPayload ?? []);
+        const INITIAL_SCANNED_ORDER = @json($scannedOrderPayload ?? null);
 
         const KASIR_STATE = {
             cart: [],
             activeMainTab: @json($activeTab),
             activeCategory: @json($initialCatalogTab),
             activeStockCategory: @json($firstCategoryKey),
+            activeOrderStatus: 'unpaid',
+            activeOrderService: 'all',
+            orderSearchQuery: '',
+            recentOrders: Array.isArray(INITIAL_RECENT_ORDERS) ? INITIAL_RECENT_ORDERS : [],
+            ordersById: {},
+            knownOrderIds: new Set(),
+            activeScannedOrder: INITIAL_SCANNED_ORDER || null,
+            editOrderDraft: null,
+            payOrderDraft: null,
+            cancelOrderTargetId: null,
             stocks: {
                 @foreach($catalogItems as $ci)
-                    {{ $ci['id'] }}: {{ $ci['is_available'] && (int)$ci['stock'] > 0 ? 25 : 0 }},
+                    {{ $ci['id'] }}: {{ $ci['is_available'] && (int)$ci['stock'] > 0 ? (int)$ci['stock'] : 0 }},
                 @endforeach
             },
             variantDraft: null,
@@ -1249,6 +1718,15 @@
             html5QrScanner: null,
             scannerRunning: false,
         };
+
+        (KASIR_STATE.recentOrders || []).forEach(ord => {
+            KASIR_STATE.ordersById[ord.id] = ord;
+            KASIR_STATE.knownOrderIds.add(Number(ord.id));
+        });
+        if (KASIR_STATE.activeScannedOrder && KASIR_STATE.activeScannedOrder.id) {
+            KASIR_STATE.ordersById[KASIR_STATE.activeScannedOrder.id] = KASIR_STATE.activeScannedOrder;
+            KASIR_STATE.knownOrderIds.add(Number(KASIR_STATE.activeScannedOrder.id));
+        }
 
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024 && KASIR_STATE.mobileCartOpen) {
@@ -2346,7 +2824,8 @@
                     data.order.customer_name,
                     data.order.total,
                     data.order.change_amount || 0,
-                    data.receipt_url
+                    data.receipt_url,
+                    payload.payment_method === 'cash'
                 );
                 showKasirToast(`Pesanan #${data.order.code} tersimpan`);
                 syncKasirWithDatabase(false);
@@ -2357,11 +2836,12 @@
             }
         }
 
-        function openOrderSuccessModal(orderCode, customerName, totalAmount, changeAmount = 0, receiptUrl = null) {
+        function openOrderSuccessModal(orderCode, customerName, totalAmount, changeAmount = 0, receiptUrl = null, showChange = true) {
             const modal = document.getElementById('kasirOrderSuccessModal');
             const codeEl = document.getElementById('modalSuccessOrderCode');
             const nameEl = document.getElementById('modalSuccessCustomerName');
             const totalEl = document.getElementById('modalSuccessTotalText');
+            const changeRow = document.getElementById('modalSuccessChangeRow');
             const changeEl = document.getElementById('modalSuccessChangeText');
             const receiptBtn = document.getElementById('modalSuccessReceiptBtn');
 
@@ -2370,6 +2850,7 @@
             if (codeEl) codeEl.textContent = `#${orderCode}`;
             if (nameEl) nameEl.textContent = customerName || 'Pelanggan Kasir';
             if (totalEl) totalEl.textContent = formatRupiah(totalAmount);
+            if (changeRow) changeRow.classList.toggle('hidden', !showChange);
             if (changeEl) changeEl.textContent = formatRupiah(changeAmount);
             if (receiptBtn && receiptUrl) receiptBtn.href = receiptUrl;
 
@@ -2439,6 +2920,196 @@
             lookupKasirOrderCode(val);
         }
 
+        function getOrderServiceMeta(order) {
+            if (order && order.is_zendo) {
+                return {
+                    key: 'zendo',
+                    label: order.service_type_label || 'Kurir Zendo',
+                    badgeClass: 'bg-sky-50 text-sky-800 border border-sky-200',
+                    icon: 'fa-motorcycle',
+                    cardBorder: 'border-sky-200',
+                };
+            }
+            if (order && order.order_type === 'dine_in') {
+                return {
+                    key: 'dine_in',
+                    label: order.service_type_label || 'Makan di Sini',
+                    badgeClass: 'bg-canvas text-ink border border-line',
+                    icon: 'fa-utensils',
+                    cardBorder: 'border-line',
+                };
+            }
+            return {
+                key: 'take_away',
+                label: order?.service_type_label || 'Bawa Pulang',
+                badgeClass: 'bg-stone-100 text-sub border border-line',
+                icon: 'fa-bag-shopping',
+                cardBorder: 'border-line',
+            };
+        }
+
+        function formatOrderOptionsText(options) {
+            if (!Array.isArray(options) || options.length === 0) return '';
+            return options.map(opt => {
+                if (opt && typeof opt === 'object') {
+                    return opt.price > 0 ? `${opt.name} (+${formatRupiah(opt.price)})` : (opt.name || '');
+                }
+                return String(opt || '');
+            }).filter(Boolean).join(' · ');
+        }
+
+        function getKasirOrderBucket(order) {
+            if (!order) return 'unpaid';
+            if (order.kasir_bucket) return order.kasir_bucket;
+            if (order.status === 'cancelled') return 'cancelled';
+            if (order.status === 'completed' || ((order.status === 'processing' || order.status === 'ready') && order.payment_status === 'paid')) {
+                return 'completed';
+            }
+            return 'unpaid';
+        }
+
+        function formatPaymentMethodLabel(method) {
+            const m = String(method || 'cash').toLowerCase();
+            if (m === 'qris') return 'QRIS';
+            if (m === 'transfer') return 'Transfer';
+            return 'Tunai';
+        }
+
+        function renderScannedOrderResult(o) {
+            const container = document.getElementById('scannedOrderResultContainer');
+            if (!container || !o) return;
+
+            KASIR_STATE.activeScannedOrder = o;
+            KASIR_STATE.ordersById[o.id] = o;
+
+            const serviceMeta = getOrderServiceMeta(o);
+            const bucket = getKasirOrderBucket(o);
+            const deliveryFee = Number(o.delivery_fee || 0);
+            const payLabel = o.payment_method_label || formatPaymentMethodLabel(o.payment_method);
+
+            const itemsHtml = (o.items || []).map(i => {
+                const optsText = formatOrderOptionsText(i.options);
+                return `
+                    <div class="flex items-start justify-between gap-2 bg-canvas rounded-xl px-3.5 py-2.5 text-xs">
+                        <div class="min-w-0">
+                            <div>
+                                <span class="font-bold text-ink">${escapeKasirHtml(i.menu_name)}</span>
+                                <span class="text-sub ml-1.5 tabular-nums">x${i.qty}</span>
+                            </div>
+                            ${optsText ? `<p class="text-[11px] text-sub mt-0.5">${escapeKasirHtml(optsText)}</p>` : ''}
+                        </div>
+                        <span class="font-bold text-ink tabular-nums shrink-0">${formatRupiah(i.line_total)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const customerMetaParts = [escapeKasirHtml(o.customer_name || 'Pelanggan Kasir')];
+            if (o.table_number) {
+                customerMetaParts.push(`Meja ${escapeKasirHtml(o.table_number)}`);
+            }
+            if (o.customer_phone && o.customer_phone !== '-') {
+                customerMetaParts.push(escapeKasirHtml(o.customer_phone));
+            }
+
+            const paymentInfoLine = bucket === 'unpaid'
+                ? (o.is_zendo
+                    ? `<p class="text-xs text-sub mt-1">Pembayaran: <strong class="text-sky-800">Pilih metode saat kurir Zendo bayar</strong></p>`
+                    : `<p class="text-xs text-sub mt-1">Metode pilihan pelanggan: <strong class="text-ink">${escapeKasirHtml(payLabel)}</strong></p>`)
+                : '';
+
+            const addressHtml = (o.is_zendo && o.delivery_address)
+                ? `<p class="text-xs text-sky-900 bg-sky-50/70 border border-sky-200/80 rounded-lg px-2.5 py-1.5 mt-2"><i class="fa-solid fa-location-dot text-sky-700 mr-1"></i>${escapeKasirHtml(o.delivery_address)}</p>`
+                : '';
+
+            const editButtonHtml = o.can_edit
+                ? `<button type="button" onclick="openEditOrderModal(${o.id})" class="min-h-[48px] px-4 rounded-xl bg-warning-soft text-warning-ink border border-warning/40 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"><i class="fa-solid fa-pen-to-square text-[11px]"></i><span>Ubah Pesanan</span></button>`
+                : '';
+
+            const feeRowsHtml = deliveryFee > 0
+                ? `
+                    <div class="flex items-center justify-between text-xs text-sub">
+                        <span>Subtotal Menu (Bayar ke Kafe)</span>
+                        <span class="font-bold tabular-nums text-ink">${formatRupiah(o.subtotal)}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-sky-800">
+                        <span>Ongkir Kurir Zendo</span>
+                        <span class="font-bold tabular-nums">${formatRupiah(deliveryFee)}</span>
+                    </div>
+                `
+                : '';
+
+            const statusBadgeClass = bucket === 'completed'
+                ? 'bg-forest-soft text-forest-dark'
+                : (bucket === 'cancelled' ? 'bg-danger-soft text-danger' : 'bg-warning-soft text-warning-ink');
+            const statusBadgeText = bucket === 'completed'
+                ? `SELESAI • LUNAS (${payLabel})`
+                : (bucket === 'cancelled' ? 'BATAL' : 'BELUM BAYAR');
+
+            let footerActionsHtml = '';
+            if (bucket === 'unpaid') {
+                footerActionsHtml = `
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="openPayOrderModal(${o.id})" class="flex-1 min-h-[48px] px-4 rounded-xl bg-forest hover:bg-forest-dark text-white text-xs font-bold cursor-pointer">
+                            Bayar &amp; Selesai
+                        </button>
+                        ${editButtonHtml}
+                        <button type="button" onclick="openCancelOrderConfirm(${o.id})" class="min-h-[48px] px-4 rounded-xl bg-danger-soft text-danger text-xs font-bold cursor-pointer">
+                            Batalkan
+                        </button>
+                    </div>
+                `;
+            } else if (bucket === 'completed') {
+                footerActionsHtml = `
+                    <div class="flex items-center justify-between gap-3 rounded-xl bg-forest-soft px-4 py-3 text-xs font-bold text-forest-dark">
+                        <span>Transaksi Selesai • Lunas (${escapeKasirHtml(payLabel)})</span>
+                        <a href="${escapeKasirHtml(o.receipt_url)}" target="_blank" class="underline">Cetak Struk</a>
+                    </div>
+                `;
+            } else {
+                footerActionsHtml = `
+                    <div class="rounded-xl bg-danger-soft px-4 py-3 text-xs font-bold text-danger">
+                        Pesanan ini sudah dibatalkan.
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-line">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-xs font-bold px-2.5 py-1 rounded-md ${statusBadgeClass}">
+                                    ${escapeKasirHtml(statusBadgeText)}
+                                </span>
+                                <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md ${serviceMeta.badgeClass}">
+                                    <i class="fa-solid ${serviceMeta.icon} text-[10px]"></i>
+                                    <span>${escapeKasirHtml(serviceMeta.label)}</span>
+                                </span>
+                            </div>
+                            <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#${escapeKasirHtml(o.code)}</h3>
+                            <p class="text-xs font-normal text-sub mt-0.5">${customerMetaParts.join(' • ')}</p>
+                            ${paymentInfoLine}
+                            ${addressHtml}
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <a href="${escapeKasirHtml(o.receipt_url)}" target="_blank" class="min-h-[44px] px-4 rounded-xl bg-canvas border border-line text-ink text-xs font-bold flex items-center">
+                                Cetak Struk
+                            </a>
+                        </div>
+                    </div>
+                    <div class="space-y-2 max-h-60 overflow-y-auto pr-1">${itemsHtml}</div>
+                    <div class="pt-3 border-t border-line space-y-1.5">
+                        ${feeRowsHtml}
+                        <div class="flex items-center justify-between pt-1">
+                            <span class="text-xs font-normal text-sub">${o.is_zendo ? 'Total Pelanggan' : 'Total'}</span>
+                            <span class="text-2xl font-bold text-ink tabular-nums">${formatRupiah(o.total)}</span>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-line">${footerActionsHtml}</div>
+                </div>
+            `;
+        }
+
         async function lookupKasirOrderCode(rawCode) {
             const code = (rawCode || '').trim();
             if (!code) return;
@@ -2457,55 +3128,20 @@
                     return;
                 }
 
-                const o = data.order;
-                const container = document.getElementById('scannedOrderResultContainer');
-                if (!container) return;
-
-                const itemsHtml = (o.items || []).map(i => `
-                    <div class="flex items-center justify-between bg-canvas rounded-xl px-3.5 py-2.5 text-xs">
-                        <div>
-                            <span class="font-bold text-ink">${escapeKasirHtml(i.menu_name)}</span>
-                            <span class="text-sub ml-1.5 tabular-nums">x${i.qty}</span>
-                        </div>
-                        <span class="font-bold text-ink tabular-nums">${formatRupiah(i.line_total)}</span>
-                    </div>
-                `).join('');
-
-                const isPaid = o.payment_status === 'paid';
-                container.innerHTML = `
-                    <div class="space-y-4">
-                        <div class="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-line">
-                            <div>
-                                <span class="text-xs font-bold px-2.5 py-1 rounded-md ${isPaid ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink'}">
-                                    ${isPaid ? 'LUNAS' : 'BELUM BAYAR'} (${escapeKasirHtml(o.status_label)})
-                                </span>
-                                <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#${escapeKasirHtml(o.code)}</h3>
-                                <p class="text-xs font-normal text-sub mt-0.5">${escapeKasirHtml(o.customer_name || 'Pelanggan Kasir')} • ${o.order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang'}</p>
-                            </div>
-                            <a href="${data.receipt_url}" target="_blank" class="min-h-[44px] px-4 rounded-xl bg-canvas border border-line text-ink text-xs font-bold flex items-center">
-                                Cetak Struk
-                            </a>
-                        </div>
-                        <div class="space-y-2 max-h-60 overflow-y-auto pr-1">${itemsHtml}</div>
-                        <div class="flex items-center justify-between pt-3 border-t border-line">
-                            <span class="text-xs font-normal text-sub">Total</span>
-                            <span class="text-2xl font-bold text-ink tabular-nums">${formatRupiah(o.total)}</span>
-                        </div>
-                        <div class="pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <button type="button" onclick="updateKasirOrderStatus(${o.id}, 'processing', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">Set Diproses & Lunas</button>
-                            <button type="button" onclick="updateKasirOrderStatus(${o.id}, 'ready', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">Set Siap Saji</button>
-                            <button type="button" onclick="updateKasirOrderStatus(${o.id}, 'completed', 'paid')" class="min-h-[48px] px-3 rounded-xl bg-forest text-white text-xs font-bold cursor-pointer">Selesaikan Pesanan</button>
-                        </div>
-                    </div>
-                `;
-                showKasirToast(`Pesanan #${o.code} ditemukan`);
+                renderScannedOrderResult(data.order);
+                showKasirToast(`Pesanan #${data.order.code} ditemukan`);
             } catch (e) {
                 showKasirToast('Gagal memuat detail pesanan');
             }
         }
 
-        async function updateKasirOrderStatus(orderId, status, paymentStatus = 'paid') {
+        async function updateKasirOrderStatus(orderId, status, paymentStatus = null, extraPayload = {}) {
             try {
+                const bodyPayload = { status, ...extraPayload };
+                if (paymentStatus) {
+                    bodyPayload.payment_status = paymentStatus;
+                }
+
                 const res = await fetch(`/kasir/pesanan/${orderId}/status`, {
                     method: 'POST',
                     headers: {
@@ -2513,22 +3149,810 @@
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
                     },
-                    body: JSON.stringify({ status, payment_status: paymentStatus }),
+                    body: JSON.stringify(bodyPayload),
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    const badge = document.getElementById(`orderCardStatusBadge-${orderId}`);
-                    if (badge) badge.textContent = data.order.status_label;
+                    if (data.order) {
+                        upsertKasirOrderInState(data.order);
+                        if (KASIR_STATE.activeScannedOrder && Number(KASIR_STATE.activeScannedOrder.id) === Number(data.order.id)) {
+                            renderScannedOrderResult(data.order);
+                        }
+                    }
+                    if (data.stocks) {
+                        Object.entries(data.stocks).forEach(([mid, newStock]) => {
+                            applyStockToDom(Number(mid), Number(newStock));
+                        });
+                    }
                     if (data.stats) {
                         updateKasirHeaderStats(data.stats);
                     }
+                    renderKasirOrdersGrid();
                     showKasirToast(data.message || 'Status pesanan diperbarui');
+                    syncKasirWithDatabase(false);
+                    return data;
+                }
+                showKasirToast(data.message || 'Gagal memperbarui status pesanan');
+                return { success: false, message: data.message };
+            } catch (e) {
+                showKasirToast('Gagal memperbarui status pesanan');
+                return { success: false, message: 'Koneksi bermasalah. Coba lagi.' };
+            }
+        }
+
+        function upsertKasirOrderInState(orderObj) {
+            if (!orderObj || !orderObj.id) return;
+            KASIR_STATE.ordersById[orderObj.id] = orderObj;
+            KASIR_STATE.knownOrderIds.add(Number(orderObj.id));
+
+            const idx = KASIR_STATE.recentOrders.findIndex(o => Number(o.id) === Number(orderObj.id));
+            if (idx !== -1) {
+                KASIR_STATE.recentOrders[idx] = orderObj;
+            } else {
+                KASIR_STATE.recentOrders.unshift(orderObj);
+            }
+        }
+
+        function renderKasirOrdersGrid() {
+            const container = document.getElementById('kasirOrdersGridContainer');
+            if (!container) return;
+
+            const statusFilter = KASIR_STATE.activeOrderStatus || 'unpaid';
+            const serviceFilter = KASIR_STATE.activeOrderService || 'all';
+            const query = (KASIR_STATE.orderSearchQuery || '').toLowerCase().trim();
+
+            const filtered = (KASIR_STATE.recentOrders || []).filter(ord => {
+                const serviceMeta = getOrderServiceMeta(ord);
+                const bucket = getKasirOrderBucket(ord);
+                if (query === '' && bucket !== statusFilter) {
+                    return false;
+                }
+                if (serviceFilter !== 'all' && serviceMeta.key !== serviceFilter) {
+                    return false;
+                }
+                if (query !== '') {
+                    const itemsText = (ord.items || []).map(it => it.menu_name || '').join(' ');
+                    const hay = `${ord.code || ''} ${ord.customer_name || ''} ${ord.delivery_address || ''} ${serviceMeta.label} ${itemsText}`.toLowerCase();
+                    if (!hay.includes(query)) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                const emptyLabel = query !== ''
+                    ? 'Pesanan tidak ditemukan untuk kata kunci tersebut'
+                    : (serviceFilter !== 'all'
+                        ? 'Belum ada pesanan pada filter ini'
+                        : (statusFilter === 'unpaid'
+                            ? 'Tidak ada pesanan yang menunggu pembayaran'
+                            : (statusFilter === 'completed' ? 'Belum ada pesanan selesai' : 'Belum ada pesanan dibatalkan')));
+                container.innerHTML = `
+                    <div class="col-span-full bg-white border border-line rounded-xl p-12 text-center">
+                        <p class="text-sm font-bold text-ink">${escapeKasirHtml(emptyLabel)}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(ord => {
+                const serviceMeta = getOrderServiceMeta(ord);
+                const bucket = getKasirOrderBucket(ord);
+                const deliveryFee = Number(ord.delivery_fee || 0);
+                const payLabel = ord.payment_method_label || formatPaymentMethodLabel(ord.payment_method);
+
+                const itemsHtml = (ord.items || []).map(it => {
+                    const optsText = formatOrderOptionsText(it.options);
+                    return `
+                        <div class="flex items-start justify-between gap-2 text-ink">
+                            <div class="min-w-0 pr-2">
+                                <span class="font-normal">${escapeKasirHtml(it.menu_name)} <strong class="font-bold tabular-nums">x${it.qty}</strong></span>
+                                ${optsText ? `<div class="text-[10.5px] text-sub truncate">${escapeKasirHtml(optsText)}</div>` : ''}
+                            </div>
+                            <span class="font-bold tabular-nums shrink-0">${formatRupiah(it.line_total)}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                const paymentMetaHtml = bucket === 'unpaid'
+                    ? (ord.is_zendo
+                        ? `<p class="text-[11px] text-sub mt-1">Pembayaran: <strong class="text-sky-800">Pilih saat kurir tiba</strong></p>`
+                        : `<p class="text-[11px] text-sub mt-1">Pembayaran: <strong class="text-ink">${escapeKasirHtml(payLabel)}</strong></p>`)
+                    : '';
+
+                const addressHtml = (ord.is_zendo && ord.delivery_address)
+                    ? `<p class="text-[11px] text-sky-900 bg-sky-50/70 border border-sky-200/70 rounded-lg px-2 py-1 mt-2 line-clamp-2"><i class="fa-solid fa-location-dot text-sky-700 mr-1"></i>${escapeKasirHtml(ord.delivery_address)}</p>`
+                    : '';
+
+                const feeHtml = deliveryFee > 0
+                    ? `<div class="flex items-center justify-between text-[11px] text-sky-800"><span>Ongkir Kurir Zendo</span><span class="font-bold tabular-nums">${formatRupiah(deliveryFee)}</span></div>`
+                    : '';
+
+                const badgeClass = bucket === 'completed'
+                    ? 'bg-forest-soft text-forest-dark'
+                    : (bucket === 'cancelled' ? 'bg-danger-soft text-danger' : 'bg-warning-soft text-warning-ink');
+                const badgeText = bucket === 'completed'
+                    ? `Selesai • ${payLabel}`
+                    : (bucket === 'cancelled' ? 'Batal' : 'Belum Bayar');
+
+                let actionButtonsHtml = '';
+                if (bucket === 'unpaid') {
+                    const editBtnHtml = ord.can_edit
+                        ? `<button type="button" onclick="openEditOrderModal(${ord.id})" class="min-h-[44px] px-3 rounded-xl bg-warning-soft text-warning-ink border border-warning/40 text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0" title="Ubah item pesanan"><i class="fa-solid fa-pen-to-square text-[11px]"></i><span>Ubah</span></button>`
+                        : '';
+                    actionButtonsHtml = `
+                        <button type="button" onclick="openPayOrderModal(${ord.id})" class="flex-1 min-h-[44px] px-3.5 rounded-xl bg-forest hover:bg-forest-dark text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-check text-[11px]"></i>
+                            <span>Bayar &amp; Selesai</span>
+                        </button>
+                        ${editBtnHtml}
+                        <button type="button" onclick="openCancelOrderConfirm(${ord.id})" class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-danger-soft text-danger text-xs font-bold flex items-center justify-center cursor-pointer shrink-0" title="Batalkan pesanan" aria-label="Batalkan pesanan">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    `;
+                } else if (bucket === 'completed') {
+                    actionButtonsHtml = `
+                        <a href="${escapeKasirHtml(ord.receipt_url)}" target="_blank" class="flex-1 min-h-[44px] px-3.5 rounded-xl bg-forest text-white text-xs font-bold flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-print text-[11px]"></i>
+                            <span>Cetak Struk</span>
+                        </a>
+                    `;
+                } else {
+                    actionButtonsHtml = `
+                        <span class="flex-1 min-h-[44px] px-3.5 rounded-xl bg-canvas text-muted text-xs font-bold flex items-center justify-center">
+                            Pesanan Dibatalkan
+                        </span>
+                    `;
+                }
+
+                return `
+                    <div
+                        class="kasir-order-card bg-white border ${serviceMeta.cardBorder} rounded-xl p-4 flex flex-col justify-between gap-4"
+                        data-order-id="${ord.id}"
+                        data-order-bucket="${escapeKasirHtml(bucket)}"
+                        data-order-status="${escapeKasirHtml(ord.status)}"
+                        data-order-service="${escapeKasirHtml(serviceMeta.key)}"
+                    >
+                        <div>
+                            <div class="flex items-start justify-between gap-2 pb-3 border-b border-line">
+                                <div class="min-w-0 w-full">
+                                    <div class="flex flex-wrap items-center justify-between gap-1.5">
+                                        <span class="text-xs font-bold text-ink tabular-nums">#${escapeKasirHtml(ord.code)}</span>
+                                        <span class="text-xs font-bold px-2 py-0.5 rounded-md ${badgeClass}">
+                                            ${escapeKasirHtml(badgeText)}
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                        <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md ${serviceMeta.badgeClass}">
+                                            <i class="fa-solid ${serviceMeta.icon} text-[10px]"></i>
+                                            <span>${escapeKasirHtml(serviceMeta.label)}</span>
+                                        </span>
+                                        <span class="text-xs font-bold text-ink truncate">
+                                            ${escapeKasirHtml(ord.customer_name || 'Pelanggan Kasir')}
+                                            ${ord.table_number ? `<span class="font-normal text-sub">• Meja ${escapeKasirHtml(ord.table_number)}</span>` : ''}
+                                        </span>
+                                    </div>
+                                    ${paymentMetaHtml}
+                                    ${addressHtml}
+                                </div>
+                            </div>
+
+                            <div class="py-3 space-y-1.5 max-h-36 overflow-y-auto text-xs">${itemsHtml}</div>
+                        </div>
+
+                        <div class="pt-3 border-t border-line space-y-3">
+                            <div class="space-y-1">
+                                ${feeHtml}
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-normal text-sub tabular-nums">${escapeKasirHtml(ord.created_at_short || ord.created_at_time || '')}</span>
+                                    <span class="text-sm font-bold text-ink tabular-nums">${formatRupiah(ord.total)}</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-2">${actionButtonsHtml}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /**
+         * Modal Ubah Pesanan (Solusi A: revisi pesanan pending saat kurir/pelanggan datang)
+         */
+        function openEditOrderModal(orderId) {
+            const ord = KASIR_STATE.ordersById[orderId] || (KASIR_STATE.recentOrders || []).find(o => Number(o.id) === Number(orderId));
+            if (!ord) {
+                showKasirToast('Data pesanan tidak ditemukan.');
+                return;
+            }
+            if (!ord.can_edit) {
+                showKasirToast('Pesanan ini sudah dibayar atau diproses sehingga tidak dapat diubah.');
+                return;
+            }
+
+            KASIR_STATE.editOrderDraft = {
+                orderId: ord.id,
+                code: ord.code,
+                customerName: ord.customer_name || 'Pelanggan Kasir',
+                isZendo: Boolean(ord.is_zendo),
+                serviceMeta: getOrderServiceMeta(ord),
+                deliveryAddress: ord.delivery_address || '',
+                deliveryFee: Number(ord.delivery_fee || 0),
+                originalTotal: Number(ord.total || 0),
+                updateUrl: ord.update_items_url || `/kasir/pesanan/${ord.id}/items`,
+                items: (ord.items || []).map((it, idx) => ({
+                    draftKey: `orig_${idx}_${it.menu_id || 'x'}_${Date.now()}`,
+                    menu_id: it.menu_id ?? null,
+                    menu_name: it.menu_name,
+                    unit_price: Number(it.unit_price || 0),
+                    qty: Math.max(1, Number(it.qty || 1)),
+                    options: Array.isArray(it.options) ? [...it.options] : [],
+                })),
+            };
+
+            const titleEl = document.getElementById('editOrderModalTitle');
+            const badgeEl = document.getElementById('editOrderModalServiceBadge');
+            const subEl = document.getElementById('editOrderModalSubtitle');
+            const addrBox = document.getElementById('editOrderAddressBox');
+            const addrText = document.getElementById('editOrderAddressText');
+            const searchEl = document.getElementById('editOrderCatalogSearch');
+            const errBox = document.getElementById('editOrderErrorBox');
+
+            if (titleEl) titleEl.textContent = `Ubah Pesanan #${ord.code}`;
+            if (badgeEl) {
+                badgeEl.className = `inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md ${KASIR_STATE.editOrderDraft.serviceMeta.badgeClass}`;
+                badgeEl.innerHTML = `<i class="fa-solid ${KASIR_STATE.editOrderDraft.serviceMeta.icon} text-[10px]"></i><span>${escapeKasirHtml(KASIR_STATE.editOrderDraft.serviceMeta.label)}</span>`;
+            }
+            if (subEl) subEl.textContent = ord.customer_name || 'Pelanggan Kasir';
+            if (addrBox && addrText) {
+                if (ord.is_zendo && ord.delivery_address) {
+                    addrText.textContent = ord.delivery_address;
+                    addrBox.classList.remove('hidden');
+                } else {
+                    addrBox.classList.add('hidden');
+                }
+            }
+            if (searchEl) searchEl.value = '';
+            if (errBox) {
+                errBox.textContent = '';
+                errBox.classList.add('hidden');
+            }
+
+            renderEditOrderModalItems();
+            renderEditOrderCatalog('');
+            updateEditOrderSummary();
+
+            const modal = document.getElementById('kasirEditOrderModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeEditOrderModal() {
+            KASIR_STATE.editOrderDraft = null;
+            const modal = document.getElementById('kasirEditOrderModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function renderEditOrderModalItems() {
+            const draft = KASIR_STATE.editOrderDraft;
+            const listEl = document.getElementById('editOrderItemsList');
+            const countEl = document.getElementById('editOrderItemCountLabel');
+            if (!draft || !listEl) return;
+
+            const totalQty = draft.items.reduce((sum, it) => sum + Number(it.qty || 0), 0);
+            if (countEl) countEl.textContent = `${totalQty} item`;
+
+            if (draft.items.length === 0) {
+                listEl.innerHTML = `
+                    <div class="rounded-xl border border-dashed border-line bg-canvas p-4 text-center text-xs text-sub">
+                        Belum ada item. Pilih menu pengganti di bawah sebelum menyimpan.
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = draft.items.map((it, idx) => {
+                const optsText = formatOrderOptionsText(it.options);
+                const lineTotal = Number(it.unit_price) * Number(it.qty);
+                return `
+                    <div class="flex items-center justify-between gap-2 bg-canvas border border-line rounded-xl px-3 py-2.5">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-ink truncate">${escapeKasirHtml(it.menu_name)}</div>
+                            ${optsText ? `<div class="text-[11px] text-sub truncate">${escapeKasirHtml(optsText)}</div>` : ''}
+                            <div class="text-[11px] text-muted tabular-nums mt-0.5">${formatRupiah(it.unit_price)} × ${it.qty} = <strong class="text-ink">${formatRupiah(lineTotal)}</strong></div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="adjustEditOrderItemQty(${idx}, -1)" aria-label="Kurangi" class="w-9 h-9 rounded-lg bg-white border border-line text-ink text-xs font-bold flex items-center justify-center cursor-pointer">-</button>
+                            <span class="min-w-[22px] text-center text-xs font-bold text-ink tabular-nums">${it.qty}</span>
+                            <button type="button" onclick="adjustEditOrderItemQty(${idx}, 1)" aria-label="Tambah" class="w-9 h-9 rounded-lg bg-white border border-line text-ink text-xs font-bold flex items-center justify-center cursor-pointer">+</button>
+                            <button type="button" onclick="removeEditOrderItem(${idx})" aria-label="Hapus item" class="w-9 h-9 rounded-lg bg-danger-soft text-danger text-xs flex items-center justify-center cursor-pointer ml-0.5">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function adjustEditOrderItemQty(index, delta) {
+            const draft = KASIR_STATE.editOrderDraft;
+            if (!draft || !draft.items[index]) return;
+            draft.items[index].qty += delta;
+            if (draft.items[index].qty <= 0) {
+                draft.items.splice(index, 1);
+            }
+            renderEditOrderModalItems();
+            updateEditOrderSummary();
+        }
+
+        function removeEditOrderItem(index) {
+            const draft = KASIR_STATE.editOrderDraft;
+            if (!draft || !draft.items[index]) return;
+            draft.items.splice(index, 1);
+            renderEditOrderModalItems();
+            updateEditOrderSummary();
+        }
+
+        function renderEditOrderCatalog(searchQuery) {
+            const listEl = document.getElementById('editOrderCatalogList');
+            if (!listEl) return;
+
+            const q = String(searchQuery || '').toLowerCase().trim();
+            const menus = Object.values(KASIR_CATALOG || {}).filter(m => {
+                if (q === '') return true;
+                return String(m.name || '').toLowerCase().includes(q)
+                    || String(m.sub_category || '').toLowerCase().includes(q);
+            });
+
+            if (menus.length === 0) {
+                listEl.innerHTML = `<div class="col-span-full text-center text-xs text-muted py-4">Menu tidak ditemukan</div>`;
+                return;
+            }
+
+            listEl.innerHTML = menus.map(m => {
+                const stockVal = Number(KASIR_STATE.stocks[m.id] ?? (m.is_available ? 25 : 0));
+                const isAvail = stockVal > 0 && Boolean(m.is_available);
+                return `
+                    <div class="flex items-center justify-between gap-2 p-2 rounded-xl border border-line bg-white ${!isAvail ? 'opacity-50' : ''}">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <img src="${escapeKasirHtml(m.image || '')}" alt="" class="w-9 h-9 rounded-lg object-cover bg-canvas shrink-0">
+                            <div class="min-w-0">
+                                <div class="text-xs font-bold text-ink truncate">${escapeKasirHtml(m.name)}</div>
+                                <div class="text-[11px] font-bold text-forest-dark tabular-nums">${formatRupiah(m.price)}</div>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onclick="addCatalogMenuToEditOrder(${Number(m.id)})"
+                            ${!isAvail ? 'disabled' : ''}
+                            class="min-h-[36px] px-3 rounded-lg text-xs font-bold shrink-0 cursor-pointer disabled:cursor-not-allowed ${isAvail ? 'bg-forest-soft text-forest-dark hover:bg-forest hover:text-white' : 'bg-danger-soft text-danger'}"
+                        >
+                            ${isAvail ? '+ Tambah' : 'Habis'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addCatalogMenuToEditOrder(menuId) {
+            const draft = KASIR_STATE.editOrderDraft;
+            const catalogMenu = KASIR_CATALOG[String(menuId)];
+            if (!draft || !catalogMenu) return;
+
+            const existing = draft.items.find(it =>
+                Number(it.menu_id) === Number(catalogMenu.id)
+                && (!Array.isArray(it.options) || it.options.length === 0)
+            );
+
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                draft.items.push({
+                    draftKey: `new_${catalogMenu.id}_${Date.now()}`,
+                    menu_id: Number(catalogMenu.id),
+                    menu_name: catalogMenu.name,
+                    unit_price: Number(catalogMenu.price || 0),
+                    qty: 1,
+                    options: [],
+                });
+            }
+
+            renderEditOrderModalItems();
+            updateEditOrderSummary();
+        }
+
+        function updateEditOrderSummary() {
+            const draft = KASIR_STATE.editOrderDraft;
+            if (!draft) return;
+
+            const subtotal = draft.items.reduce((sum, it) => sum + (Number(it.unit_price || 0) * Number(it.qty || 0)), 0);
+            const deliveryFee = Number(draft.deliveryFee || 0);
+            const newTotal = subtotal + deliveryFee;
+            const diff = newTotal - Number(draft.originalTotal || 0);
+
+            const subEl = document.getElementById('editOrderSubtotalText');
+            const feeRow = document.getElementById('editOrderDeliveryFeeRow');
+            const feeEl = document.getElementById('editOrderDeliveryFeeText');
+            const totalEl = document.getElementById('editOrderTotalText');
+            const diffEl = document.getElementById('editOrderDiffBadge');
+            const btnSave = document.getElementById('btnSaveEditOrderOnly');
+            const btnSavePay = document.getElementById('btnSaveEditOrderAndPay');
+
+            if (subEl) subEl.textContent = formatRupiah(subtotal);
+            if (feeRow && feeEl) {
+                feeRow.classList.toggle('hidden', deliveryFee <= 0);
+                feeEl.textContent = formatRupiah(deliveryFee);
+            }
+            if (totalEl) totalEl.textContent = formatRupiah(newTotal);
+
+            if (diffEl) {
+                if (diff === 0) {
+                    diffEl.classList.add('hidden');
+                } else {
+                    diffEl.classList.remove('hidden');
+                    diffEl.textContent = diff > 0 ? `+${formatRupiah(diff)}` : `-${formatRupiah(Math.abs(diff))}`;
+                    diffEl.className = diff > 0
+                        ? 'text-[11px] font-bold px-2 py-0.5 rounded-md tabular-nums bg-warning-soft text-warning-ink'
+                        : 'text-[11px] font-bold px-2 py-0.5 rounded-md tabular-nums bg-forest-soft text-forest-dark';
+                }
+            }
+
+            const hasItems = draft.items.length > 0;
+            if (btnSave) btnSave.disabled = !hasItems;
+            if (btnSavePay) btnSavePay.disabled = !hasItems;
+        }
+
+        async function submitEditKasirOrder(proceedToPay = false) {
+            const draft = KASIR_STATE.editOrderDraft;
+            if (!draft || draft.items.length === 0) return;
+
+            const btnSave = document.getElementById('btnSaveEditOrderOnly');
+            const btnSavePay = document.getElementById('btnSaveEditOrderAndPay');
+            const errBox = document.getElementById('editOrderErrorBox');
+
+            if (btnSave) btnSave.disabled = true;
+            if (btnSavePay) btnSavePay.disabled = true;
+            if (errBox) errBox.classList.add('hidden');
+
+            try {
+                const res = await fetch(draft.updateUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: JSON.stringify({
+                        items: draft.items.map(it => ({
+                            menu_id: it.menu_id,
+                            menu_name: it.menu_name,
+                            unit_price: Number(it.unit_price || 0),
+                            qty: Number(it.qty || 1),
+                            options: Array.isArray(it.options) ? it.options : [],
+                        })),
+                        mark_completed_paid: false,
+                    }),
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    if (errBox) {
+                        errBox.textContent = data.message || 'Gagal menyimpan perubahan pesanan.';
+                        errBox.classList.remove('hidden');
+                    }
+                    updateEditOrderSummary();
+                    return;
+                }
+
+                if (data.stocks) {
+                    Object.entries(data.stocks).forEach(([mid, newStock]) => {
+                        applyStockToDom(Number(mid), Number(newStock));
+                    });
+                }
+                if (data.stats) {
+                    updateKasirHeaderStats(data.stats);
+                }
+                if (data.order) {
+                    upsertKasirOrderInState(data.order);
+                    if (KASIR_STATE.activeScannedOrder && Number(KASIR_STATE.activeScannedOrder.id) === Number(data.order.id)) {
+                        renderScannedOrderResult(data.order);
+                    }
+                }
+
+                renderKasirOrdersGrid();
+                closeEditOrderModal();
+                showKasirToast(data.message || 'Pesanan berhasil diperbarui');
+
+                if (proceedToPay && data.order) {
+                    openPayOrderModal(data.order.id);
+                } else {
                     syncKasirWithDatabase(false);
                 }
             } catch (e) {
-                showKasirToast('Gagal memperbarui status pesanan');
+                if (errBox) {
+                    errBox.textContent = 'Koneksi terganggu. Coba lagi.';
+                    errBox.classList.remove('hidden');
+                }
+                updateEditOrderSummary();
             }
         }
+
+        /**
+         * Modal Pembayaran Pintar:
+         * - Dine-In / Take Away: pakai metode pilihan pelanggan (QRIS/Transfer langsung tanpa kembalian; Tunai input uang & kembalian)
+         * - Kurir Zendo: pilih metode pembayaran kurir terlebih dahulu (Tunai -> hitung kembalian; QRIS/Transfer -> langsung konfirmasi)
+         */
+        function openPayOrderModal(orderId) {
+            const ord = KASIR_STATE.ordersById[orderId] || (KASIR_STATE.recentOrders || []).find(o => Number(o.id) === Number(orderId));
+            if (!ord) {
+                showKasirToast('Data pesanan tidak ditemukan.');
+                return;
+            }
+
+            const serviceMeta = getOrderServiceMeta(ord);
+            const isZendo = Boolean(ord.is_zendo);
+            const payableAmount = Number(ord.payable_amount ?? (isZendo ? ord.subtotal : ord.total) ?? 0);
+            const customerMethod = String(ord.payment_method || 'cash').toLowerCase();
+
+            KASIR_STATE.payOrderDraft = {
+                orderId: ord.id,
+                code: ord.code,
+                customerName: ord.customer_name || 'Pelanggan Kasir',
+                isZendo,
+                payableAmount,
+                deliveryFee: Number(ord.delivery_fee || 0),
+                customerTotal: Number(ord.total || 0),
+                customerChosenMethod: isZendo ? null : customerMethod,
+                selectedMethod: isZendo ? null : customerMethod,
+                receiptUrl: ord.receipt_url,
+            };
+
+            const titleEl = document.getElementById('payOrderModalTitle');
+            const badgeEl = document.getElementById('payOrderModalServiceBadge');
+            const subEl = document.getElementById('payOrderModalSubtitle');
+            const zendoNotice = document.getElementById('payOrderZendoFeeNotice');
+            const feeText = document.getElementById('payOrderDeliveryFeeText');
+            const custTotalText = document.getElementById('payOrderCustomerTotalText');
+            const amtLabel = document.getElementById('payOrderAmountLabel');
+            const amtText = document.getElementById('payOrderPayableAmountText');
+            const methodHint = document.getElementById('payOrderMethodHint');
+            const choiceBadge = document.getElementById('payOrderCustomerChoiceBadge');
+            const cashInput = document.getElementById('payOrderCashReceived');
+            const errBox = document.getElementById('payOrderErrorBox');
+
+            if (titleEl) titleEl.textContent = `Pembayaran #${ord.code}`;
+            if (badgeEl) {
+                badgeEl.className = `inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md ${serviceMeta.badgeClass}`;
+                badgeEl.innerHTML = `<i class="fa-solid ${serviceMeta.icon} text-[10px]"></i><span>${escapeKasirHtml(serviceMeta.label)}</span>`;
+            }
+            if (subEl) subEl.textContent = ord.customer_name || 'Pelanggan Kasir';
+            if (zendoNotice) {
+                zendoNotice.classList.toggle('hidden', !isZendo || Number(ord.delivery_fee || 0) <= 0);
+            }
+            if (feeText) feeText.textContent = formatRupiah(ord.delivery_fee || 0);
+            if (custTotalText) custTotalText.textContent = formatRupiah(ord.total || 0);
+            if (amtLabel) amtLabel.textContent = isZendo ? 'Tagihan Menu (Bayar ke Kafe)' : 'Total Tagihan';
+            if (amtText) amtText.textContent = formatRupiah(payableAmount);
+
+            if (methodHint) {
+                methodHint.textContent = isZendo ? 'Pilih Metode Pembayaran Kurir Zendo' : 'Metode Pembayaran';
+            }
+            if (choiceBadge) {
+                if (!isZendo) {
+                    choiceBadge.textContent = `Pilihan pelanggan: ${formatPaymentMethodLabel(customerMethod)}`;
+                    choiceBadge.classList.remove('hidden');
+                } else {
+                    choiceBadge.classList.add('hidden');
+                }
+            }
+            if (cashInput) cashInput.value = '';
+            if (errBox) {
+                errBox.textContent = '';
+                errBox.classList.add('hidden');
+            }
+
+            syncPayOrderModalMethodUi();
+
+            const modal = document.getElementById('kasirPayOrderModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closePayOrderModal() {
+            KASIR_STATE.payOrderDraft = null;
+            const modal = document.getElementById('kasirPayOrderModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function selectPayOrderMethod(method) {
+            if (!KASIR_STATE.payOrderDraft) return;
+            KASIR_STATE.payOrderDraft.selectedMethod = method;
+            const errBox = document.getElementById('payOrderErrorBox');
+            if (errBox) errBox.classList.add('hidden');
+            syncPayOrderModalMethodUi();
+        }
+
+        function syncPayOrderModalMethodUi() {
+            const draft = KASIR_STATE.payOrderDraft;
+            if (!draft) return;
+
+            const method = draft.selectedMethod;
+            document.querySelectorAll('.pay-modal-method-btn').forEach(btn => {
+                const m = btn.getAttribute('data-pay-modal-btn');
+                btn.className = m === method
+                    ? 'pay-modal-method-btn min-h-[48px] px-2 rounded-xl border border-forest bg-forest text-xs font-bold text-white flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors'
+                    : 'pay-modal-method-btn min-h-[48px] px-2 rounded-xl border border-line bg-canvas text-xs font-bold text-sub flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-colors';
+            });
+
+            const cashSection = document.getElementById('payOrderCashSection');
+            const nonCashSection = document.getElementById('payOrderNonCashSection');
+            const nonCashText = document.getElementById('payOrderNonCashText');
+            const qrisWrap = document.getElementById('payOrderQrisPreviewWrap');
+            const confirmBtn = document.getElementById('btnConfirmPayOrder');
+
+            if (cashSection) cashSection.classList.toggle('hidden', method !== 'cash');
+            if (nonCashSection) nonCashSection.classList.toggle('hidden', method !== 'qris' && method !== 'transfer');
+
+            if (method === 'qris') {
+                if (nonCashText) nonCashText.textContent = 'Pembayaran QRIS — tidak perlu hitung kembalian. Pastikan pembayaran QRIS sudah masuk.';
+                if (qrisWrap) qrisWrap.classList.toggle('hidden', !KASIR_QRIS_IMAGE_URL);
+            } else if (method === 'transfer') {
+                if (nonCashText) nonCashText.textContent = 'Pembayaran Transfer — tidak perlu hitung kembalian. Pastikan transfer sudah diterima.';
+                if (qrisWrap) qrisWrap.classList.add('hidden');
+            }
+
+            if (confirmBtn) {
+                if (!method) {
+                    confirmBtn.disabled = true;
+                    confirmBtn.textContent = 'Pilih Metode Pembayaran';
+                } else if (method === 'cash') {
+                    confirmBtn.textContent = 'Bayar & Selesai';
+                    calculatePayOrderChange();
+                    setTimeout(() => document.getElementById('payOrderCashReceived')?.focus(), 50);
+                } else {
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = `Konfirmasi ${formatPaymentMethodLabel(method)} & Selesai`;
+                }
+            }
+        }
+
+        function setPayOrderQuickCash(amount) {
+            const draft = KASIR_STATE.payOrderDraft;
+            const input = document.getElementById('payOrderCashReceived');
+            if (!draft || !input) return;
+
+            input.value = amount === 'exact' ? draft.payableAmount : amount;
+            calculatePayOrderChange();
+        }
+
+        function calculatePayOrderChange() {
+            const draft = KASIR_STATE.payOrderDraft;
+            const input = document.getElementById('payOrderCashReceived');
+            const display = document.getElementById('payOrderChangeDisplay');
+            const confirmBtn = document.getElementById('btnConfirmPayOrder');
+            if (!draft || !display) return;
+
+            const rawVal = String(input?.value || '').trim();
+            const cash = Number(rawVal || 0);
+
+            if (rawVal === '' || cash === 0) {
+                display.textContent = 'Rp 0 (Uang Pas)';
+                display.className = 'text-base font-bold tabular-nums text-ink';
+                if (confirmBtn && draft.selectedMethod === 'cash') confirmBtn.disabled = false;
+                return;
+            }
+
+            const diff = cash - draft.payableAmount;
+            if (diff >= 0) {
+                display.textContent = formatRupiah(diff);
+                display.className = 'text-base font-bold tabular-nums text-forest-dark';
+                if (confirmBtn && draft.selectedMethod === 'cash') confirmBtn.disabled = false;
+            } else {
+                display.textContent = `Kurang ${formatRupiah(Math.abs(diff))}`;
+                display.className = 'text-base font-bold tabular-nums text-danger';
+                if (confirmBtn && draft.selectedMethod === 'cash') confirmBtn.disabled = true;
+            }
+        }
+
+        async function submitPayKasirOrder() {
+            const draft = KASIR_STATE.payOrderDraft;
+            if (!draft || !draft.selectedMethod) return;
+
+            const confirmBtn = document.getElementById('btnConfirmPayOrder');
+            const errBox = document.getElementById('payOrderErrorBox');
+            const cashInputVal = String(document.getElementById('payOrderCashReceived')?.value || '').trim();
+
+            const extraPayload = {
+                payment_method: draft.selectedMethod,
+            };
+
+            if (draft.selectedMethod === 'cash') {
+                const cashNum = cashInputVal !== '' ? Number(cashInputVal) : draft.payableAmount;
+                if (cashNum < draft.payableAmount) {
+                    if (errBox) {
+                        errBox.textContent = 'Uang tunai yang diterima kurang dari total tagihan.';
+                        errBox.classList.remove('hidden');
+                    }
+                    return;
+                }
+                extraPayload.cash_received = cashNum;
+            }
+
+            if (confirmBtn) {
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = 'Memproses...';
+            }
+            if (errBox) errBox.classList.add('hidden');
+
+            const result = await updateKasirOrderStatus(draft.orderId, 'completed', 'paid', extraPayload);
+            if (!result || !result.success) {
+                if (errBox) {
+                    errBox.textContent = result?.message || 'Gagal menyelesaikan pembayaran.';
+                    errBox.classList.remove('hidden');
+                }
+                syncPayOrderModalMethodUi();
+                return;
+            }
+
+            const orderCode = result.order?.code || draft.code;
+            const customerName = result.order?.customer_name || draft.customerName;
+            const paidAmount = Number(result.payable_amount ?? draft.payableAmount);
+            const changeAmount = Number(result.change_amount || 0);
+            const receiptUrl = result.receipt_url || draft.receiptUrl;
+
+            const isCashPayment = draft.selectedMethod === 'cash';
+            closePayOrderModal();
+            openOrderSuccessModal(orderCode, customerName, paidAmount, changeAmount, receiptUrl, isCashPayment);
+        }
+
+        function openCancelOrderConfirm(orderId) {
+            const ord = KASIR_STATE.ordersById[orderId] || (KASIR_STATE.recentOrders || []).find(o => Number(o.id) === Number(orderId));
+            KASIR_STATE.cancelOrderTargetId = orderId;
+            const titleEl = document.getElementById('cancelOrderModalTitle');
+            if (titleEl) {
+                titleEl.textContent = ord ? `Batalkan Pesanan #${ord.code}?` : 'Batalkan Pesanan?';
+            }
+            const modal = document.getElementById('kasirCancelOrderModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeCancelOrderConfirm() {
+            KASIR_STATE.cancelOrderTargetId = null;
+            const modal = document.getElementById('kasirCancelOrderModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        async function executeCancelKasirOrder() {
+            const orderId = KASIR_STATE.cancelOrderTargetId;
+            if (!orderId) return;
+            closeCancelOrderConfirm();
+            await updateKasirOrderStatus(orderId, 'cancelled', null);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (KASIR_STATE.payOrderDraft) closePayOrderModal();
+                else if (KASIR_STATE.editOrderDraft) closeEditOrderModal();
+                else if (KASIR_STATE.cancelOrderTargetId) closeCancelOrderConfirm();
+            }
+        });
 
         function updateKasirHeaderStats(stats) {
             if (!stats) return;
@@ -2588,6 +4012,34 @@
                             applyStockToDom(Number(item.id), Number(item.stock), Boolean(item.is_available));
                         });
                     }
+                    if (Array.isArray(data.recent_orders)) {
+                        const newlyArrivedPending = [];
+                        data.recent_orders.forEach(ord => {
+                            const idNum = Number(ord.id);
+                            if (!KASIR_STATE.knownOrderIds.has(idNum)) {
+                                KASIR_STATE.knownOrderIds.add(idNum);
+                                if (ord.status === 'pending') {
+                                    newlyArrivedPending.push(ord);
+                                }
+                            }
+                            KASIR_STATE.ordersById[ord.id] = ord;
+                        });
+
+                        KASIR_STATE.recentOrders = data.recent_orders;
+                        renderKasirOrdersGrid();
+
+                        if (KASIR_STATE.activeScannedOrder && KASIR_STATE.ordersById[KASIR_STATE.activeScannedOrder.id]) {
+                            const refreshedScanned = KASIR_STATE.ordersById[KASIR_STATE.activeScannedOrder.id];
+                            if (JSON.stringify(refreshedScanned) !== JSON.stringify(KASIR_STATE.activeScannedOrder)) {
+                                renderScannedOrderResult(refreshedScanned);
+                            }
+                        }
+
+                        if (newlyArrivedPending.length > 0 && !showNotification) {
+                            const firstNew = newlyArrivedPending[0];
+                            showKasirToast(`Pesanan baru masuk: #${firstNew.code} (${firstNew.service_type_label})`);
+                        }
+                    }
                     if (showNotification) {
                         showKasirToast('Data kasir tersinkron');
                     }
@@ -2616,6 +4068,8 @@
         });
 
         function filterKasirOrderStatus(status) {
+            KASIR_STATE.activeOrderStatus = status;
+
             document.querySelectorAll('.kasir-ord-filter').forEach(btn => {
                 const st = btn.getAttribute('data-ord-filter');
                 btn.className = st === status
@@ -2623,19 +4077,35 @@
                     : 'kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0';
             });
 
-            document.querySelectorAll('.kasir-order-card').forEach(card => {
-                const st = card.getAttribute('data-order-status');
-                card.classList.toggle('hidden', st !== status);
+            renderKasirOrdersGrid();
+        }
+
+        function filterKasirOrderService(serviceKey) {
+            KASIR_STATE.activeOrderService = serviceKey;
+
+            document.querySelectorAll('.kasir-service-filter').forEach(btn => {
+                const key = btn.getAttribute('data-service-filter');
+                if (key === serviceKey) {
+                    btn.className = key === 'zendo'
+                        ? 'kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-bold bg-sky-700 text-white border border-sky-700 cursor-pointer shrink-0 inline-flex items-center gap-1.5'
+                        : 'kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-bold bg-ink text-white border border-ink cursor-pointer shrink-0 inline-flex items-center gap-1.5';
+                } else {
+                    btn.className = key === 'zendo'
+                        ? 'kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-normal bg-white text-sky-800 border border-sky-200 cursor-pointer shrink-0 inline-flex items-center gap-1.5'
+                        : 'kasir-service-filter min-h-[38px] px-3.5 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0 inline-flex items-center gap-1.5';
+                }
             });
+
+            renderKasirOrdersGrid();
         }
 
         function searchKasirOrderRows(q) {
-            const query = (q || '').toLowerCase().trim();
-            document.querySelectorAll('.kasir-order-card').forEach(card => {
-                const text = card.getAttribute('data-order-search') || '';
-                card.classList.toggle('hidden', query !== '' && !text.includes(query));
-            });
+            KASIR_STATE.orderSearchQuery = String(q || '');
+            renderKasirOrdersGrid();
         }
+
+        // Terapkan render awal daftar pesanan agar sinkron dengan filter Pending
+        renderKasirOrdersGrid();
 
         function showKasirToast(message) {
             const toast = document.getElementById('kasirToast');

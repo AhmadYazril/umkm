@@ -54,12 +54,28 @@
 
     <div class="divider"></div>
 
+    @php
+        $isZendo = $order->isZendo();
+        $deliveryAddress = $order->effective_delivery_address;
+        $productTotal = $order->effective_subtotal;
+        $deliveryFee = $order->effective_delivery_fee;
+        $cafeTotal = $order->cafe_payable_amount;
+        $totalItemQty = $order->total_item_qty;
+        $isPaid = $order->payment_status === 'paid';
+        $isCash = strtolower((string) $order->payment_method) === 'cash';
+        $cashReceived = $order->cash_received_amount;
+        $changeAmount = $order->change_amount;
+    @endphp
+
     <div style="font-size: 10px;">
         <div>KODE: <span class="bold">{{ $order->code }}</span></div>
         <div>TGL : {{ $order->created_at->format('d/m/Y H:i') }}</div>
         <div>PLG : {{ $order->customer_name }} ({{ $order->customer_phone }})</div>
-        <div>TIPE: <span class="bold">{{ strtoupper(str_replace('_', ' ', $order->order_type)) }}</span> @if($order->table) [MEJA {{ $order->table->number }}]@endif</div>
-        <div>BAYAR: {{ strtoupper($order->payment_method) }} ({{ strtoupper($order->payment_status) }})</div>
+        <div>TIPE: <span class="bold">{{ strtoupper($order->service_type_label) }}</span> @if($order->table) [MEJA {{ $order->table->number }}]@endif</div>
+        @if($deliveryAddress)
+            <div>ALMT: {{ $deliveryAddress }}</div>
+        @endif
+        <div>BAYAR: {{ strtoupper($order->payment_method_label) }} ({{ strtoupper($order->payment_status_label) }})</div>
     </div>
 
     <div class="double-divider"></div>
@@ -96,10 +112,50 @@
 
     <table>
         <tr>
-            <td class="bold">TOTAL AKHIR:</td>
-            <td class="text-right bold" style="font-size: 13px;">Rp {{ number_format($order->total, 0, ',', '.') }}</td>
+            <td>TOTAL PRODUK ({{ $totalItemQty }} ITEM):</td>
+            <td class="text-right">Rp {{ number_format($productTotal, 0, ',', '.') }}</td>
+        </tr>
+        <tr>
+            <td class="bold">{{ $isZendo ? 'TOTAL BAYAR KAFE:' : 'TOTAL AKHIR:' }}</td>
+            <td class="text-right bold" style="font-size: 13px;">Rp {{ number_format($cafeTotal, 0, ',', '.') }}</td>
         </tr>
     </table>
+
+    <div class="divider"></div>
+
+    <table>
+        @if($isPaid)
+            <tr>
+                <td>PEMBAYARAN ({{ strtoupper($order->payment_method_label) }}):</td>
+                <td class="text-right bold">Rp {{ number_format($cashReceived, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>KEMBALIAN:</td>
+                <td class="text-right bold">Rp {{ number_format($isCash ? $changeAmount : 0, 0, ',', '.') }}</td>
+            </tr>
+        @else
+            <tr>
+                <td>STATUS PEMBAYARAN:</td>
+                <td class="text-right bold">BELUM BAYAR</td>
+            </tr>
+        @endif
+    </table>
+
+    @if($isZendo && $deliveryFee > 0)
+        <div class="divider"></div>
+        <div style="font-size: 9px; margin-bottom: 2px;" class="bold">INFO KURIR ZENDO (TERPISAH):</div>
+        <table style="font-size: 10px;">
+            <tr>
+                <td>ONGKIR ZENDO:</td>
+                <td class="text-right">Rp {{ number_format($deliveryFee, 0, ',', '.') }}</td>
+            </tr>
+            <tr>
+                <td>EST. TOTAL PELANGGAN:</td>
+                <td class="text-right">Rp {{ number_format($productTotal + $deliveryFee, 0, ',', '.') }}</td>
+            </tr>
+        </table>
+        <div style="font-size: 8px; color: #333;">* Ongkir dibayarkan terpisah ke kurir Zendo.</div>
+    @endif
 
     <div class="divider"></div>
 

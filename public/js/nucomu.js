@@ -955,11 +955,11 @@ function initScrollSpy() {
                 mobileNavLinks.forEach(link => {
                     const href = link.getAttribute('href');
                     if (href === `#${activeId}` || (href && href.endsWith(`#${activeId}`))) {
-                        link.classList.add('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
-                        link.classList.remove('text-[#C8C8C8]', 'font-semibold');
+                        link.classList.add('bg-[var(--badge-bg)]', 'font-bold', 'text-[var(--text)]');
+                        link.classList.remove('text-[var(--text-muted)]', 'font-semibold');
                     } else if (href && href.includes('#')) {
-                        link.classList.remove('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
-                        link.classList.add('text-[#C8C8C8]', 'font-semibold');
+                        link.classList.remove('bg-[var(--badge-bg)]', 'font-bold', 'text-[var(--text)]');
+                        link.classList.add('text-[var(--text-muted)]', 'font-semibold');
                     }
                 });
             }
@@ -1658,8 +1658,8 @@ function initFacilitiesGallery() {
                         const dot = document.createElement('span');
                         dot.className = `facility-counter-dot transition-all duration-300 ${
                             i === activeIndex
-                                ? 'w-3.5 h-1.5 bg-[#F5F2EE] rounded-full'
-                                : 'w-1.5 h-1.5 bg-white/30 rounded-full'
+                                ? 'w-3.5 h-1.5 bg-[var(--accent-solid)] rounded-full'
+                                : 'w-1.5 h-1.5 bg-[var(--border-strong)] rounded-full'
                         }`;
                         cardBDots.appendChild(dot);
                     }
@@ -1705,9 +1705,9 @@ function initFacilitiesGallery() {
             const isTarget = btn.getAttribute('data-facility-category-trigger') === targetCategory;
             btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
             if (isTarget) {
-                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-[#F5F2EE] text-[#111111] shadow-xs focus:outline-none focus:ring-2 focus:ring-[#F5F5F5] focus:ring-offset-2 focus:ring-offset-[#0C0C0C]';
+                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-xs focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)]';
             } else {
-                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-transparent text-[#B5B5B5] hover:text-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#F5F5F5] focus:ring-offset-2 focus:ring-offset-[#0C0C0C]';
+                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-transparent text-[var(--text-muted)] hover:text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)]';
             }
         });
 
@@ -1728,7 +1728,7 @@ function initFacilitiesGallery() {
                         const li = document.createElement('li');
                         li.className = 'flex items-center gap-3';
                         li.innerHTML = `
-                            <span class="w-5 h-5 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[#F5F5F5] shrink-0" aria-hidden="true">
+                            <span class="w-5 h-5 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] flex items-center justify-center text-[var(--text)] shrink-0" aria-hidden="true">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                                 </svg>
@@ -2025,7 +2025,7 @@ function updateBestCarousel() {
         visibleCards.forEach((_, idx) => {
             const dot = document.createElement('button');
             dot.className = `h-2 rounded-full transition-all duration-300 ${
-                idx === bestCurrentIndex ? 'w-8 bg-[#F5F2EE]' : 'w-2 bg-white/25 hover:bg-white/50'
+                idx === bestCurrentIndex ? 'w-8 bg-[var(--accent-solid)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'
             }`;
             dot.setAttribute('aria-label', `Slide ${idx + 1}`);
             dot.onclick = () => window.goToBestSlide(idx);
@@ -2115,22 +2115,22 @@ window.switchBestMenuItem = function(index) {
         const priceSpan = pill.querySelector('.pill-price');
         
         if (idx === index) {
-            pill.className = 'best-menu-pill active bg-[#F5F2EE] text-[#111111] shadow-[var(--shadow)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[#111111]';
-            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-bold block mt-0.5 tabular-nums text-[#2A2A2A]';
+            pill.className = 'best-menu-pill active bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-[var(--shadow)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[var(--accent-solid-text)]';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-bold block mt-0.5 tabular-nums text-[var(--accent-solid-text)] opacity-85';
         } else {
-            pill.className = 'best-menu-pill bg-[var(--surface)] text-[#F5F5F5] shadow-[var(--shadow)] hover:bg-[var(--surface-strong)] hover:border-white/30 hover:-translate-x-1 border border-[var(--border)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[#F5F5F5]';
-            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-medium block mt-0.5 tabular-nums text-[#B5B5B5]';
+            pill.className = 'best-menu-pill bg-[var(--surface)] text-[var(--text)] shadow-[var(--shadow)] hover:bg-[var(--surface-strong)] hover:border-[var(--border-strong)] hover:-translate-x-1 border border-[var(--border)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[var(--text)]';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-medium block mt-0.5 tabular-nums text-[var(--text-muted)]';
         }
     });
 
     // Update dots
     document.querySelectorAll('.best-menu-dot').forEach((dot, idx) => {
         if (idx === index) {
-            dot.className = 'best-menu-dot w-5 h-1.5 bg-[#F5F2EE] rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-5 h-1.5 bg-[var(--accent-solid)] rounded-full transition-all duration-300';
         } else {
-            dot.className = 'best-menu-dot w-1.5 h-1.5 bg-white/30 hover:bg-white/50 rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-1.5 h-1.5 bg-[var(--border-strong)] hover:bg-[var(--text-muted)] rounded-full transition-all duration-300';
         }
     });
 };
@@ -2141,15 +2141,15 @@ window.switchBestMenuItem = function(index) {
 window.filterRecommendations = function(category, buttonEl) {
     // 1. Update active tab button style
     document.querySelectorAll('.rec-tab-btn').forEach(btn => {
-        btn.classList.remove('active', 'text-[#F5F5F5]');
-        btn.classList.add('text-[#B5B5B5]');
+        btn.classList.remove('active', 'text-[var(--text)]');
+        btn.classList.add('text-[var(--text-muted)]');
         const indicator = btn.querySelector('.tab-indicator');
         if (indicator) indicator.classList.add('hidden');
     });
 
     if (buttonEl) {
-        buttonEl.classList.add('active', 'text-[#F5F5F5]');
-        buttonEl.classList.remove('text-[#B5B5B5]');
+        buttonEl.classList.add('active', 'text-[var(--text)]');
+        buttonEl.classList.remove('text-[var(--text-muted)]');
         const indicator = buttonEl.querySelector('.tab-indicator');
         if (indicator) indicator.classList.remove('hidden');
     }
@@ -2211,10 +2211,10 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
 
     document.querySelectorAll('.cat-circle-btn').forEach(btn => {
         btn.classList.remove('active-cat');
-        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-[#F5F2EE]', 'ring-2', 'ring-white/25', 'scale-105');
+        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-[var(--accent-solid)]', 'ring-2', 'ring-[var(--field-ring)]', 'scale-105');
         btn.querySelector('.cat-circle-img-wrap')?.classList.add('border-[var(--border)]');
-        btn.querySelector('.cat-circle-label')?.classList.remove('text-[#F5F5F5]', 'font-bold');
-        btn.querySelector('.cat-circle-label')?.classList.add('text-[#B5B5B5]');
+        btn.querySelector('.cat-circle-label')?.classList.remove('text-[var(--text)]', 'font-bold');
+        btn.querySelector('.cat-circle-label')?.classList.add('text-[var(--text-muted)]');
     });
 
     let targetCategory = categoryId;
@@ -2222,10 +2222,10 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
         targetCategory = 'all';
     } else if (buttonEl) {
         buttonEl.classList.add('active-cat');
-        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-[#F5F2EE]', 'ring-2', 'ring-white/25', 'scale-105');
+        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-[var(--accent-solid)]', 'ring-2', 'ring-[var(--field-ring)]', 'scale-105');
         buttonEl.querySelector('.cat-circle-img-wrap')?.classList.remove('border-[var(--border)]');
-        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-[#F5F5F5]', 'font-bold');
-        buttonEl.querySelector('.cat-circle-label')?.classList.remove('text-[#B5B5B5]');
+        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-[var(--text)]', 'font-bold');
+        buttonEl.querySelector('.cat-circle-label')?.classList.remove('text-[var(--text-muted)]');
     }
 
     if (targetCategory === 'snacks' && !document.querySelector('#recommendations-cards-pool .rec-card[data-category~="snacks"]')) {
@@ -2242,13 +2242,13 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
 window.filterAllMenuCategory = function(category, buttonEl) {
     // Update tab indicators
     document.querySelectorAll('.all-menu-cat-btn').forEach(btn => {
-        btn.classList.remove('active-cat', 'border-[#F5F2EE]', 'text-[#F5F5F5]', 'font-bold');
-        btn.classList.add('border-transparent', 'text-[#B5B5B5]');
+        btn.classList.remove('active-cat', 'border-[var(--accent-solid)]', 'text-[var(--text)]', 'font-bold');
+        btn.classList.add('border-transparent', 'text-[var(--text-muted)]');
     });
 
     if (buttonEl) {
-        buttonEl.classList.add('active-cat', 'border-[#F5F2EE]', 'text-[#F5F5F5]', 'font-bold');
-        buttonEl.classList.remove('border-transparent', 'text-[#B5B5B5]');
+        buttonEl.classList.add('active-cat', 'border-[var(--accent-solid)]', 'text-[var(--text)]', 'font-bold');
+        buttonEl.classList.remove('border-transparent', 'text-[var(--text-muted)]');
     }
 
     const catalogGrid = document.getElementById('all-menu-grid');
@@ -2523,8 +2523,8 @@ window.selectLayananCategoryChip = function(category) {
     const descBridal = document.getElementById('layanan-desc-bridal');
     const descBirthday = document.getElementById('layanan-desc-birthday');
 
-    const activeClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[#F5F2EE] text-[#111111] shadow-xs focus:outline-none focus:ring-2 focus:ring-[#F5F5F5] focus:ring-offset-2 focus:ring-offset-[#0C0C0C] inline-flex items-center justify-center text-center whitespace-nowrap';
-    const inactiveClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[rgba(255,255,255,0.08)] border border-[var(--border)] text-[#B5B5B5] hover:border-white/35 hover:text-[#F5F5F5] focus:outline-none focus:ring-2 focus:ring-[#F5F5F5] focus:ring-offset-2 focus:ring-offset-[#0C0C0C] inline-flex items-center justify-center text-center whitespace-nowrap';
+    const activeClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-xs focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)] inline-flex items-center justify-center text-center whitespace-nowrap';
+    const inactiveClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)] inline-flex items-center justify-center text-center whitespace-nowrap';
 
     if (category === 'Bridal') {
         if (btnBridal) {
@@ -2594,8 +2594,8 @@ window.toggleLayananDetailPanel = function() {
         panelWrapper.classList.remove('hidden');
         panelWrapper.setAttribute('aria-hidden', 'false');
         toggleBtn.setAttribute('aria-expanded', 'true');
-        toggleBtn.classList.add('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
-        toggleBtn.classList.remove('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
+        toggleBtn.classList.add('is-active', 'bg-[var(--accent-solid)]', 'text-[var(--accent-solid-text)]', 'border-[var(--accent-solid)]');
+        toggleBtn.classList.remove('bg-[var(--badge-bg)]', 'text-[var(--text)]', 'border-[var(--border)]');
         if (toggleText) toggleText.textContent = 'Tutup Detail';
         if (toggleIcon) toggleIcon.classList.add('rotate-180');
 
@@ -2638,8 +2638,8 @@ window.closeLayananDetailPanel = function() {
     panelWrapper.setAttribute('aria-hidden', 'true');
     if (toggleBtn) {
         toggleBtn.setAttribute('aria-expanded', 'false');
-        toggleBtn.classList.remove('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
-        toggleBtn.classList.add('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
+        toggleBtn.classList.remove('is-active', 'bg-[var(--accent-solid)]', 'text-[var(--accent-solid-text)]', 'border-[var(--accent-solid)]');
+        toggleBtn.classList.add('bg-[var(--badge-bg)]', 'text-[var(--text)]', 'border-[var(--border)]');
         if (typeof toggleBtn.focus === 'function') {
             toggleBtn.focus();
         }
@@ -2929,38 +2929,38 @@ window.resetReservationEventCategory = function() {
     }
 
     if (btnBridal) {
-        btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-white/30 bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#F5F5F5]';
+        btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
     }
     if (iconBoxBridal) {
-        iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/15 text-[#F5F5F5] flex items-center justify-center shrink-0 transition-colors';
+        iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
     }
     if (labelBridal) {
-        labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+        labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
     }
     if (titleBridal) {
-        titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[#F5F5F5] block leading-tight transition-colors';
+        titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
     }
     if (subBridal) {
-        subBridal.className = 'text-[11px] text-[#B5B5B5] block mt-0.5 transition-colors';
+        subBridal.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
     }
     if (checkBridal) {
         checkBridal.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
     }
 
     if (btnBirthday) {
-        btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-white/30 bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#F5F5F5]';
+        btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
     }
     if (iconBoxBirthday) {
-        iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/15 text-[#F5F5F5] flex items-center justify-center shrink-0 transition-colors';
+        iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
     }
     if (labelBirthday) {
-        labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+        labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
     }
     if (titleBirthday) {
-        titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[#F5F5F5] block leading-tight transition-colors';
+        titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
     }
     if (subBirthday) {
-        subBirthday.className = 'text-[11px] text-[#B5B5B5] block mt-0.5 transition-colors';
+        subBirthday.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
     }
     if (checkBirthday) {
         checkBirthday.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
@@ -3015,41 +3015,41 @@ window.chooseReservationEventCategory = function(categoryKey) {
             });
         }
 
-        // Active Bridal Button: strong frosted dark glass with white border & cream checkmark
+        // Active Bridal Button
         if (btnBridal) {
-            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#F5F5F5] ring-2 ring-white/20 bg-[var(--surface-strong)] text-[#F5F5F5] transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[#F5F5F5]';
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[var(--accent-solid)] ring-2 ring-[var(--field-ring)] bg-[var(--surface-strong)] text-[var(--text)] transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBridal) {
-            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-white/15 border border-white/25 text-[#F5F5F5] flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[var(--accent-solid)] border border-[var(--accent-solid)] text-[var(--accent-solid-text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBridal) {
-            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBridal) {
-            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[#F5F5F5] block leading-tight transition-colors';
+            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBridal) {
-            subBridal.className = 'text-[11px] text-[#B5B5B5] block mt-0.5 transition-colors';
+            subBridal.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBridal) {
-            checkBridal.className = 'w-6 h-6 rounded-full bg-[#F5F2EE] text-[#111111] border border-[#F5F2EE] flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
+            checkBridal.className = 'w-6 h-6 rounded-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border border-[var(--accent-solid)] flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
         }
 
         // Inactive Birthday Button
         if (btnBirthday) {
-            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-white/30 bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#F5F5F5]';
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBirthday) {
-            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/15 text-[#F5F5F5] flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBirthday) {
-            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBirthday) {
-            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[#F5F5F5] block leading-tight transition-colors';
+            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBirthday) {
-            subBirthday.className = 'text-[11px] text-[#B5B5B5] block mt-0.5 transition-colors';
+            subBirthday.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBirthday) {
             checkBirthday.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
@@ -3081,41 +3081,41 @@ window.chooseReservationEventCategory = function(categoryKey) {
             });
         }
 
-        // Active Birthday Button: strong frosted dark glass with white border & cream checkmark
+        // Active Birthday Button
         if (btnBirthday) {
-            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#F5F5F5] ring-2 ring-white/20 bg-[var(--surface-strong)] text-[#F5F5F5] transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[#F5F5F5]';
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[var(--accent-solid)] ring-2 ring-[var(--field-ring)] bg-[var(--surface-strong)] text-[var(--text)] transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBirthday) {
-            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-white/15 border border-white/25 text-[#F5F5F5] flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[var(--accent-solid)] border border-[var(--accent-solid)] text-[var(--accent-solid-text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBirthday) {
-            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBirthday) {
-            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[#F5F5F5] block leading-tight transition-colors';
+            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBirthday) {
-            subBirthday.className = 'text-[11px] text-[#B5B5B5] block mt-0.5 transition-colors';
+            subBirthday.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBirthday) {
-            checkBirthday.className = 'w-6 h-6 rounded-full bg-[#F5F2EE] text-[#111111] border border-[#F5F2EE] flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
+            checkBirthday.className = 'w-6 h-6 rounded-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border border-[var(--accent-solid)] flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
         }
 
         // Inactive Bridal Button
         if (btnBridal) {
-            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-white/30 bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#F5F5F5]';
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBridal) {
-            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/15 text-[#F5F5F5] flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBridal) {
-            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBridal) {
-            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[#F5F5F5] block leading-tight transition-colors';
+            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBridal) {
-            subBridal.className = 'text-[11px] text-[#B5B5B5] block mt-0.5 transition-colors';
+            subBridal.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBridal) {
             checkBridal.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
@@ -3190,19 +3190,19 @@ window.selectReservationPackage = function(sectionName, packageName, priceShort,
     // Reset all package cards to monochrome default
     const allCards = document.querySelectorAll('.res-pkg-card');
     allCards.forEach(card => {
-        card.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[var(--border)] bg-[var(--surface)] hover:border-white/30 transition-all duration-200 flex flex-col justify-between relative shadow-2xs';
+        card.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[var(--border)] bg-[var(--surface-solid)] hover:border-[var(--border-strong)] transition-all duration-200 flex flex-col justify-between relative shadow-2xs';
         const check = card.querySelector('.res-pkg-check');
         if (check) {
-            check.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-white/10 text-transparent border border-[var(--border)]';
+            check.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[var(--badge-bg)] text-transparent border border-[var(--border)]';
         }
     });
 
     // Highlight active card
     if (cardElement) {
-        cardElement.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border-2 border-[#F5F5F5] bg-[var(--surface-strong)] ring-2 ring-white/20 shadow-sm transition-all duration-200 flex flex-col justify-between relative';
+        cardElement.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border-2 border-[var(--accent-solid)] bg-[var(--surface-strong)] ring-2 ring-[var(--field-ring)] shadow-sm transition-all duration-200 flex flex-col justify-between relative';
         const activeCheck = cardElement.querySelector('.res-pkg-check');
         if (activeCheck) {
-            activeCheck.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#F5F2EE] text-[#111111] border border-[#F5F2EE] res-check-pop';
+            activeCheck.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border border-[var(--accent-solid)] res-check-pop';
         }
     }
 
@@ -3459,9 +3459,9 @@ window.switchReviewSlide = function(slideIndex) {
 
     dots.forEach((dot, idx) => {
         if (idx === slideIndex) {
-            dot.className = 'review-dot w-6 h-2 bg-[#F5F2EE] rounded-full transition-all duration-300';
+            dot.className = 'review-dot w-6 h-2 bg-[var(--accent-solid)] rounded-full transition-all duration-300';
         } else {
-            dot.className = 'review-dot w-2 h-2 bg-white/25 hover:bg-white/50 rounded-full transition-all duration-300';
+            dot.className = 'review-dot w-2 h-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)] rounded-full transition-all duration-300';
         }
     });
 };

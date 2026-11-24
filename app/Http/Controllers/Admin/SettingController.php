@@ -465,6 +465,7 @@ class SettingController extends Controller
             'zendo_tier_5_6' => 'nullable|integer|min:0',
             'zendo_tier_6_7' => 'nullable|integer|min:0',
             'zendo_extra_per_km' => 'nullable|integer|min:0',
+            'theme' => 'nullable|string|in:light,dark',
         ], [
             'cafe_logo.uploaded' => 'File logo resmi kafe gagal diunggah ke server.',
             'cafe_logo.image' => 'Berkas logo harus berupa gambar valid.',
@@ -519,6 +520,10 @@ class SettingController extends Controller
             if ($request->has($key)) {
                 Setting::set($key, $request->input($key));
             }
+        }
+
+        if ($request->filled('theme')) {
+            Setting::setSiteTheme((string) $request->input('theme'));
         }
 
         // Synchronize transaction_mode & hide_live_tracking with order_mode_* keys when updated from General Settings

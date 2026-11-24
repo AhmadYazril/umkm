@@ -9,7 +9,7 @@
         
         <!-- Breadcrumbs & Back Link -->
         <div class="mb-6">
-            <a href="{{ route('home') }}#menu" class="inline-flex items-center space-x-1.5 text-xs uppercase tracking-editorial-widest font-semibold text-[#B5B5B5] hover:text-[#F5F5F5] transition-colors">
+            <a href="{{ route('home') }}#menu" class="inline-flex items-center space-x-1.5 text-xs uppercase tracking-editorial-widest font-semibold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
                 <span class="material-symbols-outlined text-sm">arrow_back</span>
                 <span>Kembali ke Beranda</span>
             </a>
@@ -17,9 +17,9 @@
 
         <!-- Page Header -->
         <div class="text-center max-w-4xl mx-auto mb-10 flex flex-col items-center">
-            <span class="text-[11px] font-semibold uppercase tracking-widest text-[#B5B5B5] block mb-3 pl-[0.1em]">KATALOG LENGKAP MENU</span>
-            <h1 class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#F5F5F5] tracking-tight mx-auto">Katalog Sajian Nucomu</h1>
-            <p class="font-body text-xs sm:text-sm text-[#B5B5B5] mt-3.5 leading-relaxed max-w-3xl mx-auto">
+            <span class="text-[11px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block mb-3 pl-[0.1em]">KATALOG LENGKAP MENU</span>
+            <h1 class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[var(--text)] tracking-tight mx-auto">Katalog Sajian Nucomu</h1>
+            <p class="font-body text-xs sm:text-sm text-[var(--text-muted)] mt-3.5 leading-relaxed max-w-3xl mx-auto">
                 Koleksi racikan kopi single origin Sendang Tulungagung, seduhan daun teh bergamot, ceremonial matcha, dan sajian hangat dapur Nucomu.
             </p>
         </div>
@@ -37,11 +37,11 @@
                role="tab"
                aria-selected="{{ $selectedCategory === 'all' ? 'true' : 'false' }}"
                class="group flex flex-col items-center focus:outline-none transition-colors">
-                <span class="text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors {{ $selectedCategory === 'all' ? 'text-[#F5F5F5] font-bold' : 'text-[#8F8F8F] group-hover:text-[#F5F5F5]' }}">
+                <span class="text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors {{ $selectedCategory === 'all' ? 'text-[var(--text)] font-bold' : 'text-[var(--text-faint)] group-hover:text-[var(--text)]' }}">
                     Semua Menu
                 </span>
                 @if($selectedCategory === 'all')
-                    <span class="w-1.5 h-1.5 rounded-full bg-[#F5F2EE] mt-1.5"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent-solid)] mt-1.5"></span>
                 @else
                     <span class="w-1.5 h-1.5 rounded-full bg-transparent mt-1.5"></span>
                 @endif
@@ -56,11 +56,11 @@
                    role="tab"
                    aria-selected="{{ $isCurrentCatActive ? 'true' : 'false' }}"
                    class="group flex flex-col items-center focus:outline-none transition-colors">
-                    <span class="text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors {{ $isCurrentCatActive ? 'text-[#F5F5F5] font-bold' : 'text-[#8F8F8F] group-hover:text-[#F5F5F5]' }}">
+                    <span class="text-xs sm:text-sm font-semibold uppercase tracking-wider transition-colors {{ $isCurrentCatActive ? 'text-[var(--text)] font-bold' : 'text-[var(--text-faint)] group-hover:text-[var(--text)]' }}">
                         {{ $catItem->name }}
                     </span>
                     @if($isCurrentCatActive)
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#F5F2EE] mt-1.5"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent-solid)] mt-1.5"></span>
                     @else
                         <span class="w-1.5 h-1.5 rounded-full bg-transparent mt-1.5"></span>
                     @endif
@@ -69,8 +69,8 @@
         </div>
 
         @if(! ($txSettings['is_any_mode_active'] ?? true))
-            <div class="max-w-2xl mx-auto mb-10 p-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-[#B5B5B5] text-center text-xs sm:text-sm shadow-xs">
-                <i class="fa-solid fa-circle-info mr-1.5 text-[#F5F5F5]"></i>
+            <div class="max-w-2xl mx-auto mb-10 p-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] text-center text-xs sm:text-sm shadow-xs">
+                <i class="fa-solid fa-circle-info mr-1.5 text-[var(--text)]"></i>
                 Pemesanan online sedang tidak tersedia saat ini. Silakan berkunjung langsung ke kafe kami.
             </div>
         @endif
@@ -272,12 +272,12 @@
         @else
             <!-- Empty State -->
             <div class="text-center py-16 nu-glass-card rounded-2xl max-w-xl mx-auto p-8 my-10">
-                <span class="material-symbols-outlined text-[#8F8F8F] text-5xl mb-3">coffee</span>
-                <h3 class="font-editorial text-2xl font-bold text-[#F5F5F5]">Menu Belum Tersedia</h3>
-                <p class="font-body text-xs text-[#B5B5B5] mt-1 leading-relaxed">
+                <span class="material-symbols-outlined text-[var(--text-faint)] text-5xl mb-3">coffee</span>
+                <h3 class="font-editorial text-2xl font-bold text-[var(--text)]">Menu Belum Tersedia</h3>
+                <p class="font-body text-xs text-[var(--text-muted)] mt-1 leading-relaxed">
                     Daftar sajian untuk kategori ini sedang disiapkan oleh barista kami.
                 </p>
-                <a href="{{ route('menu.all', ['category' => 'all']) }}" class="mt-5 inline-block text-xs font-semibold uppercase tracking-widest text-[#F5F5F5] border-b border-[#F5F5F5] pb-0.5 hover:text-[#B5B5B5] transition-colors">
+                <a href="{{ route('menu.all', ['category' => 'all']) }}" class="mt-5 inline-block text-xs font-semibold uppercase tracking-widest text-[var(--text)] border-b border-[var(--text)] pb-0.5 hover:text-[var(--text-muted)] transition-colors">
                     Kembali ke Semua Menu &rarr;
                 </a>
             </div>

@@ -1,14 +1,20 @@
+@php
+    $activeTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark' ? 'dark' : 'light';
+    $isDarkTheme = $activeTheme === 'dark';
+@endphp
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id" data-theme="{{ $activeTheme }}" class="{{ $isDarkTheme ? 'dark' : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="{{ $activeTheme }}">
     <title>Slip Pesanan #{{ $order->code }} — Nucomu Cafe</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/nucomu.css') }}?v={{ filemtime(public_path('css/nucomu.css')) }}">
     {{-- QR Code libraries (Primary + Fallbacks) --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
@@ -18,14 +24,15 @@
             theme: {
                 extend: {
                     colors: {
-                        obsidian: '#0C0C0C',
-                        charcoal: '#141414',
-                        goldAccent: '#F5F2EE',
-                        violetAccent: '#B5B5B5',
-                        cyanAccent: '#D4D4D4',
+                        obsidian: 'var(--bg-page)',
+                        charcoal: 'var(--surface-solid)',
+                        goldAccent: 'var(--accent-solid)',
+                        violetAccent: 'var(--text-muted)',
+                        cyanAccent: 'var(--text-secondary)',
                     },
                     fontFamily: {
                         sans: ['"Montserrat"', 'sans-serif'],
+                        editorial: ['"Playfair Display"', 'Georgia', 'serif'],
                         mono: ['JetBrains Mono', 'monospace'],
                     }
                 }
@@ -33,14 +40,11 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0C0C0C; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 9999px; }
         .glass-card {
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--surface);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.14);
+            border: 1px solid var(--border);
         }
         @media print {
             body { background: white !important; color: black !important; }
@@ -50,48 +54,48 @@
         }
     </style>
 </head>
-<body class="bg-obsidian text-[#F5F5F5] font-sans min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden">
+<body class="bg-[var(--bg-page)] text-[var(--text)] font-sans min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden">
 
     {{-- Ambient Glow --}}
-    <div class="fixed top-10 left-1/3 w-96 h-96 rounded-full bg-white/[0.04] pointer-events-none z-0 blur-3xl"></div>
-    <div class="fixed bottom-0 right-0 w-80 h-80 rounded-full bg-white/[0.03] pointer-events-none z-0 blur-3xl"></div>
+    <div class="fixed top-10 left-1/3 w-96 h-96 rounded-full pointer-events-none z-0 blur-3xl" style="background: var(--ambient-glow-top);"></div>
+    <div class="fixed bottom-0 right-0 w-80 h-80 rounded-full pointer-events-none z-0 blur-3xl" style="background: var(--ambient-glow-top);"></div>
 
     <div class="relative z-10 w-full max-w-md mx-auto space-y-4">
 
         {{-- SUCCESS BADGE --}}
         <div class="text-center space-y-2 no-print">
-            <div class="w-14 h-14 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
-                <i class="fa-solid fa-check text-emerald-400 text-xl"></i>
+            <div class="w-14 h-14 rounded-full bg-emerald-500/15 border-2 border-emerald-500 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/10">
+                <i class="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-xl"></i>
             </div>
-            <h1 class="text-xl font-black text-white">Pesanan Dibuat!</h1>
-            <p class="text-[#B5B5B5] text-xs sm:text-sm">Tunjukkan QR code di bawah ini ke kasir atau scan via Google Lens di HP.</p>
+            <h1 class="text-xl font-black text-[var(--text)]">Pesanan Dibuat!</h1>
+            <p class="text-[var(--text-muted)] text-xs sm:text-sm">Tunjukkan QR code di bawah ini ke kasir atau scan via Google Lens di HP.</p>
         </div>
 
         {{-- SLIP CARD (Printable) --}}
-        <div class="glass-card rounded-3xl overflow-hidden print-card shadow-2xl border border-white/15">
+        <div class="glass-card rounded-3xl overflow-hidden print-card shadow-[var(--shadow)] border border-[var(--border)]">
 
             {{-- Header Slip --}}
-            <div class="bg-gradient-to-r from-white/10 to-white/[0.03] border-b border-white/15 px-6 py-5 text-center">
+            <div class="bg-[var(--surface-strong-solid)] border-b border-[var(--border)] px-6 py-5 text-center">
                 <div class="flex items-center justify-center gap-2 mb-1">
-                    <i class="fa-solid fa-mug-hot text-goldAccent"></i>
-                    <span class="font-black text-lg text-white tracking-wider">NUCOMU CAFE</span>
+                    <i class="fa-solid fa-mug-hot text-[var(--text)]"></i>
+                    <span class="font-black text-lg text-[var(--text)] tracking-wider">NUCOMU CAFE</span>
                 </div>
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest">Coffee & Stories · Slip Pesanan</p>
+                <p class="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">Coffee & Stories · Slip Pesanan</p>
             </div>
 
             {{-- Customer Info --}}
-            <div class="px-6 py-4 border-b border-white/5">
+            <div class="px-6 py-4 border-b border-[var(--border-soft)]">
                 <div class="flex items-center justify-between text-sm">
                     <div>
-                        <p class="text-gray-400 text-xs mb-0.5">Nama Pemesan</p>
-                        <p class="font-black text-white text-lg">{{ $order->customer_name }}</p>
+                        <p class="text-[var(--text-muted)] text-xs mb-0.5">Nama Pemesan</p>
+                        <p class="font-black text-[var(--text)] text-lg">{{ $order->customer_name }}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-gray-400 text-xs mb-0.5">Kode Pesanan</p>
-                        <p class="font-mono font-black text-goldAccent print-gold text-base">{{ $order->code }}</p>
+                        <p class="text-[var(--text-muted)] text-xs mb-0.5">Kode Pesanan</p>
+                        <p class="font-mono font-black text-[var(--text)] print-gold text-base">{{ $order->code }}</p>
                     </div>
                 </div>
-                <div class="mt-3 flex items-center gap-3 text-xs text-gray-400">
+                <div class="mt-3 flex items-center gap-3 text-xs text-[var(--text-muted)]">
                     <span><i class="fa-regular fa-clock mr-1"></i>{{ $order->created_at->format('H:i') }} WIB</span>
                     <span>·</span>
                     <span><i class="fa-regular fa-calendar mr-1"></i>{{ $order->created_at->translatedFormat('d M Y') }}</span>
@@ -99,56 +103,56 @@
             </div>
 
             {{-- QR CODE SECTION --}}
-            <div class="px-6 py-6 flex flex-col items-center border-b border-white/5 bg-black/20">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] text-goldAccent font-semibold mb-3">
+            <div class="px-6 py-6 flex flex-col items-center border-b border-[var(--border-soft)] bg-[var(--badge-bg)]">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--surface-solid)] border border-[var(--border)] text-[10px] text-[var(--text)] font-semibold mb-3">
                     <i class="fa-solid fa-camera"></i> Siap Scan Google Lens / HP Kasir
                 </div>
 
                 {{-- White QR Plate Container --}}
-                <div class="bg-white p-4 rounded-3xl shadow-2xl flex items-center justify-center min-w-[210px] min-h-[210px]" id="qrContainer">
+                <div class="bg-white p-4 rounded-3xl border border-[var(--border)] shadow-xl flex items-center justify-center min-w-[210px] min-h-[210px]" id="qrContainer">
                     <canvas id="qrCanvas" class="hidden"></canvas>
                     <div id="qrcodeJsTarget"></div>
                     <img id="qrFallbackImg" class="hidden w-[200px] h-[200px] object-contain rounded" alt="QR Code">
                 </div>
 
                 {{-- Host IP & Direct URL Info for User & Kasir --}}
-                <div class="mt-4 w-full bg-black/50 border border-white/10 rounded-2xl p-3 text-center space-y-1.5">
-                    <div class="flex items-center justify-center gap-1.5 text-[11px] text-gray-300">
-                        <i class="fa-solid fa-wifi text-emerald-400 text-[10px]"></i>
-                        <span class="font-semibold text-white">Target Akses IP:</span>
-                        <span class="font-mono text-goldAccent font-bold" id="currentScanHost">{{ $host }}{{ $portSuffix }}</span>
+                <div class="mt-4 w-full bg-[var(--surface-solid)] border border-[var(--border)] rounded-2xl p-3 text-center space-y-1.5">
+                    <div class="flex items-center justify-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                        <i class="fa-solid fa-wifi text-emerald-600 dark:text-emerald-400 text-[10px]"></i>
+                        <span class="font-semibold text-[var(--text)]">Target Akses IP:</span>
+                        <span class="font-mono text-[var(--text)] font-bold" id="currentScanHost">{{ $host }}{{ $portSuffix }}</span>
                     </div>
 
                     <div class="flex items-center justify-center gap-2 pt-1">
-                        <button type="button" onclick="copyScanUrl()" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-gray-200 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
+                        <button type="button" onclick="copyScanUrl()" class="px-3 py-1 bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] text-[var(--text)] border border-[var(--border)] rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
                             <i class="fa-regular fa-copy"></i>
                             <span id="copyBtnText">Salin Tautan</span>
                         </button>
-                        <button type="button" onclick="toggleIpModal()" class="px-3 py-1 bg-goldAccent/15 hover:bg-goldAccent/25 text-goldAccent border border-goldAccent/30 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
+                        <button type="button" onclick="toggleIpModal()" class="px-3 py-1 bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
                             <i class="fa-solid fa-gear"></i>
                             <span>Ganti Host IP</span>
                         </button>
                     </div>
 
-                    <p class="text-[9px] text-gray-500 font-mono pt-1" id="fullUrlPreview">{{ $adminOrderUrl }}</p>
+                    <p class="text-[9px] text-[var(--text-faint)] font-mono pt-1" id="fullUrlPreview">{{ $adminOrderUrl }}</p>
                 </div>
 
-                <p class="text-[10px] text-gray-500 mt-2.5 text-center">
+                <p class="text-[10px] text-[var(--text-faint)] mt-2.5 text-center">
                     Tunjukkan barcode QR ini ke kasir atau buka tautan di atas via HP.
                 </p>
             </div>
 
             {{-- ORDER ITEMS --}}
-            <div class="px-6 py-4 border-b border-white/5">
-                <h3 class="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">Rincian Pesanan</h3>
+            <div class="px-6 py-4 border-b border-[var(--border-soft)]">
+                <h3 class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Rincian Pesanan</h3>
                 <div class="space-y-2.5">
                     @foreach($order->items as $item)
                         <div class="flex items-center justify-between text-sm">
                             <div class="flex-1">
-                                <p class="font-semibold text-white">{{ $item->menu_name }}</p>
-                                <p class="text-xs text-gray-400 font-mono">Rp {{ number_format($item->unit_price, 0, ',', '.') }} × {{ $item->qty }}</p>
+                                <p class="font-semibold text-[var(--text)]">{{ $item->menu_name }}</p>
+                                <p class="text-xs text-[var(--text-muted)] font-mono">Rp {{ number_format($item->unit_price, 0, ',', '.') }} × {{ $item->qty }}</p>
                             </div>
-                            <span class="font-mono font-bold text-white ml-4">
+                            <span class="font-mono font-bold text-[var(--text)] ml-4">
                                 Rp {{ number_format($item->line_total, 0, ',', '.') }}
                             </span>
                         </div>
@@ -158,21 +162,21 @@
 
             {{-- DELIVERY ADDRESS & NOTES --}}
             @if(!empty($deliveryAddress))
-                <div class="px-6 py-3.5 border-b border-white/5 bg-emerald-500/5 space-y-1">
+                <div class="px-6 py-3.5 border-b border-[var(--border-soft)] bg-emerald-500/10 space-y-1">
                     <div class="flex items-center justify-between">
-                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">
+                        <p class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-widest">
                             <i class="fa-solid fa-location-dot mr-1"></i> Alamat Pengiriman (Kurir Zendo)
                         </p>
                         @if(!empty($distanceKm))
-                            <span class="text-[10px] font-mono font-bold text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full">
+                            <span class="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded-full">
                                 {{ number_format((float) $distanceKm, 1, ',', '.') }} km dari Kafe
                             </span>
                         @endif
                     </div>
-                    <p class="text-xs text-gray-200">{{ $deliveryAddress }}</p>
+                    <p class="text-xs text-[var(--text)]">{{ $deliveryAddress }}</p>
                     @if(!empty($customerLat) && !empty($customerLng))
                         <a href="https://www.google.com/maps?q={{ $customerLat }},{{ $customerLng }}" target="_blank"
-                           class="inline-flex items-center gap-1 text-[10px] text-emerald-400 hover:underline font-semibold pt-0.5">
+                           class="inline-flex items-center gap-1 text-[10px] text-emerald-700 dark:text-emerald-400 hover:underline font-semibold pt-0.5">
                             <i class="fa-solid fa-map-pin"></i> Buka Titik Peta Pengiriman ↗
                         </a>
                     @endif
@@ -180,20 +184,20 @@
             @endif
 
             @if(!empty($cleanNotes ?? $order->notes))
-                <div class="px-6 py-3 border-b border-white/5 bg-white/2">
-                    <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Catatan</p>
-                    <p class="text-xs text-gray-300 italic">{{ $cleanNotes ?? $order->notes }}</p>
+                <div class="px-6 py-3 border-b border-[var(--border-soft)] bg-[var(--badge-bg)]">
+                    <p class="text-[10px] text-[var(--text-muted)] uppercase tracking-widest mb-1">Catatan</p>
+                    <p class="text-xs text-[var(--text-secondary)] italic">{{ $cleanNotes ?? $order->notes }}</p>
                 </div>
             @endif
 
             {{-- TOTAL & ONGKIR BREAKDOWN --}}
-            <div class="px-6 py-5 bg-goldAccent/5 space-y-2">
+            <div class="px-6 py-5 bg-[var(--surface-strong-solid)] space-y-2">
                 @if(!empty($isZendoOrder) && !empty($deliveryFee) && $deliveryFee > 0)
-                    <div class="flex items-center justify-between text-xs text-gray-300">
+                    <div class="flex items-center justify-between text-xs text-[var(--text-muted)]">
                         <span>Subtotal Menu</span>
-                        <span class="font-mono font-semibold">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
+                        <span class="font-mono font-semibold text-[var(--text)]">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
                     </div>
-                    <div class="flex items-center justify-between text-xs text-emerald-400 pb-2 border-b border-white/10">
+                    <div class="flex items-center justify-between text-xs text-emerald-700 dark:text-emerald-400 pb-2 border-b border-[var(--border-soft)]">
                         <span>
                             @if($order->kind === 'zendo_chat' || empty($distanceKm))
                                 Ongkir (perkiraan, final dikonfirmasi kurir)
@@ -206,21 +210,21 @@
                 @endif
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-gray-400">Total Pembayaran</p>
-                        <p class="text-[10px] text-gray-500">
+                        <p class="text-xs text-[var(--text-muted)]">Total Pembayaran</p>
+                        <p class="text-[10px] text-[var(--text-faint)]">
                             {{ !empty($isZendoOrder) ? '*Terkirim otomatis ke kontak Kurir Zendo' : '*Bayar tunai di kasir' }}
                         </p>
                     </div>
-                    <span class="font-mono font-black text-2xl text-goldAccent print-gold">
+                    <span class="font-mono font-black text-2xl text-[var(--text)] print-gold">
                         Rp {{ number_format($order->total, 0, ',', '.') }}
                     </span>
                 </div>
             </div>
 
             {{-- Footer Slip --}}
-            <div class="px-6 py-4 text-center bg-white/2">
-                <p class="text-[10px] text-gray-500">Terima kasih atas kunjungan Anda 🙏</p>
-                <p class="text-[10px] text-gray-500">Nucomu Cafe · Open 08:00 - 23:00</p>
+            <div class="px-6 py-4 text-center bg-[var(--badge-bg)]">
+                <p class="text-[10px] text-[var(--text-faint)]">Terima kasih atas kunjungan Anda 🙏</p>
+                <p class="text-[10px] text-[var(--text-faint)]">Nucomu Cafe · Open 08:00 - 23:00</p>
             </div>
         </div>
 
@@ -228,7 +232,7 @@
         @if(!empty($zendoWhatsappUrl) && (!empty($isZendoOrder) || ($transactionMode ?? 'both') !== 'kasir'))
             <div class="no-print">
                 <a href="{{ $zendoWhatsappUrl }}" target="_blank"
-                   class="w-full py-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-bold text-xs uppercase tracking-wider hover:bg-emerald-500/25 transition-all flex items-center justify-center gap-2">
+                   class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-sm">
                     <i class="fa-brands fa-whatsapp text-base"></i>
                     <span>{{ !empty($isZendoOrder) ? 'Hubungi Kontak Kurir Zendo (+' . ($zendoWaClean ?? '') . ')' : 'Pesan Delivery via Kurir Zendo' }}</span>
                 </a>
@@ -238,30 +242,30 @@
         {{-- ACTION BUTTONS --}}
         <div class="flex flex-col sm:flex-row gap-3 no-print">
             <button onclick="window.print()"
-                class="flex-1 py-3.5 rounded-2xl bg-white/10 border border-white/20 text-white font-bold text-sm hover:bg-white/15 transition-all flex items-center justify-center gap-2 shadow-sm">
+                class="flex-1 py-3.5 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm">
                 <i class="fa-solid fa-print"></i> Cetak / Screenshot
             </button>
             <a href="{{ route('nucomu.order') }}"
-               class="flex-1 py-3.5 rounded-2xl glass-card border border-white/10 text-gray-300 font-bold text-sm hover:text-white transition-all flex items-center justify-center gap-2">
+               class="flex-1 py-3.5 rounded-2xl glass-card border border-[var(--border)] text-[var(--text-muted)] font-bold text-sm hover:text-[var(--text)] transition-all flex items-center justify-center gap-2">
                 <i class="fa-solid fa-arrow-left"></i> Kembali ke Menu
             </a>
         </div>
 
         {{-- Status pesanan --}}
-        <div class="glass-card rounded-2xl p-4 border border-white/10 no-print">
+        <div class="glass-card rounded-2xl p-4 border border-[var(--border)] no-print">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full {{ !empty($isZendoOrder) ? 'bg-emerald-500/20' : 'bg-white/15' }} flex items-center justify-center shrink-0">
-                        <i class="{{ !empty($isZendoOrder) ? 'fa-solid fa-check-double text-emerald-400' : 'fa-solid fa-clock text-[#F5F2EE]' }} text-sm"></i>
+                    <div class="w-8 h-8 rounded-full {{ !empty($isZendoOrder) ? 'bg-emerald-500/20' : 'bg-[var(--badge-bg)]' }} flex items-center justify-center shrink-0">
+                        <i class="{{ !empty($isZendoOrder) ? 'fa-solid fa-check-double text-emerald-600 dark:text-emerald-400' : 'fa-solid fa-clock text-[var(--text)]' }} text-sm"></i>
                     </div>
                     <div>
-                        <p class="text-xs font-bold text-white">
+                        <p class="text-xs font-bold text-[var(--text)]">
                             Status:
-                            <span class="{{ !empty($isZendoOrder) ? 'text-emerald-400' : 'text-goldAccent' }}">
+                            <span class="{{ !empty($isZendoOrder) ? 'text-emerald-600 dark:text-emerald-400' : 'text-[var(--text)]' }}">
                                 {{ !empty($isZendoOrder) ? 'Terkirim Otomatis ke Kontak Zendo' : 'Menunggu Kasir' }}
                             </span>
                         </p>
-                        <p class="text-[10px] text-gray-400">
+                        <p class="text-[10px] text-[var(--text-muted)]">
                             {{ !empty($isZendoOrder) ? 'Pesanan & titik alamat Anda telah dikirim ke kontak Kurir Zendo.' : 'Tunjukkan slip ini ke kasir untuk membayar.' }}
                         </p>
                     </div>
@@ -273,37 +277,37 @@
 
     {{-- MODAL GANTI HOST IP CONFIG --}}
     <div id="ipModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="glass-card bg-[#15151c] w-full max-w-sm rounded-3xl p-6 border border-white/15 shadow-2xl relative">
+        <div class="bg-[var(--surface-solid)] w-full max-w-sm rounded-3xl p-6 border border-[var(--border)] shadow-2xl relative">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-network-wired text-goldAccent"></i>
+                <h3 class="text-sm font-bold text-[var(--text)] flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired text-[var(--text)]"></i>
                     <span>Pengaturan Host IP QR</span>
                 </h3>
-                <button onclick="toggleIpModal()" class="text-gray-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="toggleIpModal()" class="text-[var(--text-muted)] hover:text-[var(--text)] text-sm"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <p class="text-[11px] text-gray-400 mb-3 leading-relaxed">
-                Sesuaikan alamat IP dari perintah <code class="text-goldAccent font-mono">ipconfig</code> komputer kasir agar HP di jaringan Wi-Fi lokal dapat langsung mengakses data pesanan.
+            <p class="text-[11px] text-[var(--text-muted)] mb-3 leading-relaxed">
+                Sesuaikan alamat IP dari perintah <code class="text-[var(--text)] font-mono">ipconfig</code> komputer kasir agar HP di jaringan Wi-Fi lokal dapat langsung mengakses data pesanan.
             </p>
 
             <div class="space-y-3">
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-300 uppercase mb-1">Host IP / Domain</label>
+                    <label class="block text-[10px] font-bold text-[var(--text)] uppercase mb-1">Host IP / Domain</label>
                     <input type="text" id="customHostInput" value="{{ $host }}" placeholder="Contoh: 192.168.0.104"
-                           class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-goldAccent">
+                           class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text)] focus:outline-none focus:border-[var(--field-focus)]">
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-300 uppercase mb-1">Port (Kosongkan jika port 80)</label>
+                    <label class="block text-[10px] font-bold text-[var(--text)] uppercase mb-1">Port (Kosongkan jika port 80)</label>
                     <input type="text" id="customPortInput" value="{{ ltrim($portSuffix, ':') }}" placeholder="8000"
-                           class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-goldAccent">
+                           class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] rounded-xl px-3 py-2 text-xs font-mono text-[var(--text)] focus:outline-none focus:border-[var(--field-focus)]">
                 </div>
 
                 <div class="pt-2 flex gap-2">
-                    <button type="button" onclick="applyCustomHost()" class="flex-1 py-2.5 rounded-xl bg-[#F5F2EE] text-[#111111] font-extrabold text-xs uppercase tracking-wider hover:bg-white transition-all">
+                    <button type="button" onclick="applyCustomHost()" class="flex-1 py-2.5 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-extrabold text-xs uppercase tracking-wider hover:bg-[var(--accent-solid-hover)] transition-all">
                         Terapkan ke QR
                     </button>
-                    <button type="button" onclick="toggleIpModal()" class="py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 text-gray-400 text-xs font-bold">
+                    <button type="button" onclick="toggleIpModal()" class="py-2.5 px-4 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text-muted)] text-xs font-bold">
                         Batal
                     </button>
                 </div>

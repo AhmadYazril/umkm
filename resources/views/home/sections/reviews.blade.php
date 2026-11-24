@@ -25,34 +25,89 @@
     }
     $reviewsArray = $allReviewsCollection->values()->all();
 
-    // Mapping avatar letter background colors (monochrome dark slate/charcoal badges for dark theme)
-    $avatarPalette = [
-        'D' => '#2A2A2A',
-        'K' => '#262626',
-        'T' => '#2E2E2E',
-        'R' => '#242424',
-        'M' => '#303030',
-        'A' => '#2B2B2B',
-        'F' => '#282828',
-        'B' => '#323232',
-        'N' => '#252525',
-    ];
+    $isDarkReviewsTheme = ($siteTheme ?? 'light') === 'dark';
+
+    // Mapping avatar letter background colors (Google Reviews palette for light, monochrome dark slate for dark)
+    $avatarPalette = $isDarkReviewsTheme
+        ? [
+            'D' => '#2A2A2A',
+            'K' => '#262626',
+            'T' => '#2E2E2E',
+            'R' => '#242424',
+            'M' => '#303030',
+            'A' => '#2B2B2B',
+            'F' => '#282828',
+            'B' => '#323232',
+            'N' => '#252525',
+        ]
+        : [
+            'D' => '#C2185B', // Dya slma (magenta/crimson)
+            'K' => '#7B1FA2', // Karina Wulan Cahyani (purple)
+            'T' => '#00897B', // Tani Kopi (teal)
+            'R' => '#1E88E5', // Rizky Pratama (blue)
+            'M' => '#43A047', // Muhammad Kaisi
+            'A' => '#E53935',
+            'F' => '#3949AB',
+            'B' => '#FB8C00',
+            'N' => '#00ACC1',
+        ];
+    $defaultAvatarBg = $isDarkReviewsTheme ? '#1C1C1C' : '#54392B';
 @endphp
 
 <style>
     /* ======================================================================
-       PALET WARNA SECTION REVIEWS (CSS VARIABLES TERPUSAT — DARK GLASS)
+       PALET WARNA SECTION REVIEWS (LIGHT BASIS & DARK OVERRIDE)
        ====================================================================== */
+    :root {
+        --nucomu-review-star-color: #E0A030;
+        --nucomu-review-star-inactive: #D4D4D4;
+    }
+
+    [data-theme="dark"],
+    .dark {
+        --nucomu-review-star-color: #F5F2EE;
+        --nucomu-review-star-inactive: rgba(255, 255, 255, 0.25);
+    }
+
     #reviews {
+        --nucomu-bg-page: #FFFFFF;
+        --nucomu-bg-container: #FFFFFF;
+        --nucomu-fade-edge: #FFFFFF;
+        --nucomu-bg-container-fade: rgba(255, 255, 255, 0.75);
+        --nucomu-bg-container-transparent: rgba(255, 255, 255, 0);
+        --nucomu-border: rgba(43, 29, 22, 0.06);
+        --nucomu-container-shadow: 0 2px 10px rgba(43, 29, 22, 0.03);
+        --nucomu-text: #2B1D16;
+        --nucomu-accent: #54392B;
+        --nucomu-star: var(--nucomu-review-star-color);
+        --nucomu-card-bg: #FFFFFF;
+        --nucomu-card-border: #EEE8DE;
+        --nucomu-card-shadow: 0 3px 10px rgba(43, 29, 22, 0.08), 0 12px 28px -4px rgba(43, 29, 22, 0.16), 0 20px 38px -8px rgba(43, 29, 22, 0.14);
+        --nucomu-card-shadow-active: 0 2px 8px rgba(43, 29, 22, 0.08), 0 14px 30px -4px rgba(43, 29, 22, 0.22), 0 26px 50px -10px rgba(43, 29, 22, 0.22);
+        --nucomu-card-shadow-hover: 0 6px 14px rgba(43, 29, 22, 0.10), 0 20px 38px -4px rgba(43, 29, 22, 0.26), 0 32px 60px -10px rgba(43, 29, 22, 0.25);
+        --nucomu-btn-secondary-bg: #FFFFFF;
+        --nucomu-btn-secondary-border: #D8CBB8;
+        --nucomu-btn-secondary-hover: #F7F1E8;
+        --nucomu-btn-primary-bg: #2B1D16;
+        --nucomu-btn-primary-text: #F5EFE6;
+        --nucomu-btn-primary-hover: #3A2A21;
+
+        background-color: var(--nucomu-bg-page);
+        color: var(--nucomu-text);
+    }
+
+    [data-theme="dark"] #reviews,
+    .dark #reviews {
         --nucomu-bg-page: var(--bg-page, #0C0C0C);
         --nucomu-bg-container: rgba(255, 255, 255, 0.03);
+        --nucomu-fade-edge: #0E0E0E;
         --nucomu-bg-container-fade: rgba(14, 14, 14, 0.78);
         --nucomu-bg-container-transparent: rgba(14, 14, 14, 0);
         --nucomu-border: var(--border-soft, rgba(255, 255, 255, 0.08));
         --nucomu-container-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
         --nucomu-text: var(--text, #F5F5F5);
         --nucomu-accent: var(--text, #F5F5F5);
-        --nucomu-star: #F5F2EE;
+        --nucomu-star: var(--nucomu-review-star-color);
         --nucomu-card-bg: #151515;
         --nucomu-card-border: var(--border, rgba(255, 255, 255, 0.14));
         --nucomu-card-shadow: 0 20px 50px rgba(0, 0, 0, 0.60);
@@ -64,9 +119,6 @@
         --nucomu-btn-primary-bg: var(--accent-solid, #F5F2EE);
         --nucomu-btn-primary-text: var(--accent-solid-text, #111111);
         --nucomu-btn-primary-hover: var(--accent-solid-hover, #FFFFFF);
-
-        background-color: var(--nucomu-bg-page);
-        color: var(--nucomu-text);
     }
 
     /* ======================================================================
@@ -83,7 +135,7 @@
     #reviews .nucomu-reviews-fade-left {
         background: linear-gradient(
             to right,
-            #0E0E0E 0%,
+            var(--nucomu-fade-edge) 0%,
             var(--nucomu-bg-container-fade) 48%,
             var(--nucomu-bg-container-transparent) 100%
         );
@@ -92,7 +144,7 @@
     #reviews .nucomu-reviews-fade-right {
         background: linear-gradient(
             to left,
-            #0E0E0E 0%,
+            var(--nucomu-fade-edge) 0%,
             var(--nucomu-bg-container-fade) 48%,
             var(--nucomu-bg-container-transparent) 100%
         );
@@ -630,9 +682,9 @@
         </div>
 
         @if(session('review_success'))
-            <div class="max-w-3xl mx-auto mb-6 p-4 rounded-2xl nu-glass-card text-[#F5F5F5] text-xs sm:text-sm flex items-center justify-between gap-3 shadow-xs font-body">
+            <div class="max-w-3xl mx-auto mb-6 p-4 rounded-2xl nu-glass-card text-[var(--text)] text-xs sm:text-sm flex items-center justify-between gap-3 shadow-xs font-body">
                 <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-circle-check text-[#F5F2EE] text-base" aria-hidden="true"></i>
+                    <i class="fa-solid fa-circle-check text-[var(--text)] text-base" aria-hidden="true"></i>
                     <span>{{ session('review_success') }}</span>
                 </div>
             </div>
@@ -644,7 +696,7 @@
              aria-label="Ulasan pelanggan Nucomu Cafe"
              class="nucomu-reviews-stage relative rounded-[20px] sm:rounded-[26px] overflow-hidden select-none">
 
-            <!-- Soft Edge Fades di tepi dalam kontainer agar kartu samping menyatu halus dengan warna #FFFFFF -->
+            <!-- Soft Edge Fades di tepi dalam kontainer agar kartu samping menyatu halus -->
             <div class="nucomu-reviews-fade-left pointer-events-none hidden md:block absolute inset-y-0 left-0 w-8 lg:w-10 xl:w-14 z-40" aria-hidden="true"></div>
             <div class="nucomu-reviews-fade-right pointer-events-none hidden md:block absolute inset-y-0 right-0 w-8 lg:w-10 xl:w-14 z-40" aria-hidden="true"></div>
 
@@ -660,13 +712,13 @@
                         // Avatar determination matching Google Reviews
                         $nameClean = trim($rev['name'] ?? 'Pengunjung');
                         $initial = strtoupper(substr($nameClean, 0, 1));
-                        $avatarBg = $avatarPalette[$initial] ?? '#1C1C1C';
+                        $avatarBg = $avatarPalette[$initial] ?? $defaultAvatarBg;
 
                         // Specific checks: Dya slma (idx 0) and Karina (idx 2) use colored letter circle, Febry has photo
                         $isLetterAvatar = in_array($idx, [0, 2]) || empty($rev['avatar_url']) || str_contains($rev['avatar_url'] ?? '', 'placeholder') || str_contains($rev['avatar_url'] ?? '', 'unsplash');
                     @endphp
 
-                    <!-- 1 Stage Card Article (Tampilan Google Reviews Card Bersih — Dark Glass) -->
+                    <!-- 1 Stage Card Article (Tampilan Google Reviews Card Bersih) -->
                     <article data-stage-index="{{ $idx }}"
                              data-order-tag="{{ $rev['order_tag'] ?? 'Menu Nucomu' }}"
                              onclick="focusStageCard({{ $idx }})"
@@ -676,7 +728,7 @@
                         <!-- 1. Reviewer Header (Avatar + Name + Subtitle) -->
                         <div class="flex items-center gap-2.5 mb-2">
                             @if($isLetterAvatar)
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-[#F5F5F5] border border-white/15 font-bold text-sm shadow-xs select-none"
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-white border border-white/15 font-bold text-sm shadow-xs select-none"
                                      style="background-color: {{ $avatarBg }};">
                                     {{ $initial }}
                                 </div>
@@ -685,15 +737,15 @@
                                      alt="{{ $rev['name'] }}"
                                      referrerpolicy="no-referrer"
                                      loading="lazy"
-                                     class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-[var(--border)] bg-[#1A1A1A] shadow-xs select-none"
-                                     onerror="this.outerHTML='<div class=\'w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-[#F5F5F5] border border-white/15 font-bold text-sm shadow-xs select-none\' style=\'background-color: {{ $avatarBg }};\'>{{ $initial }}</div>'">
+                                     class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover shrink-0 border border-[var(--border)] bg-[var(--media-bg)] shadow-xs select-none"
+                                     onerror="this.outerHTML='<div class=\'w-9 h-9 sm:w-10 sm:h-10 rounded-full shrink-0 flex items-center justify-center text-white border border-white/15 font-bold text-sm shadow-xs select-none\' style=\'background-color: {{ $avatarBg }};\'>{{ $initial }}</div>'">
                             @endif
 
                             <div class="min-w-0 flex-1">
-                                <h4 class="text-sm sm:text-[15px] font-bold text-[#F5F5F5] leading-snug font-body truncate">
+                                <h4 class="text-sm sm:text-[15px] font-bold text-[var(--text)] leading-snug font-body truncate">
                                     {{ $rev['name'] }}
                                 </h4>
-                                <p class="text-[11px] text-[#B5B5B5] mt-0.5 font-body truncate">
+                                <p class="text-[11px] text-[var(--text-muted)] mt-0.5 font-body truncate">
                                     {{ $rev['handle'] ?? 'Pengunjung Google Maps' }}
                                 </p>
                             </div>
@@ -707,13 +759,13 @@
                                     <i class="fa-solid fa-star text-[10px]" aria-hidden="true"></i>
                                 @endfor
                             </div>
-                            <span class="text-[11px] text-[#B5B5B5] font-body">{{ $rev['time_ago'] ?? 'Baru-baru ini' }}</span>
+                            <span class="text-[11px] text-[var(--text-muted)] font-body">{{ $rev['time_ago'] ?? 'Baru-baru ini' }}</span>
                         </div>
 
                         <!-- 3. Review Comment Text + Link Baca Selengkapnya (muncul otomatis jika teks terpotong) -->
                         <div class="mb-2.5 min-h-[68px] flex flex-col items-start">
                             <p data-review-comment="{{ $idx }}"
-                               class="nucomu-review-comment text-[12.5px] sm:text-[13px] text-[#D4D4D4] leading-snug line-clamp-3 font-body whitespace-pre-line">{{ trim($rev['content']) }}</p>
+                               class="nucomu-review-comment text-[12.5px] sm:text-[13px] text-[var(--text-secondary)] leading-snug line-clamp-3 font-body whitespace-pre-line">{{ trim($rev['content']) }}</p>
                             <button type="button"
                                     data-readmore-for="{{ $idx }}"
                                     onclick="event.stopPropagation(); openSingleReviewModal({{ $idx }}, this)"
@@ -725,9 +777,9 @@
 
                         <!-- 4. Attached Photo Grid (2x2 Grid for 4 photos, 1x2 for 2 photos) -->
                         @if(count($cardImages) >= 4)
-                            <div class="grid grid-cols-2 grid-rows-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[#1A1A1A] border border-[var(--border)] mb-2.5">
+                            <div class="grid grid-cols-2 grid-rows-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[var(--media-bg)] border border-[var(--border)] mb-2.5">
                                 @foreach(array_slice($cardImages, 0, 4) as $imgIdx => $imgUrl)
-                                    <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[#1F1F1F]"
+                                    <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[var(--surface-muted)]"
                                          onclick="event.stopPropagation(); openReviewImagePreview('{{ $imgUrl }}', '{{ addslashes($rev['name']) }}')"
                                          title="Klik untuk memperbesar">
                                         <img src="{{ $imgUrl }}"
@@ -748,9 +800,9 @@
                                 @endforeach
                             </div>
                         @elseif(count($cardImages) === 2)
-                            <div class="grid grid-cols-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[#1A1A1A] border border-[var(--border)] mb-2.5">
+                            <div class="grid grid-cols-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[var(--media-bg)] border border-[var(--border)] mb-2.5">
                                 @foreach($cardImages as $imgUrl)
-                                    <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[#1F1F1F]"
+                                    <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[var(--surface-muted)]"
                                          onclick="event.stopPropagation(); openReviewImagePreview('{{ $imgUrl }}', '{{ addslashes($rev['name']) }}')"
                                          title="Klik untuk memperbesar">
                                         <img src="{{ $imgUrl }}"
@@ -765,8 +817,8 @@
                                 @endforeach
                             </div>
                         @elseif(count($cardImages) === 3)
-                            <div class="grid grid-cols-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[#1A1A1A] border border-[var(--border)] mb-2.5">
-                                <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[#1F1F1F]"
+                            <div class="grid grid-cols-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[var(--media-bg)] border border-[var(--border)] mb-2.5">
+                                <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[var(--surface-muted)]"
                                      onclick="event.stopPropagation(); openReviewImagePreview('{{ $cardImages[0] }}', '{{ addslashes($rev['name']) }}')">
                                     <img src="{{ $cardImages[0] }}"
                                          alt="Foto ulasan {{ $rev['name'] }}"
@@ -776,7 +828,7 @@
                                 </div>
                                 <div class="grid grid-rows-2 gap-[3px] w-full h-full">
                                     @foreach(array_slice($cardImages, 1, 2) as $imgUrl)
-                                        <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[#1F1F1F]"
+                                        <div class="relative group cursor-pointer overflow-hidden w-full h-full bg-[var(--surface-muted)]"
                                              onclick="event.stopPropagation(); openReviewImagePreview('{{ $imgUrl }}', '{{ addslashes($rev['name']) }}')">
                                             <img src="{{ $imgUrl }}"
                                                  alt="Foto ulasan {{ $rev['name'] }}"
@@ -788,7 +840,7 @@
                                 </div>
                             </div>
                         @elseif(count($cardImages) === 1)
-                            <div class="h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[#1A1A1A] border border-[var(--border)] mb-2.5 relative group cursor-pointer"
+                            <div class="h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[var(--media-bg)] border border-[var(--border)] mb-2.5 relative group cursor-pointer"
                                  onclick="event.stopPropagation(); openReviewImagePreview('{{ $cardImages[0] }}', '{{ addslashes($rev['name']) }}')">
                                 <img src="{{ $cardImages[0] }}"
                                      alt="Foto ulasan {{ $rev['name'] }}"
@@ -803,9 +855,9 @@
 
                     <!-- 5. Card Footer: Menu Favorit Pill -->
                     <div class="pt-2.5 border-t border-[var(--border-soft)] flex items-center gap-1.5 mt-auto">
-                        <span class="text-[11px] text-[#B5B5B5] font-body shrink-0">Menu Favorit:</span>
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-white/10 text-[#F5F5F5] border border-[var(--border)] truncate font-body">
-                            <i class="fa-solid fa-mug-saucer text-[9px] text-[#F5F5F5]" aria-hidden="true"></i>
+                        <span class="text-[11px] text-[var(--text-muted)] font-body shrink-0">Menu Favorit:</span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[var(--badge-bg)] text-[var(--text)] border border-[var(--border)] truncate font-body">
+                            <i class="fa-solid fa-mug-saucer text-[9px] text-[var(--text)]" aria-hidden="true"></i>
                             <span class="truncate">{{ $rev['order_tag'] ?? 'Menu Nucomu' }}</span>
                         </span>
                     </div>
@@ -860,31 +912,31 @@
      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300"
      onclick="closeSingleReviewModal()">
     <div id="singleReviewModalContent"
-         class="bg-[#121212] text-[#F5F5F5] w-full max-w-lg rounded-[28px] border border-[var(--border)] shadow-[var(--shadow)] relative transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col overflow-hidden font-body"
+         class="bg-[var(--surface-solid)] text-[var(--text)] w-full max-w-lg rounded-[28px] border border-[var(--border)] shadow-[var(--shadow)] relative transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col overflow-hidden font-body"
          onclick="event.stopPropagation()">
 
         <!-- Modal Header: Reviewer Info -->
-        <div class="p-5 sm:p-6 border-b border-[var(--border-soft)] flex items-center justify-between gap-3 bg-[#161616]">
+        <div class="p-5 sm:p-6 border-b border-[var(--border-soft)] flex items-center justify-between gap-3 bg-[var(--surface-strong-solid)]">
             <div class="flex items-center gap-3.5 min-w-0">
                 <div class="relative shrink-0">
                     <img id="singleReviewAvatar"
                          src=""
                          alt="Avatar Pengunjung"
                          referrerpolicy="no-referrer"
-                         class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-white/20 bg-[#1A1A1A] shadow-xs">
+                         class="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-[var(--border)] bg-[var(--media-bg)] shadow-xs">
                     <div id="singleReviewAvatarFallback"
-                         class="hidden w-12 h-12 sm:w-14 sm:h-14 rounded-full items-center justify-center text-[#F5F5F5] border border-white/15 font-bold text-lg shadow-xs select-none"></div>
+                         class="hidden w-12 h-12 sm:w-14 sm:h-14 rounded-full items-center justify-center text-white border border-white/15 font-bold text-lg shadow-xs select-none"></div>
                 </div>
                 <div class="min-w-0">
-                    <h3 id="singleReviewName" class="text-base sm:text-lg font-bold text-[#F5F5F5] truncate"></h3>
-                    <span id="singleReviewHandle" class="text-xs text-[#B5B5B5] block truncate"></span>
+                    <h3 id="singleReviewName" class="text-base sm:text-lg font-bold text-[var(--text)] truncate"></h3>
+                    <span id="singleReviewHandle" class="text-xs text-[var(--text-muted)] block truncate"></span>
                 </div>
             </div>
 
             <button type="button"
                     onclick="closeSingleReviewModal()"
                     aria-label="Tutup ulasan lengkap"
-                    class="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] hover:bg-[#F5F2EE] hover:text-[#111111] flex items-center justify-center text-[#F5F5F5] transition-colors shadow-2xs shrink-0 cursor-pointer">
+                    class="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--accent-solid)] hover:text-[var(--accent-solid-text)] flex items-center justify-center text-[var(--text)] transition-colors shadow-2xs shrink-0 cursor-pointer">
                 <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
             </button>
         </div>
@@ -893,41 +945,41 @@
         <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4">
             <!-- Rating Stars & Time Ago -->
             <div class="flex items-center justify-between gap-2">
-                <div class="inline-flex items-center gap-1.5 bg-white/10 border border-[var(--border)] text-[#F5F5F5] px-3 py-1 rounded-full text-xs">
-                    <div id="singleReviewStars" class="flex items-center gap-0.5 text-[11px]" style="color: #F5F2EE;"></div>
+                <div class="inline-flex items-center gap-1.5 bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] px-3 py-1 rounded-full text-xs">
+                    <div id="singleReviewStars" class="flex items-center gap-0.5 text-[11px]" style="color: var(--nucomu-review-star-color);"></div>
                     <span id="singleReviewRatingNum" class="font-bold text-[11px] ml-0.5">5.0</span>
                 </div>
-                <span id="singleReviewTimeAgo" class="text-xs text-[#B5B5B5] font-medium"></span>
+                <span id="singleReviewTimeAgo" class="text-xs text-[var(--text-muted)] font-medium"></span>
             </div>
 
             <!-- Full Review Content -->
             <div class="nu-glass-card rounded-2xl p-4 sm:p-5 shadow-2xs">
-                <p id="singleReviewText" class="text-sm sm:text-[15px] text-[#E5E5E5] leading-relaxed whitespace-pre-line"></p>
+                <p id="singleReviewText" class="text-sm sm:text-[15px] text-[var(--text-secondary)] leading-relaxed whitespace-pre-line"></p>
             </div>
 
             <!-- Review Photos Container -->
             <div id="singleReviewPhotosWrap" class="hidden space-y-2">
-                <div class="flex items-center justify-between text-xs text-[#B5B5B5]">
-                    <span class="font-semibold text-[#F5F5F5] flex items-center gap-1.5">
+                <div class="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <span class="font-semibold text-[var(--text)] flex items-center gap-1.5">
                         <i class="fa-solid fa-camera"></i>
                         <span>Foto Ulasan Pengunjung</span>
                     </span>
-                    <span class="text-[11px] text-[#8F8F8F]">Klik foto untuk memperbesar</span>
+                    <span class="text-[11px] text-[var(--text-faint)]">Klik foto untuk memperbesar</span>
                 </div>
                 <div id="singleReviewPhotosGrid" class="grid gap-2"></div>
             </div>
         </div>
 
         <!-- Modal Footer: Menu Order Tag & Close Button -->
-        <div class="px-5 sm:px-6 py-4 bg-[#161616] border-t border-[var(--border-soft)] flex items-center justify-between gap-3">
+        <div class="px-5 sm:px-6 py-4 bg-[var(--surface-strong-solid)] border-t border-[var(--border-soft)] flex items-center justify-between gap-3">
             <div class="flex items-center gap-2 min-w-0">
-                <span class="text-xs text-[#8F8F8F] shrink-0">Menu Favorit:</span>
-                <span id="singleReviewOrderTag" class="text-xs font-semibold text-[#F5F5F5] bg-white/10 border border-[var(--border)] px-3 py-1 rounded-full truncate"></span>
+                <span class="text-xs text-[var(--text-faint)] shrink-0">Menu Favorit:</span>
+                <span id="singleReviewOrderTag" class="text-xs font-semibold text-[var(--text)] bg-[var(--badge-bg)] border border-[var(--border)] px-3 py-1 rounded-full truncate"></span>
             </div>
 
             <button type="button"
                     onclick="closeSingleReviewModal()"
-                    class="px-4 py-2 rounded-full bg-[#F5F2EE] hover:bg-white text-[#111111] text-xs font-bold transition-all shrink-0 cursor-pointer">
+                    class="px-4 py-2 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] text-xs font-bold transition-all shrink-0 cursor-pointer">
                 Tutup
             </button>
         </div>
@@ -939,19 +991,19 @@
      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300"
      onclick="closeAllReviewsModal()">
     <div id="allReviewsModalContent"
-         class="bg-[#121212] text-[#F5F5F5] w-full max-w-5xl rounded-[28px] border border-[var(--border)] shadow-[var(--shadow)] relative transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col overflow-hidden font-body"
+         class="bg-[var(--surface-solid)] text-[var(--text)] w-full max-w-5xl rounded-[28px] border border-[var(--border)] shadow-[var(--shadow)] relative transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col overflow-hidden font-body"
          onclick="event.stopPropagation()">
 
         <!-- Modal Header -->
-        <div class="p-5 sm:p-6 border-b border-[var(--border-soft)] flex flex-wrap items-center justify-between gap-4 bg-[#161616] shrink-0">
+        <div class="p-5 sm:p-6 border-b border-[var(--border-soft)] flex flex-wrap items-center justify-between gap-4 bg-[var(--surface-strong-solid)] shrink-0">
             <div class="flex items-center gap-3.5">
-                <div class="w-11 h-11 rounded-2xl bg-white/10 border border-[var(--border)] flex items-center justify-center text-[#F5F2EE] text-lg shrink-0">
+                <div class="w-11 h-11 rounded-2xl bg-[var(--badge-bg)] border border-[var(--border)] flex items-center justify-center text-[var(--nucomu-review-star-color)] text-lg shrink-0">
                     <i class="fa-solid fa-star"></i>
                 </div>
                 <div>
-                    <h3 class="text-base sm:text-xl font-bold text-[#F5F5F5]">Semua Ulasan Pengunjung Nucomu Cafe</h3>
-                    <div class="flex items-center gap-2 text-xs text-[#B5B5B5] mt-0.5">
-                        <span class="font-bold text-[#F5F5F5]">★ 4.9 / 5.0</span>
+                    <h3 class="text-base sm:text-xl font-bold text-[var(--text)]">Semua Ulasan Pengunjung Nucomu Cafe</h3>
+                    <div class="flex items-center gap-2 text-xs text-[var(--text-muted)] mt-0.5">
+                        <span class="font-bold text-[var(--text)]">★ 4.9 / 5.0</span>
                         <span>•</span>
                         <span>Menampilkan {{ $allReviewsCollection->count() }} Ulasan Pilihan &amp; Terbaru</span>
                     </div>
@@ -961,34 +1013,34 @@
             <div class="flex items-center gap-2">
                 <button type="button"
                         onclick="closeAllReviewsModal(); openHomeReviewModal();"
-                        class="text-xs font-bold text-[#111111] bg-[#F5F2EE] hover:bg-white px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
-                    <i class="fa-solid fa-plus-circle text-[#111111]"></i>
+                        class="text-xs font-bold text-[var(--accent-solid-text)] bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] px-4 py-2 rounded-full inline-flex items-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                    <i class="fa-solid fa-plus-circle"></i>
                     <span>Tulis Ulasan</span>
                 </button>
                 <button type="button"
                         onclick="closeAllReviewsModal()"
                         aria-label="Tutup semua ulasan"
-                        class="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] hover:bg-[#F5F2EE] hover:text-[#111111] flex items-center justify-center text-[#F5F5F5] transition-colors shadow-2xs cursor-pointer">
+                        class="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--accent-solid)] hover:text-[var(--accent-solid-text)] flex items-center justify-center text-[var(--text)] transition-colors shadow-2xs cursor-pointer">
                     <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
 
         <!-- Filter Bar inside Modal -->
-        <div class="px-5 sm:px-6 py-3 bg-[#101010] border-b border-[var(--border-soft)] flex flex-wrap items-center justify-between gap-3 shrink-0">
-            <span class="text-xs font-semibold text-[#B5B5B5]">Filter Ulasan:</span>
+        <div class="px-5 sm:px-6 py-3 bg-[var(--bg-section-alt)] border-b border-[var(--border-soft)] flex flex-wrap items-center justify-between gap-3 shrink-0">
+            <span class="text-xs font-semibold text-[var(--text-muted)]">Filter Ulasan:</span>
             <div class="flex flex-wrap items-center gap-2">
                 <button type="button"
                         id="filterReviewsAllBtn"
                         onclick="filterModalReviews('all')"
-                        class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#F5F2EE] text-[#111111] transition-all shadow-2xs cursor-pointer">
+                        class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-[var(--accent-solid)] text-[var(--accent-solid-text)] transition-all shadow-2xs cursor-pointer">
                     Semua ({{ $allReviewsCollection->count() }})
                 </button>
                 <button type="button"
                         id="filterReviewsPhotoBtn"
                         onclick="filterModalReviews('with-photo')"
-                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] hover:bg-white/10 text-[#B5B5B5] border border-[var(--border)] transition-all cursor-pointer">
-                    <i class="fa-solid fa-camera mr-1 text-[#F5F5F5]"></i> Dengan Foto
+                        class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] hover:bg-[var(--badge-bg)] text-[var(--text-muted)] border border-[var(--border)] transition-all cursor-pointer">
+                    <i class="fa-solid fa-camera mr-1 text-[var(--text)]"></i> Dengan Foto
                 </button>
             </div>
         </div>
@@ -1003,7 +1055,7 @@
                             : (!empty($mRev['review_image']) ? [$mRev['review_image']] : []);
                         $hasPhotos = count($mImages) > 0;
                         $mInitial = strtoupper(substr(trim($mRev['name'] ?? 'P'), 0, 1));
-                        $mAvatarBg = $avatarPalette[$mInitial] ?? '#2A2A2A';
+                        $mAvatarBg = $avatarPalette[$mInitial] ?? $defaultAvatarBg;
                     @endphp
                     <div class="modal-review-item nu-glass-card rounded-2xl p-4 sm:p-5 flex flex-col justify-between transition-colors shadow-2xs"
                          data-has-photo="{{ $hasPhotos ? '1' : '0' }}">
@@ -1015,25 +1067,25 @@
                                              alt="{{ $mRev['name'] }}"
                                              referrerpolicy="no-referrer"
                                              loading="lazy"
-                                             class="w-10 h-10 rounded-full object-cover border border-[var(--border)] bg-[#1A1A1A]">
+                                             class="w-10 h-10 rounded-full object-cover border border-[var(--border)] bg-[var(--media-bg)]">
                                     @else
-                                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-[#F5F5F5] border border-white/15 font-bold text-sm shadow-xs"
+                                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-white border border-white/15 font-bold text-sm shadow-xs"
                                              style="background-color: {{ $mAvatarBg }};">
                                             {{ $mInitial }}
                                         </div>
                                     @endif
                                     <div>
-                                        <h5 class="text-xs sm:text-sm font-bold text-[#F5F5F5]">{{ $mRev['name'] }}</h5>
-                                        <span class="text-[11px] text-[#B5B5B5] block">{{ $mRev['handle'] ?? 'Pengunjung Nucomu' }}</span>
+                                        <h5 class="text-xs sm:text-sm font-bold text-[var(--text)]">{{ $mRev['name'] }}</h5>
+                                        <span class="text-[11px] text-[var(--text-muted)] block">{{ $mRev['handle'] ?? 'Pengunjung Nucomu' }}</span>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-0.5 text-xs text-[#F5F2EE]">
+                                <div class="flex items-center gap-0.5 text-xs" style="color: var(--nucomu-review-star-color);">
                                     @for($i = 0; $i < ($mRev['rating'] ?? 5); $i++)
                                         <i class="fa-solid fa-star text-[10px]"></i>
                                     @endfor
                                 </div>
                             </div>
-                            <p class="text-xs sm:text-sm text-[#D4D4D4] leading-relaxed whitespace-pre-line mb-3">
+                            <p class="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed whitespace-pre-line mb-3">
                                 "{{ $mRev['content'] }}"
                             </p>
                             @if($hasPhotos)
@@ -1049,15 +1101,15 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="pt-2.5 border-t border-[var(--border-soft)] flex items-center justify-between text-[11px] text-[#B5B5B5] mt-2">
-                            <span><i class="fa-solid fa-mug-saucer mr-1 text-[#F5F5F5]"></i>{{ $mRev['order_tag'] ?? 'Menu Nucomu' }}</span>
+                        <div class="pt-2.5 border-t border-[var(--border-soft)] flex items-center justify-between text-[11px] text-[var(--text-muted)] mt-2">
+                            <span><i class="fa-solid fa-mug-saucer mr-1 text-[var(--text)]"></i>{{ $mRev['order_tag'] ?? 'Menu Nucomu' }}</span>
                             <span>{{ $mRev['time_ago'] ?? 'Baru-baru ini' }}</span>
                         </div>
                     </div>
                 @endforeach
                 <!-- Empty State Message when Filter has no results -->
-                <div id="allReviewsEmptyState" class="hidden col-span-full py-12 text-center font-body text-sm text-[#B5B5B5]">
-                    <i class="fa-regular fa-image text-2xl text-[#8F8F8F] block mb-2"></i>
+                <div id="allReviewsEmptyState" class="hidden col-span-full py-12 text-center font-body text-sm text-[var(--text-muted)]">
+                    <i class="fa-regular fa-image text-2xl text-[var(--text-faint)] block mb-2"></i>
                     Belum ada ulasan dengan foto.
                 </div>
             </div>
@@ -1070,18 +1122,18 @@
      class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300"
      onclick="closeHomeReviewModal()">
     <div id="homeModalContent"
-         class="bg-[#121212] text-[#F5F5F5] w-full max-w-lg rounded-[28px] border border-[var(--border)] shadow-[var(--shadow)] relative transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col overflow-hidden font-body"
+         class="bg-[var(--surface-solid)] text-[var(--text)] w-full max-w-lg rounded-[28px] border border-[var(--border)] shadow-[var(--shadow)] relative transform scale-95 transition-transform duration-300 max-h-[90vh] flex flex-col overflow-hidden font-body"
          onclick="event.stopPropagation()">
 
-        <div class="p-5 sm:p-6 border-b border-[var(--border-soft)] flex items-center justify-between bg-[#161616]">
+        <div class="p-5 sm:p-6 border-b border-[var(--border-soft)] flex items-center justify-between bg-[var(--surface-strong-solid)]">
             <div>
-                <h3 class="text-base sm:text-lg font-bold text-[#F5F5F5]">Bagikan Pengalaman Anda</h3>
-                <p class="text-xs text-[#B5B5B5]">Ulasan Anda sangat berarti bagi pengembangan Nucomu Cafe</p>
+                <h3 class="text-base sm:text-lg font-bold text-[var(--text)]">Bagikan Pengalaman Anda</h3>
+                <p class="text-xs text-[var(--text-muted)]">Ulasan Anda sangat berarti bagi pengembangan Nucomu Cafe</p>
             </div>
             <button type="button"
                     onclick="closeHomeReviewModal()"
                     aria-label="Tutup formulir ulasan"
-                    class="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] hover:bg-[#F5F2EE] hover:text-[#111111] flex items-center justify-center text-[#F5F5F5] transition-colors shadow-2xs cursor-pointer">
+                    class="w-9 h-9 rounded-full bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--accent-solid)] hover:text-[var(--accent-solid-text)] flex items-center justify-center text-[var(--text)] transition-colors shadow-2xs cursor-pointer">
                 <i class="fa-solid fa-xmark text-sm" aria-hidden="true"></i>
             </button>
         </div>
@@ -1094,12 +1146,12 @@
 
             <!-- Rating Stars Selection -->
             <div>
-                <label class="block text-xs font-semibold text-[#F5F5F5] mb-1.5">Beri Bintang Kepuasan</label>
+                <label class="block text-xs font-semibold text-[var(--text)] mb-1.5">Beri Bintang Kepuasan</label>
                 <div class="flex items-center gap-2" id="homeStarRating">
                     @for($s = 1; $s <= 5; $s++)
                         <button type="button"
                                 onclick="setHomeRating({{ $s }})"
-                                class="text-2xl text-[#F5F2EE] hover:scale-125 transition-transform cursor-pointer">
+                                class="text-2xl text-[var(--nucomu-review-star-color)] hover:scale-125 transition-transform cursor-pointer">
                             <i class="fa-solid fa-star"></i>
                         </button>
                     @endfor
@@ -1109,58 +1161,58 @@
 
             <!-- Name -->
             <div>
-                <label for="homeReviewerName" class="block text-xs font-semibold text-[#F5F5F5] mb-1">Nama Lengkap *</label>
+                <label for="homeReviewerName" class="block text-xs font-semibold text-[var(--text)] mb-1">Nama Lengkap *</label>
                 <input type="text"
                        name="name"
                        id="homeReviewerName"
                        required
                        placeholder="Contoh: Budi Santoso"
-                       class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 rounded-xl px-3.5 py-2.5 text-xs text-[#F5F5F5] placeholder:text-[#8F8F8F] outline-hidden">
+                       class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text)] placeholder:text-[var(--text-faint)] outline-hidden">
             </div>
 
             <!-- Handle / Role -->
             <div>
-                <label for="homeReviewerHandle" class="block text-xs font-semibold text-[#F5F5F5] mb-1">Status / Profesi (Opsional)</label>
+                <label for="homeReviewerHandle" class="block text-xs font-semibold text-[var(--text)] mb-1">Status / Profesi (Opsional)</label>
                 <input type="text"
                        name="handle"
                        id="homeReviewerHandle"
                        placeholder="Contoh: Pecinta Kopi Manual Brew · Tulungagung"
-                       class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 rounded-xl px-3.5 py-2.5 text-xs text-[#F5F5F5] placeholder:text-[#8F8F8F] outline-hidden">
+                       class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text)] placeholder:text-[var(--text-faint)] outline-hidden">
             </div>
 
             <!-- Order Tag -->
             <div>
-                <label for="homeReviewOrderTag" class="block text-xs font-semibold text-[#F5F5F5] mb-1">Menu yang Dipesan</label>
+                <label for="homeReviewOrderTag" class="block text-xs font-semibold text-[var(--text)] mb-1">Menu yang Dipesan</label>
                 <input type="text"
                        name="order_tag"
                        id="homeReviewOrderTag"
                        placeholder="Contoh: Kopi Susu Nucomu + Basque Cheesecake"
-                       class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 rounded-xl px-3.5 py-2.5 text-xs text-[#F5F5F5] placeholder:text-[#8F8F8F] outline-hidden">
+                       class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text)] placeholder:text-[var(--text-faint)] outline-hidden">
             </div>
 
             <!-- Comment -->
             <div>
-                <label for="homeReviewComment" class="block text-xs font-semibold text-[#F5F5F5] mb-1">Cerita / Komentar Anda *</label>
+                <label for="homeReviewComment" class="block text-xs font-semibold text-[var(--text)] mb-1">Cerita / Komentar Anda *</label>
                 <textarea name="comment"
                           id="homeReviewComment"
                           rows="4"
                           required
                           placeholder="Ceritakan rasa kopi, kenyamanan suasana, atau keramahan barista kami..."
-                          class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[#F5F5F5] focus:ring-1 focus:ring-white/25 rounded-xl px-3.5 py-2.5 text-xs text-[#F5F5F5] placeholder:text-[#8F8F8F] outline-hidden"></textarea>
+                          class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] rounded-xl px-3.5 py-2.5 text-xs text-[var(--text)] placeholder:text-[var(--text-faint)] outline-hidden"></textarea>
             </div>
 
             <!-- Optional Image Upload -->
             <div>
-                <label class="block text-xs font-semibold text-[#F5F5F5] mb-1">Foto Momen di Nucomu (Opsional, Maks 2MB)</label>
-                <div class="relative border-2 border-dashed border-[var(--field-border)] hover:border-[#F5F5F5] rounded-2xl p-4 text-center cursor-pointer transition-colors bg-[var(--field-bg)]">
+                <label class="block text-xs font-semibold text-[var(--text)] mb-1">Foto Momen di Nucomu (Opsional, Maks 2MB)</label>
+                <div class="relative border-2 border-dashed border-[var(--field-border)] hover:border-[var(--field-focus)] rounded-2xl p-4 text-center cursor-pointer transition-colors bg-[var(--field-bg)]">
                     <input type="file"
                            name="review_image"
                            accept="image/*"
                            onchange="previewHomeReviewUpload(this)"
                            class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
                     <div class="space-y-1">
-                        <i class="fa-solid fa-cloud-arrow-up text-xl text-[#8F8F8F]"></i>
-                        <p class="text-xs text-[#B5B5B5] font-medium" id="homeReviewImageLabel">Pilih foto dari perangkat Anda</p>
+                        <i class="fa-solid fa-cloud-arrow-up text-xl text-[var(--text-faint)]"></i>
+                        <p class="text-xs text-[var(--text-muted)] font-medium" id="homeReviewImageLabel">Pilih foto dari perangkat Anda</p>
                     </div>
                 </div>
                 <div id="homeReviewUploadPreviewWrap" class="mt-2 hidden">
@@ -1171,11 +1223,11 @@
             <div class="pt-3 border-t border-[var(--border-soft)] flex items-center justify-end gap-2">
                 <button type="button"
                         onclick="closeHomeReviewModal()"
-                        class="px-4 py-2 rounded-full border border-[var(--btn-outline)] text-xs font-semibold text-[#F5F5F5] hover:bg-white/10 transition-colors cursor-pointer">
+                        class="px-4 py-2 rounded-full border border-[var(--btn-outline)] text-xs font-semibold text-[var(--text)] hover:bg-[var(--btn-outline-hover-bg)] transition-colors cursor-pointer">
                     Batal
                 </button>
                 <button type="submit"
-                        class="px-5 py-2 rounded-full bg-[#F5F2EE] hover:bg-white text-[#111111] text-xs font-bold transition-all shadow-xs cursor-pointer">
+                        class="px-5 py-2 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] text-xs font-bold transition-all shadow-xs cursor-pointer">
                     Kirim Ulasan
                 </button>
             </div>
@@ -1400,7 +1452,7 @@
 
         const reviewerName = (rev.name || 'Pengunjung Nucomu').trim();
         const initialChar = reviewerName.charAt(0).toUpperCase() || 'P';
-        const avatarBg = homeReviewAvatarPalette[initialChar] || '#2A2A2A';
+        const avatarBg = homeReviewAvatarPalette[initialChar] || @json($defaultAvatarBg);
         const rawAvatarUrl = rev.avatar_url || '';
         const useLetterAvatar = [0, 2].includes(safeIdx) || !rawAvatarUrl || rawAvatarUrl.includes('placeholder') || rawAvatarUrl.includes('unsplash');
 
@@ -1431,7 +1483,7 @@
         if (timeAgoEl) timeAgoEl.innerText = rev.time_ago || 'Baru-baru ini';
         if (textEl) textEl.innerText = `"${(rev.content || '').trim()}"`;
         if (orderTagEl) {
-            orderTagEl.innerHTML = `<i class="fa-solid fa-mug-saucer mr-1 text-[10px] text-[#F5F5F5]" aria-hidden="true"></i> ${rev.order_tag || 'Menu Nucomu'}`;
+            orderTagEl.innerHTML = `<i class="fa-solid fa-mug-saucer mr-1 text-[10px] text-[var(--text)]" aria-hidden="true"></i> ${rev.order_tag || 'Menu Nucomu'}`;
         }
 
         const starsCount = parseInt(rev.rating || 5, 10) || 5;
@@ -1454,7 +1506,7 @@
                 photosGridEl.className = rawPhotos.length === 1 ? 'grid grid-cols-1 gap-2' : 'grid grid-cols-2 gap-2';
                 rawPhotos.forEach((imgUrl) => {
                     const item = document.createElement('div');
-                    item.className = 'relative group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden border border-[var(--border)] bg-[#1A1A1A]';
+                    item.className = 'relative group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden border border-[var(--border)] bg-[var(--media-bg)]';
                     item.onclick = () => openReviewImagePreview(imgUrl, rev.name);
                     item.innerHTML = `<img src="${imgUrl}" alt="Foto ulasan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                       <span class="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1.5"><i class="fa-solid fa-expand"></i><span>Perbesar</span></span>`;
@@ -1551,11 +1603,11 @@
 
         if (allBtn && photoBtn) {
             if (mode === 'with-photo') {
-                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#F5F2EE] text-[#111111] transition-all shadow-2xs cursor-pointer';
-                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] hover:bg-white/10 text-[#B5B5B5] border border-[var(--border)] transition-all cursor-pointer';
+                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[var(--accent-solid)] text-[var(--accent-solid-text)] transition-all shadow-2xs cursor-pointer';
+                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] hover:bg-[var(--badge-bg)] text-[var(--text-muted)] border border-[var(--border)] transition-all cursor-pointer';
             } else {
-                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#F5F2EE] text-[#111111] transition-all shadow-2xs cursor-pointer';
-                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] hover:bg-white/10 text-[#B5B5B5] border border-[var(--border)] transition-all cursor-pointer';
+                allBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-bold bg-[var(--accent-solid)] text-[var(--accent-solid-text)] transition-all shadow-2xs cursor-pointer';
+                photoBtn.className = 'px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[var(--surface)] hover:bg-[var(--badge-bg)] text-[var(--text-muted)] border border-[var(--border)] transition-all cursor-pointer';
             }
         }
     }
@@ -1596,11 +1648,11 @@
         const stars = document.getElementById('homeStarRating').children;
         for (let i = 0; i < stars.length; i++) {
             if (i < rating) {
-                stars[i].classList.add('text-[#F5F2EE]');
-                stars[i].classList.remove('text-white/25');
+                stars[i].classList.add('text-[var(--nucomu-review-star-color)]');
+                stars[i].classList.remove('text-[var(--nucomu-review-star-inactive)]');
             } else {
-                stars[i].classList.remove('text-[#F5F2EE]');
-                stars[i].classList.add('text-white/25');
+                stars[i].classList.remove('text-[var(--nucomu-review-star-color)]');
+                stars[i].classList.add('text-[var(--nucomu-review-star-inactive)]');
             }
         }
     }

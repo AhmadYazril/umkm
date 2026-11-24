@@ -1847,13 +1847,21 @@ class NucomuController extends Controller
             $storedNotes = implode(' | ', $zendoParts);
         }
 
-        $paymentMethod = ($processMethod === 'kasir' && $request->input('payment_method') === 'qris') ? 'qris' : 'cash';
+        $requestedPaymentMethod = strtolower((string) $request->input('payment_method', 'cash'));
+        $paymentMethod = ($processMethod === 'kasir' && in_array($requestedPaymentMethod, ['cash', 'qris', 'transfer'], true))
+            ? $requestedPaymentMethod
+            : 'cash';
 
         try {
             $order = DB::transaction(function () use ($request, $processMethod, $paymentMethod, $dineType, $customerPhone, $storedNotes, $subtotal, $grandTotal, $deliveryAddress, $deliveryFee, $distanceKm, $tableNo, $customerLat, $customerLng) {
                 $date = Carbon::now()->format('Ymd');
                 $count = Order::whereDate('created_at', today())->count() + 1;
-                $code = 'NCM-'.$date.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
+
+                while (Order::where('code', $code)->exists()) {
+                    $count++;
+                    $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
+                }
 
                 $order = Order::create([
                     'code' => $code,
@@ -1874,7 +1882,7 @@ class NucomuController extends Controller
                     'total' => $grandTotal,
                     'payment_method' => $paymentMethod,
                     'payment_status' => 'unpaid',
-                    'status' => $processMethod === 'zendo' ? 'processing' : 'pending',
+                    'status' => 'pending',
                 ]);
 
                 foreach ($request->items as $item) {
@@ -2004,56 +2012,14 @@ class NucomuController extends Controller
                 'whatsapp_url' => $whatsappUrl,
             ]);
         } catch (\Exception $e) {
-            Log::error('Nucomu order store error: '.$e->getMessage());
-
-            if ($processMethod === 'zendo') {
-                $fallbackCode = 'NCM-'.Carbon::now()->format('Ymd').'-'.str_pad((string) random_int(1, 999), 3, '0', STR_PAD_LEFT);
-                $messageText = $this->buildZendoMessageText(
-                    $fallbackCode,
-                    $request->customer_name,
-                    $customerPhone,
-                    $deliveryAddress,
-                    $request->items,
-                    $subtotal,
-                    $deliveryFee,
-                    $grandTotal,
-                    $distanceKm,
-                    $customerLat,
-                    $customerLng,
-                    $rawNotes,
-                    $courierName,
-                    null,
-                    null,
-                    $hideLiveTracking ?? false
-                );
-                $whatsappUrl = 'https://wa.me/'.$zendoWaClean.'?text='.rawurlencode($messageText);
-                $autoSent = $this->dispatchZendoWhatsappMessage($zendoWaClean, $messageText, $txSettings);
-
-                return response()->json([
-                    'success' => true,
-                    'process_method' => 'zendo',
-                    'send_mode' => $zendoSendMode,
-                    'auto_sent' => $autoSent,
-                    'courier_index' => $courierIndex,
-                    'courier_name' => $courierName,
-                    'zendo_contact' => $zendoWaClean,
-                    'dispatch_reason' => $dispatchReason,
-                    'dispatch_reason_label' => $dispatchReasonLabel,
-                    'order_code' => $fallbackCode,
-                    'distance_km' => $distanceKm,
-                    'subtotal' => $subtotal,
-                    'delivery_fee' => $deliveryFee,
-                    'grand_total' => $grandTotal,
-                    'slip_url' => null,
-                    'tracking_url' => null,
-                    'hide_live_tracking' => $hideLiveTracking ?? false,
-                    'whatsapp_url' => $whatsappUrl,
-                ]);
-            }
+            Log::error('Nucomu order store error: '.$e->getMessage(), [
+                'process_method' => $processMethod,
+                'customer_name' => $request->input('customer_name'),
+            ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan, silakan coba lagi.',
+                'message' => 'Pesanan gagal disimpan ke sistem. Silakan coba lagi.',
             ], 500);
         }
     }

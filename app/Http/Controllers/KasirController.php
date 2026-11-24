@@ -387,6 +387,73 @@ class KasirController extends Controller
     }
 
     /**
+     * Restore ordered quantities back to both the database Menu table and Kasir stock map
+     * (used when editing pending order items or cancelling an order).
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     * @return array<string, int>
+     */
+    public static function restoreStockForOrderItems(array $items): array
+    {
+        $instance = app(self::class);
+        $stockMap = $instance->getStockMap();
+        $updatedStocks = [];
+
+        foreach ($items as $item) {
+            $midRaw = $item['menu_id'] ?? null;
+            $menuName = trim((string) ($item['menu_name'] ?? ''));
+            $qty = max(1, (int) ($item['qty'] ?? 1));
+
+            $menuModel = null;
+            try {
+                if (is_numeric($midRaw)) {
+                    $menuModel = Menu::find((int) $midRaw);
+                }
+                if (! $menuModel && is_string($midRaw) && $midRaw !== '') {
+                    $menuModel = Menu::where('slug', $midRaw)->first();
+                }
+                if (! $menuModel && $menuName !== '') {
+                    $menuModel = Menu::whereRaw('LOWER(name) = ?', [strtolower($menuName)])->first();
+                }
+            } catch (\Throwable $e) {
+                $menuModel = null;
+            }
+
+            if ($menuModel) {
+                $idKey = (string) $menuModel->id;
+                $currentStock = $menuModel->stock !== null
+                    ? (int) $menuModel->stock
+                    : (isset($stockMap[$idKey]) ? (int) $stockMap[$idKey] : ($menuModel->is_available ? 25 : 0));
+
+                $newStock = max(0, $currentStock + $qty);
+                $isAvailable = $newStock > 0;
+
+                $stockMap[$idKey] = $newStock;
+                $updatedStocks[$idKey] = $newStock;
+
+                try {
+                    $menuModel->update([
+                        'stock' => $newStock,
+                        'is_available' => $isAvailable,
+                    ]);
+                } catch (\Throwable $e) {
+                }
+            } elseif ($midRaw !== null && (string) $midRaw !== '') {
+                $mid = (string) $midRaw;
+                $currentStock = isset($stockMap[$mid]) ? (int) $stockMap[$mid] : 25;
+                $newStock = max(0, $currentStock + $qty);
+
+                $stockMap[$mid] = $newStock;
+                $updatedStocks[$mid] = $newStock;
+            }
+        }
+
+        $instance->saveStockMap($stockMap);
+
+        return $updatedStocks;
+    }
+
+    /**
      * Main Kasir POS, QR Scanner, and Order Workspace (/kasir).
      */
     public function index(Request $request): View
@@ -410,26 +477,32 @@ class KasirController extends Controller
         }
 
         $scannedOrder = null;
+        $scannedOrderPayload = null;
         $rawCode = trim((string) $request->query('code', ''));
         if ($rawCode !== '') {
             $cleanCode = $this->extractOrderCode($rawCode);
-            $scannedOrder = Order::where('code', $cleanCode)->with(['items', 'table'])->first();
+            $scannedOrder = Order::where('code', $cleanCode)->with(['items', 'table', 'zendoDelivery'])->first();
+            if ($scannedOrder) {
+                $scannedOrderPayload = $this->formatOrderForKasir($scannedOrder);
+            }
         }
 
         $recentOrders = collect();
+        $recentOrdersPayload = [];
         $tables = collect();
         $todayOrdersCount = 0;
         $todayRevenue = 0;
         $pendingOrdersCount = 0;
 
         try {
-            $recentOrders = Order::with(['items', 'table'])->latest()->take(25)->get();
+            $recentOrders = Order::with(['items', 'table', 'zendoDelivery'])->latest()->take(50)->get();
+            $recentOrdersPayload = $recentOrders->map(fn (Order $o): array => $this->formatOrderForKasir($o))->values()->all();
             $tables = Table::orderBy('number')->get();
             $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
             $todayRevenue = (int) Order::whereDate('created_at', today())
                 ->where('status', '!=', 'cancelled')
                 ->sum('total');
-            $pendingOrdersCount = Order::where('status', 'pending')->count();
+            $pendingOrdersCount = $this->countUnpaidOrders();
         } catch (\Throwable $e) {
             // Fallback gracefully if tables are empty
         }
@@ -458,7 +531,9 @@ class KasirController extends Controller
             'bestSellerItems',
             'qrisImageUrl',
             'scannedOrder',
+            'scannedOrderPayload',
             'recentOrders',
+            'recentOrdersPayload',
             'tables',
             'todayOrdersCount',
             'todayRevenue',
@@ -528,10 +603,10 @@ class KasirController extends Controller
         }
 
         $grandTotal = $subtotal;
-        $cashReceived = isset($validated['cash_received']) && $validated['cash_received'] > 0
+        $cashReceived = $paymentMethod === 'cash' && isset($validated['cash_received']) && $validated['cash_received'] > 0
             ? (int) $validated['cash_received']
             : $grandTotal;
-        $changeAmount = max(0, $cashReceived - $grandTotal);
+        $changeAmount = $paymentMethod === 'cash' ? max(0, $cashReceived - $grandTotal) : 0;
 
         $noteParts = [];
         if ($orderType === 'dine_in' && $tableNo !== '') {
@@ -548,11 +623,14 @@ class KasirController extends Controller
             $customerName,
             $customerPhone,
             $orderType,
+            $tableNo,
             $storedNotes,
             $subtotal,
             $grandTotal,
             $paymentMethod,
             $paymentStatus,
+            $cashReceived,
+            $changeAmount,
             $normalizedItems
         ) {
             $date = Carbon::now()->format('Ymd');
@@ -564,17 +642,24 @@ class KasirController extends Controller
                 $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
             }
 
+            $formData = array_filter([
+                'table_no' => $orderType === 'dine_in' && $tableNo !== '' ? $tableNo : null,
+                'cash_received' => $paymentStatus === 'paid' ? $cashReceived : null,
+                'change_amount' => $paymentStatus === 'paid' ? $changeAmount : null,
+            ], static fn (mixed $v): bool => $v !== null);
+
             $order = Order::create([
                 'code' => $code,
                 'customer_name' => $customerName,
                 'customer_phone' => $customerPhone,
                 'order_type' => $orderType,
                 'notes' => $storedNotes,
+                'form_data' => $formData !== [] ? $formData : null,
                 'subtotal' => $subtotal,
                 'total' => $grandTotal,
                 'payment_method' => $paymentMethod,
                 'payment_status' => $paymentStatus,
-                'status' => $paymentStatus === 'paid' ? 'processing' : 'pending',
+                'status' => $paymentStatus === 'paid' ? 'completed' : 'pending',
             ]);
 
             foreach ($normalizedItems as $item) {
@@ -602,7 +687,7 @@ class KasirController extends Controller
 
         $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
         $todayRevenue = (int) Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->sum('total');
-        $pendingOrdersCount = Order::where('status', 'pending')->count();
+        $pendingOrdersCount = $this->countUnpaidOrders();
 
         $host = $request->getHost();
         $port = $request->getPort();
@@ -626,8 +711,10 @@ class KasirController extends Controller
                 'order_type' => $order->order_type,
                 'table_no' => $tableNo,
                 'payment_method' => $order->payment_method,
+                'payment_method_label' => $order->payment_method_label,
                 'payment_status' => $order->payment_status,
                 'status' => $order->status,
+                'kasir_bucket' => $order->status === 'completed' ? 'completed' : 'unpaid',
                 'status_label' => $order->status_label,
                 'subtotal' => $order->subtotal,
                 'total' => $order->total,
@@ -749,29 +836,15 @@ class KasirController extends Controller
             $todayRevenue = (int) Order::whereDate('created_at', today())
                 ->where('status', '!=', 'cancelled')
                 ->sum('total');
-            $pendingOrdersCount = Order::where('status', 'pending')->count();
+            $pendingOrdersCount = $this->countUnpaidOrders();
 
-            $recentOrders = Order::with(['items', 'table'])->latest()->take(25)->get()->map(fn (Order $o) => [
-                'id' => $o->id,
-                'code' => $o->code,
-                'customer_name' => $o->customer_name,
-                'order_type' => $o->order_type,
-                'status' => $o->status,
-                'status_label' => $o->status_label,
-                'payment_method' => $o->payment_method ?? 'cash',
-                'payment_status' => $o->payment_status ?? 'unpaid',
-                'total' => $o->total,
-                'notes' => $o->notes,
-                'created_at_time' => $o->created_at?->format('H:i'),
-                'receipt_url' => route('kasir.orders.receipt', $o->id),
-                'items' => $o->items->map(fn (OrderItem $i) => [
-                    'menu_name' => $i->menu_name,
-                    'qty' => $i->qty,
-                    'unit_price' => $i->unit_price,
-                    'options' => $i->options ?? [],
-                    'line_total' => $i->line_total,
-                ])->values()->all(),
-            ])->values()->all();
+            $recentOrders = Order::with(['items', 'table', 'zendoDelivery'])
+                ->latest()
+                ->take(50)
+                ->get()
+                ->map(fn (Order $o): array => $this->formatOrderForKasir($o))
+                ->values()
+                ->all();
         } catch (\Throwable $e) {
         }
 
@@ -806,7 +879,7 @@ class KasirController extends Controller
             return redirect()->route('kasir.index', ['tab' => 'scan']);
         }
 
-        $order = Order::where('code', $cleanCode)->with(['items', 'table'])->first();
+        $order = Order::where('code', $cleanCode)->with(['items', 'table', 'zendoDelivery'])->first();
 
         if (! $order) {
             if ($request->expectsJson()) {
@@ -827,36 +900,186 @@ class KasirController extends Controller
 
             return response()->json([
                 'success' => true,
-                'order' => [
-                    'id' => $order->id,
-                    'code' => $order->code,
-                    'customer_name' => $order->customer_name,
-                    'customer_phone' => $order->customer_phone,
-                    'order_type' => $order->order_type,
-                    'table_number' => $order->table?->number,
-                    'status' => $order->status,
-                    'status_label' => $order->status_label,
-                    'payment_method' => $order->payment_method ?? 'cash',
-                    'payment_status' => $order->payment_status ?? 'unpaid',
-                    'subtotal' => $order->subtotal,
-                    'total' => $order->total,
-                    'notes' => $order->notes,
-                    'created_at' => $order->created_at?->format('d M Y, H:i'),
-                    'items' => $order->items->map(fn (OrderItem $i) => [
-                        'menu_name' => $i->menu_name,
-                        'qty' => $i->qty,
-                        'unit_price' => $i->unit_price,
-                        'options' => $i->options ?? [],
-                        'line_total' => $i->line_total,
-                    ])->values()->all(),
-                ],
+                'order' => $this->formatOrderForKasir($order),
                 'qr_url' => "{$scheme}://{$host}{$portSuffix}/qr/pesanan/{$order->code}",
                 'receipt_url' => route('kasir.orders.receipt', $order->id),
                 'status_url' => route('kasir.orders.status', $order->id),
+                'update_items_url' => route('kasir.orders.updateItems', $order->id),
             ]);
         }
 
         return redirect()->route('kasir.index', ['tab' => 'scan', 'code' => $order->code]);
+    }
+
+    /**
+     * Edit items of a pending, unpaid order directly from Kasir (e.g., when a Zendo courier arrives with customer revisions).
+     */
+    public function updateOrderItems(Request $request, Order $order): JsonResponse
+    {
+        self::ensureDatabaseSchemaAndSync();
+        $order->load(['items', 'table', 'zendoDelivery']);
+
+        if (! $order->canBeEditedAtKasir()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan yang sudah dibayar, selesai, atau dibatalkan tidak dapat diubah.',
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.menu_id' => ['nullable'],
+            'items.*.menu_name' => ['required', 'string', 'max:255'],
+            'items.*.unit_price' => ['required', 'integer', 'min:0'],
+            'items.*.qty' => ['required', 'integer', 'min:1', 'max:999'],
+            'items.*.options' => ['nullable', 'array'],
+            'items.*.item_notes' => ['nullable', 'string', 'max:255'],
+            'mark_completed_paid' => ['nullable', 'boolean'],
+            'mark_processing_paid' => ['nullable', 'boolean'],
+            'payment_method' => ['nullable', 'string', 'in:cash,qris,transfer'],
+        ], [
+            'items.required' => 'Pesanan harus memiliki minimal 1 item menu.',
+            'items.min' => 'Pesanan harus memiliki minimal 1 item menu.',
+        ]);
+
+        $oldQtyByMenuId = [];
+        $oldItemsPayload = [];
+        foreach ($order->items as $existingItem) {
+            if ($existingItem->menu_id !== null) {
+                $midKey = (string) $existingItem->menu_id;
+                $oldQtyByMenuId[$midKey] = ($oldQtyByMenuId[$midKey] ?? 0) + (int) $existingItem->qty;
+            }
+            $oldItemsPayload[] = [
+                'menu_id' => $existingItem->menu_id,
+                'menu_name' => $existingItem->menu_name,
+                'qty' => (int) $existingItem->qty,
+            ];
+        }
+
+        $subtotal = 0;
+        $normalizedItems = [];
+
+        foreach ($validated['items'] as $item) {
+            $menuIdVal = $item['menu_id'] ?? null;
+            $menuName = trim((string) $item['menu_name']);
+            $qty = (int) $item['qty'];
+            $unitPrice = (int) $item['unit_price'];
+
+            $menuModel = null;
+            if (is_numeric($menuIdVal)) {
+                $menuModel = Menu::find((int) $menuIdVal);
+            }
+            if (! $menuModel && $menuName !== '') {
+                $menuModel = Menu::whereRaw('LOWER(name) = ?', [strtolower($menuName)])->first();
+            }
+
+            if ($menuModel) {
+                $midKey = (string) $menuModel->id;
+                $oldQtyForMenu = $oldQtyByMenuId[$midKey] ?? 0;
+                $currentStock = $menuModel->stock !== null ? (int) $menuModel->stock : ($menuModel->is_available ? 25 : 0);
+
+                if ($oldQtyForMenu === 0 && (! $menuModel->is_available || $currentStock <= 0)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Menu '{$menuModel->name}' sedang habis dan tidak dapat ditambahkan.",
+                    ], 422);
+                }
+
+                $validMenuId = $menuModel->id;
+                $menuName = $menuModel->name;
+                if ($unitPrice <= 0 && (int) $menuModel->price > 0) {
+                    $unitPrice = (int) $menuModel->price;
+                }
+            } else {
+                $validMenuId = is_numeric($menuIdVal) && Menu::whereKey($menuIdVal)->exists()
+                    ? (int) $menuIdVal
+                    : null;
+            }
+
+            $storedOptions = $this->normalizeOrderItemOptions(
+                is_array($item['options'] ?? null) ? $item['options'] : [],
+                (string) ($item['item_notes'] ?? '')
+            );
+
+            $lineTotal = $unitPrice * $qty;
+            $subtotal += $lineTotal;
+
+            $normalizedItems[] = [
+                'menu_id' => $validMenuId,
+                'menu_name' => $menuName,
+                'unit_price' => $unitPrice,
+                'qty' => $qty,
+                'options' => $storedOptions,
+                'line_total' => $lineTotal,
+            ];
+        }
+
+        $deliveryFee = $order->effective_delivery_fee;
+        $grandTotal = $subtotal + $deliveryFee;
+        $markCompletedPaid = $request->boolean('mark_completed_paid') || $request->boolean('mark_processing_paid');
+
+        DB::transaction(function () use ($order, $normalizedItems, $subtotal, $deliveryFee, $grandTotal, $markCompletedPaid, $validated): void {
+            $order->items()->delete();
+
+            foreach ($normalizedItems as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'menu_id' => $item['menu_id'],
+                    'menu_name' => $item['menu_name'],
+                    'unit_price' => $item['unit_price'],
+                    'qty' => $item['qty'],
+                    'options' => $item['options'],
+                    'line_total' => $item['line_total'],
+                ]);
+            }
+
+            $orderUpdates = [
+                'subtotal' => $subtotal,
+                'delivery_fee' => $deliveryFee,
+                'total' => $grandTotal,
+            ];
+
+            if ($markCompletedPaid) {
+                $payableAfterEdit = $order->isZendo() ? $subtotal : $grandTotal;
+                $existingFormData = is_array($order->form_data) ? $order->form_data : [];
+                $existingFormData['cash_received'] = $payableAfterEdit;
+                $existingFormData['change_amount'] = 0;
+
+                $orderUpdates['status'] = 'completed';
+                $orderUpdates['payment_status'] = 'paid';
+                $orderUpdates['form_data'] = $existingFormData;
+                if (! empty($validated['payment_method'])) {
+                    $orderUpdates['payment_method'] = $validated['payment_method'];
+                }
+            }
+
+            $order->update($orderUpdates);
+        });
+
+        $restoredStocks = self::restoreStockForOrderItems($oldItemsPayload);
+        $deductedStocks = self::deductStockForOrderItems($normalizedItems);
+        $updatedStocks = array_replace($restoredStocks, $deductedStocks);
+
+        $order->refresh();
+        $order->load(['items', 'table', 'zendoDelivery']);
+
+        $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
+        $todayRevenue = (int) Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->sum('total');
+        $pendingOrdersCount = $this->countUnpaidOrders();
+
+        return response()->json([
+            'success' => true,
+            'message' => $markCompletedPaid
+                ? "Pesanan #{$order->code} berhasil diubah & diselesaikan (Lunas)."
+                : "Pesanan #{$order->code} berhasil diperbarui.",
+            'order' => $this->formatOrderForKasir($order),
+            'stocks' => $updatedStocks,
+            'stats' => [
+                'today_orders_count' => $todayOrdersCount,
+                'today_revenue' => $todayRevenue,
+                'pending_orders_count' => $pendingOrdersCount,
+            ],
+        ]);
     }
 
     /**
@@ -868,7 +1091,40 @@ class KasirController extends Controller
             'status' => ['required', 'string', 'in:pending,processing,ready,completed,cancelled'],
             'payment_status' => ['nullable', 'string', 'in:unpaid,paid'],
             'payment_method' => ['nullable', 'string', 'in:cash,qris,transfer'],
+            'cash_received' => ['nullable', 'integer', 'min:0'],
         ]);
+
+        $order->loadMissing(['items', 'table', 'zendoDelivery']);
+        $previousStatus = $order->status;
+
+        $effectivePaymentMethod = ! empty($validated['payment_method'])
+            ? $validated['payment_method']
+            : ($order->payment_method ?? 'cash');
+        $effectivePaymentStatus = ! empty($validated['payment_status'])
+            ? $validated['payment_status']
+            : ($order->payment_status ?? 'unpaid');
+
+        // Untuk Kurir Zendo, nominal yang dibayar kurir ke kafe adalah subtotal menu (ongkir milik kurir)
+        $payableAmount = $order->isZendo() ? $order->effective_subtotal : (int) $order->total;
+        $cashReceived = isset($validated['cash_received']) ? (int) $validated['cash_received'] : null;
+
+        if ($effectivePaymentMethod === 'cash' && $effectivePaymentStatus === 'paid' && $cashReceived !== null && $cashReceived > 0 && $cashReceived < $payableAmount) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Uang yang diterima kurang dari total tagihan.',
+                ], 422);
+            }
+
+            return back()->withErrors(['cash_received' => 'Uang yang diterima kurang dari total tagihan.']);
+        }
+
+        $recordedCash = $effectivePaymentMethod === 'cash' && $cashReceived !== null && $cashReceived > 0
+            ? $cashReceived
+            : $payableAmount;
+        $changeAmount = $effectivePaymentMethod === 'cash'
+            ? max(0, $recordedCash - $payableAmount)
+            : 0;
 
         $updateData = ['status' => $validated['status']];
         if (! empty($validated['payment_status'])) {
@@ -878,24 +1134,51 @@ class KasirController extends Controller
             $updateData['payment_method'] = $validated['payment_method'];
         }
 
+        if ($effectivePaymentStatus === 'paid' && $validated['status'] !== 'cancelled') {
+            $existingFormData = is_array($order->form_data) ? $order->form_data : [];
+            $existingFormData['cash_received'] = $recordedCash;
+            $existingFormData['change_amount'] = $changeAmount;
+            $updateData['form_data'] = $existingFormData;
+        }
+
         $order->update($updateData);
+
+        $updatedStocks = [];
+        $itemsPayload = $order->items->map(fn (OrderItem $i): array => [
+            'menu_id' => $i->menu_id,
+            'menu_name' => $i->menu_name,
+            'qty' => (int) $i->qty,
+        ])->all();
+
+        if ($previousStatus !== 'cancelled' && $order->status === 'cancelled') {
+            $updatedStocks = self::restoreStockForOrderItems($itemsPayload);
+        } elseif ($previousStatus === 'cancelled' && $order->status !== 'cancelled') {
+            $updatedStocks = self::deductStockForOrderItems($itemsPayload);
+        }
+
+        $order->refresh();
+        $order->load(['items', 'table', 'zendoDelivery']);
 
         if ($request->expectsJson()) {
             $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
             $todayRevenue = (int) Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->sum('total');
-            $pendingOrdersCount = Order::where('status', 'pending')->count();
+            $pendingOrdersCount = $this->countUnpaidOrders();
+
+            $message = match ($order->status) {
+                'completed' => "Pembayaran pesanan #{$order->code} selesai & lunas.",
+                'cancelled' => "Pesanan #{$order->code} dibatalkan dan stok dikembalikan.",
+                default => "Status pesanan #{$order->code} berhasil diperbarui di Database & Admin.",
+            };
 
             return response()->json([
                 'success' => true,
-                'message' => "Status pesanan #{$order->code} berhasil diperbarui di Database & Admin.",
-                'order' => [
-                    'id' => $order->id,
-                    'code' => $order->code,
-                    'status' => $order->status,
-                    'status_label' => $order->status_label,
-                    'payment_status' => $order->payment_status,
-                    'payment_method' => $order->payment_method,
-                ],
+                'message' => $message,
+                'order' => $this->formatOrderForKasir($order),
+                'payable_amount' => $payableAmount,
+                'cash_received' => $recordedCash,
+                'change_amount' => $changeAmount,
+                'receipt_url' => route('kasir.orders.receipt', $order->id),
+                'stocks' => $updatedStocks,
                 'stats' => [
                     'today_orders_count' => $todayOrdersCount,
                     'today_revenue' => $todayRevenue,
@@ -912,9 +1195,84 @@ class KasirController extends Controller
      */
     public function receipt(Order $order): View
     {
-        $order->load(['table', 'items']);
+        $order->load(['table', 'items', 'zendoDelivery']);
 
         return view('admin.orders.receipt', compact('order'));
+    }
+
+    /**
+     * Count all orders currently awaiting payment in the Kasir workspace.
+     */
+    protected function countUnpaidOrders(): int
+    {
+        return Order::whereNotIn('status', ['completed', 'cancelled'])
+            ->where(function ($query): void {
+                $query->where('payment_status', '!=', 'paid')
+                    ->orWhereNull('payment_status');
+            })
+            ->count();
+    }
+
+    /**
+     * Format an Order model consistently for Kasir JSON & Blade payloads, including Zendo metadata.
+     *
+     * @return array<string, mixed>
+     */
+    protected function formatOrderForKasir(Order $order): array
+    {
+        $isZendo = $order->isZendo();
+        $serviceTypeKey = $isZendo ? 'zendo' : ($order->order_type === 'dine_in' ? 'dine_in' : 'take_away');
+        $effectiveSubtotal = $order->effective_subtotal;
+        $effectiveDeliveryFee = $order->effective_delivery_fee;
+        $kasirBucket = match (true) {
+            $order->status === 'cancelled' => 'cancelled',
+            $order->status === 'completed' || (in_array($order->status, ['processing', 'ready'], true) && $order->payment_status === 'paid') => 'completed',
+            default => 'unpaid',
+        };
+
+        return [
+            'id' => $order->id,
+            'code' => $order->code,
+            'customer_name' => $order->customer_name ?: 'Pelanggan Kasir',
+            'customer_phone' => $order->customer_phone,
+            'order_type' => $order->order_type,
+            'kind' => $order->kind,
+            'kind_label' => $order->kind_label,
+            'is_zendo' => $isZendo,
+            'service_type_key' => $serviceTypeKey,
+            'service_type_label' => $order->service_type_label,
+            'table_number' => $order->table?->number ?? data_get($order->form_data, 'table_no'),
+            'delivery_address' => $order->effective_delivery_address,
+            'delivery_fee' => $effectiveDeliveryFee,
+            'subtotal' => $effectiveSubtotal,
+            'total' => (int) $order->total,
+            'payable_amount' => $isZendo ? $effectiveSubtotal : (int) $order->total,
+            'cash_received' => $order->cash_received_amount,
+            'change_amount' => $order->change_amount,
+            'status' => $order->status,
+            'status_label' => $order->status_label,
+            'kasir_bucket' => $kasirBucket,
+            'payment_method' => $order->payment_method ?? 'cash',
+            'payment_method_label' => $order->payment_method_label,
+            'payment_status' => $order->payment_status ?? 'unpaid',
+            'can_edit' => $order->canBeEditedAtKasir(),
+            'notes' => $order->notes,
+            'created_at' => $order->created_at?->format('d M Y, H:i'),
+            'created_at_short' => $order->created_at?->format('d M H:i'),
+            'created_at_time' => $order->created_at?->format('H:i'),
+            'receipt_url' => route('kasir.orders.receipt', $order->id),
+            'status_url' => route('kasir.orders.status', $order->id),
+            'update_items_url' => route('kasir.orders.updateItems', $order->id),
+            'items' => $order->items->map(fn (OrderItem $i): array => [
+                'id' => $i->id,
+                'menu_id' => $i->menu_id,
+                'menu_name' => $i->menu_name,
+                'qty' => (int) $i->qty,
+                'unit_price' => (int) $i->unit_price,
+                'options' => $i->options ?? [],
+                'line_total' => (int) $i->line_total,
+            ])->values()->all(),
+        ];
     }
 
     /**

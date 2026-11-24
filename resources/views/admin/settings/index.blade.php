@@ -279,8 +279,204 @@
             </div>
         </div>
 
-        {{-- Right Column: Shortcut Links to Dedicated Modules (5 Cols) --}}
+        {{-- Right Column: Site Theme Control & Shortcut Links (5 Cols) --}}
         <div class="lg:col-span-5 space-y-5">
+
+            {{-- Global Public Site Theme Control Card (Admin Only) --}}
+            @php
+                $currentSiteTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark' ? 'dark' : 'light';
+            @endphp
+            <div class="bg-pure-white rounded-2xl border border-hairline p-5 shadow-xs space-y-4" id="adminSiteThemeCard" data-saved-theme="{{ $currentSiteTheme }}">
+                <div class="flex items-start justify-between gap-3 border-b border-hairline pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div id="themeHeaderIconWrap" class="w-9 h-9 rounded-xl {{ $currentSiteTheme === 'dark' ? 'bg-neutral-900 text-amber-200 border border-neutral-800' : 'bg-amber-50 text-amber-700 border border-amber-200' }} flex items-center justify-center shrink-0 text-sm transition-colors">
+                            <i id="themeHeaderIcon" class="fa-solid {{ $currentSiteTheme === 'dark' ? 'fa-moon' : 'fa-sun' }}"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-ink-black uppercase tracking-wider">
+                                Tema Tampilan Landing Page
+                            </h3>
+                            <p class="text-[11px] text-muted-text mt-0.5">
+                                Aktif untuk semua pengunjung:
+                                <strong id="savedThemeLabel" class="text-ink-black">
+                                    {{ $currentSiteTheme === 'dark' ? 'Mode Gelap (Dark)' : 'Mode Terang (Light)' }}
+                                </strong>
+                            </p>
+                        </div>
+                    </div>
+                    <span id="themeDraftBadge" class="hidden px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold uppercase tracking-wider shrink-0">
+                        Belum Disimpan
+                    </span>
+                </div>
+
+                {{-- Inline Notification Banner (Success / Error) --}}
+                <div id="siteThemeAlert" class="hidden p-3 rounded-xl text-xs font-semibold flex items-center justify-between gap-2 transition-all" role="status" aria-live="polite">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i id="siteThemeAlertIcon" class="fa-solid fa-circle-check shrink-0"></i>
+                        <span id="siteThemeAlertMessage" class="leading-snug"></span>
+                    </div>
+                    <button type="button" onclick="document.getElementById('siteThemeAlert').classList.add('hidden')" class="opacity-70 hover:opacity-100 shrink-0" aria-label="Tutup notifikasi">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <form id="siteThemeForm" action="{{ route('admin.settings.theme.update') }}" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
+                    {{-- Radio Picker: Terang / Gelap --}}
+                    <fieldset class="space-y-2">
+                        <legend class="text-[11px] font-bold uppercase tracking-wider text-muted-text">
+                            Pilih Tema Global Pengunjung
+                        </legend>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <label for="siteThemeLight"
+                                   data-theme-card="light"
+                                   class="site-theme-option relative flex flex-col gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all {{ $currentSiteTheme === 'light' ? 'border-ink-black bg-warm-canvas/60 shadow-2xs' : 'border-hairline hover:border-ink-black/40 bg-pure-white' }}">
+                                <input type="radio"
+                                       id="siteThemeLight"
+                                       name="theme"
+                                       value="light"
+                                       class="sr-only"
+                                       {{ $currentSiteTheme === 'light' ? 'checked' : '' }}>
+                                <div class="flex items-center justify-between">
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-bold text-ink-black">
+                                        <i class="fa-solid fa-sun text-amber-500"></i>
+                                        <span>Terang</span>
+                                    </span>
+                                    <span data-theme-check="light" class="w-4 h-4 rounded-full border flex items-center justify-center text-[9px] {{ $currentSiteTheme === 'light' ? 'bg-ink-black border-ink-black text-white' : 'border-hairline text-transparent' }}">
+                                        <i class="fa-solid fa-check"></i>
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-[#F9F9F9] border border-neutral-300" title="Background #F9F9F9"></span>
+                                    <span class="w-4 h-4 rounded-full bg-[#FFFFFF] border border-neutral-300" title="Card #FFFFFF"></span>
+                                    <span class="w-4 h-4 rounded-full bg-[#191919] border border-neutral-700" title="Text #191919"></span>
+                                    <span class="text-[10px] text-muted-text ml-1">Default</span>
+                                </div>
+                            </label>
+
+                            <label for="siteThemeDark"
+                                   data-theme-card="dark"
+                                   class="site-theme-option relative flex flex-col gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all {{ $currentSiteTheme === 'dark' ? 'border-ink-black bg-warm-canvas/60 shadow-2xs' : 'border-hairline hover:border-ink-black/40 bg-pure-white' }}">
+                                <input type="radio"
+                                       id="siteThemeDark"
+                                       name="theme"
+                                       value="dark"
+                                       class="sr-only"
+                                       {{ $currentSiteTheme === 'dark' ? 'checked' : '' }}>
+                                <div class="flex items-center justify-between">
+                                    <span class="inline-flex items-center gap-1.5 text-xs font-bold text-ink-black">
+                                        <i class="fa-solid fa-moon text-indigo-600"></i>
+                                        <span>Gelap</span>
+                                    </span>
+                                    <span data-theme-check="dark" class="w-4 h-4 rounded-full border flex items-center justify-center text-[9px] {{ $currentSiteTheme === 'dark' ? 'bg-ink-black border-ink-black text-white' : 'border-hairline text-transparent' }}">
+                                        <i class="fa-solid fa-check"></i>
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-[#0C0C0C] border border-neutral-600" title="Background #0C0C0C"></span>
+                                    <span class="w-4 h-4 rounded-full bg-[#161616] border border-neutral-600" title="Card #161616"></span>
+                                    <span class="w-4 h-4 rounded-full bg-[#F5F2EE] border border-neutral-400" title="Accent #F5F2EE"></span>
+                                    <span class="text-[10px] text-muted-text ml-1">Dark Glass</span>
+                                </div>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    {{-- Interactive Live Mini-Preview Before Saving --}}
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-[10.5px]">
+                            <span class="font-bold uppercase tracking-wider text-muted-text">Pratinjau Langsung</span>
+                            <span id="themePreviewCaption" class="font-mono text-muted-text">
+                                {{ $currentSiteTheme === 'dark' ? 'Preview: Gelap (#0C0C0C)' : 'Preview: Terang (#F9F9F9)' }}
+                            </span>
+                        </div>
+
+                        <div id="siteThemePreviewBox"
+                             class="rounded-2xl overflow-hidden border transition-all duration-300 select-none"
+                             style="background-color: {{ $currentSiteTheme === 'dark' ? '#0C0C0C' : '#F9F9F9' }}; border-color: {{ $currentSiteTheme === 'dark' ? 'rgba(255,255,255,0.16)' : '#E5E5E5' }}; color: {{ $currentSiteTheme === 'dark' ? '#F5F5F5' : '#191919' }};">
+                            {{-- Mini Navbar --}}
+                            <div id="previewNavBar"
+                                 class="px-3.5 py-2.5 flex items-center justify-between border-b transition-colors duration-300"
+                                 style="background-color: {{ $currentSiteTheme === 'dark' ? 'rgba(12,12,12,0.92)' : 'rgba(255,255,255,0.92)' }}; border-color: {{ $currentSiteTheme === 'dark' ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)' }};">
+                                <span class="font-serif font-bold text-[11px] tracking-wider uppercase">NUCOMU</span>
+                                <div class="flex items-center gap-2 text-[9px] opacity-75">
+                                    <span>Tentang</span>
+                                    <span>Menu</span>
+                                    <span>Galeri</span>
+                                </div>
+                                <span id="previewNavCart"
+                                      class="px-2 py-0.5 rounded-full text-[8.5px] font-bold transition-colors duration-300"
+                                      style="background-color: {{ $currentSiteTheme === 'dark' ? '#F5F2EE' : '#111111' }}; color: {{ $currentSiteTheme === 'dark' ? '#111111' : '#FFFFFF' }};">
+                                    Cart
+                                </span>
+                            </div>
+
+                            {{-- Mini Landing Content --}}
+                            <div class="p-3.5 space-y-2.5">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="space-y-1 min-w-0">
+                                        <span id="previewEyebrow"
+                                              class="text-[8.5px] font-bold uppercase tracking-[0.18em] block transition-colors duration-300"
+                                              style="color: {{ $currentSiteTheme === 'dark' ? '#B5B5B5' : '#555555' }};">
+                                            NUCOMU CAFE TULUNGAGUNG
+                                        </span>
+                                        <p class="font-serif text-sm font-bold leading-tight">
+                                            Crafted Coffee &amp; Warm Space
+                                        </p>
+                                    </div>
+                                    <span id="previewPrimaryBtn"
+                                          class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider shrink-0 transition-colors duration-300"
+                                          style="background-color: {{ $currentSiteTheme === 'dark' ? '#F5F2EE' : '#1F1F1F' }}; color: {{ $currentSiteTheme === 'dark' ? '#111111' : '#FFFFFF' }};">
+                                        Pesan
+                                    </span>
+                                </div>
+
+                                {{-- Mini Menu Card --}}
+                                <div id="previewMenuCard"
+                                     class="rounded-xl p-2.5 border flex items-center justify-between gap-2 transition-colors duration-300"
+                                     style="background-color: {{ $currentSiteTheme === 'dark' ? '#161616' : '#FFFFFF' }}; border-color: {{ $currentSiteTheme === 'dark' ? 'rgba(255,255,255,0.14)' : '#E5E5E5' }};">
+                                    <div class="min-w-0">
+                                        <p class="text-[10.5px] font-bold truncate">Nucomu Signature Latte</p>
+                                        <p id="previewCardMuted"
+                                           class="text-[9px] transition-colors duration-300"
+                                           style="color: {{ $currentSiteTheme === 'dark' ? '#B5B5B5' : '#555555' }};">
+                                            Single origin Sendang · Rp 22.000
+                                        </p>
+                                    </div>
+                                    <span id="previewOutlineBtn"
+                                          class="px-2 py-0.5 rounded-full text-[8.5px] font-semibold border transition-colors duration-300"
+                                          style="border-color: {{ $currentSiteTheme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(25,25,25,0.34)' }};">
+                                        Detail
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-muted-text leading-relaxed">
+                        Pengunjung publik tidak melihat tombol ganti tema. Perubahan tema disimpan di server dan langsung berlaku secara global.
+                    </p>
+
+                    <div class="flex items-center gap-2 pt-0.5">
+                        <button type="submit"
+                                id="saveSiteThemeBtn"
+                                class="flex-1 py-2.5 px-4 rounded-xl bg-ink-black hover:bg-charcoal text-white text-xs font-bold uppercase tracking-wider transition shadow-2xs flex items-center justify-center gap-2 btn-press cursor-pointer disabled:opacity-60">
+                            <i id="saveSiteThemeIcon" class="fa-solid fa-floppy-disk"></i>
+                            <span id="saveSiteThemeText">Simpan Tema</span>
+                        </button>
+                        <a href="{{ route('home') }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="py-2.5 px-3.5 rounded-xl bg-warm-stone hover:bg-hairline text-ink-black text-xs font-bold border border-hairline transition flex items-center gap-1.5 shrink-0"
+                           title="Buka Landing Page di tab baru">
+                            <span>Lihat</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
 
             {{-- Quick Toggle Card: Grafik Keuangan Penjualan Dashboard --}}
             <div class="bg-pure-white rounded-2xl border border-hairline p-5 shadow-xs space-y-4">
@@ -494,6 +690,195 @@
                 };
                 reader.readAsDataURL(file);
             }
+        });
+    }
+
+    // Global Public Site Theme Selector + Live Mini-Preview + AJAX Save
+    var themeCard = document.getElementById('adminSiteThemeCard');
+    var themeForm = document.getElementById('siteThemeForm');
+    if (themeCard && themeForm) {
+        var themeRadios = themeForm.querySelectorAll('input[name="theme"]');
+        var draftBadge = document.getElementById('themeDraftBadge');
+        var savedLabel = document.getElementById('savedThemeLabel');
+        var headerIconWrap = document.getElementById('themeHeaderIconWrap');
+        var headerIcon = document.getElementById('themeHeaderIcon');
+        var previewBox = document.getElementById('siteThemePreviewBox');
+        var previewNavBar = document.getElementById('previewNavBar');
+        var previewNavCart = document.getElementById('previewNavCart');
+        var previewEyebrow = document.getElementById('previewEyebrow');
+        var previewPrimaryBtn = document.getElementById('previewPrimaryBtn');
+        var previewMenuCard = document.getElementById('previewMenuCard');
+        var previewCardMuted = document.getElementById('previewCardMuted');
+        var previewOutlineBtn = document.getElementById('previewOutlineBtn');
+        var previewCaption = document.getElementById('themePreviewCaption');
+        var alertBox = document.getElementById('siteThemeAlert');
+        var alertIcon = document.getElementById('siteThemeAlertIcon');
+        var alertMsg = document.getElementById('siteThemeAlertMessage');
+        var saveBtn = document.getElementById('saveSiteThemeBtn');
+        var saveIcon = document.getElementById('saveSiteThemeIcon');
+        var saveText = document.getElementById('saveSiteThemeText');
+
+        function getSelectedTheme() {
+            var checked = themeForm.querySelector('input[name="theme"]:checked');
+            return checked && checked.value === 'dark' ? 'dark' : 'light';
+        }
+
+        function showThemeAlert(type, message) {
+            if (!alertBox || !alertMsg || !alertIcon) return;
+            alertBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-rose-50', 'border-rose-200', 'text-rose-900');
+            alertBox.classList.add('border');
+            if (type === 'success') {
+                alertBox.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
+                alertIcon.className = 'fa-solid fa-circle-check text-emerald-600 shrink-0';
+            } else {
+                alertBox.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-900');
+                alertIcon.className = 'fa-solid fa-triangle-exclamation text-rose-600 shrink-0';
+            }
+            alertMsg.textContent = message;
+        }
+
+        function renderThemePreview(mode) {
+            var isDark = mode === 'dark';
+            var savedTheme = themeCard.getAttribute('data-saved-theme') || 'light';
+
+            if (draftBadge) {
+                draftBadge.classList.toggle('hidden', mode === savedTheme);
+            }
+
+            themeForm.querySelectorAll('[data-theme-card]').forEach(function(labelEl) {
+                var cardMode = labelEl.getAttribute('data-theme-card');
+                var isSelected = cardMode === mode;
+                labelEl.classList.toggle('border-ink-black', isSelected);
+                labelEl.classList.toggle('bg-warm-canvas/60', isSelected);
+                labelEl.classList.toggle('shadow-2xs', isSelected);
+                labelEl.classList.toggle('border-hairline', !isSelected);
+                labelEl.classList.toggle('bg-pure-white', !isSelected);
+
+                var checkEl = labelEl.querySelector('[data-theme-check]');
+                if (checkEl) {
+                    checkEl.classList.toggle('bg-ink-black', isSelected);
+                    checkEl.classList.toggle('border-ink-black', isSelected);
+                    checkEl.classList.toggle('text-white', isSelected);
+                    checkEl.classList.toggle('border-hairline', !isSelected);
+                    checkEl.classList.toggle('text-transparent', !isSelected);
+                }
+            });
+
+            if (previewCaption) {
+                previewCaption.textContent = isDark ? 'Preview: Gelap (#0C0C0C)' : 'Preview: Terang (#F9F9F9)';
+            }
+            if (previewBox) {
+                previewBox.style.backgroundColor = isDark ? '#0C0C0C' : '#F9F9F9';
+                previewBox.style.borderColor = isDark ? 'rgba(255,255,255,0.16)' : '#E5E5E5';
+                previewBox.style.color = isDark ? '#F5F5F5' : '#191919';
+            }
+            if (previewNavBar) {
+                previewNavBar.style.backgroundColor = isDark ? 'rgba(12,12,12,0.92)' : 'rgba(255,255,255,0.92)';
+                previewNavBar.style.borderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)';
+            }
+            if (previewNavCart) {
+                previewNavCart.style.backgroundColor = isDark ? '#F5F2EE' : '#111111';
+                previewNavCart.style.color = isDark ? '#111111' : '#FFFFFF';
+            }
+            if (previewEyebrow) {
+                previewEyebrow.style.color = isDark ? '#B5B5B5' : '#555555';
+            }
+            if (previewPrimaryBtn) {
+                previewPrimaryBtn.style.backgroundColor = isDark ? '#F5F2EE' : '#1F1F1F';
+                previewPrimaryBtn.style.color = isDark ? '#111111' : '#FFFFFF';
+            }
+            if (previewMenuCard) {
+                previewMenuCard.style.backgroundColor = isDark ? '#161616' : '#FFFFFF';
+                previewMenuCard.style.borderColor = isDark ? 'rgba(255,255,255,0.14)' : '#E5E5E5';
+            }
+            if (previewCardMuted) {
+                previewCardMuted.style.color = isDark ? '#B5B5B5' : '#555555';
+            }
+            if (previewOutlineBtn) {
+                previewOutlineBtn.style.borderColor = isDark ? 'rgba(255,255,255,0.45)' : 'rgba(25,25,25,0.34)';
+            }
+        }
+
+        function syncSavedHeader(savedTheme) {
+            var isDark = savedTheme === 'dark';
+            themeCard.setAttribute('data-saved-theme', savedTheme);
+            if (savedLabel) {
+                savedLabel.textContent = isDark ? 'Mode Gelap (Dark)' : 'Mode Terang (Light)';
+            }
+            if (headerIconWrap) {
+                headerIconWrap.className = 'w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-sm transition-colors ' +
+                    (isDark ? 'bg-neutral-900 text-amber-200 border border-neutral-800' : 'bg-amber-50 text-amber-700 border border-amber-200');
+            }
+            if (headerIcon) {
+                headerIcon.className = 'fa-solid ' + (isDark ? 'fa-moon' : 'fa-sun');
+            }
+            if (draftBadge) {
+                draftBadge.classList.add('hidden');
+            }
+        }
+
+        themeRadios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                renderThemePreview(getSelectedTheme());
+            });
+        });
+
+        themeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var chosenTheme = getSelectedTheme();
+            var csrfInput = themeForm.querySelector('input[name="_token"]');
+            var csrfToken = csrfInput ? csrfInput.value : '';
+
+            if (saveBtn) saveBtn.disabled = true;
+            if (saveIcon) saveIcon.className = 'fa-solid fa-spinner fa-spin';
+            if (saveText) saveText.textContent = 'Menyimpan...';
+
+            fetch(themeForm.action, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ theme: chosenTheme })
+            })
+            .then(function(response) {
+                return response.json().catch(function() {
+                    return {};
+                }).then(function(data) {
+                    return { ok: response.ok, status: response.status, data: data };
+                });
+            })
+            .then(function(result) {
+                if (!result.ok) {
+                    var errMsg = (result.data && result.data.message)
+                        ? result.data.message
+                        : (result.status === 403
+                            ? 'Akses ditolak. Hanya admin yang dapat mengubah tema.'
+                            : 'Gagal menyimpan tema situs (HTTP ' + result.status + ').');
+                    showThemeAlert('error', errMsg);
+                    return;
+                }
+
+                var appliedTheme = (result.data && result.data.theme) ? result.data.theme : chosenTheme;
+                syncSavedHeader(appliedTheme);
+                renderThemePreview(appliedTheme);
+                showThemeAlert(
+                    'success',
+                    (result.data && result.data.message)
+                        ? result.data.message
+                        : ('Tema situs berhasil diubah ke mode ' + (appliedTheme === 'dark' ? 'Gelap' : 'Terang') + '.')
+                );
+            })
+            .catch(function() {
+                showThemeAlert('error', 'Terjadi gangguan jaringan saat menyimpan tema. Silakan coba lagi.');
+            })
+            .finally(function() {
+                if (saveBtn) saveBtn.disabled = false;
+                if (saveIcon) saveIcon.className = 'fa-solid fa-floppy-disk';
+                if (saveText) saveText.textContent = 'Simpan Tema';
+            });
         });
     }
 })();

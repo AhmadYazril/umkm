@@ -11,11 +11,11 @@
         
         <div class="mb-10 pb-6 border-b border-[var(--border-soft)]">
             <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
-                <span class="text-xs font-mono uppercase tracking-[0.2em] text-[#B5B5B5] block mb-3 pl-[0.2em]">Koleksi Visual Lengkap</span>
-                <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-[#F5F5F5] font-editorial mx-auto">
+                <span class="text-xs font-mono uppercase tracking-[0.2em] text-[var(--text-muted)] block mb-3 pl-[0.2em]">Koleksi Visual Lengkap</span>
+                <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-[var(--text)] font-editorial mx-auto">
                     Arsip Foto &amp; Dokumentasi
                 </h2>
-                <p class="text-xs sm:text-sm text-[#B5B5B5] max-w-3xl font-body leading-relaxed mx-auto mt-3.5">
+                <p class="text-xs sm:text-sm text-[var(--text-muted)] max-w-3xl font-body leading-relaxed mx-auto mt-3.5">
                     Eksplorasi sudut ruang, detail material, dan suasana yang terekam di Nucomu Cafe Tulungagung.
                 </p>
             </div>
@@ -29,28 +29,28 @@
                         $caption = $item->caption ?? ($item->title ?? 'Nucomu Cafe');
                         $cat = $item->category_badge ?? ($item->category ?? 'Nucomu');
                     @endphp
-                    <div class="nu-glass-card group relative bg-[var(--surface)] border border-[var(--border)] p-3 shadow-[var(--shadow)] hover:border-white/30 transition-all duration-300 cursor-pointer"
+                    <div class="nu-glass-card group relative bg-[var(--surface)] border border-[var(--border)] p-3 shadow-[var(--shadow)] hover:border-[var(--border-strong)] transition-all duration-300 cursor-pointer"
                          onclick="openPublicModal('{{ $imgSrc }}', '{{ addslashes($caption) }}', '{{ addslashes($item->description ?? '') }}', '{{ addslashes($cat) }}', '{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}')">
                         
                         <!-- Inner Photo Frame -->
-                        <div class="relative aspect-[4/3] overflow-hidden bg-[#141414] border border-[var(--border-soft)]">
+                        <div class="relative aspect-[4/3] overflow-hidden bg-[var(--media-bg)] border border-[var(--border-soft)]">
                             <img src="{{ $imgSrc }}"
                                  alt="{{ $caption }}"
                                  class="w-full h-full object-cover filter grayscale contrast-105 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                                  loading="lazy">
 
                             <!-- Corner Mark -->
-                            <div class="absolute top-2 right-2 px-1.5 py-0.5 bg-black/75 backdrop-blur-xs text-[#F5F5F5] font-mono text-[9px] uppercase tracking-widest border border-white/15">
+                            <div class="absolute top-2 right-2 px-1.5 py-0.5 bg-black/75 backdrop-blur-xs text-white font-mono text-[9px] uppercase tracking-widest border border-white/15">
                                 {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
                             </div>
                         </div>
 
                         <!-- Technical Caption Strip -->
                         <div class="mt-3 pt-2.5 border-t border-[var(--border-soft)] flex items-center justify-between text-[11px] font-mono">
-                            <span class="text-[#B5B5B5] uppercase tracking-widest truncate">{{ $cat }}</span>
-                            <span class="text-[#8F8F8F] group-hover:text-[#F5F5F5] transition-colors">&rarr;</span>
+                            <span class="text-[var(--text-muted)] uppercase tracking-widest truncate">{{ $cat }}</span>
+                            <span class="text-[var(--text-faint)] group-hover:text-[var(--text)] transition-colors">&rarr;</span>
                         </div>
-                        <h3 class="text-xs font-bold text-[#F5F5F5] truncate mt-1">
+                        <h3 class="text-xs font-bold text-[var(--text)] truncate mt-1">
                             {{ $caption }}
                         </h3>
                     </div>
@@ -58,11 +58,11 @@
             </div>
         @else
             <div class="nu-glass-card text-center py-20 bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8">
-                <svg class="w-16 h-16 text-[#8F8F8F] mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-16 h-16 text-[var(--text-faint)] mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                <h3 class="text-lg font-bold text-[#F5F5F5] mb-2">Galeri Foto Belum Tersedia</h3>
-                <p class="text-[#B5B5B5] text-sm">Foto galeri akan segera diperbarui oleh Admin Nucomu Cafe.</p>
+                <h3 class="text-lg font-bold text-[var(--text)] mb-2">Galeri Foto Belum Tersedia</h3>
+                <p class="text-[var(--text-muted)] text-sm">Foto galeri akan segera diperbarui oleh Admin Nucomu Cafe.</p>
             </div>
         @endif
 

@@ -41,6 +41,25 @@
 @endphp
 
 <style>
+    :root {
+        --menu-avatar-border: #FFFFFF;
+        --menu-avatar-shadow: 0 6px 16px rgba(0, 0, 0, 0.14), 0 14px 28px -6px rgba(0, 0, 0, 0.16);
+        --menu-avatar-hover-shadow: 0 18px 36px -6px rgba(0, 0, 0, 0.24);
+        --menu-card-hover-shadow: 0 22px 44px -12px rgba(0, 0, 0, 0.16);
+        --menu-card-open-shadow: 0 26px 52px -12px rgba(0, 0, 0, 0.20);
+        --floating-cart-hover-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.22);
+    }
+
+    [data-theme="dark"],
+    .dark {
+        --menu-avatar-border: #1E1E1E;
+        --menu-avatar-shadow: 0 6px 16px rgba(0, 0, 0, 0.55), 0 16px 32px -4px rgba(0, 0, 0, 0.65);
+        --menu-avatar-hover-shadow: 0 22px 42px rgba(0, 0, 0, 0.75);
+        --menu-card-hover-shadow: 0 24px 54px rgba(0, 0, 0, 0.72);
+        --menu-card-open-shadow: 0 28px 60px rgba(0, 0, 0, 0.78);
+        --floating-cart-hover-shadow: 0 22px 52px rgba(0, 0, 0, 0.72);
+    }
+
     /* Typography: Tabular numbers for price consistency */
     .menu-card-price-row, .card-price, .font-editorial-num, .lining-nums {
         font-variant-numeric: tabular-nums;
@@ -83,15 +102,15 @@
         position: relative;
     }
 
-    /* Menu Card: In-flow dark glass card with rounded corners, soft glow, and smooth border transitions */
+    /* Menu Card: In-flow glass/surface card with rounded corners, soft glow, and smooth border transitions */
     .menu-card {
         position: relative;
         width: 100%;
-        background-color: var(--surface-solid, #161616);
+        background-color: var(--surface-solid);
         background-image: var(--glow);
         border-radius: 24px;
-        border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
-        box-shadow: var(--shadow, 0 20px 50px rgba(0, 0, 0, 0.6));
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
         padding: 56px 11px 14px 11px;
         text-align: center;
         box-sizing: border-box;
@@ -99,7 +118,7 @@
     }
     @supports ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px))) {
         .menu-card {
-            background-color: var(--surface, rgba(255, 255, 255, 0.04));
+            background-color: var(--surface);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
@@ -107,7 +126,7 @@
     @media (min-width: 640px) {
         .menu-card {
             border-radius: 28px;
-            box-shadow: var(--shadow, 0 20px 50px rgba(0, 0, 0, 0.6));
+            box-shadow: var(--shadow);
             padding: 72px 16px 20px 16px;
         }
     }
@@ -126,12 +145,12 @@
         user-select: none;
     }
     .menu-card-header-btn:focus-visible {
-        outline: 2px solid #F5F5F5;
+        outline: 2px solid var(--field-focus);
         outline-offset: 4px;
         border-radius: 16px;
     }
 
-    /* Overhanging Large Circular Photo with Dark Border */
+    /* Overhanging Large Circular Photo */
     .menu-card-avatar {
         position: absolute;
         top: -44px;
@@ -141,12 +160,10 @@
         width: 94px;
         height: 94px;
         border-radius: 50%;
-        border: 4px solid #1E1E1E;
-        box-shadow:
-            0 6px 16px rgba(0, 0, 0, 0.55),
-            0 16px 32px -4px rgba(0, 0, 0, 0.65);
+        border: 4px solid var(--menu-avatar-border);
+        box-shadow: var(--menu-avatar-shadow);
         overflow: hidden;
-        background-color: #141414;
+        background-color: var(--media-bg);
         padding: 0;
         margin: 0;
         display: block;
@@ -158,7 +175,7 @@
         will-change: transform, box-shadow;
     }
     .menu-card-avatar:focus-visible {
-        outline: 2px solid #F5F5F5;
+        outline: 2px solid var(--field-focus);
         outline-offset: 3px;
     }
     @media (min-width: 640px) {
@@ -167,9 +184,7 @@
             width: 126px;
             height: 126px;
             border-width: 5px;
-            box-shadow:
-                0 6px 16px rgba(0, 0, 0, 0.55),
-                0 16px 32px -4px rgba(0, 0, 0, 0.65);
+            box-shadow: var(--menu-avatar-shadow);
         }
     }
     .menu-card-avatar img {
@@ -185,7 +200,7 @@
         font-size: 0.92rem;
         font-weight: 700;
         line-height: 1.22;
-        color: #F5F5F5;
+        color: var(--text);
         margin-bottom: 4px;
         min-height: 2.3rem;
         display: flex;
@@ -210,7 +225,7 @@
         font-family: var(--font-sans), sans-serif;
         font-size: 0.94rem;
         font-weight: 700;
-        color: #F5F5F5;
+        color: var(--text);
         white-space: nowrap;
         font-variant-numeric: tabular-nums;
     }
@@ -223,7 +238,7 @@
     .menu-card-unit {
         font-size: 0.75rem;
         font-weight: 500;
-        color: #B5B5B5;
+        color: var(--text-muted);
     }
 
     /* Drawer Container: in-flow collapsible section */
@@ -238,7 +253,7 @@
     /* Divider Line: becomes visible inside drawer when opened */
     .menu-card-divider {
         height: 1px;
-        background-color: var(--border, rgba(255, 255, 255, 0.14));
+        background-color: var(--border);
         margin: 10px auto 10px auto;
         width: 80%;
         opacity: 0.9;
@@ -259,39 +274,39 @@
             cursor: pointer;
         }
         .menu-card:not(.is-open):hover {
-            border-color: rgba(255, 255, 255, 0.28);
-            box-shadow: 0 24px 54px rgba(0, 0, 0, 0.72);
+            border-color: var(--card-hover-border);
+            box-shadow: var(--menu-card-hover-shadow);
         }
         /* Foto bulat membesar mendekat ke depan dan bayangan lebih tegas */
         .menu-card:hover .menu-card-avatar {
             transform: translateX(-50%) translateY(-3px) scale(1.10);
-            box-shadow: 0 22px 42px rgba(0, 0, 0, 0.75);
+            box-shadow: var(--menu-avatar-hover-shadow);
             z-index: 30;
         }
     }
 
     /* Fokus Keyboard (:has(:focus-visible)) */
     .menu-card:has(:focus-visible):not(.is-open) {
-        border-color: rgba(255, 255, 255, 0.35);
-        box-shadow: 0 24px 54px rgba(0, 0, 0, 0.72);
+        border-color: var(--border-strong);
+        box-shadow: var(--menu-card-hover-shadow);
         z-index: 25;
     }
     .menu-card:has(:focus-visible) .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
-        box-shadow: 0 22px 42px rgba(0, 0, 0, 0.75);
+        box-shadow: var(--menu-avatar-hover-shadow);
         z-index: 30;
     }
 
     /* Keadaan 2: KLIK (Kartu terbuka penuh) */
     .menu-card.is-open {
         z-index: 35;
-        background-color: var(--surface-strong-solid, #1C1C1C);
-        border-color: rgba(255, 255, 255, 0.40) !important;
-        box-shadow: 0 28px 60px rgba(0, 0, 0, 0.78) !important;
+        background-color: var(--surface-elevated);
+        border-color: var(--border-strong) !important;
+        box-shadow: var(--menu-card-open-shadow) !important;
     }
     .menu-card.is-open .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
-        box-shadow: 0 22px 42px rgba(0, 0, 0, 0.75);
+        box-shadow: var(--menu-avatar-hover-shadow);
         z-index: 30;
     }
     .menu-card.is-open .menu-card-drawer-content {
@@ -317,7 +332,7 @@
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: #F5F5F5;
+        color: var(--text);
         margin-bottom: 4px;
         display: block;
     }
@@ -326,17 +341,17 @@
         align-items: center;
         gap: 5px;
         font-size: 0.72rem;
-        color: #B5B5B5;
+        color: var(--text-muted);
         cursor: pointer;
         padding: 1.5px 0;
         transition: color 0.15s ease;
         user-select: none;
     }
     .radio-pill-label:hover {
-        color: #FFFFFF;
+        color: var(--text);
     }
     .radio-pill-label input[type="radio"] {
-        accent-color: #F5F2EE;
+        accent-color: var(--accent-solid);
         width: 12px;
         height: 12px;
         cursor: pointer;
@@ -347,7 +362,7 @@
     /* Short Description for Menu without Options */
     .menu-card-desc {
         font-size: 0.72rem;
-        color: #B5B5B5;
+        color: var(--text-muted);
         line-height: 1.35;
         margin: 6px 0 10px 0;
         text-align: center;
@@ -362,8 +377,8 @@
         width: 100%;
         padding: 8px 12px;
         border-radius: 9999px;
-        background-color: #F5F2EE;
-        color: #111111;
+        background-color: var(--accent-solid);
+        color: var(--accent-solid-text);
         font-size: 0.75rem;
         font-weight: 700;
         letter-spacing: 0.02em;
@@ -373,12 +388,12 @@
         gap: 6px;
         border: none;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+        box-shadow: var(--shadow-soft);
         transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
     }
     .btn-add-cart:hover {
-        background-color: #FFFFFF;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+        background-color: var(--accent-solid-hover);
+        box-shadow: var(--shadow);
     }
     .btn-add-cart:active {
         transform: scale(0.97);
@@ -388,8 +403,8 @@
         color: #ffffff !important;
     }
     .btn-add-cart.disabled {
-        background-color: rgba(255, 255, 255, 0.14) !important;
-        color: #8F8F8F !important;
+        background-color: var(--badge-bg) !important;
+        color: var(--text-faint) !important;
         cursor: not-allowed;
         box-shadow: none;
     }
@@ -405,16 +420,16 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        background-color: rgba(18, 18, 18, 0.92);
+        background-color: var(--glass-surface-bg);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        border: 1px solid var(--border, rgba(255, 255, 255, 0.14));
+        border: 1px solid var(--border);
         border-radius: 18px;
         padding: 11px 16px;
-        box-shadow: var(--shadow, 0 20px 50px rgba(0, 0, 0, 0.6));
+        box-shadow: var(--shadow);
         cursor: pointer;
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.3s ease;
-        color: #F5F5F5;
+        color: var(--text);
     }
     @media (min-width: 640px) {
         .floating-cart-pill {
@@ -429,8 +444,8 @@
     }
     .floating-cart-pill:hover {
         transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, 0.35);
-        box-shadow: 0 22px 52px rgba(0, 0, 0, 0.72);
+        border-color: var(--border-strong);
+        box-shadow: var(--floating-cart-hover-shadow);
     }
     .floating-cart-pill:active {
         transform: scale(0.97);
@@ -449,11 +464,11 @@
     /* Drawer Scrollbar */
     .drawer-scroll {
         scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, 0.25) #121212;
+        scrollbar-color: var(--scrollbar-thumb) var(--surface-solid);
     }
     .drawer-scroll::-webkit-scrollbar { width: 5px; }
-    .drawer-scroll::-webkit-scrollbar-track { background: #121212; }
-    .drawer-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.22); border-radius: 9999px; }
+    .drawer-scroll::-webkit-scrollbar-track { background: var(--surface-solid); }
+    .drawer-scroll::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 9999px; }
 
     /* Reduced Motion: matikan zoom dan gerak naik, ganti dengan perubahan garis tepi dan bayangan saja */
     @media (prefers-reduced-motion: reduce) {
@@ -477,8 +492,8 @@
 <div id="cart-aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <!-- =========================================================================
-     1. FLOATING BOTTOM-RIGHT CAPSULE BUTTON (Exact Match to Video Scene 3)
-     White Pill with thin border, shopping cart icon, count badge, and "My cart: Rp [total]"
+     1. FLOATING BOTTOM-RIGHT CAPSULE BUTTON
+     Pill with thin border, shopping cart icon, count badge, and "My cart: Rp [total]"
      ========================================================================= -->
 @if($isAnyOrderModeActive)
 <button type="button" 
@@ -488,21 +503,21 @@
         aria-label="Lihat Keranjang Belanja">
     <div class="flex items-center gap-2.5 sm:gap-2">
         <div class="relative flex items-center">
-            <span class="material-symbols-outlined text-[#F5F5F5] text-xl">shopping_cart</span>
+            <span class="material-symbols-outlined text-[var(--text)] text-xl">shopping_cart</span>
             <span id="floating-cart-badge" 
-                  class="absolute -top-2 -right-2 bg-[#F5F2EE] text-[#111111] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                  class="absolute -top-2 -right-2 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
                 0
             </span>
         </div>
-        <span class="font-body text-xs font-bold sm:font-semibold text-[#B5B5B5] tracking-wide">
+        <span class="font-body text-xs font-bold sm:font-semibold text-[var(--text-muted)] tracking-wide">
             My cart:
         </span>
     </div>
     <div class="flex items-center gap-1.5">
-        <span id="floating-cart-total" class="font-editorial-num text-xs font-bold text-[#F5F5F5]">
+        <span id="floating-cart-total" class="font-editorial-num text-xs font-bold text-[var(--text)]">
             Rp 0
         </span>
-        <span class="material-symbols-outlined text-base text-white/80 sm:hidden">chevron_right</span>
+        <span class="material-symbols-outlined text-base text-[var(--text-muted)] sm:hidden">chevron_right</span>
     </div>
 </button>
 @endif
@@ -517,20 +532,20 @@
 </div>
 
 <aside id="cart-drawer-panel" 
-       class="fixed top-0 right-0 h-full w-full max-w-[420px] bg-[#121212] z-50 shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-[var(--border)]"
+       class="fixed top-0 right-0 h-full w-full max-w-[420px] bg-[var(--surface-solid)] z-50 shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-[var(--border)]"
        role="dialog"
        aria-modal="true"
        aria-labelledby="drawer-cart-title">
     
     <!-- DRAWER HEADER -->
-    <div class="p-4 sm:p-5 border-b border-[var(--border)] flex items-center justify-between bg-[#161616] shrink-0">
+    <div class="p-4 sm:p-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--surface-strong-solid)] shrink-0">
         <!-- View 1: Cart Header -->
         <div id="cart-header-items" class="flex items-center space-x-2.5">
-            <span class="material-symbols-outlined text-[#F5F5F5] text-2xl">shopping_cart</span>
-            <h3 id="drawer-cart-title" class="font-editorial text-2xl font-bold text-[#F5F5F5] tracking-tight">
+            <span class="material-symbols-outlined text-[var(--text)] text-2xl">shopping_cart</span>
+            <h3 id="drawer-cart-title" class="font-editorial text-2xl font-bold text-[var(--text)] tracking-tight">
                 My cart
             </h3>
-            <span id="cart-header-count" class="px-2 py-0.5 text-xs font-bold rounded-full bg-white/10 border border-[var(--border)] text-[#F5F5F5]">
+            <span id="cart-header-count" class="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)]">
                 0
             </span>
         </div>
@@ -539,19 +554,19 @@
         <div id="cart-header-checkout" class="hidden items-center space-x-2.5">
             <button type="button" 
                     onclick="switchCartView('items')" 
-                    class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-[#F5F5F5] flex items-center justify-center transition-colors cursor-pointer"
+                    class="w-8 h-8 rounded-full bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="Kembali ke keranjang">
                 <span class="material-symbols-outlined text-base">arrow_back</span>
             </button>
-            <h3 class="font-editorial text-xl font-bold text-[#F5F5F5] tracking-tight">
+            <h3 class="font-editorial text-xl font-bold text-[var(--text)] tracking-tight">
                 Checkout Pesanan
             </h3>
         </div>
 
         <!-- View 3: Success Header (Initially hidden) -->
         <div id="cart-header-success" class="hidden items-center space-x-2.5">
-            <span class="material-symbols-outlined text-emerald-400 text-2xl">check_circle</span>
-            <h3 class="font-editorial text-xl font-bold text-[#F5F5F5] tracking-tight">
+            <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-2xl">check_circle</span>
+            <h3 class="font-editorial text-xl font-bold text-[var(--text)] tracking-tight">
                 Pesanan Berhasil
             </h3>
         </div>
@@ -560,7 +575,7 @@
         <button type="button" 
                 id="cart-drawer-close-btn"
                 onclick="closeCartDrawer()" 
-                class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-[#B5B5B5] hover:text-[#F5F5F5] flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
+                class="w-9 h-9 rounded-full bg-[var(--badge-bg)] hover:bg-[var(--accent-solid)] hover:text-[var(--accent-solid-text)] text-[var(--text-muted)] flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
                 aria-label="Tutup Keranjang">
             <span class="material-symbols-outlined text-xl">close</span>
         </button>
@@ -575,11 +590,11 @@
             
             <!-- Empty State -->
             <div id="cart-empty-state" class="py-16 text-center">
-                <div class="w-16 h-16 mx-auto rounded-full bg-white/5 border border-[var(--border-soft)] flex items-center justify-center text-[#8F8F8F] mb-3">
+                <div class="w-16 h-16 mx-auto rounded-full bg-[var(--badge-bg)] border border-[var(--border-soft)] flex items-center justify-center text-[var(--text-faint)] mb-3">
                     <span class="material-symbols-outlined text-3xl">remove_shopping_cart</span>
                 </div>
-                <h4 class="font-editorial text-lg font-bold text-[#F5F5F5]">Keranjang Masih Kosong</h4>
-                <p class="font-body text-xs text-[#B5B5B5] max-w-xs mx-auto mt-1 leading-relaxed">
+                <h4 class="font-editorial text-lg font-bold text-[var(--text)]">Keranjang Masih Kosong</h4>
+                <p class="font-body text-xs text-[var(--text-muted)] max-w-xs mx-auto mt-1 leading-relaxed">
                     Pilih sajian favorit Anda di daftar menu untuk mulai memesan.
                 </p>
             </div>
@@ -591,19 +606,19 @@
         </div>
 
         <!-- Cart View Footer: Pricing Breakdown & Checkout Button -->
-        <div id="cart-footer-panel" class="p-4 sm:p-5 border-t border-[var(--border)] bg-[#161616] space-y-3 shrink-0">
+        <div id="cart-footer-panel" class="p-4 sm:p-5 border-t border-[var(--border)] bg-[var(--surface-strong-solid)] space-y-3 shrink-0">
             <div class="space-y-1.5 text-xs sm:text-sm">
-                <div class="flex items-center justify-between text-[#B5B5B5] font-medium">
+                <div class="flex items-center justify-between text-[var(--text-muted)] font-medium">
                     <span>Subtotal Menu</span>
-                    <span id="cart-subtotal" class="font-semibold text-[#F5F5F5] font-editorial-num">Rp 0</span>
+                    <span id="cart-subtotal" class="font-semibold text-[var(--text)] font-editorial-num">Rp 0</span>
                 </div>
-                <div class="flex items-center justify-between text-[#B5B5B5] text-[11px] sm:text-xs">
+                <div class="flex items-center justify-between text-[var(--text-muted)] text-[11px] sm:text-xs">
                     <span>Diskon / Promo</span>
-                    <span class="font-medium text-emerald-400 font-editorial-num">Rp 0</span>
+                    <span class="font-medium text-emerald-600 dark:text-emerald-400 font-editorial-num">Rp 0</span>
                 </div>
                 <div class="pt-2 border-t border-[var(--border-soft)] flex items-baseline justify-between">
-                    <span class="font-bold text-sm sm:text-base text-[#F5F5F5]">Final Total</span>
-                    <span id="cart-final-total" class="font-editorial text-xl font-bold text-[#F5F5F5] font-editorial-num">
+                    <span class="font-bold text-sm sm:text-base text-[var(--text)]">Final Total</span>
+                    <span id="cart-final-total" class="font-editorial text-xl font-bold text-[var(--text)] font-editorial-num">
                         Rp 0
                     </span>
                 </div>
@@ -614,7 +629,7 @@
             <button type="button" 
                     id="cart-checkout-btn"
                     onclick="switchCartView('checkout')" 
-                    class="w-full py-3.5 px-5 rounded-2xl bg-[#F5F2EE] hover:bg-white text-[#111111] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                    class="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
                 <span>Checkout / Pesan Sekarang</span>
                 <span class="material-symbols-outlined text-lg">arrow_forward</span>
             </button>
@@ -633,29 +648,29 @@
                 <!-- 1. METODE PROSES TRANSAKSI (Kasir vs Zendo Courier) -->
                 @if($orderModeDineIn && $orderModeZendo)
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider flex items-center gap-1.5">
+                    <label class="text-xs font-bold text-[var(--text)] uppercase tracking-wider flex items-center gap-1.5">
                         <span>1. Metode Pesanan</span>
                     </label>
                     <div class="grid grid-cols-2 gap-2.5">
                         <div id="method-card-kasir" 
                              onclick="selectDrawerMethod('kasir')" 
-                             class="drawer-method-card active p-3 rounded-2xl bg-[var(--surface-strong)] border-2 border-[#F5F5F5] shadow-xs cursor-pointer transition-all">
+                             class="drawer-method-card active p-3 rounded-2xl bg-[var(--surface-strong)] border-2 border-[var(--accent-solid)] shadow-xs cursor-pointer transition-all">
                             <div class="flex items-start justify-between">
-                                <span class="material-symbols-outlined text-[#F5F5F5] text-xl">store</span>
-                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-[#F5F2EE]"></span>
+                                <span class="material-symbols-outlined text-[var(--text)] text-xl">store</span>
+                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-[var(--accent-solid)]"></span>
                             </div>
-                            <h5 class="text-xs font-bold text-[#F5F5F5] mt-2">Kasir Kafe</h5>
-                            <p class="text-[10px] text-[#B5B5B5] mt-0.5">Dine-In / Takeaway</p>
+                            <h5 class="text-xs font-bold text-[var(--text)] mt-2">Kasir Kafe</h5>
+                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Dine-In / Takeaway</p>
                         </div>
                         <div id="method-card-zendo" 
                              onclick="selectDrawerMethod('zendo')" 
-                             class="drawer-method-card p-3 rounded-2xl bg-[var(--surface)] border-2 border-[var(--border)] hover:border-white/35 cursor-pointer transition-all">
+                             class="drawer-method-card p-3 rounded-2xl bg-[var(--surface)] border-2 border-[var(--border)] hover:border-[var(--border-strong)] cursor-pointer transition-all">
                             <div class="flex items-start justify-between">
-                                <span class="material-symbols-outlined text-[#B5B5B5] text-xl">two_wheeler</span>
-                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-white/25"></span>
+                                <span class="material-symbols-outlined text-[var(--text-muted)] text-xl">two_wheeler</span>
+                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-[var(--border-strong)]"></span>
                             </div>
-                            <h5 class="text-xs font-bold text-[#F5F5F5] mt-2">Kurir Zendo</h5>
-                            <p class="text-[10px] text-[#B5B5B5] mt-0.5">{{ count($zendoCouriers) }} Kurir Siaga</p>
+                            <h5 class="text-xs font-bold text-[var(--text)] mt-2">Kurir Zendo</h5>
+                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">{{ count($zendoCouriers) }} Kurir Siaga</p>
                         </div>
                     </div>
                 </div>
@@ -664,76 +679,108 @@
                 <!-- 2. DATA PEMESAN -->
                 <div class="space-y-3">
                     <div>
-                        <label for="drawer-customer-name" class="block text-xs font-bold text-[#F5F5F5] uppercase tracking-wider mb-1">
-                            Nama Pemesan <span class="text-[#FF8A8A]">*</span>
+                        <label for="drawer-customer-name" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Nama Pemesan <span class="text-[var(--error-text)]">*</span>
                         </label>
                         <input type="text" 
                                id="drawer-customer-name" 
                                required 
                                placeholder="Nama lengkap atau panggilan..." 
-                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[#F5F5F5] text-xs focus:outline-none focus:border-[#F5F5F5] transition-all placeholder:text-[#8F8F8F]">
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                     </div>
                     <div>
-                        <label for="drawer-customer-phone" class="block text-xs font-bold text-[#F5F5F5] uppercase tracking-wider mb-1">
-                            Nomor WhatsApp <span class="text-[#FF8A8A]">*</span>
+                        <label for="drawer-customer-phone" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Nomor WhatsApp <span class="text-[var(--error-text)]">*</span>
                         </label>
                         <input type="tel" 
                                id="drawer-customer-phone" 
                                required 
                                placeholder="08xxxxxxxxxx" 
-                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[#F5F5F5] text-xs focus:outline-none focus:border-[#F5F5F5] transition-all placeholder:text-[#8F8F8F]">
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                     </div>
 
                     <!-- Kasir Specific: Nomor Meja -->
                     <div id="drawer-field-table">
-                        <label for="drawer-customer-table" class="block text-xs font-bold text-[#F5F5F5] uppercase tracking-wider mb-1">
-                            Nomor Meja <span class="text-[#B5B5B5] font-normal">(Kosongkan jika Take Away)</span>
+                        <label for="drawer-customer-table" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Nomor Meja <span class="text-[var(--text-muted)] font-normal">(Kosongkan jika Take Away)</span>
                         </label>
                         <input type="text" 
                                id="drawer-customer-table" 
                                placeholder="Contoh: Meja 05 / Take Away" 
-                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[#F5F5F5] text-xs focus:outline-none focus:border-[#F5F5F5] transition-all placeholder:text-[#8F8F8F]">
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
+                    </div>
+
+                    <!-- Kasir Specific: Metode Pembayaran (Dine-In / Take Away) -->
+                    <div id="drawer-field-payment" class="space-y-2 {{ $initialProcessMethod === 'zendo' ? 'hidden' : '' }}">
+                        <label class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider">
+                            Metode Pembayaran
+                        </label>
+                        <input type="hidden" id="drawer-payment-method" value="{{ $orderDineInCash ? 'cash' : ($orderDineInQris ? 'qris' : 'transfer') }}">
+                        <div class="grid grid-cols-3 gap-2">
+                            @if($orderDineInCash)
+                                <button type="button"
+                                        data-drawer-pay="cash"
+                                        onclick="selectDrawerPaymentMethod('cash')"
+                                        class="drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]">
+                                    Tunai
+                                </button>
+                            @endif
+                            @if($orderDineInQris)
+                                <button type="button"
+                                        data-drawer-pay="qris"
+                                        onclick="selectDrawerPaymentMethod('qris')"
+                                        class="drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer {{ ! $orderDineInCash ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]' : 'bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]' }}">
+                                    QRIS
+                                </button>
+                            @endif
+                            <button type="button"
+                                    data-drawer-pay="transfer"
+                                    onclick="selectDrawerPaymentMethod('transfer')"
+                                    class="drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer {{ ! $orderDineInCash && ! $orderDineInQris ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]' : 'bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]' }}">
+                                Transfer
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Zendo Specific: Alamat Pengiriman -->
                     <div id="drawer-field-address" class="hidden space-y-2">
-                        <label for="drawer-customer-address" class="block text-xs font-bold text-[#F5F5F5] uppercase tracking-wider mb-1">
-                            Alamat Pengantaran Zendo <span class="text-[#FF8A8A]">*</span>
+                        <label for="drawer-customer-address" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Alamat Pengantaran Zendo <span class="text-[var(--error-text)]">*</span>
                         </label>
                         <textarea id="drawer-customer-address" 
                                   rows="2" 
                                   placeholder="Nama jalan, nomor rumah, patokan..." 
-                                  class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[#F5F5F5] text-xs focus:outline-none focus:border-[#F5F5F5] transition-all placeholder:text-[#8F8F8F]"></textarea>
+                                  class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]"></textarea>
                     </div>
 
                     <!-- Catatan Tambahan -->
                     <div>
-                        <label for="drawer-order-notes" class="block text-xs font-bold text-[#F5F5F5] uppercase tracking-wider mb-1">
-                            Catatan Tambahan <span class="text-[#B5B5B5] font-normal">(opsional)</span>
+                        <label for="drawer-order-notes" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Catatan Tambahan <span class="text-[var(--text-muted)] font-normal">(opsional)</span>
                         </label>
                         <input type="text" 
                                id="drawer-order-notes" 
                                placeholder="Contoh: Kurangi es, saus dipisah..." 
-                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[#F5F5F5] text-xs focus:outline-none focus:border-[#F5F5F5] transition-all placeholder:text-[#8F8F8F]">
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                     </div>
 
                     <!-- Error Banner -->
-                    <div id="drawer-checkout-error" class="hidden p-3 rounded-xl bg-[var(--error-bg)] border border-[var(--error-border)] text-[#FF8A8A] text-xs"></div>
+                    <div id="drawer-checkout-error" class="hidden p-3 rounded-xl bg-[var(--error-bg)] border border-[var(--error-border)] text-[var(--error-text)] text-xs"></div>
                 </div>
 
             </div>
 
             <!-- Checkout View Footer: Submit & Back -->
-            <div class="p-4 sm:p-5 border-t border-[var(--border)] bg-[#161616] space-y-2 shrink-0">
+            <div class="p-4 sm:p-5 border-t border-[var(--border)] bg-[var(--surface-strong-solid)] space-y-2 shrink-0">
                 <button type="submit" 
                         id="drawer-submit-btn" 
-                        class="w-full py-3.5 px-5 rounded-2xl bg-[#F5F2EE] hover:bg-white text-[#111111] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                        class="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
                     <span id="drawer-submit-text">Konfirmasi Pesanan</span>
                     <span id="drawer-submit-spinner" class="hidden animate-spin material-symbols-outlined text-base">progress_activity</span>
                 </button>
                 <button type="button" 
                         onclick="switchCartView('items')" 
-                        class="w-full py-2 text-center text-xs font-semibold text-[#B5B5B5] hover:text-[#F5F5F5] transition-colors cursor-pointer">
+                        class="w-full py-2 text-center text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors cursor-pointer">
                     ← Kembali ke Daftar Menu
                 </button>
             </div>
@@ -744,20 +791,20 @@
          VIEW 3: SUCCESS & ORDER SLIP QR
          ========================================================================= -->
     <div id="cart-view-success" class="hidden flex-col flex-grow overflow-hidden p-5 sm:p-6 text-center space-y-4 drawer-scroll overflow-y-auto">
-        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/15 border border-emerald-400/35 flex items-center justify-center text-emerald-400">
+        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <span class="material-symbols-outlined text-3xl">check_circle</span>
         </div>
 
         <div>
-            <span class="text-[11px] font-bold uppercase tracking-widest text-[#B5B5B5] block">PESANAN DITERIMA</span>
-            <h4 class="font-editorial text-2xl font-bold text-[#F5F5F5] mt-0.5" id="success-order-code">NCM-ORDER</h4>
-            <p class="text-xs text-[#B5B5B5] mt-1" id="success-subtext">
+            <span class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)] block">PESANAN DITERIMA</span>
+            <h4 class="font-editorial text-2xl font-bold text-[var(--text)] mt-0.5" id="success-order-code">NCM-ORDER</h4>
+            <p class="text-xs text-[var(--text-muted)] mt-1" id="success-subtext">
                 Tunjukkan QR code ini ke kasir untuk proses pembayaran.
             </p>
         </div>
 
         <!-- QR Code Plate (White quiet-zone preserved for reliable camera QR scanning) -->
-        <div class="bg-white p-4 rounded-3xl border border-white/25 shadow-md mx-auto w-fit flex flex-col items-center justify-center" id="drawer-qr-container">
+        <div class="bg-white p-4 rounded-3xl border border-[var(--border)] shadow-md mx-auto w-fit flex flex-col items-center justify-center" id="drawer-qr-container">
             <div id="drawer-qrcode-target"></div>
             <img id="drawer-qr-fallback" class="hidden w-40 h-40 object-contain rounded" alt="QR Code">
             <span class="text-[10px] text-[#191919] font-bold uppercase tracking-wider mt-2.5 block" id="success-qr-label">
@@ -767,17 +814,17 @@
 
         <!-- Summary Details -->
         <div class="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-xs text-left space-y-1.5">
-            <div class="flex justify-between text-[#B5B5B5]">
+            <div class="flex justify-between text-[var(--text-muted)]">
                 <span>Pemesan:</span>
-                <span id="success-customer-name" class="font-bold text-[#F5F5F5]">-</span>
+                <span id="success-customer-name" class="font-bold text-[var(--text)]">-</span>
             </div>
-            <div class="flex justify-between text-[#B5B5B5]">
+            <div class="flex justify-between text-[var(--text-muted)]">
                 <span>Tipe:</span>
-                <span id="success-order-type" class="font-bold text-[#F5F5F5]">-</span>
+                <span id="success-order-type" class="font-bold text-[var(--text)]">-</span>
             </div>
-            <div class="flex justify-between text-[#B5B5B5] pt-1.5 border-t border-[var(--border-soft)]">
+            <div class="flex justify-between text-[var(--text-muted)] pt-1.5 border-t border-[var(--border-soft)]">
                 <span>Total:</span>
-                <span id="success-total-amount" class="font-bold text-emerald-400 text-sm font-editorial-num">Rp 0</span>
+                <span id="success-total-amount" class="font-bold text-emerald-600 dark:text-emerald-400 text-sm font-editorial-num">Rp 0</span>
             </div>
         </div>
 
@@ -793,13 +840,13 @@
             <a id="success-slip-link" 
                href="#" 
                target="_blank" 
-               class="w-full py-3 px-4 rounded-xl bg-white/10 hover:bg-white/20 text-[#F5F5F5] border border-[var(--border)] font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors">
+               class="w-full py-3 px-4 rounded-xl bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] text-[var(--text)] border border-[var(--border)] font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors">
                 <span class="material-symbols-outlined text-sm">receipt_long</span>
                 <span>Buka Slip Lengkap & Cetak Struk</span>
             </a>
             <button type="button" 
                     onclick="resetDrawerToCart()" 
-                    class="w-full py-3 px-4 rounded-xl bg-[#F5F2EE] hover:bg-white text-[#111111] font-bold text-xs shadow-md transition-all cursor-pointer">
+                    class="w-full py-3 px-4 rounded-xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-xs shadow-md transition-all cursor-pointer">
                 Selesai / Pesan Menu Lain
             </button>
         </div>
@@ -1282,7 +1329,7 @@
             if (item.options && item.options.length > 0) {
                 chipsHtml = '<div class="flex flex-wrap gap-1 mt-1">';
                 item.options.forEach(opt => {
-                    chipsHtml += `<span class="inline-block px-2 py-0.5 rounded-full bg-white/10 text-[#B5B5B5] text-[10px] font-medium leading-none">${opt}</span>`;
+                    chipsHtml += `<span class="inline-block px-2 py-0.5 rounded-full bg-[var(--badge-bg)] text-[var(--text-muted)] text-[10px] font-medium leading-none">${opt}</span>`;
                 });
                 chipsHtml += '</div>';
             }
@@ -1291,14 +1338,14 @@
             <div class="flex items-center gap-3 p-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] transition-all">
                 <img src="${item.image || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=200'}" 
                      alt="${item.name}" 
-                     class="w-12 h-12 rounded-xl object-cover shrink-0 border border-white/15 shadow-xs">
+                     class="w-12 h-12 rounded-xl object-cover shrink-0 border border-[var(--border)] shadow-xs">
                 
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-[#F5F5F5] leading-tight truncate">
+                    <p class="text-xs font-bold text-[var(--text)] leading-tight truncate">
                         ${item.qty}× ${item.name}
                     </p>
                     ${chipsHtml}
-                    <p class="text-[11px] font-bold text-[#B5B5B5] font-editorial-num mt-1">
+                    <p class="text-[11px] font-bold text-[var(--text-muted)] font-editorial-num mt-1">
                         Rp ${lineTotal.toLocaleString('id-ID')}
                     </p>
                 </div>
@@ -1306,16 +1353,16 @@
                 <div class="flex items-center gap-1.5 shrink-0">
                     <button type="button" 
                             onclick="updateDrawerQty('${key}', -1)" 
-                            class="w-6 h-6 rounded-full bg-white/10 border border-[var(--border)] hover:border-white text-[#F5F5F5] text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
+                            class="w-6 h-6 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] hover:border-[var(--border-strong)] text-[var(--text)] text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
                             aria-label="Kurangi jumlah">−</button>
-                    <span class="text-xs font-bold text-[#F5F5F5] w-4 text-center font-mono">${item.qty}</span>
+                    <span class="text-xs font-bold text-[var(--text)] w-4 text-center font-mono">${item.qty}</span>
                     <button type="button" 
                             onclick="updateDrawerQty('${key}', 1)" 
-                            class="w-6 h-6 rounded-full bg-[#F5F2EE] hover:bg-white text-[#111111] text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
+                            class="w-6 h-6 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
                             aria-label="Tambah jumlah">+</button>
                     <button type="button" 
                             onclick="removeDrawerCartItem('${key}')" 
-                            class="w-6 h-6 rounded-full text-[#8F8F8F] hover:text-[#FF8A8A] flex items-center justify-center ml-1 text-xs transition-colors cursor-pointer" 
+                            class="w-6 h-6 rounded-full text-[var(--text-faint)] hover:text-[var(--error-text)] flex items-center justify-center ml-1 text-xs transition-colors cursor-pointer" 
                             title="Hapus menu" 
                             aria-label="Hapus menu">
                         <span class="material-symbols-outlined text-sm">delete</span>
@@ -1370,11 +1417,23 @@
         if (headSuccess) headSuccess.classList.toggle('hidden', viewName !== 'success');
     };
 
+    window.selectDrawerPaymentMethod = function(payMethod) {
+        const input = document.getElementById('drawer-payment-method');
+        if (input) input.value = payMethod;
+        document.querySelectorAll('.drawer-pay-btn').forEach(btn => {
+            const m = btn.getAttribute('data-drawer-pay');
+            btn.className = m === payMethod
+                ? 'drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]'
+                : 'drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]';
+        });
+    };
+
     window.selectDrawerMethod = function(method) {
         window.currentDrawerMethod = method;
         const cardKasir = document.getElementById('method-card-kasir');
         const cardZendo = document.getElementById('method-card-zendo');
         const fieldTable = document.getElementById('drawer-field-table');
+        const fieldPayment = document.getElementById('drawer-field-payment');
         const fieldAddress = document.getElementById('drawer-field-address');
         const submitText = document.getElementById('drawer-submit-text');
 
@@ -1385,36 +1444,38 @@
 
         if (method === 'kasir') {
             if (cardKasir) {
-                cardKasir.classList.add('border-[#F5F5F5]');
+                cardKasir.classList.add('border-[var(--accent-solid)]');
                 cardKasir.classList.remove('border-[var(--border)]');
             }
             if (cardZendo) {
-                cardZendo.classList.remove('border-[#F5F5F5]');
+                cardZendo.classList.remove('border-[var(--accent-solid)]');
                 cardZendo.classList.add('border-[var(--border)]');
             }
-            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
-            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
-            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
-            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--accent-solid)]'; }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--border-strong)]'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-[var(--text)] text-xl'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-[var(--text-muted)] text-xl'; }
 
             if (fieldTable) fieldTable.classList.remove('hidden');
+            if (fieldPayment) fieldPayment.classList.remove('hidden');
             if (fieldAddress) fieldAddress.classList.add('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kasir)';
         } else {
             if (cardZendo) {
-                cardZendo.classList.add('border-[#F5F5F5]');
+                cardZendo.classList.add('border-[var(--accent-solid)]');
                 cardZendo.classList.remove('border-[var(--border)]');
             }
             if (cardKasir) {
-                cardKasir.classList.remove('border-[#F5F5F5]');
+                cardKasir.classList.remove('border-[var(--accent-solid)]');
                 cardKasir.classList.add('border-[var(--border)]');
             }
-            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
-            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
-            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
-            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--accent-solid)]'; }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--border-strong)]'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-[var(--text)] text-xl'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-[var(--text-muted)] text-xl'; }
 
             if (fieldTable) fieldTable.classList.add('hidden');
+            if (fieldPayment) fieldPayment.classList.add('hidden');
             if (fieldAddress) fieldAddress.classList.remove('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kurir Zendo)';
         }
@@ -1492,6 +1553,10 @@
         let subtotal = 0;
         payloadItems.forEach(it => subtotal += it.line_total);
 
+        const selectedPayMethod = isZendo
+            ? 'cash'
+            : (document.getElementById('drawer-payment-method')?.value || 'cash');
+
         const payload = {
             process_method: isZendo ? 'zendo' : 'kasir',
             customer_name: customerName,
@@ -1501,7 +1566,7 @@
             dine_type: tableNumber ? 'dine_in' : 'take_away',
             delivery_address: address,
             notes: notes,
-            payment_method: 'cash',
+            payment_method: selectedPayMethod,
             items: payloadItems,
             total: subtotal,
             subtotal: subtotal,

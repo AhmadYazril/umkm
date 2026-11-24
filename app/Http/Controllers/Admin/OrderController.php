@@ -351,7 +351,7 @@ class OrderController extends Controller
 
     public function printReceipt(Order $order)
     {
-        $order->load(['table', 'items']);
+        $order->load(['table', 'items', 'zendoDelivery']);
 
         return view('admin.orders.receipt', compact('order'));
     }

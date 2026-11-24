@@ -1,23 +1,70 @@
 <!-- SECTION 2: ABOUT NUCOMU CAFE -->
 <section id="about" 
-         class="relative pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 overflow-hidden border-b border-[#222222]"
-         style="background-color: var(--color-about-bg, #0A0A0A); transition: background-color 0.8s ease;">
+         class="relative pt-16 sm:pt-20 lg:pt-28 pb-20 sm:pb-28 lg:pb-32 overflow-hidden border-b border-[var(--color-about-divider)]"
+         style="background-color: var(--color-about-bg, #FAFAFA); transition: background-color 0.8s ease;">
 
     <style>
         #about {
+            --color-about-bg: #FAFAFA;
+            --color-about-backplate: #E5E5E5;
+            --color-about-backplate-border: rgba(0, 0, 0, 0.08);
+            --color-about-badge-dot: #242424;
+            --color-about-label: #555555;
+            --color-about-divider: #E5E5E5;
+            --color-about-focus-ring: #242424;
+            --color-about-title: #1C1C1C;
+            --color-about-meta: #555555;
+            --color-about-body: #333333;
+            --color-about-body-sub: #4A4A4A;
+            --color-about-caption: rgba(28, 28, 28, 0.58);
+            --color-about-line: rgba(28, 28, 28, 0.16);
+            --color-about-logo-bg: #FFFFFF;
+            --color-about-logo-border: #E5E5E5;
+            --color-about-logo-text: #1C1C1C;
+            --color-about-logo-filter: none;
+            --color-about-play-bg: #1C1C1C;
+            --color-about-play-text: #FFFFFF;
+            --color-about-play-border: #FAFAFA;
+            --color-about-frame-border: #FFFFFF;
+            --color-about-frame-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.22);
+            --color-about-watermark: #1C1C1C;
+            --color-about-watermark-opacity: 0.04;
+            --color-about-quote-bg: #F2F2F2;
+            --color-about-quote-border: #E5E5E5;
+            --color-about-quote-text: #333333;
+            --color-about-quote-muted: #555555;
+        }
+
+        [data-theme="dark"] #about,
+        .dark #about {
             --color-about-bg: #0A0A0A;
             --color-about-backplate: #1A1A1A;
+            --color-about-backplate-border: rgba(255, 255, 255, 0.10);
             --color-about-badge-dot: #FFFFFF;
             --color-about-label: #A0A0A0;
             --color-about-divider: #262626;
             --color-about-focus-ring: #FFFFFF;
             --color-about-title: #FFFFFF;
             --color-about-meta: #A0A0A0;
-            --color-about-body: #B0B0B0;
+            --color-about-body: #EDE6DD;
+            --color-about-body-sub: #E2DDD5;
+            --color-about-caption: rgba(255, 255, 255, 0.55);
+            --color-about-line: rgba(255, 255, 255, 0.20);
+            --color-about-logo-bg: #1C1C1C;
+            --color-about-logo-border: rgba(255, 255, 255, 0.15);
+            --color-about-logo-text: rgba(255, 255, 255, 0.90);
+            --color-about-logo-filter: invert(1) brightness(2);
+            --color-about-play-bg: #FFFFFF;
+            --color-about-play-text: #111111;
+            --color-about-play-border: #0A0A0A;
+            --color-about-frame-border: rgba(255, 255, 255, 0.15);
+            --color-about-frame-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+            --color-about-watermark: #FFFFFF;
+            --color-about-watermark-opacity: 0.02;
             --color-about-quote-bg: #141414;
             --color-about-quote-border: #2A2A2A;
             --color-about-quote-text: #F5F5F5;
-            --color-about-quote-muted: #8E8E8E;
+            --color-about-quote-muted: #969696;
         }
     </style>
 
@@ -57,7 +104,7 @@
         <div id="our-story-section" class="relative overflow-hidden mb-20 sm:mb-24 lg:mb-28">
             {{-- Faded Watermark Background Text --}}
             <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
-                <span style="font-family: var(--font-sans); font-size: clamp(90px, 16vw, 260px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; color: #FFFFFF; opacity: 0.02; white-space: nowrap; display: block;">NUCOMU</span>
+                <span style="font-family: var(--font-sans); font-size: clamp(90px, 16vw, 260px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; color: var(--color-about-watermark); opacity: var(--color-about-watermark-opacity); white-space: nowrap; display: block;">NUCOMU</span>
             </div>
 
             {{-- Screen Reader Content for Accessibility & Testing Assertions --}}
@@ -92,14 +139,16 @@
                 <div class="lg:col-span-6 flex flex-col items-center lg:items-start justify-center">
                     <div class="group/story-card relative w-full max-w-[440px] sm:max-w-[470px] lg:max-w-[490px] xl:max-w-[520px] p-4 sm:p-5 lg:p-6">
 
-                        {{-- 1. Lapisan Belakang (Back Plate): Monochrome backplate tone, Rounded Corners, Rotasi -2.6 Derajat --}}
+                        {{-- 1. Lapisan Belakang (Back Plate): Monochrome backplate tone, Rounded Corners --}}
                         <div id="about-backplate" 
-                             class="story-anim-deco absolute inset-0 bg-[#161616] border border-white/10 rounded-[28px] sm:rounded-[34px] lg:rounded-[40px] pointer-events-none z-0 shadow-2xl origin-center"
+                             class="story-anim-deco absolute inset-0 rounded-[28px] sm:rounded-[34px] lg:rounded-[40px] pointer-events-none z-0 shadow-xl origin-center"
+                             style="background-color: var(--color-about-backplate); border: 1px solid var(--color-about-backplate-border);"
                              aria-hidden="true"></div>
 
                         {{-- 2. Frame Media Nucomu Cafe (Video Animasi Room Tour 3D atau Foto Pilihan Admin) --}}
                         <div id="about-video-container"
-                             class="story-anim-photo relative z-10 w-full rounded-[18px] sm:rounded-[22px] lg:rounded-[24px] overflow-hidden border-[3.5px] sm:border-4 border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.85)] bg-neutral-950 select-none aspect-video sm:aspect-video lg:aspect-[16/10]">
+                             class="story-anim-photo relative z-10 w-full rounded-[18px] sm:rounded-[22px] lg:rounded-[24px] overflow-hidden border-[3.5px] sm:border-4 bg-neutral-950 select-none aspect-video sm:aspect-video lg:aspect-[16/10]"
+                             style="border-color: var(--color-about-frame-border); box-shadow: var(--color-about-frame-shadow);">
                             
                             @php
                                 $aboutMediaType = $brand['about_media_type'] ?? 'video';
@@ -145,11 +194,14 @@
                         </div>
 
                         {{-- 3. Badge Logo Resmi Nucomu (Sudut Kiri Atas Frame) --}}
-                        <div class="story-anim-badge-logo absolute top-1.5 left-1.5 sm:top-2 sm:left-2 lg:top-2.5 lg:left-2.5 z-20 w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] lg:w-[82px] lg:h-[82px] bg-[#1C1C1C] rounded-[16px] sm:rounded-[18px] shadow-[0_12px_28px_-6px_rgba(0,0,0,0.75)] flex flex-col items-center justify-center p-2 border border-white/15 select-none" title="Nucomu Cafe Tulungagung">
+                        <div class="story-anim-badge-logo absolute top-1.5 left-1.5 sm:top-2 sm:left-2 lg:top-2.5 lg:left-2.5 z-20 w-[68px] h-[68px] sm:w-[76px] sm:h-[76px] lg:w-[82px] lg:h-[82px] rounded-[16px] sm:rounded-[18px] shadow-lg flex flex-col items-center justify-center p-2 select-none"
+                             style="background-color: var(--color-about-logo-bg); border: 1px solid var(--color-about-logo-border);"
+                             title="Nucomu Cafe Tulungagung">
                             <img src="{{ asset('images/nucomu/nucomu_logo_icon.png') }}" 
                                  alt="Logo Nucomu Cafe" 
-                                 class="h-6 sm:h-7 lg:h-8 w-auto object-contain invert brightness-200">
-                            <span class="text-[7.5px] sm:text-[8.5px] font-extrabold tracking-[0.2em] text-white/90 uppercase mt-1 font-body">NUCOMU</span>
+                                 class="h-6 sm:h-7 lg:h-8 w-auto object-contain"
+                                 style="filter: var(--color-about-logo-filter);">
+                            <span class="text-[7.5px] sm:text-[8.5px] font-extrabold tracking-[0.2em] uppercase mt-1 font-body" style="color: var(--color-about-logo-text);">NUCOMU</span>
                         </div>
 
                         {{-- 4. Tombol Play/Pause Bulat Interaktif (Hanya tampil jika media adalah video) --}}
@@ -158,13 +210,14 @@
                                 type="button"
                                 aria-label="Jeda Video Room Tour 3D"
                                 title="Putar / Jeda Video"
-                                class="story-anim-badge-coffee absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 lg:bottom-2.5 lg:right-2.5 z-20 w-[54px] h-[54px] sm:w-[60px] sm:h-[60px] lg:w-[66px] lg:h-[66px] bg-white hover:bg-neutral-200 rounded-full shadow-[0_12px_28px_-6px_rgba(0,0,0,0.85)] flex items-center justify-center text-black border-[3px] border-[#0A0A0A] cursor-pointer focus:outline-none focus:ring-2 focus:ring-white">
+                                class="story-anim-badge-coffee absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 lg:bottom-2.5 lg:right-2.5 z-20 w-[54px] h-[54px] sm:w-[60px] sm:h-[60px] lg:w-[66px] lg:h-[66px] rounded-full shadow-lg flex items-center justify-center border-[3px] cursor-pointer focus:outline-none focus:ring-2"
+                                style="background-color: var(--color-about-play-bg); color: var(--color-about-play-text); border-color: var(--color-about-play-border);">
                             {{-- Ikon Pause --}}
-                            <svg id="about-icon-pause" class="w-5 h-5 text-black" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <svg id="about-icon-pause" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                 <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
                             </svg>
                             {{-- Ikon Play --}}
-                            <svg id="about-icon-play" class="w-5 h-5 text-black ml-0.5 hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <svg id="about-icon-play" class="w-5 h-5 ml-0.5 hidden" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                 <path d="M8 5v14l11-7z"/>
                             </svg>
                         </button>
@@ -174,66 +227,66 @@
 
                     {{-- Caption Di Bawah Frame Media Sesuai Gambar --}}
                     <div class="story-anim-caption mt-2 text-center w-full max-w-[440px] sm:max-w-[470px] lg:max-w-[490px] xl:max-w-[520px]">
-                        <span class="font-editorial text-xs tracking-[0.25em] text-white/50 uppercase select-none">
+                        <span class="font-editorial text-xs tracking-[0.25em] uppercase select-none" style="color: var(--color-about-caption);">
                             Room Tour View
                         </span>
                     </div>
                 </div>
 
-                {{-- KOLOM KANAN: EYEBROW/TITLE, PARAGRAF & TAGLINE (TEKS ASLI NUCOMU SEPERTI SEBELUMNYA DENGAN GAYA ELEGAN DARI GAMBAR) --}}
+                {{-- KOLOM KANAN: EYEBROW/TITLE, PARAGRAF & TAGLINE --}}
                 <div class="lg:col-span-6 flex flex-col justify-center text-left lg:pl-2">
 
-                    {{-- 1. Eyebrow Label dengan Garis Aksen Tipis (Seperti Sebelumnya) --}}
+                    {{-- 1. Eyebrow Label dengan Garis Aksen Tipis --}}
                     <div class="story-anim-right story-delay-1 flex items-center gap-3 mb-4 sm:mb-5">
-                        <span class="text-xs sm:text-[13px] font-bold text-white/70 uppercase tracking-[0.22em] font-body">
+                        <span class="text-xs sm:text-[13px] font-bold uppercase tracking-[0.22em] font-body" style="color: var(--color-about-label);">
                             {{ !empty($brand['about_label']) ? $brand['about_label'] : 'TENTANG KAMI' }}
                         </span>
-                        <div class="w-12 h-px bg-white/20" aria-hidden="true"></div>
+                        <div class="w-12 h-px" style="background-color: var(--color-about-line);" aria-hidden="true"></div>
                     </div>
 
-                    {{-- 2. Headline Utama: Nucomu Cafe (Seperti Sebelumnya) --}}
+                    {{-- 2. Headline Utama: Nucomu Cafe --}}
                     <div class="story-anim-right story-delay-2 mb-5 flex items-center">
-                        <h2 class="font-heading text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-bold text-white leading-[1.18] tracking-tight">
+                        <h2 class="font-heading text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-bold leading-[1.18] tracking-tight" style="color: var(--color-about-title);">
                             <span id="about-headline">{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : 'Nucomu Cafe' }}</span>
                         </h2>
                     </div>
 
-                    {{-- 3. Paragraf 1: Teks Asli Profil Nucomu Cafe (Seperti Sebelumnya, dengan Gaya Tipografi Serif Hangat) --}}
-                    <p class="story-anim-right story-delay-3 font-editorial text-base sm:text-[17px] text-[#EDE6DD] leading-[1.8] font-normal mb-5 max-w-xl">
+                    {{-- 3. Paragraf 1: Teks Asli Profil Nucomu Cafe --}}
+                    <p class="story-anim-right story-delay-3 font-editorial text-base sm:text-[17px] leading-[1.8] font-normal mb-5 max-w-xl" style="color: var(--color-about-body);">
                         {{ $brand['cafe_story_p1'] ?? 'Kafe adalah tempat bersantai untuk menikmati kopi, makanan ringan, dan dessert sambil bertemu teman, bekerja, atau belajar. Nucomu Cafe (Coffee & Dessert) hadir dengan konsep itu: ruang yang nyaman dan bersih, kopi yang diracik segar, dan dessert andalan seperti cheesecake, tiramisu, donut butter cream, dan banana toffee.' }}
                     </p>
 
-                    {{-- 4. Garis Pemisah Tipis dengan Dot di Tengah (Dipertahankan dari Gambar) --}}
-                    <div class="story-anim-right story-delay-4 flex items-center gap-3 my-4 max-w-xl text-white/30" aria-hidden="true">
-                        <div class="flex-1 h-px bg-white/20"></div>
-                        <span class="w-1.5 h-1.5 rounded-full bg-white/60 border border-white/40 shadow-sm"></span>
-                        <div class="flex-1 h-px bg-white/20"></div>
+                    {{-- 4. Garis Pemisah Tipis dengan Dot di Tengah --}}
+                    <div class="story-anim-right story-delay-4 flex items-center gap-3 my-4 max-w-xl" aria-hidden="true">
+                        <div class="flex-1 h-px" style="background-color: var(--color-about-line);"></div>
+                        <span class="w-1.5 h-1.5 rounded-full shadow-sm" style="background-color: var(--color-about-badge-dot); opacity: 0.7;"></span>
+                        <div class="flex-1 h-px" style="background-color: var(--color-about-line);"></div>
                     </div>
 
-                    {{-- 5. Paragraf 2: Teks Asli Fasilitas Nucomu (Dengan Ikon Bullet Lingkaran Ganda & Aksen Garis Kiri dari Gambar) --}}
+                    {{-- 5. Paragraf 2: Teks Asli Fasilitas Nucomu --}}
                     <div class="story-anim-right story-delay-5 flex items-start gap-3.5 mb-6 max-w-xl">
                         {{-- Concentric Double-Circle Bullet Icon --}}
                         <div class="flex-shrink-0 mt-1" aria-hidden="true">
-                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full border border-white/40 text-white/90">
-                                <span class="w-2 h-2 rounded-full bg-white/80"></span>
+                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full border" style="border-color: var(--color-about-line);">
+                                <span class="w-2 h-2 rounded-full" style="background-color: var(--color-about-badge-dot);"></span>
                             </span>
                         </div>
                         {{-- Text with Left Accent Line --}}
-                        <div class="border-l border-white/25 pl-4 space-y-3">
-                            <p class="font-editorial text-[15px] sm:text-base text-[#E2DDD5] leading-[1.75] font-normal">
+                        <div class="pl-4 space-y-3" style="border-left: 1px solid var(--color-about-line);">
+                            <p class="font-editorial text-[15px] sm:text-base leading-[1.75] font-normal" style="color: var(--color-about-body-sub);">
                                 {{ $brand['cafe_story_p2'] ?? 'Terletak di Plosokandang, Tulungagung, Nucomu punya area indoor dan outdoor yang luas, cocok untuk mahasiswa, nugas, atau WFC. Fasilitas lengkap: WiFi, toilet, dan mushola.' }}
                             </p>
                             @if(!empty($brand['cafe_story_p3']))
-                                <p class="font-editorial text-[15px] sm:text-base text-[#D6D1C9] leading-[1.75] font-normal">
+                                <p class="font-editorial text-[15px] sm:text-base leading-[1.75] font-normal" style="color: var(--color-about-body-sub);">
                                     {{ $brand['cafe_story_p3'] }}
                                 </p>
                             @endif
                         </div>
                     </div>
 
-                    {{-- 6. Tagline: Find your favorite taste. (Dipertahankan dari Gambar) --}}
+                    {{-- 6. Tagline: Find your favorite taste. --}}
                     <div class="story-anim-right story-delay-6 pt-1">
-                        <p class="font-editorial italic text-3xl sm:text-4xl lg:text-[40px] text-white leading-tight font-normal">
+                        <p class="font-editorial italic text-3xl sm:text-4xl lg:text-[40px] leading-tight font-normal" style="color: var(--color-about-title);">
                             {{ !empty($brand['about_tagline']) ? $brand['about_tagline'] : 'Find your favorite taste.' }}
                         </p>
                     </div>
@@ -245,23 +298,23 @@
         </div>
 
         <!-- SUBSECTION 2B: FASILITAS CAFE (MODERN ELEGANT MONOCHROME — FLOATING GALLERY) -->
-        <div id="facilities" class="relative overflow-hidden pt-14 sm:pt-18 lg:pt-22 border-t border-[#222222]">
+        <div id="facilities" class="relative overflow-hidden pt-14 sm:pt-18 lg:pt-22 border-t border-[var(--color-about-divider)]">
 
             {{-- Faded Watermark Background Text --}}
             <div class="absolute top-1/2 -translate-y-1/2 right-0 pointer-events-none select-none z-0" aria-hidden="true">
-                <span style="font-family: var(--font-sans); font-size: clamp(90px, 16vw, 260px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; color: #FFFFFF; opacity: 0.02; white-space: nowrap; display: block;">NUCOMU</span>
+                <span style="font-family: var(--font-sans); font-size: clamp(90px, 16vw, 260px); font-weight: 800; line-height: 1; letter-spacing: -0.01em; color: var(--color-about-watermark); opacity: var(--color-about-watermark-opacity); white-space: nowrap; display: block;">NUCOMU</span>
             </div>
             
             <!-- 1. Introduction Header (Vertikal & Rata Tengah) -->
-            <div class="mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[#222222] reveal-fade-up">
+            <div class="mb-8 sm:mb-12 pb-6 sm:pb-8 border-b border-[var(--color-about-divider)] reveal-fade-up">
                 <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
-                    <span class="text-[11px] font-semibold text-[#8E8E8E] uppercase tracking-[0.22em] font-body block mb-3 pl-[0.22em]">
+                    <span class="text-[11px] font-semibold uppercase tracking-[0.22em] font-body block mb-3 pl-[0.22em]" style="color: var(--color-about-meta);">
                         OUR SPACE / FASILITAS NUCOMU
                     </span>
-                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-normal text-white tracking-tight font-editorial leading-tight mx-auto">
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-normal tracking-tight font-editorial leading-tight mx-auto" style="color: var(--color-about-title);">
                         Setiap Sudut, Punya Cerita.
                     </h2>
-                    <p class="font-body text-xs sm:text-sm text-[#A0A0A0] max-w-3xl font-normal leading-relaxed mx-auto mt-3.5">
+                    <p class="font-body text-xs sm:text-sm max-w-3xl font-normal leading-relaxed mx-auto mt-3.5" style="color: var(--color-about-label);">
                         Dirancang dengan cermat untuk kenyamanan bekerja, kehangatan bercengkerama, hingga ketenangan beribadah.
                     </p>
                 </div>

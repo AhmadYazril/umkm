@@ -146,14 +146,53 @@
 
 <style>
     /* ======================================================================
-       PALET & SECTION HEADER EDITORIAL (SPLIT DESKTOP 1 BARIS SEPERTI ULASAN)
+       PALET & SECTION HEADER EDITORIAL (LIGHT BASIS + DARK OVERRIDE)
        ====================================================================== */
     #gallery {
+        --nucomu-text: #2B1D16;
+        --nucomu-accent: #54392B;
+        --nucomu-subtitle: #5B5048;
+        --nucomu-btn-secondary-bg: #FFFFFF;
+        --nucomu-btn-secondary-border: #D8CBB8;
+        --nucomu-btn-secondary-hover: #F7F1E8;
+        --nucomu-btn-hover-shadow: 0 4px 12px rgba(43, 29, 22, 0.10);
+        --nucomu-card-border: 3px solid #FFFFFF;
+        --nucomu-card-border-hover: #FFFFFF;
+        --nucomu-card-bg: #FFFFFF;
+        --nucomu-card-shadow:
+            0 2px 8px rgba(43, 29, 22, 0.08),
+            0 12px 26px -4px rgba(43, 29, 22, 0.18),
+            0 24px 48px -10px rgba(43, 29, 22, 0.20);
+        --nucomu-card-shadow-hover:
+            0 4px 12px rgba(43, 29, 22, 0.12),
+            0 18px 34px -4px rgba(43, 29, 22, 0.24),
+            0 30px 58px -10px rgba(43, 29, 22, 0.28);
+        --nucomu-feather-start: #FFFFFF;
+        --nucomu-feather-mid: rgba(255, 255, 255, 0.55);
+    }
+
+    [data-theme="dark"] #gallery,
+    .dark #gallery {
         --nucomu-text: var(--text, #F5F5F5);
         --nucomu-accent: var(--text, #F5F5F5);
+        --nucomu-subtitle: var(--text-muted, #B5B5B5);
         --nucomu-btn-secondary-bg: transparent;
         --nucomu-btn-secondary-border: var(--btn-outline, rgba(255, 255, 255, 0.50));
         --nucomu-btn-secondary-hover: rgba(255, 255, 255, 0.08);
+        --nucomu-btn-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+        --nucomu-card-border: 1.5px solid rgba(255, 255, 255, 0.22);
+        --nucomu-card-border-hover: rgba(255, 255, 255, 0.48);
+        --nucomu-card-bg: #141414;
+        --nucomu-card-shadow:
+            0 2px 10px rgba(0, 0, 0, 0.35),
+            0 12px 26px -4px rgba(0, 0, 0, 0.55),
+            0 24px 48px -10px rgba(0, 0, 0, 0.65);
+        --nucomu-card-shadow-hover:
+            0 4px 14px rgba(0, 0, 0, 0.45),
+            0 18px 34px -4px rgba(0, 0, 0, 0.65),
+            0 30px 58px -10px rgba(0, 0, 0, 0.75);
+        --nucomu-feather-start: #101010;
+        --nucomu-feather-mid: rgba(16, 16, 16, 0.55);
     }
 
     #gallery .nucomu-gallery-header {
@@ -187,7 +226,7 @@
         padding-left: 0.14em;
         text-transform: uppercase;
         line-height: 1.2;
-        color: var(--text-muted, #B5B5B5);
+        color: var(--nucomu-accent);
         margin-bottom: 12px;
     }
 
@@ -213,7 +252,7 @@
     #gallery .nucomu-gallery-header-subtitle {
         font-size: clamp(14px, 1.1vw, 15px);
         line-height: 1.55;
-        color: var(--text-muted, #B5B5B5);
+        color: var(--nucomu-subtitle);
         max-width: 820px;
         margin: 14px auto 0 auto;
         font-weight: 400;
@@ -268,9 +307,9 @@
 
     #gallery .nucomu-gallery-btn-secondary:hover {
         background-color: var(--nucomu-btn-secondary-hover);
-        border-color: var(--text, #F5F5F5);
+        border-color: var(--nucomu-text);
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+        box-shadow: var(--nucomu-btn-hover-shadow);
     }
 
     @media (min-width: 640px) {
@@ -372,20 +411,14 @@
         will-change: transform, filter, opacity;
         border-radius: 18px;
         overflow: hidden;
-        border: 1.5px solid rgba(255, 255, 255, 0.22);
-        box-shadow:
-            0 2px 10px rgba(0, 0, 0, 0.35),
-            0 12px 26px -4px rgba(0, 0, 0, 0.55),
-            0 24px 48px -10px rgba(0, 0, 0, 0.65);
-        background-color: #141414;
+        border: var(--nucomu-card-border);
+        box-shadow: var(--nucomu-card-shadow);
+        background-color: var(--nucomu-card-bg);
         transition: border-color 220ms ease, box-shadow 220ms ease;
     }
     .carousel-3d-card:hover {
-        border-color: rgba(255, 255, 255, 0.48);
-        box-shadow:
-            0 4px 14px rgba(0, 0, 0, 0.45),
-            0 18px 34px -4px rgba(0, 0, 0, 0.65),
-            0 30px 58px -10px rgba(0, 0, 0, 0.75);
+        border-color: var(--nucomu-card-border-hover);
+        box-shadow: var(--nucomu-card-shadow-hover);
     }
     @media (min-width: 640px) {
         .carousel-3d-card {
@@ -393,13 +426,13 @@
         }
     }
 
-    /* Side Feathers untuk pembauran visual tepi kiri & kanan ke latar gelap */
+    /* Side Feathers untuk pembauran visual tepi kiri & kanan sesuai tema aktif */
     .circular-gallery-feather-left {
         position: absolute;
         inset-block: 0;
         left: 0;
         width: 32px;
-        background: linear-gradient(to right, #101010 0%, rgba(16, 16, 16, 0.55) 50%, transparent 100%);
+        background: linear-gradient(to right, var(--nucomu-feather-start) 0%, var(--nucomu-feather-mid) 50%, transparent 100%);
         pointer-events: none;
         z-index: 20;
     }
@@ -408,7 +441,7 @@
         inset-block: 0;
         right: 0;
         width: 32px;
-        background: linear-gradient(to left, #101010 0%, rgba(16, 16, 16, 0.55) 50%, transparent 100%);
+        background: linear-gradient(to left, var(--nucomu-feather-start) 0%, var(--nucomu-feather-mid) 50%, transparent 100%);
         pointer-events: none;
         z-index: 20;
     }
@@ -422,7 +455,7 @@
 </style>
 
 <section id="gallery"
-         class="pt-10 sm:pt-12 lg:pt-14 pb-4 sm:pb-6 lg:pb-8 relative z-10 bg-[var(--bg-section-alt)] text-[#F5F5F5] overflow-hidden select-none">
+         class="pt-10 sm:pt-12 lg:pt-14 pb-4 sm:pb-6 lg:pb-8 relative z-10 bg-[var(--bg-section-alt)] text-[var(--text)] overflow-hidden select-none">
 
     <div class="w-full max-w-[1840px] mx-auto px-3 sm:px-4 lg:px-5 relative z-10">
 
@@ -492,9 +525,9 @@
         </div>
         @else
         <div class="text-center py-20 nu-glass-card rounded-3xl max-w-xl mx-auto p-8 shadow-[var(--shadow)]">
-            <i class="fa-solid fa-images text-3xl text-[#B5B5B5] mb-3 block"></i>
-            <h3 class="text-base font-bold text-[#F5F5F5] mb-1">Galeri Foto Belum Tersedia</h3>
-            <p class="text-xs text-[#B5B5B5]">Foto galeri akan segera diperbarui di Nucomu Cafe.</p>
+            <i class="fa-solid fa-images text-3xl text-[var(--text-muted)] mb-3 block"></i>
+            <h3 class="text-base font-bold text-[var(--text)] mb-1">Galeri Foto Belum Tersedia</h3>
+            <p class="text-xs text-[var(--text-muted)]">Foto galeri akan segera diperbarui di Nucomu Cafe.</p>
         </div>
         @endif
 

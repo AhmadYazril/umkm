@@ -1,6 +1,6 @@
 <!-- INTRO / OPENING PRELOADER WITH SVG LOGO ANIMATION (MODERN ELEGANT MONOCHROME) -->
 <div id="nucomu-intro-overlay"
-     class="nucomu-intro-overlay fixed inset-0 z-[99999] bg-[#0C0C0C] flex flex-col items-center justify-center select-none"
+     class="nucomu-intro-overlay fixed inset-0 z-[99999] bg-[var(--intro-bg)] flex flex-col items-center justify-center select-none"
      role="dialog"
      aria-modal="true"
      aria-label="Pembukaan Nucomu Cafe">
@@ -25,7 +25,7 @@
         </svg>
 
         <!-- Teks Branding "NUCOMU CAFE" -->
-        <span class="intro-text mt-4 sm:mt-5 text-[13px] sm:text-[14px] font-bold text-[#F5F5F5] uppercase tracking-[0.28em] font-sans">
+        <span class="intro-text mt-4 sm:mt-5 text-[13px] sm:text-[14px] font-bold text-[var(--text)] uppercase tracking-[0.28em] font-sans">
             NUCOMU CAFE
         </span>
     </div>
@@ -34,7 +34,7 @@
     <button type="button"
             id="nucomu-intro-skip-btn"
             onclick="window.skipNucomuIntro?.()"
-            class="nucomu-intro-skip absolute bottom-6 right-6 sm:bottom-8 sm:right-8 text-xs font-semibold uppercase tracking-wider text-[#B5B5B5] hover:text-[#F5F5F5] px-3.5 py-1.5 rounded-full border border-transparent hover:border-[var(--border)] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]"
+            class="nucomu-intro-skip absolute bottom-6 right-6 sm:bottom-8 sm:right-8 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] hover:text-[var(--text)] px-3.5 py-1.5 rounded-full border border-transparent hover:border-[var(--border)] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--field-focus)]"
             aria-label="Lewati animasi pembukaan">
         Lewati
     </button>

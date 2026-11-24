@@ -14,14 +14,14 @@
     ];
 @endphp
 
-<div class="bg-[var(--bg-page)] text-[#F5F5F5]">
+<div class="bg-[var(--bg-page)] text-[var(--text)]">
 
     {{-- Hero --}}
     <section class="pt-32 sm:pt-40 pb-16 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
-        <h1 class="font-editorial text-5xl sm:text-7xl lg:text-8xl leading-[0.92] tracking-editorial-tighter max-w-4xl text-[#F5F5F5]">
+        <h1 class="font-editorial text-5xl sm:text-7xl lg:text-8xl leading-[0.92] tracking-editorial-tighter max-w-4xl text-[var(--text)]">
             Tempat untuk momen yang ingin kamu rayakan.
         </h1>
-        <p class="mt-8 max-w-md text-sm sm:text-base leading-relaxed text-[#B5B5B5]">
+        <p class="mt-8 max-w-md text-sm sm:text-base leading-relaxed text-[var(--text-muted)]">
             Dari ulang tahun kecil sampai workshop komunitas, Nucomu menyiapkan ruang, hidangan, dan suasana yang tenang.
         </p>
     </section>
@@ -35,18 +35,18 @@
             @endphp
             <article class="grid md:grid-cols-12 gap-8 md:gap-14 items-center py-12 border-t border-[var(--border-soft)]">
                 <div class="md:col-span-6 {{ $loop->even ? 'md:order-2' : '' }}">
-                    <div class="aspect-[4/3] overflow-hidden border border-[var(--border)] bg-[#141414] {{ $loop->even ? 'rounded-b-[4rem]' : 'rounded-t-[4rem]' }}">
+                    <div class="aspect-[4/3] overflow-hidden border border-[var(--border)] bg-[var(--media-bg)] {{ $loop->even ? 'rounded-b-[4rem]' : 'rounded-t-[4rem]' }}">
                         <img src="{{ $s['image'] }}" alt="{{ $s['title'] }}" loading="lazy"
                              class="w-full h-full object-cover grayscale hover:grayscale-0 hover:scale-105 transition duration-700">
                     </div>
                 </div>
                 <div class="md:col-span-6">
-                    <p class="text-sm text-[#B5B5B5]">{{ $s['category'] }}</p>
-                    <h2 class="font-editorial text-4xl sm:text-5xl mt-2 mb-4 leading-tight text-[#F5F5F5]">{{ $s['title'] }}</h2>
-                    <p class="text-sm leading-relaxed text-[#B5B5B5] max-w-md">{{ $s['full_desc'] }}</p>
-                    <p class="mt-5 text-sm text-[#F5F5F5]"><span class="text-[#B5B5B5]">Area yang disarankan:</span> {{ $s['suggested_area'] }}</p>
+                    <p class="text-sm text-[var(--text-muted)]">{{ $s['category'] }}</p>
+                    <h2 class="font-editorial text-4xl sm:text-5xl mt-2 mb-4 leading-tight text-[var(--text)]">{{ $s['title'] }}</h2>
+                    <p class="text-sm leading-relaxed text-[var(--text-muted)] max-w-md">{{ $s['full_desc'] }}</p>
+                    <p class="mt-5 text-sm text-[var(--text)]"><span class="text-[var(--text-muted)]">Area yang disarankan:</span> {{ $s['suggested_area'] }}</p>
                     <a href="{{ $link }}" target="_blank" rel="noopener"
-                       class="inline-block mt-6 px-7 py-3.5 rounded-full bg-[#F5F2EE] text-[#111111] text-sm font-semibold hover:bg-white transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F5F2EE]">
+                       class="inline-block mt-6 px-7 py-3.5 rounded-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-sm font-semibold hover:bg-[var(--accent-solid-hover)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--field-focus)]">
                         Tanya layanan ini
                     </a>
                 </div>
@@ -55,15 +55,15 @@
     </section>
 
     {{-- Cara memesan: urutan nyata, jadi bernomor --}}
-    <section class="bg-[var(--bg-section-alt)] border-y border-[var(--border-soft)] text-[#F5F5F5] mt-8">
+    <section class="bg-[var(--bg-section-alt)] border-y border-[var(--border-soft)] text-[var(--text)] mt-8">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <h2 class="font-editorial text-4xl sm:text-5xl mb-12 max-w-md text-[#F5F5F5]">Cara memesan</h2>
+            <h2 class="font-editorial text-4xl sm:text-5xl mb-12 max-w-md text-[var(--text)]">Cara memesan</h2>
             <ol class="grid md:grid-cols-3 gap-10">
                 @foreach($steps as $i => [$title, $desc])
                     <li class="border-t border-[var(--border)] pt-5">
-                        <span class="font-editorial text-6xl text-[#8F8F8F] leading-none">{{ $i + 1 }}</span>
-                        <h3 class="font-editorial text-2xl mt-4 mb-2 text-[#F5F5F5]">{{ $title }}</h3>
-                        <p class="text-sm leading-relaxed text-[#B5B5B5]">{{ $desc }}</p>
+                        <span class="font-editorial text-6xl text-[var(--text-faint)] leading-none">{{ $i + 1 }}</span>
+                        <h3 class="font-editorial text-2xl mt-4 mb-2 text-[var(--text)]">{{ $title }}</h3>
+                        <p class="text-sm leading-relaxed text-[var(--text-muted)]">{{ $desc }}</p>
                     </li>
                 @endforeach
             </ol>
@@ -73,11 +73,11 @@
     {{-- Penutup --}}
     <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-            <h2 class="font-editorial text-3xl sm:text-4xl max-w-md text-[#F5F5F5]">Belum yakin acaranya cocok?</h2>
-            <p class="mt-3 text-sm text-[#B5B5B5]">Kami buka {{ $hours }}.</p>
+            <h2 class="font-editorial text-3xl sm:text-4xl max-w-md text-[var(--text)]">Belum yakin acaranya cocok?</h2>
+            <p class="mt-3 text-sm text-[var(--text-muted)]">Kami buka {{ $hours }}.</p>
         </div>
         <a href="https://wa.me/{{ $wa }}" target="_blank" rel="noopener"
-           class="px-7 py-3.5 rounded-full border border-[var(--btn-outline)] text-[#F5F5F5] text-sm font-semibold text-center hover:bg-[#F5F2EE] hover:text-[#111111] hover:border-[#F5F2EE] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F5F2EE]">
+           class="px-7 py-3.5 rounded-full border border-[var(--btn-outline)] text-[var(--text)] text-sm font-semibold text-center hover:bg-[var(--accent-solid)] hover:text-[var(--accent-solid-text)] hover:border-[var(--accent-solid)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--field-focus)]">
             Ngobrol lewat WhatsApp
         </a>
     </section>

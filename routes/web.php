@@ -21,6 +21,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\NucomuController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SiteThemeController;
 use App\Http\Controllers\ZendoTrackingController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 //  PUBLIC ROUTES — NUCOMU CAFE (MATCHING NYOBA)
 // ─────────────────────────────────────────────
 Route::get('/', [NucomuController::class, 'index'])->name('home');
+Route::get('/api/site-settings/theme', [SiteThemeController::class, 'show'])->name('api.site-settings.theme');
 Route::get('/menu', [NucomuController::class, 'allMenu'])->name('menu.all');
 Route::get('/daftar-menu', [NucomuController::class, 'allMenu'])->name('menu');
 Route::post('/reservasi', [NucomuController::class, 'submitReservation'])->name('reservation.submit');
@@ -104,10 +106,11 @@ Route::prefix('kasir')->name('kasir.')->group(function () {
         Route::post('/stok', [KasirController::class, 'updateStock'])->name('stock.update');
         Route::post('/pesanan', [KasirController::class, 'storeOrder'])->name('orders.store');
         Route::get('/pesanan/cari', [KasirController::class, 'lookupOrder'])->name('orders.lookup');
+        Route::put('/pesanan/{order}/items', [KasirController::class, 'updateOrderItems'])->name('orders.updateItems');
         Route::post('/pesanan/{order}/status', [KasirController::class, 'updateOrderStatus'])->name('orders.status');
         Route::get('/pesanan/{order}/struk', [KasirController::class, 'receipt'])->name('orders.receipt');
     });
-});     
+});
 
 // ─────────────────────────────────────────────
 //  ADMIN ROUTES
@@ -259,6 +262,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/pengaturan', [SettingController::class, 'index']);
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
         Route::post('/pengaturan', [SettingController::class, 'update']);
+        Route::match(['put', 'patch', 'post'], '/settings/theme', [SiteThemeController::class, 'update'])->name('settings.theme.update');
+        Route::match(['put', 'patch', 'post'], '/pengaturan/tema', [SiteThemeController::class, 'update'])->name('settings.theme.update.id');
         Route::post('/pengaturan/dashboard-chart', [SettingController::class, 'toggleDashboardChart'])->name('settings.toggleChart');
         Route::post('/pengaturan/test-wa', [SettingController::class, 'testZendoWhatsapp'])->name('settings.testWa');
         Route::post('/pengaturan/jam-operasional', [SettingController::class, 'updateHours'])->name('settings.hours');

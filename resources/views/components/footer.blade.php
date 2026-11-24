@@ -36,8 +36,8 @@
 
 <footer id="global-footer" 
         data-navbar-theme="dark"
-        class="relative bg-[#0C0C0C] text-[#D4D4D4] pt-10 md:pt-16 pb-8 border-t border-[var(--border-soft)] overflow-hidden font-body select-none-bg"
-        style="background-color: var(--bg-page, #0C0C0C);">
+        class="relative bg-[#111113] dark:bg-[#0C0C0C] text-[#D4D4D4] pt-10 md:pt-16 pb-8 border-t border-white/10 overflow-hidden font-body select-none-bg"
+        style="background-color: var(--footer-bg, #111113);">
 
     <!-- Background Artwork Layer (Monochrome Exact Match) -->
     <div class="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
@@ -162,7 +162,7 @@
                 </div>
 
                 <!-- Hours Card with Elevation & Row Highlight & Icon Micro-Animations -->
-                <div class="footer-hours-card nu-glass-card grid grid-cols-2 divide-x divide-white/10 md:block md:divide-x-0 rounded-2xl backdrop-blur-md p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
+                <div class="footer-hours-card grid grid-cols-2 divide-x divide-white/10 md:block md:divide-x-0 rounded-2xl bg-zinc-900/75 dark:bg-white/[0.04] border border-white/12 backdrop-blur-md p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
                     <!-- Row: Senin – Sabtu -->
                     <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
                         <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
@@ -345,6 +345,17 @@
 
 <!-- FOOTER STYLES & MICRO-INTERACTIONS -->
 <style>
+    #global-footer {
+        --footer-bg: #111113;
+        --footer-accent: #c2a378;
+        --footer-shimmer-mid: #edd5be;
+    }
+    [data-theme="dark"] #global-footer,
+    .dark #global-footer {
+        --footer-bg: #0C0C0C;
+        --footer-accent: #f5f2ee;
+        --footer-shimmer-mid: #f5f2ee;
+    }
     /* 1. Staggered Navigation Items */
     .footer-nav-item {
         opacity: 0;

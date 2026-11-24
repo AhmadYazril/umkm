@@ -8,19 +8,19 @@
         
         <!-- Section Title & Subtitle -->
         <div class="text-center max-w-4xl mx-auto mb-8 sm:mb-12 reveal-on-scroll flex flex-col items-center">
-            <h2 class="font-editorial text-4xl sm:text-5xl font-bold tracking-tight text-[#F5F5F5] uppercase mx-auto">
+            <h2 class="font-editorial text-4xl sm:text-5xl font-bold tracking-tight text-[var(--text)] uppercase mx-auto">
                 BEST MENU
             </h2>
-            <p class="font-body text-xs sm:text-sm text-[#B5B5B5] mt-3.5 max-w-3xl mx-auto leading-relaxed">
+            <p class="font-body text-xs sm:text-sm text-[var(--text-muted)] mt-3.5 max-w-3xl mx-auto leading-relaxed">
                 Explore our curated selection of fine artisanal coffees and gourmet delights.
             </p>
         </div>
 
-        <!-- The Reference Showcase Card (Dark Frosted Glass) -->
+        <!-- The Reference Showcase Card -->
         <div class="nu-glass-card rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 lg:p-14 overflow-hidden">
             
             <!-- Faded Watermark in Background -->
-            <div class="absolute -left-6 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.04] font-editorial font-extrabold text-[120px] sm:text-[180px] lg:text-[220px] leading-none text-white z-0 tracking-tighter">
+            <div class="absolute -left-6 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.04] font-editorial font-extrabold text-[120px] sm:text-[180px] lg:text-[220px] leading-none text-[var(--watermark-color)] z-0 tracking-tighter">
                 FOOD<br>ZONE
             </div>
 
@@ -28,43 +28,43 @@
                 
                 <!-- 1. LEFT COLUMN: Bold Typography & Menu Story (~4 cols) -->
                 <div class="lg:col-span-4 flex flex-col justify-center text-left">
-                    <span class="text-[11px] uppercase tracking-widest font-semibold text-[#8F8F8F] block mb-3">
+                    <span class="text-[11px] uppercase tracking-widest font-semibold text-[var(--text-faint)] block mb-3">
                         FOOD ZONE
                     </span>
                     <div class="flex items-center space-x-2 mb-2">
-                        <span class="text-[11px] uppercase tracking-widest font-bold text-[#F5F5F5]">FEATURED</span>
-                        <span class="material-symbols-outlined text-sm text-[#B5B5B5] font-light">restaurant</span>
+                        <span class="text-[11px] uppercase tracking-widest font-bold text-[var(--text)]">FEATURED</span>
+                        <span class="material-symbols-outlined text-sm text-[var(--text-muted)] font-light">restaurant</span>
                     </div>
-                    <h3 id="best-hero-title" class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[#F5F5F5] leading-[1.05] tracking-tight transition-all duration-300">
+                    <h3 id="best-hero-title" class="font-editorial text-4xl sm:text-5xl lg:text-6xl font-bold text-[var(--text)] leading-[1.05] tracking-tight transition-all duration-300">
                         {!! $bestMenu[0]['display_title'] ?? $bestMenu[0]['name'] !!}
                     </h3>
 
                     <div class="flex items-center space-x-2.5 my-3.5">
-                        <span class="w-6 h-[1.5px] bg-[#F5F5F5]"></span>
-                        <span id="best-hero-category" class="text-xs font-medium text-[#D4D4D4]">
+                        <span class="w-6 h-[1.5px] bg-[var(--text)]"></span>
+                        <span id="best-hero-category" class="text-xs font-medium text-[var(--text-secondary)]">
                             {{ $bestMenu[0]['category_label'] }}
                         </span>
                     </div>
 
-                    <p id="best-hero-desc" class="font-body text-xs sm:text-sm text-[#B5B5B5] leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
+                    <p id="best-hero-desc" class="font-body text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
                         {{ $bestMenu[0]['description'] }}
                     </p>
 
                     <div class="mt-8 flex items-center space-x-2 select-none opacity-60">
-                        <span class="material-symbols-outlined text-sm text-[#B5B5B5]">verified</span>
-                        <span class="text-[9px] font-bold tracking-[0.25em] uppercase text-[#B5B5B5]">NUCOMU</span>
+                        <span class="material-symbols-outlined text-sm text-[var(--text-muted)]">verified</span>
+                        <span class="text-[9px] font-bold tracking-[0.25em] uppercase text-[var(--text-muted)]">NUCOMU</span>
                     </div>
                 </div>
 
-                <!-- 2. CENTER COLUMN: Giant Plate, Cream Order Pill, and Slide Dots (~5 cols) -->
+                <!-- 2. CENTER COLUMN: Giant Plate, Order Pill, and Slide Dots (~5 cols) -->
                 <div class="lg:col-span-5 flex flex-col items-center justify-center my-4 lg:my-0">
-                    <!-- Big Round Plate with Dark Ring & Shadow -->
-                    <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-[#161616] shadow-[var(--shadow)] transition-all duration-500 ease-out border border-white/20 flex items-center justify-center">
+                    <!-- Big Round Plate with Ring & Shadow -->
+                    <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-[var(--surface-solid)] shadow-[var(--shadow)] transition-all duration-500 ease-out border border-[var(--border)] flex items-center justify-center">
                         <button type="button"
                                 onclick="openCurrentBestMenuPhoto()"
                                 aria-label="Lihat foto {{ $bestMenu[0]['name'] }}"
                                 title="Klik untuk melihat foto"
-                                class="group relative w-full h-full rounded-full overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5F5F5]">
+                                class="group relative w-full h-full rounded-full overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--field-focus)]">
                             <img id="best-hero-img" 
                                  src="{{ $bestMenu[0]['image'] }}" 
                                  alt="{{ $bestMenu[0]['name'] }}" 
@@ -72,12 +72,12 @@
                         </button>
                     </div>
 
-                    <!-- Cream Pill Order Button Underneath -->
+                    <!-- Primary Pill Order Button Underneath -->
                     <div class="mt-6 sm:-mt-5 relative z-20">
                         <button id="best-hero-order-btn" 
                                 type="button" 
                                 onclick="orderCurrentBestMenuItem()" 
-                                class="px-7 sm:px-8 py-2.5 rounded-full bg-[#F5F2EE] hover:bg-white text-[#111111] font-medium text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2 shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer">
+                                class="px-7 sm:px-8 py-2.5 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-medium text-xs sm:text-sm uppercase tracking-wider flex items-center space-x-2 shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer">
                             <span id="best-hero-price" class="font-bold tabular-nums">{{ $bestMenu[0]['price_formatted'] }}</span>
                             <span class="font-bold">ORDER</span>
                             <span class="material-symbols-outlined text-sm">chevron_right</span>
@@ -89,7 +89,7 @@
                         @foreach($bestMenu as $idx => $m)
                             <button type="button" 
                                     onclick="switchBestMenuItem({{ $idx }})" 
-                                    class="best-menu-dot {{ $idx === 0 ? 'w-5 h-1.5 bg-[#F5F2EE]' : 'w-1.5 h-1.5 bg-white/30 hover:bg-white/55' }} rounded-full transition-all duration-300" 
+                                    class="best-menu-dot {{ $idx === 0 ? 'w-5 h-1.5 bg-[var(--accent-solid)]' : 'w-1.5 h-1.5 bg-[var(--border-strong)] hover:opacity-80' }} rounded-full transition-all duration-300" 
                                     aria-label="Menu {{ $idx + 1 }}">
                             </button>
                         @endforeach
@@ -100,10 +100,10 @@
                 <div class="lg:col-span-3 grid grid-cols-2 gap-2.5 lg:flex lg:flex-col lg:gap-0 lg:space-y-3 lg:-mr-14">
                     @foreach($bestMenu as $idx => $m)
                         <div onclick="switchBestMenuItem({{ $idx }})" 
-                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#F5F2EE] text-[#111111] shadow-md' : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)] text-[#F5F5F5] border border-[var(--border)]' }} flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group">
+                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-md' : 'bg-[var(--surface)] hover:bg-[var(--surface-strong)] text-[var(--text)] border border-[var(--border)]' }} flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group">
                             
-                            <!-- Left: Thumbnail in dark ring -->
-                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden p-0.5 bg-[#141414] border border-[var(--border)] shadow-xs shrink-0">
+                            <!-- Left: Thumbnail -->
+                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden p-0.5 bg-[var(--media-bg)] border border-[var(--border)] shadow-xs shrink-0">
                                 <img src="{{ $m['image'] }}" 
                                      alt="{{ $m['name'] }}" 
                                      class="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-300">
@@ -111,10 +111,10 @@
 
                             <!-- Right Info: Title & Price -->
                             <div class="flex-1 ml-2 sm:ml-3 mr-1 sm:mr-2 text-left min-w-0">
-                                <span class="pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate {{ $idx === 0 ? 'text-[#111111]' : 'text-[#F5F5F5]' }}">
+                                <span class="pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate {{ $idx === 0 ? 'text-[var(--accent-solid-text)]' : 'text-[var(--text)]' }}">
                                     {{ $m['name'] }}
                                 </span>
-                                <span class="pill-price text-[11px] sm:text-sm font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-[#2A2A2A] font-semibold' : 'text-[#B5B5B5]' }}">
+                                <span class="pill-price text-[11px] sm:text-sm font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-[var(--accent-solid-text)] opacity-85 font-semibold' : 'text-[var(--text-muted)]' }}">
                                     {{ $m['price_formatted'] }}
                                 </span>
                             </div>
@@ -138,14 +138,14 @@
          ========================================================================= -->
     <div class="max-w-7xl xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-12 reveal-on-scroll flex flex-col items-center">
-            <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#F5F5F5] uppercase max-w-[22ch] mx-auto" style="text-wrap: balance;">
+            <h2 class="font-editorial text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[var(--text)] uppercase max-w-[22ch] mx-auto" style="text-wrap: balance;">
                 OUR MENU CATEGORIES
             </h2>
             
             <!-- Monochromatic Divider -->
             <div class="flex items-center justify-center space-x-3 mt-4">
                 <span class="w-12 h-px bg-[var(--border)]"></span>
-                <span class="text-[#B5B5B5] text-sm">♔</span>
+                <span class="text-[var(--text-muted)] text-sm">♔</span>
                 <span class="w-12 h-px bg-[var(--border)]"></span>
             </div>
         </div>
@@ -157,12 +157,12 @@
                         onclick="handleCircularCategoryClick('{{ $cat['id'] }}', this)" 
                         class="cat-circle-btn group flex flex-col items-center focus:outline-none transition-transform hover:-translate-y-1"
                         data-cat-id="{{ $cat['id'] }}">
-                    <div class="cat-circle-img-wrap w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-[#161616] border border-[var(--border)] shadow-[var(--shadow)] group-hover:border-[#F5F2EE] transition-all duration-300">
+                    <div class="cat-circle-img-wrap w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full overflow-hidden p-1 bg-[var(--surface-solid)] border border-[var(--border)] shadow-[var(--shadow-soft)] group-hover:border-[var(--accent-solid)] transition-all duration-300">
                         <img src="{{ $cat['image'] }}" 
                              alt="{{ $cat['name'] }}" 
                              class="w-full h-full object-cover rounded-full group-hover:scale-110 transition-transform duration-500">
                     </div>
-                    <span class="cat-circle-label mt-2 sm:mt-3 text-[11px] sm:text-sm font-semibold text-[#B5B5B5] tracking-wide text-center group-hover:text-[#F5F5F5] transition-colors leading-tight">
+                    <span class="cat-circle-label mt-2 sm:mt-3 text-[11px] sm:text-sm font-semibold text-[var(--text-muted)] tracking-wide text-center group-hover:text-[var(--text)] transition-colors leading-tight">
                         {{ $cat['name'] }}
                     </span>
                 </button>
@@ -171,13 +171,13 @@
 
         <!-- Sekat Antara Menu Categories & Menu Pilihan -->
         <div class="relative max-w-5xl mx-auto my-10 sm:my-14 flex items-center justify-center">
-            <div class="flex-grow h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+            <div class="flex-grow h-px bg-[var(--border)]"></div>
             <div class="mx-5 flex items-center space-x-2.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
-                <span class="text-sm text-[#B5B5B5]">♔</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-[#B5B5B5]"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[var(--text-muted)]"></span>
+                <span class="text-sm text-[var(--text-muted)]">♔</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[var(--text-muted)]"></span>
             </div>
-            <div class="flex-grow h-px bg-gradient-to-l from-transparent via-white/20 to-transparent"></div>
+            <div class="flex-grow h-px bg-[var(--border)]"></div>
         </div>
 
         <!-- 10 Menu Cards N-Column Layout (5 Kolom Desktop, 3 Kolom Tablet, 2 Kolom Mobile) -->
@@ -345,15 +345,15 @@
 
         <!-- Empty State Fallback -->
         <div id="recommendations-empty-state" class="hidden text-center py-12 nu-glass-card rounded-2xl mb-12 p-8">
-            <span class="material-symbols-outlined text-[#B5B5B5] text-4xl mb-2">restaurant_menu</span>
-            <p class="font-editorial text-xl font-bold text-[#F5F5F5]">Sajian Sedang Disiapkan</p>
-            <p class="font-body text-xs text-[#B5B5B5] mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
+            <span class="material-symbols-outlined text-[var(--text-muted)] text-4xl mb-2">restaurant_menu</span>
+            <p class="font-editorial text-xl font-bold text-[var(--text)]">Sajian Sedang Disiapkan</p>
+            <p class="font-body text-xs text-[var(--text-muted)] mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
         </div>
 
         <!-- Mobile Shortcut to Full Menu Catalog -->
         <div class="md:hidden text-center pb-4">
             <a href="{{ route('menu.all') }}"
-               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#191919] text-white text-xs font-bold uppercase tracking-wider shadow-md active:scale-95 transition-transform">
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] text-xs font-bold uppercase tracking-wider shadow-md active:scale-95 transition-transform">
                 <span class="material-symbols-outlined text-base">menu_book</span>
                 <span>Buka Katalog Menu Lengkap</span>
             </a>

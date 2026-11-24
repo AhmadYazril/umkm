@@ -5,9 +5,9 @@
     
     <!-- Top Bar Controls -->
     <div class="absolute top-5 right-5 z-20 flex items-center space-x-4" onclick="event.stopPropagation()">
-        <span id="lightbox-counter" class="text-xs uppercase tracking-widest text-[#B5B5B5] font-semibold">1 / 5</span>
+        <span id="lightbox-counter" class="text-xs uppercase tracking-widest text-neutral-300 font-semibold">1 / 5</span>
         <button onclick="closeLightbox()" 
-                class="w-10 h-10 rounded-full bg-white/10 border border-[var(--border)] text-[#F5F5F5] flex items-center justify-center hover:bg-[#F5F2EE] hover:text-[#111111] transition-colors"
+                class="w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-neutral-900 transition-colors"
                 aria-label="Tutup Lightbox">
             <span class="material-symbols-outlined text-xl">close</span>
         </button>
@@ -16,13 +16,13 @@
     <!-- Navigation Arrows -->
     <button id="lightbox-prev-btn"
             onclick="prevLightbox(event)" 
-            class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/70 border border-[var(--border)] text-[#F5F5F5] flex items-center justify-center hover:bg-[#F5F2EE] hover:text-[#111111] transition-colors"
+            class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-neutral-900 transition-colors"
             aria-label="Foto Sebelumnya">
         <span class="material-symbols-outlined text-2xl">chevron_left</span>
     </button>
     <button id="lightbox-next-btn"
             onclick="nextLightbox(event)" 
-            class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/70 border border-[var(--border)] text-[#F5F5F5] flex items-center justify-center hover:bg-[#F5F2EE] hover:text-[#111111] transition-colors"
+            class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-neutral-900 transition-colors"
             aria-label="Foto Berikutnya">
         <span class="material-symbols-outlined text-2xl">chevron_right</span>
     </button>
