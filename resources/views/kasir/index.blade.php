@@ -50,8 +50,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    {{-- Camera QR Scanner --}}
+    {{-- Camera QR / 1D Barcode Scanner & Offline Code 128 Renderer --}}
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="{{ asset('js/nucomu-barcode.js') }}"></script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -503,31 +505,113 @@
                                 </button>
                             </div>
 
-                            {{-- Makan di Sini / Bawa Pulang (44px, tanpa ikon) --}}
-                            <input type="hidden" id="kasirOrderType" value="dine_in">
-                            <div class="grid grid-cols-2 gap-2 bg-canvas p-1 rounded-xl">
-                                <button
-                                    type="button"
-                                    id="orderTypeBtn-dine_in"
-                                    onclick="setKasirOrderType('dine_in')"
-                                    class="min-h-[44px] px-3 rounded-lg bg-forest text-white text-xs font-bold transition-colors flex items-center justify-center cursor-pointer"
-                                >
-                                    Makan di Sini
-                                </button>
-                                <button
-                                    type="button"
-                                    id="orderTypeBtn-take_away"
-                                    onclick="setKasirOrderType('take_away')"
-                                    class="min-h-[44px] px-3 rounded-lg text-sub text-xs font-normal transition-colors flex items-center justify-center cursor-pointer"
-                                >
-                                    Bawa Pulang
-                                </button>
+                            {{-- SUMBER TRANSAKSI: Di Tempat (Barcode), Zendo, atau Grab --}}
+                            <div class="space-y-2">
+                                <label class="block text-xs font-normal text-sub">Sumber transaksi</label>
+                                <input type="hidden" id="kasirOrderChannel" value="direct">
+                                <div class="grid grid-cols-3 gap-1.5 bg-canvas p-1 rounded-xl">
+                                    <button
+                                        type="button"
+                                        id="channelBtn-direct"
+                                        onclick="setKasirOrderChannel('direct')"
+                                        class="kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-forest text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer"
+                                    >
+                                        <span class="flex items-center gap-1 leading-tight">
+                                            <i class="fa-solid fa-barcode text-[11px]"></i>
+                                            <span>Di Tempat</span>
+                                        </span>
+                                        <span class="text-[10px] font-normal opacity-90 leading-none">Barcode</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        id="channelBtn-zendo"
+                                        onclick="setKasirOrderChannel('zendo')"
+                                        class="kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                    >
+                                        <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-6 h-6 rounded-full object-cover shrink-0">
+                                        <span>Zendo</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        id="channelBtn-grab"
+                                        onclick="setKasirOrderChannel('grab')"
+                                        class="kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                    >
+                                        <img src="{{ asset('images/logos/grabfood.png') }}" alt="Logo GrabFood" class="w-6 h-6 rounded-md object-contain bg-white shrink-0">
+                                        <span>Grab</span>
+                                    </button>
+                                </div>
+
+                                {{-- Banner Logo Khusus Mitra (Zendo / GrabFood) --}}
+                                <div id="kasirChannelBrandBanner" class="hidden rounded-xl border p-2.5 flex items-center gap-3">
+                                    <img id="kasirChannelBannerLogo" src="" alt="Logo Mitra" class="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-line shrink-0">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <span id="kasirChannelBannerTitle" class="text-xs font-bold text-ink">Transaksi Mitra</span>
+                                            <span id="kasirChannelBannerPill" class="px-2 py-0.5 rounded-md text-[10px] font-bold">Tanpa Barcode</span>
+                                        </div>
+                                        <p id="kasirChannelBannerDesc" class="text-[11px] font-normal text-sub leading-snug mt-0.5">
+                                            Kurir menyampaikan pesanan langsung ke kasir (input manual).
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Makan di Sini / Bawa Pulang + Format Barcode (Khusus Di Tempat) --}}
+                            <div id="kasirDineTypeWrap" class="space-y-2.5">
+                                <input type="hidden" id="kasirOrderType" value="dine_in">
+                                <div class="grid grid-cols-2 gap-2 bg-canvas p-1 rounded-xl">
+                                    <button
+                                        type="button"
+                                        id="orderTypeBtn-dine_in"
+                                        onclick="setKasirOrderType('dine_in')"
+                                        class="min-h-[44px] px-3 rounded-lg bg-forest text-white text-xs font-bold transition-colors flex items-center justify-center cursor-pointer"
+                                    >
+                                        Makan di Sini
+                                    </button>
+                                    <button
+                                        type="button"
+                                        id="orderTypeBtn-take_away"
+                                        onclick="setKasirOrderType('take_away')"
+                                        class="min-h-[44px] px-3 rounded-lg text-sub text-xs font-normal transition-colors flex items-center justify-center cursor-pointer"
+                                    >
+                                        Bawa Pulang
+                                    </button>
+                                </div>
+
+                                {{-- Pilihan Format Barcode (QR vs Barcode Bergaris) saat Transaksi --}}
+                                <div id="kasirBarcodeTypeWrap" class="flex items-center justify-between gap-2 bg-canvas rounded-xl p-1.5">
+                                    <span class="text-[11px] font-normal text-sub pl-2 shrink-0">Format kode</span>
+                                    <input type="hidden" id="kasirBarcodeType" value="qr">
+                                    <div class="grid grid-cols-2 gap-1 flex-1 max-w-[220px]">
+                                        <button
+                                            type="button"
+                                            id="kasirBarcodeBtn-qr"
+                                            onclick="setKasirBarcodeType('qr')"
+                                            class="min-h-[34px] px-2.5 rounded-lg bg-forest text-white text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                                        >
+                                            <i class="fa-solid fa-qrcode text-[11px]"></i>
+                                            <span>QR Code</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            id="kasirBarcodeBtn-barcode"
+                                            onclick="setKasirBarcodeType('barcode')"
+                                            class="min-h-[34px] px-2.5 rounded-lg bg-white text-sub border border-line text-[11px] font-normal flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                                        >
+                                            <i class="fa-solid fa-barcode text-[11px]"></i>
+                                            <span>Garis</span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             {{-- Nama Pelanggan & No. Meja Satu Baris Berlabel Jelas --}}
                             <div class="flex items-end gap-3">
                                 <div class="flex-1 min-w-0">
-                                    <label for="kasirCustomerName" class="block text-xs font-normal text-sub mb-1">Nama pelanggan</label>
+                                    <label for="kasirCustomerName" id="kasirCustomerNameLabel" class="block text-xs font-normal text-sub mb-1">Nama pelanggan</label>
                                     <input
                                         type="text"
                                         id="kasirCustomerName"
@@ -763,55 +847,106 @@
         </section>
 
         {{-- =====================================================================
-             TAB 3: SCAN QR (Akan disempurnakan penuh pada Tahap 4)
+             TAB 3: SCAN QR & BARCODE (Kamera Live + Foto Kamera HP + Alat Scanner USB/BT)
              ===================================================================== --}}
         <section id="kasirMainPanel-scan" class="{{ $activeTab === 'scan' ? '' : 'hidden' }} pb-24 sm:pb-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
                 <div class="lg:col-span-5 bg-white border border-line rounded-xl p-4 sm:p-5 space-y-4">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-2">
                         <div>
-                            <h2 class="text-sm font-bold text-ink">Scan QR Pesanan</h2>
-                            <p class="text-xs font-normal text-sub">Arahkan kamera ke QR atau ketik kode</p>
+                            <h2 class="text-sm font-bold text-ink">Scan QR &amp; Barcode Pesanan</h2>
+                            <p class="text-xs font-normal text-sub">Arahkan kamera, scan dengan alat barcode kasir, atau foto slip</p>
                         </div>
-                        <span id="cameraScannerBadge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-canvas text-sub">
+                        <span id="cameraScannerBadge" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-canvas text-sub shrink-0">
                             Siaga
                         </span>
                     </div>
 
+                    {{-- Peringatan Otomatis Saat Dibuka via HTTP IP LAN (Bukan HTTPS / localhost) --}}
+                    <div id="kasirCameraHttpWarning" class="hidden rounded-xl border border-warning bg-warning-soft p-3 text-xs text-warning-ink space-y-1.5">
+                        <div class="font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>Kamera Live Diblokir Browser di HTTP IP LAN</span>
+                        </div>
+                        <p class="font-normal leading-relaxed text-ink">
+                            Browser hanya mengizinkan streaming kamera lewat <strong>HTTPS</strong> atau <strong>localhost</strong>. Saat pakai IP LAN (<code id="kasirCurrentOriginCode" class="font-bold"></code>), Anda tetap bisa scan dengan:
+                        </p>
+                        <ul class="list-disc pl-4 space-y-0.5 font-normal text-ink">
+                            <li><strong>Alat Scanner Barcode USB/BT</strong> langsung tembak barcode garis (otomatis masuk kolom cari).</li>
+                            <li><strong>Tombol Foto / Kamera HP</strong> di bawah (jalan normal tanpa HTTPS).</li>
+                            <li>Atau buka lewat <code>http://localhost:8000/kasir</code> di laptop host / gunakan HTTPS (ngrok).</li>
+                        </ul>
+                    </div>
+
                     <div class="relative rounded-xl overflow-hidden bg-ink aspect-[4/3] flex items-center justify-center">
                         <div id="kasirQrReader" class="w-full h-full"></div>
+                        <div id="kasirQrFileReaderHidden" class="hidden"></div>
                         <div id="kasirQrPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-center p-6 text-white gap-3">
                             <i class="fa-solid fa-camera text-2xl"></i>
-                            <button
-                                type="button"
-                                onclick="startKasirCameraScanner()"
-                                class="min-h-[48px] px-5 rounded-xl bg-forest text-white text-xs font-bold transition cursor-pointer"
-                            >
-                                Aktifkan Kamera
-                            </button>
+                            <div class="flex flex-wrap items-center justify-center gap-2">
+                                <button
+                                    type="button"
+                                    onclick="startKasirCameraScanner()"
+                                    class="min-h-[46px] px-4 rounded-xl bg-forest text-white text-xs font-bold transition cursor-pointer"
+                                >
+                                    Aktifkan Kamera Live
+                                </button>
+                                <label
+                                    for="kasirPhotoScanInput"
+                                    class="min-h-[46px] px-4 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-white text-xs font-bold transition cursor-pointer inline-flex items-center gap-1.5"
+                                >
+                                    <i class="fa-solid fa-image"></i>
+                                    <span>Foto / Kamera HP</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
-                    <button
-                        type="button"
-                        id="btnStopCameraScanner"
-                        onclick="stopKasirCameraScanner()"
-                        class="hidden w-full min-h-[48px] rounded-xl border border-line bg-canvas text-xs font-bold text-ink transition cursor-pointer"
+                    <input
+                        type="file"
+                        id="kasirPhotoScanInput"
+                        accept="image/*"
+                        capture="environment"
+                        onchange="handleKasirPhotoScan(this)"
+                        class="hidden"
                     >
-                        Matikan Kamera
-                    </button>
 
-                    <div class="pt-4 border-t border-line space-y-2">
-                        <label for="manualOrderCodeInput" class="block text-xs font-normal text-sub">
-                            Cari manual kode pesanan
+                    <div class="flex gap-2">
+                        <button
+                            type="button"
+                            id="btnStopCameraScanner"
+                            onclick="stopKasirCameraScanner()"
+                            class="hidden flex-1 min-h-[44px] rounded-xl border border-line bg-canvas text-xs font-bold text-ink transition cursor-pointer"
+                        >
+                            Matikan Kamera
+                        </button>
+                        <label
+                            for="kasirPhotoScanInput"
+                            class="flex-1 min-h-[44px] px-3 rounded-xl border border-line bg-canvas hover:bg-forest-soft text-xs font-bold text-ink transition cursor-pointer flex items-center justify-center gap-2"
+                        >
+                            <i class="fa-solid fa-camera-retro text-forest"></i>
+                            <span>Scan via Foto Barcode / QR</span>
                         </label>
+                    </div>
+
+                    <div class="pt-4 border-t border-line space-y-2.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <label for="manualOrderCodeInput" class="block text-xs font-bold text-ink">
+                                Pencarian Pesanan &amp; Alat Barcode Scanner
+                            </label>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-forest-soft text-forest-dark text-[10px] font-bold">
+                                <i class="fa-solid fa-barcode"></i>
+                                <span>Scanner USB/BT Aktif</span>
+                            </span>
+                        </div>
                         <form onsubmit="handleManualQrLookup(event)" class="flex gap-2">
                             <input
                                 type="text"
                                 id="manualOrderCodeInput"
                                 value="{{ request('code') }}"
-                                placeholder="Contoh: NCM-20261115-001"
+                                autocomplete="off"
+                                placeholder="Scan barcode garis atau ketik: NCM-20261115-001"
                                 class="flex-1 min-h-[48px] bg-canvas border border-line rounded-xl px-3.5 py-2 text-sm font-bold text-ink uppercase placeholder-muted focus:outline-none focus:border-forest focus:bg-white"
                             >
                             <button
@@ -821,6 +956,9 @@
                                 Cari
                             </button>
                         </form>
+                        <p class="text-[11px] font-normal text-sub">
+                            Saat men-scan barcode bergaris memakai alat scan kasir, kode pesanan langsung otomatis tertulis di sini dan menampilkan rincian pesanan.
+                        </p>
                     </div>
                 </div>
 
@@ -830,9 +968,27 @@
                             <div class="space-y-4">
                                 <div class="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-line">
                                     <div>
-                                        <span class="text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedOrder->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
-                                            {{ $scannedOrder->payment_status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }}
-                                        </span>
+                                        <div class="flex flex-wrap items-center gap-1.5">
+                                            <span class="text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedOrder->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
+                                                {{ $scannedOrder->payment_status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }}
+                                            </span>
+                                            @if($scannedOrder->channel === 'zendo')
+                                                <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
+                                                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-4 h-4 rounded-full object-cover">
+                                                    <span>Zendo</span>
+                                                </span>
+                                            @elseif($scannedOrder->channel === 'grab')
+                                                <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-4 h-4 object-contain">
+                                                    <span>GrabFood</span>
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-md bg-canvas text-ink border border-line">
+                                                    <i class="fa-solid fa-barcode text-[11px] text-forest"></i>
+                                                    <span>Di Tempat (Barcode)</span>
+                                                </span>
+                                            @endif
+                                        </div>
                                         <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#{{ $scannedOrder->code }}</h3>
                                         <p class="text-xs font-normal text-sub mt-0.5">
                                             {{ $scannedOrder->customer_name ?: 'Pelanggan Kasir' }}
@@ -867,7 +1023,7 @@
 
                                 <div class="pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'processing', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">
-                                        Set Diproses & Lunas
+                                        Set Diproses &amp; Lunas
                                     </button>
                                     <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'ready', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">
                                         Set Siap Disajikan
@@ -879,9 +1035,9 @@
                             </div>
                         @else
                             <div class="text-center py-8 px-4 space-y-2">
-                                <h3 class="text-sm font-bold text-ink">Belum ada QR dipindai</h3>
+                                <h3 class="text-sm font-bold text-ink">Belum ada QR / Barcode dipindai</h3>
                                 <p class="text-xs font-normal text-sub max-w-sm mx-auto">
-                                    Scan QR pelanggan atau ketik kode pesanan untuk melihat detailnya.
+                                    Scan QR atau barcode garis pelanggan (via kamera, foto, atau alat scanner kasir) untuk langsung membuka detail pesanan.
                                 </p>
                             </div>
                         @endif
@@ -892,13 +1048,85 @@
         </section>
 
         {{-- =====================================================================
-             TAB 4: PESANAN (Perbaikan filter, auto-sync & status dikerjakan di Tahap 4)
+             TAB 4: PESANAN (Dipisahkan per Sumber: Di Tempat/Barcode, Zendo, Grab)
              ===================================================================== --}}
+        @php
+            $kasirCountDirect = $recentOrders->filter(fn ($o) => $o->channel === 'direct')->count();
+            $kasirCountZendo = $recentOrders->filter(fn ($o) => $o->channel === 'zendo')->count();
+            $kasirCountGrab = $recentOrders->filter(fn ($o) => $o->channel === 'grab')->count();
+        @endphp
         <section id="kasirMainPanel-orders" class="{{ $activeTab === 'orders' ? '' : 'hidden' }} space-y-4 pb-24 sm:pb-8">
+
+            {{-- Pemisahan Riwayat Transaksi Berdasarkan Sumber: Di Tempat (Barcode), Zendo, Grab --}}
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                <button
+                    type="button"
+                    onclick="filterKasirOrderChannel('all')"
+                    data-ord-channel-btn="all"
+                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-forest text-white border-forest"
+                >
+                    <div class="min-w-0">
+                        <span class="block text-xs font-bold truncate">Semua Sumber</span>
+                        <span class="block text-[10.5px] opacity-85">Gabungan riwayat</span>
+                    </div>
+                    <span id="kasirChannelCount-all" class="px-2 py-0.5 rounded-lg bg-white/20 text-xs font-bold tabular-nums">{{ $recentOrders->count() }}</span>
+                </button>
+
+                <button
+                    type="button"
+                    onclick="filterKasirOrderChannel('direct')"
+                    data-ord-channel-btn="direct"
+                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-forest"
+                >
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-8 h-8 rounded-lg bg-forest-soft text-forest-dark flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-barcode text-sm"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">Di Tempat (Barcode)</span>
+                            <span class="block text-[10.5px] text-sub">Langsung / QR &amp; Garis</span>
+                        </div>
+                    </div>
+                    <span id="kasirChannelCount-direct" class="px-2 py-0.5 rounded-lg bg-canvas text-ink text-xs font-bold tabular-nums">{{ $kasirCountDirect }}</span>
+                </button>
+
+                <button
+                    type="button"
+                    onclick="filterKasirOrderChannel('zendo')"
+                    data-ord-channel-btn="zendo"
+                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-rose-400"
+                >
+                    <div class="flex items-center gap-2 min-w-0">
+                        <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-8 h-8 rounded-full object-cover shrink-0 border border-line bg-white">
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">Zendo</span>
+                            <span class="block text-[10.5px] text-sub">Kurir WA &bull; Tanpa Barcode</span>
+                        </div>
+                    </div>
+                    <span id="kasirChannelCount-zendo" class="px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold tabular-nums">{{ $kasirCountZendo }}</span>
+                </button>
+
+                <button
+                    type="button"
+                    onclick="filterKasirOrderChannel('grab')"
+                    data-ord-channel-btn="grab"
+                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-emerald-500"
+                >
+                    <div class="flex items-center gap-2 min-w-0">
+                        <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-8 h-8 rounded-lg object-contain shrink-0 border border-line bg-white p-0.5">
+                        <div class="min-w-0">
+                            <span class="block text-xs font-bold truncate">GrabFood</span>
+                            <span class="block text-[10.5px] text-sub">Mitra Grab &bull; Tanpa Barcode</span>
+                        </div>
+                    </div>
+                    <span id="kasirChannelCount-grab" class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold tabular-nums">{{ $kasirCountGrab }}</span>
+                </button>
+            </div>
 
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                    <button type="button" onclick="filterKasirOrderStatus('pending')" data-ord-filter="pending" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-bold bg-forest text-white cursor-pointer shrink-0">Pending</button>
+                    <button type="button" onclick="filterKasirOrderStatus('all')" data-ord-filter="all" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-bold bg-forest text-white cursor-pointer shrink-0">Semua Status</button>
+                    <button type="button" onclick="filterKasirOrderStatus('pending')" data-ord-filter="pending" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Pending</button>
                     <button type="button" onclick="filterKasirOrderStatus('processing')" data-ord-filter="processing" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Diproses</button>
                     <button type="button" onclick="filterKasirOrderStatus('ready')" data-ord-filter="ready" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Siap Saji</button>
                     <button type="button" onclick="filterKasirOrderStatus('completed')" data-ord-filter="completed" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Selesai</button>
@@ -906,6 +1134,7 @@
 
                 <input
                     type="search"
+                    id="kasirOrderSearchInput"
                     oninput="searchKasirOrderRows(this.value)"
                     placeholder="Cari kode atau nama pelanggan..."
                     class="w-full sm:w-64 min-h-[44px] bg-white border border-line rounded-xl px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-forest"
@@ -917,23 +1146,40 @@
                     <div
                         class="kasir-order-card bg-white border border-line rounded-xl p-4 flex flex-col justify-between gap-4"
                         data-order-status="{{ $ord->status }}"
-                        data-order-search="{{ strtolower($ord->code . ' ' . $ord->customer_name) }}"
+                        data-order-channel="{{ $ord->channel }}"
+                        data-order-search="{{ strtolower($ord->code . ' ' . $ord->customer_name . ' ' . $ord->channel_label) }}"
                     >
                         <div>
                             <div class="flex items-start justify-between gap-2 pb-3 border-b border-line">
-                                <div>
-                                    <div class="flex items-center gap-2">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-1.5">
                                         <span class="text-xs font-bold text-ink tabular-nums">#{{ $ord->code }}</span>
-                                        <span class="text-xs font-bold px-2 py-0.5 rounded-md {{ $ord->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
+                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-md {{ $ord->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
                                             {{ $ord->payment_status === 'paid' ? 'Lunas' : 'Belum Bayar' }}
                                         </span>
+                                        @if($ord->channel === 'zendo')
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold">
+                                                <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-3.5 h-3.5 rounded-full object-cover">
+                                                <span>Zendo</span>
+                                            </span>
+                                        @elseif($ord->channel === 'grab')
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10.5px] font-bold">
+                                                <img src="{{ asset('images/logos/grabfood.png') }}" alt="Grab" class="w-3.5 h-3.5 object-contain">
+                                                <span>GrabFood</span>
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-canvas text-sub border border-line text-[10.5px] font-bold">
+                                                <i class="fa-solid fa-barcode text-[10px] text-forest"></i>
+                                                <span>Di Tempat</span>
+                                            </span>
+                                        @endif
                                     </div>
-                                    <p class="text-xs font-bold text-ink mt-1">
+                                    <p class="text-xs font-bold text-ink mt-1.5">
                                         {{ $ord->customer_name ?: 'Pelanggan Kasir' }}
                                         <span class="font-normal text-sub">• {{ $ord->order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang' }}</span>
                                     </p>
                                 </div>
-                                <span id="orderCardStatusBadge-{{ $ord->id }}" class="text-xs font-normal px-2.5 py-1 rounded-lg bg-canvas text-ink">
+                                <span id="orderCardStatusBadge-{{ $ord->id }}" class="text-xs font-normal px-2.5 py-1 rounded-lg bg-canvas text-ink shrink-0">
                                     {{ $ord->status_label }}
                                 </span>
                             </div>
@@ -1187,6 +1433,45 @@
                 <p id="modalSuccessCustomerName" class="text-xs font-normal text-sub">Pelanggan Kasir</p>
             </div>
 
+            {{-- Partner Badge (Zendo / Grab — Tanpa Barcode) --}}
+            <div id="modalSuccessPartnerBanner" class="hidden rounded-xl border p-3 flex items-center gap-3 text-left">
+                <img id="modalSuccessPartnerLogo" src="" alt="Logo Mitra" class="w-10 h-10 rounded-xl object-contain bg-white p-1 border border-line shrink-0">
+                <div class="min-w-0">
+                    <span id="modalSuccessPartnerTitle" class="text-xs font-bold text-ink block">Transaksi Mitra</span>
+                    <span class="text-[11px] font-normal text-sub block">Input manual kasir &bull; Tanpa barcode</span>
+                </div>
+            </div>
+
+            {{-- Switchable QR / Barcode Garis (Khusus Transaksi Di Tempat) --}}
+            <div id="modalSuccessCodeBox" class="hidden bg-canvas border border-line rounded-xl p-3 space-y-2.5">
+                <div class="grid grid-cols-2 gap-1 bg-white p-1 rounded-lg border border-line">
+                    <button
+                        type="button"
+                        id="modalSuccessCodeBtn-qr"
+                        onclick="switchSuccessModalCodeMode('qr')"
+                        class="py-1.5 rounded-md text-[11px] font-bold bg-forest text-white cursor-pointer flex items-center justify-center gap-1"
+                    >
+                        <i class="fa-solid fa-qrcode"></i>
+                        <span>QR Code</span>
+                    </button>
+                    <button
+                        type="button"
+                        id="modalSuccessCodeBtn-barcode"
+                        onclick="switchSuccessModalCodeMode('barcode')"
+                        class="py-1.5 rounded-md text-[11px] font-bold text-sub cursor-pointer flex items-center justify-center gap-1"
+                    >
+                        <i class="fa-solid fa-barcode"></i>
+                        <span>Barcode Garis</span>
+                    </button>
+                </div>
+                <div id="modalSuccessQrWrap" class="bg-white rounded-lg p-3 flex items-center justify-center">
+                    <div id="modalSuccessQrTarget"></div>
+                </div>
+                <div id="modalSuccessBarcodeWrap" class="hidden bg-white rounded-lg p-2.5">
+                    <div id="modalSuccessBarcodeTarget"></div>
+                </div>
+            </div>
+
             <div class="bg-canvas rounded-xl p-4 space-y-2 text-xs">
                 <div class="flex items-center justify-between">
                     <span class="text-sub font-normal">Total</span>
@@ -1233,12 +1518,37 @@
          ========================================================================= --}}
     <script>
         const KASIR_CATALOG = @json($catalogJsMap);
+        const KASIR_CHANNEL_ASSETS = {
+            zendo: {
+                logo: @json(asset('images/logos/zendo-courier.png')),
+                title: 'Transaksi Kurir Zendo',
+                pill: 'Tanpa Barcode',
+                desc: 'Kurir Zendo menyampaikan pesanan ke kasir — input manual tanpa barcode.',
+                bannerClass: 'rounded-xl border border-rose-200 bg-rose-50/80 p-2.5 flex items-center gap-3',
+                pillClass: 'px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-600 text-white',
+            },
+            grab: {
+                logo: @json(asset('images/logos/grabfood.png')),
+                title: 'Transaksi GrabFood',
+                pill: 'Tanpa Barcode',
+                desc: 'Driver Grab menyampaikan pesanan ke kasir — input manual tanpa barcode.',
+                bannerClass: 'rounded-xl border border-emerald-300 bg-emerald-50/80 p-2.5 flex items-center gap-3',
+                pillClass: 'px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#00B14F] text-white',
+            },
+        };
+        const KASIR_BASE_QR_URL = @json($baseQrUrl);
 
         const KASIR_STATE = {
             cart: [],
+            orderChannel: 'direct',
+            barcodeType: 'qr',
             activeMainTab: @json($activeTab),
             activeCategory: @json($initialCatalogTab),
             activeStockCategory: @json($firstCategoryKey),
+            activeOrderChannelFilter: 'all',
+            activeOrderStatusFilter: 'all',
+            orderSearchQuery: '',
+            lastSuccessOrder: null,
             stocks: {
                 @foreach($catalogItems as $ci)
                     {{ $ci['id'] }}: {{ $ci['is_available'] && (int)$ci['stock'] > 0 ? 25 : 0 }},
@@ -1326,6 +1636,16 @@
 
             if (tab !== 'scan' && KASIR_STATE.scannerRunning) {
                 stopKasirCameraScanner();
+            }
+
+            if (tab === 'scan') {
+                checkKasirCameraEnvironment();
+                setTimeout(() => {
+                    const codeInput = document.getElementById('manualOrderCodeInput');
+                    if (codeInput && window.innerWidth >= 768) {
+                        codeInput.focus();
+                    }
+                }, 80);
             }
         }
 
@@ -2184,6 +2504,94 @@
             if (emptyEl) emptyEl.classList.toggle('hidden', totalVisibleBoxes > 0 || q === '');
         }
 
+        function setKasirOrderChannel(channel) {
+            const normalized = ['direct', 'zendo', 'grab'].includes(channel) ? channel : 'direct';
+            KASIR_STATE.orderChannel = normalized;
+
+            const hiddenInput = document.getElementById('kasirOrderChannel');
+            if (hiddenInput) hiddenInput.value = normalized;
+
+            const directBtn = document.getElementById('channelBtn-direct');
+            const zendoBtn = document.getElementById('channelBtn-zendo');
+            const grabBtn = document.getElementById('channelBtn-grab');
+
+            if (directBtn) {
+                directBtn.className = normalized === 'direct'
+                    ? 'kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-forest text-white text-xs font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer shadow-xs'
+                    : 'kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-sub border border-line text-xs font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer';
+            }
+            if (zendoBtn) {
+                zendoBtn.className = normalized === 'zendo'
+                    ? 'kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-rose-600 text-white border border-rose-600 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs'
+                    : 'kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer';
+            }
+            if (grabBtn) {
+                grabBtn.className = normalized === 'grab'
+                    ? 'kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-[#00B14F] text-white border border-[#00B14F] text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs'
+                    : 'kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer';
+            }
+
+            const banner = document.getElementById('kasirChannelBrandBanner');
+            const bannerLogo = document.getElementById('kasirChannelBannerLogo');
+            const bannerTitle = document.getElementById('kasirChannelBannerTitle');
+            const bannerPill = document.getElementById('kasirChannelBannerPill');
+            const bannerDesc = document.getElementById('kasirChannelBannerDesc');
+            const dineWrap = document.getElementById('kasirDineTypeWrap');
+            const tableWrap = document.getElementById('kasirTableNoWrap');
+            const customerLabel = document.getElementById('kasirCustomerNameLabel');
+            const customerInput = document.getElementById('kasirCustomerName');
+
+            if (normalized === 'direct') {
+                if (banner) banner.classList.add('hidden');
+                if (dineWrap) dineWrap.classList.remove('hidden');
+                setKasirOrderType(document.getElementById('kasirOrderType')?.value || 'dine_in');
+                if (customerLabel) customerLabel.textContent = 'Nama pelanggan';
+                if (customerInput) customerInput.placeholder = 'Opsional';
+            } else {
+                const cfg = KASIR_CHANNEL_ASSETS[normalized];
+                if (banner && cfg) {
+                    banner.className = cfg.bannerClass;
+                    if (bannerLogo) bannerLogo.src = cfg.logo;
+                    if (bannerTitle) bannerTitle.textContent = cfg.title;
+                    if (bannerPill) {
+                        bannerPill.textContent = cfg.pill;
+                        bannerPill.className = cfg.pillClass;
+                    }
+                    if (bannerDesc) bannerDesc.textContent = cfg.desc;
+                }
+                if (dineWrap) dineWrap.classList.add('hidden');
+                if (tableWrap) tableWrap.classList.add('hidden');
+                const orderTypeInput = document.getElementById('kasirOrderType');
+                if (orderTypeInput) orderTypeInput.value = 'take_away';
+                if (customerLabel) {
+                    customerLabel.textContent = normalized === 'zendo' ? 'Nama pelanggan / Kurir Zendo' : 'Nama / No. Order GrabFood';
+                }
+                if (customerInput) {
+                    customerInput.placeholder = normalized === 'zendo' ? 'Contoh: Budi / Kurir Zendo' : 'Contoh: GF-123 / Ani';
+                }
+            }
+        }
+
+        function setKasirBarcodeType(type) {
+            const normalized = type === 'barcode' ? 'barcode' : 'qr';
+            KASIR_STATE.barcodeType = normalized;
+            const input = document.getElementById('kasirBarcodeType');
+            if (input) input.value = normalized;
+
+            const qrBtn = document.getElementById('kasirBarcodeBtn-qr');
+            const barBtn = document.getElementById('kasirBarcodeBtn-barcode');
+            if (qrBtn) {
+                qrBtn.className = normalized === 'qr'
+                    ? 'min-h-[34px] px-2.5 rounded-lg bg-forest text-white text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors'
+                    : 'min-h-[34px] px-2.5 rounded-lg bg-white text-sub border border-line text-[11px] font-normal flex items-center justify-center gap-1 cursor-pointer transition-colors';
+            }
+            if (barBtn) {
+                barBtn.className = normalized === 'barcode'
+                    ? 'min-h-[34px] px-2.5 rounded-lg bg-forest text-white text-[11px] font-bold flex items-center justify-center gap-1 cursor-pointer transition-colors'
+                    : 'min-h-[34px] px-2.5 rounded-lg bg-white text-sub border border-line text-[11px] font-normal flex items-center justify-center gap-1 cursor-pointer transition-colors';
+            }
+        }
+
         function setKasirOrderType(type) {
             const input = document.getElementById('kasirOrderType');
             const dineBtn = document.getElementById('orderTypeBtn-dine_in');
@@ -2282,10 +2690,13 @@
             if (btn) btn.disabled = true;
             if (btnText) btnText.textContent = 'Menyimpan...';
 
+            const currentChannel = KASIR_STATE.orderChannel || 'direct';
             const payload = {
                 customer_name: document.getElementById('kasirCustomerName')?.value || '',
-                order_type: document.getElementById('kasirOrderType')?.value || 'dine_in',
-                table_no: document.getElementById('kasirTableNo')?.value || '',
+                order_type: currentChannel === 'direct' ? (document.getElementById('kasirOrderType')?.value || 'dine_in') : 'take_away',
+                order_channel: currentChannel,
+                barcode_type: currentChannel === 'direct' ? (KASIR_STATE.barcodeType || 'qr') : null,
+                table_no: currentChannel === 'direct' ? (document.getElementById('kasirTableNo')?.value || '') : '',
                 payment_method: document.getElementById('kasirPaymentMethod')?.value || 'cash',
                 payment_status: document.getElementById('kasirPaymentStatus')?.value || 'paid',
                 cash_received: Number(document.getElementById('kasirCashReceived')?.value || 0),
@@ -2341,13 +2752,17 @@
                 if (document.getElementById('kasirTableNo')) document.getElementById('kasirTableNo').value = '';
                 if (document.getElementById('kasirCashReceived')) document.getElementById('kasirCashReceived').value = '';
 
-                openOrderSuccessModal(
-                    data.order.code,
-                    data.order.customer_name,
-                    data.order.total,
-                    data.order.change_amount || 0,
-                    data.receipt_url
-                );
+                openOrderSuccessModal({
+                    code: data.order.code,
+                    customerName: data.order.customer_name,
+                    total: data.order.total,
+                    changeAmount: data.order.change_amount || 0,
+                    receiptUrl: data.receipt_url,
+                    channel: data.order.order_channel || currentChannel,
+                    usesBarcode: Boolean(data.order.uses_barcode),
+                    barcodeType: data.order.barcode_type || KASIR_STATE.barcodeType || 'qr',
+                    qrUrl: data.qr_url || (KASIR_BASE_QR_URL + data.order.code),
+                });
                 showKasirToast(`Pesanan #${data.order.code} tersimpan`);
                 syncKasirWithDatabase(false);
             } catch (err) {
@@ -2357,24 +2772,95 @@
             }
         }
 
-        function openOrderSuccessModal(orderCode, customerName, totalAmount, changeAmount = 0, receiptUrl = null) {
+        function openOrderSuccessModal(info) {
             const modal = document.getElementById('kasirOrderSuccessModal');
             const codeEl = document.getElementById('modalSuccessOrderCode');
             const nameEl = document.getElementById('modalSuccessCustomerName');
             const totalEl = document.getElementById('modalSuccessTotalText');
             const changeEl = document.getElementById('modalSuccessChangeText');
             const receiptBtn = document.getElementById('modalSuccessReceiptBtn');
+            const partnerBanner = document.getElementById('modalSuccessPartnerBanner');
+            const partnerLogo = document.getElementById('modalSuccessPartnerLogo');
+            const partnerTitle = document.getElementById('modalSuccessPartnerTitle');
+            const codeBox = document.getElementById('modalSuccessCodeBox');
 
             if (!modal) return;
 
-            if (codeEl) codeEl.textContent = `#${orderCode}`;
-            if (nameEl) nameEl.textContent = customerName || 'Pelanggan Kasir';
-            if (totalEl) totalEl.textContent = formatRupiah(totalAmount);
-            if (changeEl) changeEl.textContent = formatRupiah(changeAmount);
-            if (receiptBtn && receiptUrl) receiptBtn.href = receiptUrl;
+            KASIR_STATE.lastSuccessOrder = info;
+
+            if (codeEl) codeEl.textContent = `#${info.code}`;
+            if (nameEl) nameEl.textContent = info.customerName || 'Pelanggan Kasir';
+            if (totalEl) totalEl.textContent = formatRupiah(info.total);
+            if (changeEl) changeEl.textContent = formatRupiah(info.changeAmount || 0);
+            if (receiptBtn && info.receiptUrl) receiptBtn.href = info.receiptUrl;
+
+            const isPartner = info.channel === 'zendo' || info.channel === 'grab' || !info.usesBarcode;
+            if (isPartner && KASIR_CHANNEL_ASSETS[info.channel]) {
+                const cfg = KASIR_CHANNEL_ASSETS[info.channel];
+                if (partnerBanner) {
+                    partnerBanner.className = cfg.bannerClass + ' text-left';
+                }
+                if (partnerLogo) partnerLogo.src = cfg.logo;
+                if (partnerTitle) partnerTitle.textContent = cfg.title;
+                if (codeBox) codeBox.classList.add('hidden');
+            } else {
+                if (partnerBanner) partnerBanner.classList.add('hidden');
+                if (codeBox) codeBox.classList.remove('hidden');
+                switchSuccessModalCodeMode(info.barcodeType === 'barcode' ? 'barcode' : 'qr');
+            }
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+        }
+
+        function switchSuccessModalCodeMode(mode) {
+            const normalized = mode === 'barcode' ? 'barcode' : 'qr';
+            const info = KASIR_STATE.lastSuccessOrder;
+            if (!info) return;
+
+            const qrWrap = document.getElementById('modalSuccessQrWrap');
+            const barWrap = document.getElementById('modalSuccessBarcodeWrap');
+            const qrBtn = document.getElementById('modalSuccessCodeBtn-qr');
+            const barBtn = document.getElementById('modalSuccessCodeBtn-barcode');
+
+            if (qrWrap) qrWrap.classList.toggle('hidden', normalized !== 'qr');
+            if (barWrap) barWrap.classList.toggle('hidden', normalized !== 'barcode');
+
+            if (qrBtn) {
+                qrBtn.className = normalized === 'qr'
+                    ? 'py-1.5 rounded-md text-[11px] font-bold bg-forest text-white cursor-pointer flex items-center justify-center gap-1'
+                    : 'py-1.5 rounded-md text-[11px] font-bold text-sub cursor-pointer flex items-center justify-center gap-1';
+            }
+            if (barBtn) {
+                barBtn.className = normalized === 'barcode'
+                    ? 'py-1.5 rounded-md text-[11px] font-bold bg-forest text-white cursor-pointer flex items-center justify-center gap-1'
+                    : 'py-1.5 rounded-md text-[11px] font-bold text-sub cursor-pointer flex items-center justify-center gap-1';
+            }
+
+            if (normalized === 'barcode') {
+                if (window.NucomuBarcode) {
+                    window.NucomuBarcode.renderCode128Svg('#modalSuccessBarcodeTarget', info.code, {
+                        barHeight: 56,
+                        moduleWidth: 2,
+                        fontSize: 13,
+                    });
+                }
+            } else {
+                const qrTarget = document.getElementById('modalSuccessQrTarget');
+                if (qrTarget) {
+                    qrTarget.innerHTML = '';
+                    if (typeof QRCode === 'function') {
+                        new QRCode(qrTarget, {
+                            text: info.qrUrl || info.code,
+                            width: 148,
+                            height: 148,
+                            colorDark: '#1B1F1D',
+                            colorLight: '#FFFFFF',
+                            correctLevel: QRCode.CorrectLevel ? QRCode.CorrectLevel.M : 2,
+                        });
+                    }
+                }
+            }
         }
 
         function closeOrderSuccessModal() {
@@ -2384,13 +2870,32 @@
             modal.classList.remove('flex');
         }
 
-        function startKasirCameraScanner() {
+        function checkKasirCameraEnvironment() {
+            const warningEl = document.getElementById('kasirCameraHttpWarning');
+            const originCodeEl = document.getElementById('kasirCurrentOriginCode');
+            if (!warningEl || !window.NucomuBarcode) return;
+
+            const support = window.NucomuBarcode.checkCameraSupport();
+            if (originCodeEl) originCodeEl.textContent = support.origin || window.location.origin;
+            warningEl.classList.toggle('hidden', support.supported);
+        }
+
+        async function startKasirCameraScanner() {
             const placeholder = document.getElementById('kasirQrPlaceholder');
             const stopBtn = document.getElementById('btnStopCameraScanner');
             const badge = document.getElementById('cameraScannerBadge');
 
-            if (typeof Html5Qrcode === 'undefined') {
-                showKasirToast('Kamera belum siap.');
+            checkKasirCameraEnvironment();
+
+            if (!window.NucomuBarcode) {
+                showKasirToast('Scanner belum siap.');
+                return;
+            }
+
+            const support = window.NucomuBarcode.checkCameraSupport();
+            if (!support.supported) {
+                if (badge) badge.textContent = 'Butuh HTTPS';
+                showKasirToast('Kamera live butuh HTTPS/localhost. Gunakan Foto/Kamera HP atau alat scanner USB.');
                 return;
             }
 
@@ -2398,24 +2903,47 @@
             if (stopBtn) stopBtn.classList.remove('hidden');
             if (badge) badge.textContent = 'Aktif';
 
-            KASIR_STATE.html5QrScanner = new Html5Qrcode('kasirQrReader');
-            KASIR_STATE.scannerRunning = true;
-
-            KASIR_STATE.html5QrScanner.start(
-                { facingMode: 'environment' },
-                { fps: 10, qrbox: { width: 220, height: 220 } },
-                (decodedText) => {
-                    stopKasirCameraScanner();
-                    lookupKasirOrderCode(decodedText);
-                },
-                () => {}
-            ).catch(() => {
+            try {
+                KASIR_STATE.html5QrScanner = await window.NucomuBarcode.startSmartCamera(
+                    'kasirQrReader',
+                    (decodedText) => {
+                        stopKasirCameraScanner();
+                        const clean = window.NucomuBarcode.extractOrderCode(decodedText);
+                        const inputEl = document.getElementById('manualOrderCodeInput');
+                        if (inputEl) inputEl.value = clean;
+                        lookupKasirOrderCode(clean);
+                    }
+                );
+                KASIR_STATE.scannerRunning = true;
+            } catch (err) {
                 KASIR_STATE.scannerRunning = false;
                 if (placeholder) placeholder.classList.remove('hidden');
                 if (stopBtn) stopBtn.classList.add('hidden');
                 if (badge) badge.textContent = 'Gagal';
-                showKasirToast('Izinkan akses kamera atau ketik kode manual.');
-            });
+                showKasirToast(err?.message || 'Izinkan akses kamera, gunakan Foto/Kamera HP, atau alat scanner.');
+            }
+        }
+
+        async function handleKasirPhotoScan(inputEl) {
+            const file = inputEl?.files?.[0];
+            if (!file) return;
+
+            const badge = document.getElementById('cameraScannerBadge');
+            if (badge) badge.textContent = 'Membaca...';
+
+            try {
+                const decoded = await window.NucomuBarcode.scanImageFile('kasirQrFileReaderHidden', file);
+                const cleanCode = window.NucomuBarcode.extractOrderCode(decoded);
+                const codeInput = document.getElementById('manualOrderCodeInput');
+                if (codeInput) codeInput.value = cleanCode;
+                if (badge) badge.textContent = 'Terdeteksi';
+                lookupKasirOrderCode(cleanCode);
+            } catch (err) {
+                if (badge) badge.textContent = 'Siaga';
+                showKasirToast('Barcode / QR tidak terbaca pada foto. Pastikan gambar jelas & terang.');
+            } finally {
+                inputEl.value = '';
+            }
         }
 
         function stopKasirCameraScanner() {
@@ -2435,8 +2963,11 @@
 
         function handleManualQrLookup(e) {
             e.preventDefault();
-            const val = document.getElementById('manualOrderCodeInput')?.value || '';
-            lookupKasirOrderCode(val);
+            const inputEl = document.getElementById('manualOrderCodeInput');
+            const rawVal = inputEl?.value || '';
+            const clean = window.NucomuBarcode ? window.NucomuBarcode.extractOrderCode(rawVal) : rawVal.trim();
+            if (inputEl && clean) inputEl.value = clean;
+            lookupKasirOrderCode(clean);
         }
 
         async function lookupKasirOrderCode(rawCode) {
@@ -2472,13 +3003,24 @@
                 `).join('');
 
                 const isPaid = o.payment_status === 'paid';
+                const ch = o.order_channel || 'direct';
+                let channelBadgeHtml = `<span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-md bg-canvas text-ink border border-line"><i class="fa-solid fa-barcode text-[11px] text-forest"></i><span>Di Tempat (Barcode)</span></span>`;
+                if (ch === 'zendo') {
+                    channelBadgeHtml = `<span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200"><img src="${KASIR_CHANNEL_ASSETS.zendo.logo}" alt="Zendo" class="w-4 h-4 rounded-full object-cover"><span>Zendo</span></span>`;
+                } else if (ch === 'grab') {
+                    channelBadgeHtml = `<span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200"><img src="${KASIR_CHANNEL_ASSETS.grab.logo}" alt="GrabFood" class="w-4 h-4 object-contain"><span>GrabFood</span></span>`;
+                }
+
                 container.innerHTML = `
                     <div class="space-y-4">
                         <div class="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-line">
                             <div>
-                                <span class="text-xs font-bold px-2.5 py-1 rounded-md ${isPaid ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink'}">
-                                    ${isPaid ? 'LUNAS' : 'BELUM BAYAR'} (${escapeKasirHtml(o.status_label)})
-                                </span>
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <span class="text-xs font-bold px-2.5 py-1 rounded-md ${isPaid ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink'}">
+                                        ${isPaid ? 'LUNAS' : 'BELUM BAYAR'} (${escapeKasirHtml(o.status_label)})
+                                    </span>
+                                    ${channelBadgeHtml}
+                                </div>
                                 <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#${escapeKasirHtml(o.code)}</h3>
                                 <p class="text-xs font-normal text-sub mt-0.5">${escapeKasirHtml(o.customer_name || 'Pelanggan Kasir')} • ${o.order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang'}</p>
                             </div>
@@ -2588,6 +3130,9 @@
                             applyStockToDom(Number(item.id), Number(item.stock), Boolean(item.is_available));
                         });
                     }
+                    if (Array.isArray(data.recent_orders)) {
+                        renderSyncedKasirOrders(data.recent_orders);
+                    }
                     if (showNotification) {
                         showKasirToast('Data kasir tersinkron');
                     }
@@ -2615,27 +3160,177 @@
             syncKasirWithDatabase(false);
         });
 
+        function renderSyncedKasirOrders(orders) {
+            const container = document.getElementById('kasirOrdersGridContainer');
+            if (!container) return;
+
+            let countDirect = 0;
+            let countZendo = 0;
+            let countGrab = 0;
+            orders.forEach(o => {
+                const ch = o.order_channel || 'direct';
+                if (ch === 'zendo') countZendo++;
+                else if (ch === 'grab') countGrab++;
+                else countDirect++;
+            });
+
+            const cAll = document.getElementById('kasirChannelCount-all');
+            const cDir = document.getElementById('kasirChannelCount-direct');
+            const cZen = document.getElementById('kasirChannelCount-zendo');
+            const cGrb = document.getElementById('kasirChannelCount-grab');
+            if (cAll) cAll.textContent = String(orders.length);
+            if (cDir) cDir.textContent = String(countDirect);
+            if (cZen) cZen.textContent = String(countZendo);
+            if (cGrb) cGrb.textContent = String(countGrab);
+
+            if (orders.length === 0) {
+                container.innerHTML = `<div class="col-span-full bg-white border border-line rounded-xl p-12 text-center"><p class="text-sm font-bold text-ink">Belum ada pesanan</p></div>`;
+                return;
+            }
+
+            container.innerHTML = orders.map(ord => {
+                const ch = ord.order_channel || 'direct';
+                const isPaid = ord.payment_status === 'paid';
+                let channelChip = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-canvas text-sub border border-line text-[10.5px] font-bold"><i class="fa-solid fa-barcode text-[10px] text-forest"></i><span>Di Tempat</span></span>`;
+                if (ch === 'zendo') {
+                    channelChip = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold"><img src="${KASIR_CHANNEL_ASSETS.zendo.logo}" alt="Zendo" class="w-3.5 h-3.5 rounded-full object-cover"><span>Zendo</span></span>`;
+                } else if (ch === 'grab') {
+                    channelChip = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10.5px] font-bold"><img src="${KASIR_CHANNEL_ASSETS.grab.logo}" alt="GrabFood" class="w-3.5 h-3.5 object-contain"><span>GrabFood</span></span>`;
+                }
+
+                const itemsHtml = (ord.items || []).map(it => `
+                    <div class="flex items-center justify-between text-ink">
+                        <span class="pr-2 font-normal">${escapeKasirHtml(it.menu_name)} <strong class="font-bold tabular-nums">x${it.qty}</strong></span>
+                        <span class="font-bold tabular-nums shrink-0">${formatRupiah(it.line_total)}</span>
+                    </div>
+                `).join('');
+
+                const searchStr = `${ord.code} ${ord.customer_name || ''} ${ord.channel_label || ''}`.toLowerCase();
+
+                return `
+                    <div
+                        class="kasir-order-card bg-white border border-line rounded-xl p-4 flex flex-col justify-between gap-4"
+                        data-order-status="${escapeKasirHtml(ord.status)}"
+                        data-order-channel="${escapeKasirHtml(ch)}"
+                        data-order-search="${escapeKasirHtml(searchStr)}"
+                    >
+                        <div>
+                            <div class="flex items-start justify-between gap-2 pb-3 border-b border-line">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <span class="text-xs font-bold text-ink tabular-nums">#${escapeKasirHtml(ord.code)}</span>
+                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-md ${isPaid ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink'}">${isPaid ? 'Lunas' : 'Belum Bayar'}</span>
+                                        ${channelChip}
+                                    </div>
+                                    <p class="text-xs font-bold text-ink mt-1.5">
+                                        ${escapeKasirHtml(ord.customer_name || 'Pelanggan Kasir')}
+                                        <span class="font-normal text-sub">• ${ord.order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang'}</span>
+                                    </p>
+                                </div>
+                                <span id="orderCardStatusBadge-${ord.id}" class="text-xs font-normal px-2.5 py-1 rounded-lg bg-canvas text-ink shrink-0">${escapeKasirHtml(ord.status_label)}</span>
+                            </div>
+                            <div class="py-3 space-y-1.5 max-h-36 overflow-y-auto text-xs">${itemsHtml}</div>
+                        </div>
+                        <div class="pt-3 border-t border-line space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-normal text-sub tabular-nums">${escapeKasirHtml(ord.created_at_display || ord.created_at_time || '')}</span>
+                                <span class="text-sm font-bold text-ink tabular-nums">${formatRupiah(ord.total)}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <select onchange="updateKasirOrderStatus(${ord.id}, this.value, 'paid')" class="flex-1 min-h-[44px] bg-canvas border border-line rounded-xl px-3 py-2 text-xs font-bold text-ink focus:outline-none focus:border-forest cursor-pointer">
+                                    <option value="pending" ${ord.status === 'pending' ? 'selected' : ''}>Status: Pending</option>
+                                    <option value="processing" ${ord.status === 'processing' ? 'selected' : ''}>Status: Diproses</option>
+                                    <option value="ready" ${ord.status === 'ready' ? 'selected' : ''}>Status: Siap Saji</option>
+                                    <option value="completed" ${ord.status === 'completed' ? 'selected' : ''}>Status: Selesai</option>
+                                    <option value="cancelled" ${ord.status === 'cancelled' ? 'selected' : ''}>Status: Batal</option>
+                                </select>
+                                <a href="${ord.receipt_url}" target="_blank" class="min-h-[44px] px-4 rounded-xl bg-forest text-white text-xs font-bold flex items-center">Struk</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            applyKasirOrderFilters();
+        }
+
+        function filterKasirOrderChannel(channel) {
+            KASIR_STATE.activeOrderChannelFilter = channel || 'all';
+            document.querySelectorAll('.kasir-ord-channel-btn').forEach(btn => {
+                const key = btn.getAttribute('data-ord-channel-btn');
+                const active = key === KASIR_STATE.activeOrderChannelFilter;
+                if (key === 'all') {
+                    btn.className = active
+                        ? 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-forest text-white border-forest'
+                        : 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-forest';
+                } else if (key === 'zendo') {
+                    btn.className = active
+                        ? 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-rose-50 text-ink border-rose-500 ring-1 ring-rose-300'
+                        : 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-rose-400';
+                } else if (key === 'grab') {
+                    btn.className = active
+                        ? 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-emerald-50 text-ink border-[#00B14F] ring-1 ring-emerald-300'
+                        : 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-emerald-500';
+                } else {
+                    btn.className = active
+                        ? 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-forest-soft text-ink border-forest ring-1 ring-forest/30'
+                        : 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-forest';
+                }
+            });
+            applyKasirOrderFilters();
+        }
+
         function filterKasirOrderStatus(status) {
+            KASIR_STATE.activeOrderStatusFilter = status || 'all';
             document.querySelectorAll('.kasir-ord-filter').forEach(btn => {
                 const st = btn.getAttribute('data-ord-filter');
-                btn.className = st === status
+                btn.className = st === KASIR_STATE.activeOrderStatusFilter
                     ? 'kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-bold bg-forest text-white cursor-pointer shrink-0'
                     : 'kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0';
             });
-
-            document.querySelectorAll('.kasir-order-card').forEach(card => {
-                const st = card.getAttribute('data-order-status');
-                card.classList.toggle('hidden', st !== status);
-            });
+            applyKasirOrderFilters();
         }
 
         function searchKasirOrderRows(q) {
-            const query = (q || '').toLowerCase().trim();
+            KASIR_STATE.orderSearchQuery = (q || '').toLowerCase().trim();
+            applyKasirOrderFilters();
+        }
+
+        function applyKasirOrderFilters() {
+            const channelFilter = KASIR_STATE.activeOrderChannelFilter || 'all';
+            const statusFilter = KASIR_STATE.activeOrderStatusFilter || 'all';
+            const query = KASIR_STATE.orderSearchQuery || '';
+
             document.querySelectorAll('.kasir-order-card').forEach(card => {
+                const st = card.getAttribute('data-order-status') || '';
+                const ch = card.getAttribute('data-order-channel') || 'direct';
                 const text = card.getAttribute('data-order-search') || '';
-                card.classList.toggle('hidden', query !== '' && !text.includes(query));
+
+                const matchChannel = channelFilter === 'all' || ch === channelFilter;
+                const matchStatus = statusFilter === 'all' || st === statusFilter;
+                const matchSearch = query === '' || text.includes(query);
+
+                card.classList.toggle('hidden', !(matchChannel && matchStatus && matchSearch));
             });
         }
+
+        // Attach Global USB / Bluetooth Hardware Barcode Scanner Listener
+        document.addEventListener('DOMContentLoaded', () => {
+            checkKasirCameraEnvironment();
+            if (window.NucomuBarcode) {
+                window.NucomuBarcode.attachHardwareScanner({
+                    getInput: () => document.getElementById('manualOrderCodeInput'),
+                    onScan: (cleanCode) => {
+                        if (KASIR_STATE.activeMainTab !== 'scan') {
+                            switchKasirMainTab('scan');
+                        }
+                        const inputEl = document.getElementById('manualOrderCodeInput');
+                        if (inputEl) inputEl.value = cleanCode;
+                        lookupKasirOrderCode(cleanCode);
+                    },
+                });
+            }
+        });
 
         function showKasirToast(message) {
             const toast = document.getElementById('kasirToast');

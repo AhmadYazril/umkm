@@ -1,4 +1,8 @@
 @php
+    $navBrand = $brand ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::resolveBrandSettings() : config('nucomu.brand', []));
+    $navContact = $contact ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::getContactSettings() : []);
+    $navLogoUrl = !empty($navBrand['has_custom_logo']) ? $navBrand['logo_url'] : asset('images/nucomu/nucomu_logo_brand.png');
+    $navBrandName = $navBrand['name'] ?? config('nucomu.brand.name', 'Nucomu Cafe');
     $navTxSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
     $isAnyOrderModeActive = (bool) ($navTxSettings['is_any_mode_active'] ?? true);
     $isHomeWithHero = request()->routeIs('home') || request()->is('/');
@@ -22,9 +26,9 @@
     <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 h-16 sm:h-20 flex items-center justify-between">
         
         <!-- Official Brand Logo & Wordmark (Far Left) -->
-        <a href="{{ route('home') }}#home" class="flex items-center space-x-3 group" aria-label="Nucomu Cafe">
-            <img src="{{ asset('images/nucomu/nucomu_logo_brand.png') }}" 
-                 alt="NUCOMU CAFE" 
+        <a href="{{ route('home') }}#home" class="flex items-center space-x-3 group" aria-label="{{ $navBrandName }}">
+            <img src="{{ $navLogoUrl }}" 
+                 alt="{{ strtoupper($navBrandName) }}" 
                  id="navbar-brand-logo"
                  class="h-6 sm:h-7 md:h-8 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
         </a>
@@ -100,8 +104,8 @@
             <!-- Drawer Header -->
             <div class="flex items-center justify-between pb-4 border-b border-white/10">
                 <div class="flex items-center gap-2.5">
-                    <img src="{{ asset('images/nucomu/nucomu_logo_brand.png') }}" 
-                         alt="NUCOMU CAFE" 
+                    <img src="{{ $navLogoUrl }}" 
+                         alt="{{ strtoupper($navBrandName) }}" 
                          class="h-6 w-auto object-contain brightness-0 invert">
                 </div>
                 <button onclick="toggleMobileDrawer()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 text-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95" aria-label="Tutup Menu">
@@ -170,7 +174,7 @@
             </button>
             <div class="pt-1 text-center text-[11px] text-white/50 font-medium flex items-center justify-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>{{ config('nucomu.contact.hours') }}</span>
+                <span>{{ $navContact['hours'] ?? config('nucomu.contact.hours') }}</span>
             </div>
         </div>
     </div>

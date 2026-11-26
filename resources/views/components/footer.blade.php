@@ -1,6 +1,16 @@
 <!-- GLOBAL FOOTER -->
 @php
+    $brand = $brand ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::resolveBrandSettings() : config('nucomu.brand', []));
     $contact = $contact ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::getContactSettings() : []);
+    $operatingHours = $operatingHours ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::getOperatingHoursSchedule() : [
+        'days' => [],
+        'groups' => [
+            ['label' => 'Senin – Sabtu', 'hours' => '11:00 – 21:00 WIB', 'is_closed' => false],
+            ['label' => 'Minggu', 'hours' => '11:00 – 22:00 WIB', 'is_closed' => false],
+        ],
+        'is_open' => true,
+        'status_text_html' => 'Buka sekarang &bull; tutup 21:00 WIB',
+    ]);
     $footerAddress = $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Kec. Kedungwaru, Kabupaten Tulungagung, Jawa Timur 66221');
     $footerWaClean = $contact['whatsapp_clean'] ?? config('nucomu.contact.whatsapp_number', '6281234567890');
     $footerWaDisplay = $contact['whatsapp_display'] ?? config('nucomu.contact.whatsapp_display', '+62 812-3456-7890');
@@ -10,28 +20,11 @@
     $footerMapsUrl = $contact['maps_url'] ?? config('nucomu.contact.google_maps_url', 'https://maps.google.com/?q=Nucomu+Cafe+Tulungagung');
     $footerEmail = $contact['email'] ?? null;
     $footerHours = $contact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB');
+    $footerBrandName = $brand['name'] ?? config('nucomu.brand.name', 'Nucomu Cafe');
+    $footerLogoUrl = !empty($brand['has_custom_logo']) ? $brand['logo_url'] : asset('images/nucomu/footer_logo_monochrome.png');
 
-    $nowWib = \Carbon\Carbon::now('Asia/Jakarta');
-    $dayOfWeek = (int) $nowWib->dayOfWeek; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-    $currentMinutes = (int) ($nowWib->hour * 60 + $nowWib->minute);
-
-    // Senin – Sabtu: 11:00 – 21:00 WIB (660 - 1260 mins)
-    // Minggu: 11:00 – 22:00 WIB (660 - 1320 mins)
-    $openMinutes = 11 * 60;
-    $closeMinutes = ($dayOfWeek === 0) ? (22 * 60) : (21 * 60);
-    $closeTimeStr = ($dayOfWeek === 0) ? '22:00' : '21:00';
-
-    $isOpen = ($currentMinutes >= $openMinutes && $currentMinutes < $closeMinutes);
-
-    if ($isOpen) {
-        $statusText = 'Buka sekarang &bull; tutup ' . $closeTimeStr . ' WIB';
-    } else {
-        if ($currentMinutes < $openMinutes) {
-            $statusText = 'Tutup &bull; buka kembali 11:00 WIB';
-        } else {
-            $statusText = 'Tutup &bull; buka besok 11:00 WIB';
-        }
-    }
+    $isOpen = (bool) ($operatingHours['is_open'] ?? true);
+    $statusText = $operatingHours['status_text_html'] ?? 'Buka sekarang &bull; tutup 21:00 WIB';
 @endphp
 
 <footer id="global-footer" 
@@ -60,11 +53,11 @@
                 <div class="flex flex-col items-center text-center md:block md:text-left">
                     <!-- Logo & Brand Header -->
                     <a href="{{ route('home') }}#home" class="inline-flex items-center gap-3 md:gap-3.5 group">
-                        <img src="{{ asset('images/nucomu/footer_logo_monochrome.png') }}" 
-                             alt="Nucomu Cafe Logo" 
+                        <img src="{{ $footerLogoUrl }}" 
+                             alt="{{ $footerBrandName }} Logo" 
                              class="w-11 h-11 md:w-12 md:h-12 rounded-full object-contain shrink-0 group-hover:scale-105 transition-transform duration-300 shadow-sm ring-1 ring-white/15 md:ring-0">
                         <div class="flex flex-col text-left">
-                            <span class="font-sans text-xl md:text-2xl lg:text-[26px] font-bold tracking-tight text-white leading-tight">Nucomu Cafe</span>
+                            <span class="font-sans text-xl md:text-2xl lg:text-[26px] font-bold tracking-tight text-white leading-tight">{{ $footerBrandName }}</span>
                             <span class="text-[9px] uppercase tracking-[0.22em] text-zinc-400 font-semibold mt-0.5">SLOW HOSPITALITY &amp; ROASTERY</span>
                         </div>
                     </a>
@@ -162,40 +155,36 @@
                 </div>
 
                 <!-- Hours Card with Elevation & Row Highlight & Icon Micro-Animations -->
-                <div class="footer-hours-card grid grid-cols-2 divide-x divide-white/10 md:block md:divide-x-0 rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/10 p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
-                    <!-- Row: Senin – Sabtu -->
-                    <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
-                        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
-                            <svg class="footer-sun-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="12" r="4"/>
-                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-                            </svg>
+                @php $footerOpGroups = $operatingHours['groups'] ?? []; @endphp
+                <div class="footer-hours-card {{ count($footerOpGroups) === 2 ? 'grid grid-cols-2 divide-x divide-white/10' : 'block space-y-1' }} md:block md:divide-x-0 rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/10 p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
+                    @foreach($footerOpGroups as $opIdx => $opGroup)
+                        @if($opIdx > 0)
+                            <!-- Dashed Divider (animated dash-offset on card hover, desktop only) -->
+                            <div class="hidden md:block my-2.5 overflow-hidden px-1">
+                                <svg class="footer-dash-line w-full h-[2px] block text-white/20" preserveAspectRatio="none" viewBox="0 0 200 2">
+                                    <line x1="0" y1="1" x2="200" y2="1" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4, 4" />
+                                </svg>
+                            </div>
+                        @endif
+                        <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
+                            <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
+                                @if($opIdx === 0)
+                                    <svg class="footer-sun-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="4"/>
+                                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                                    </svg>
+                                @else
+                                    <svg class="footer-moon-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                    </svg>
+                                @endif
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-[9.5px] md:text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">{{ strtoupper($opGroup['label']) }}</p>
+                                <p class="text-[12px] sm:text-[13px] md:text-sm font-bold text-white tracking-wide mt-0.5 tabular-nums whitespace-nowrap">{{ $opGroup['hours'] }}</p>
+                            </div>
                         </div>
-                        <div class="min-w-0">
-                            <p class="text-[9.5px] md:text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">SENIN – SABTU</p>
-                            <p class="text-[12px] sm:text-[13px] md:text-sm font-bold text-white tracking-wide mt-0.5 tabular-nums whitespace-nowrap">11:00 – 21:00 WIB</p>
-                        </div>
-                    </div>
-
-                    <!-- Dashed Divider (animated dash-offset on card hover, desktop only) -->
-                    <div class="hidden md:block my-2.5 overflow-hidden px-1">
-                        <svg class="footer-dash-line w-full h-[2px] block text-white/20" preserveAspectRatio="none" viewBox="0 0 200 2">
-                            <line x1="0" y1="1" x2="200" y2="1" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4, 4" />
-                        </svg>
-                    </div>
-
-                    <!-- Row: Minggu -->
-                    <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
-                        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
-                            <svg class="footer-moon-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                            </svg>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-[9.5px] md:text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">MINGGU</p>
-                            <p class="text-[12px] sm:text-[13px] md:text-sm font-bold text-white tracking-wide mt-0.5 tabular-nums whitespace-nowrap">11:00 – 22:00 WIB</p>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
 
                 <!-- Dining info -->
@@ -583,7 +572,14 @@
 <!-- FOOTER LOGIC & INTERACTIONS SCRIPT -->
 <script>
     (function() {
-        // --- 1. Real-time Jam Buka Updater (Asia/Jakarta / WIB) ---
+        // --- 1. Real-time Jam Buka Updater (Asia/Jakarta / WIB, Database-backed) ---
+        const footerScheduleDays = @json($operatingHours['days'] ?? []);
+        function parseFooterTimeMins(str, fallback) {
+            if (!str || str.indexOf(':') === -1) return fallback;
+            const parts = str.split(':');
+            return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+        }
+
         function updateNucomuFooterHours() {
             const badgeText = document.getElementById('footer-status-text');
             const badgeGlow = document.getElementById('footer-status-glow');
@@ -591,30 +587,38 @@
             if (!badgeText || !badgeGlow || !badgeDot) return;
 
             try {
-                // Get current time formatted to Asia/Jakarta
                 const now = new Date();
                 const jakartaString = now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' });
                 const jakartaTime = new Date(jakartaString);
 
-                const day = jakartaTime.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-                const hour = jakartaTime.getHours();
-                const minute = jakartaTime.getMinutes();
-                const currentMins = hour * 60 + minute;
+                const day = jakartaTime.getDay();
+                const currentMins = jakartaTime.getHours() * 60 + jakartaTime.getMinutes();
 
-                // Senin – Sabtu: 11:00 – 21:00 WIB
-                // Minggu: 11:00 – 22:00 WIB
-                const openMins = 11 * 60; // 660 mins
-                const closeMins = (day === 0) ? (22 * 60) : (21 * 60);
-                const closeTimeStr = (day === 0) ? '22:00' : '21:00';
+                const todayCfg = footerScheduleDays[day] || { open_time: '11:00', close_time: day === 0 ? '22:00' : '21:00', is_closed: false };
+                const openMins = parseFooterTimeMins(todayCfg.open_time, 11 * 60);
+                const closeMins = parseFooterTimeMins(todayCfg.close_time, (day === 0 ? 22 : 21) * 60);
+                const closeTimeStr = todayCfg.close_time || (day === 0 ? '22:00' : '21:00');
+                const openTimeStr = todayCfg.open_time || '11:00';
 
-                const isOpen = (currentMins >= openMins && currentMins < closeMins);
+                const isOpen = !todayCfg.is_closed && (currentMins >= openMins && currentMins < closeMins);
 
                 if (isOpen) {
                     badgeText.innerHTML = `Buka sekarang &bull; tutup ${closeTimeStr} WIB`;
                     badgeGlow.className = 'absolute inset-0 rounded-full footer-pulse-open';
                     badgeDot.className = 'w-2 h-2 rounded-full relative z-10 bg-white shadow-[0_0_8px_rgba(255,255,255,0.95)]';
                 } else {
-                    const reopenStr = (currentMins < openMins) ? 'buka kembali 11:00 WIB' : 'buka besok 11:00 WIB';
+                    let reopenStr = `buka kembali ${openTimeStr} WIB`;
+                    if (todayCfg.is_closed || currentMins >= closeMins) {
+                        for (let offset = 1; offset <= 7; offset++) {
+                            const nextCfg = footerScheduleDays[(day + offset) % 7];
+                            if (nextCfg && !nextCfg.is_closed) {
+                                reopenStr = offset === 1
+                                    ? `buka besok ${nextCfg.open_time || '11:00'} WIB`
+                                    : `buka ${nextCfg.day_name || ''} ${nextCfg.open_time || '11:00'} WIB`;
+                                break;
+                            }
+                        }
+                    }
                     badgeText.innerHTML = `Tutup &bull; ${reopenStr}`;
                     badgeGlow.className = 'absolute inset-0 rounded-full footer-pulse-closed';
                     badgeDot.className = 'w-2 h-2 rounded-full relative z-10 bg-zinc-400';

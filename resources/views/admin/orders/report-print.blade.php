@@ -258,7 +258,7 @@
             <div class="metric-card">
                 <span class="metric-label">Metode &amp; Layanan</span>
                 <div class="metric-val" style="font-size: 12px;">Tunai: {{ $summary['cash_count'] ?? 0 }} | QRIS: {{ $summary['qris_count'] ?? 0 }}</div>
-                <div class="metric-note">Di Cafe: {{ $summary['dine_in_count'] ?? 0 }} | Zendo: {{ ($summary['zendo_tracking_count'] ?? 0) + ($summary['zendo_chat_count'] ?? 0) }}</div>
+                <div class="metric-note">Di Tempat: {{ $summary['dine_in_count'] ?? 0 }} | Zendo: {{ $summary['zendo_count'] ?? (($summary['zendo_tracking_count'] ?? 0) + ($summary['zendo_chat_count'] ?? 0)) }} | Grab: {{ $summary['grab_count'] ?? 0 }}</div>
             </div>
         </div>
 

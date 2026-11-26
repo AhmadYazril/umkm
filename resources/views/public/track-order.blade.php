@@ -32,7 +32,7 @@
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-zinc-800 pb-6 gap-4">
                     <div>
                         <span class="text-xs text-zinc-500 uppercase tracking-widest font-mono">Kode Pesanan</span>
-                        <h2 class="text-2xl font-black text-white font-mono">{ $order->code }</h2>
+                        <h2 class="text-2xl font-black text-white font-mono">{{ $order->code }}</h2>
                         <p class="text-xs text-zinc-400 mt-1">Pemesan: {{ $order->customer_name }} ({{ $order->customer_phone }})</p>
                     </div>
 
@@ -44,6 +44,10 @@
                         @elseif($order->status === 'processing')
                             <span class="inline-flex items-center px-4 py-2 rounded-full bg-blue-950 text-blue-400 border border-blue-800 text-xs font-bold uppercase tracking-wider">
                                 Sedang Diproses Barista / Dapur
+                            </span>
+                        @elseif($order->status === 'ready')
+                            <span class="inline-flex items-center px-4 py-2 rounded-full bg-indigo-950 text-indigo-300 border border-indigo-700 text-xs font-bold uppercase tracking-wider">
+                                Siap Diambil / Disajikan
                             </span>
                         @elseif($order->status === 'completed')
                             <span class="inline-flex items-center px-4 py-2 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs font-bold uppercase tracking-wider">
@@ -63,7 +67,7 @@
                         <div class="grid grid-cols-3 gap-2 relative">
                             {{-- Step 1 --}}
                             <div class="text-center space-y-2">
-                                <div class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold text-xs transition-all {{ in_array($order->status, ['pending', 'processing', 'completed']) ? 'bg-white text-zinc-950 shadow-lg shadow-white/20' : 'bg-zinc-800 text-zinc-500' }}">
+                                <div class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold text-xs transition-all {{ in_array($order->status, ['pending', 'processing', 'ready', 'completed']) ? 'bg-white text-zinc-950 shadow-lg shadow-white/20' : 'bg-zinc-800 text-zinc-500' }}">
                                     1
                                 </div>
                                 <span class="block text-xs font-bold text-white">Diterima</span>
@@ -72,7 +76,7 @@
 
                             {{-- Step 2 --}}
                             <div class="text-center space-y-2">
-                                <div class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold text-xs transition-all {{ in_array($order->status, ['processing', 'completed']) ? 'bg-white text-zinc-950 shadow-lg shadow-white/20' : 'bg-zinc-800 text-zinc-500' }}">
+                                <div class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold text-xs transition-all {{ in_array($order->status, ['processing', 'ready', 'completed']) ? 'bg-white text-zinc-950 shadow-lg shadow-white/20' : 'bg-zinc-800 text-zinc-500' }}">
                                     2
                                 </div>
                                 <span class="block text-xs font-bold text-white">Diproses</span>
@@ -81,10 +85,10 @@
 
                             {{-- Step 3 --}}
                             <div class="text-center space-y-2">
-                                <div class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold text-xs transition-all {{ $order->status === 'completed' ? 'bg-emerald-400 text-zinc-950 shadow-lg shadow-emerald-400/20' : 'bg-zinc-800 text-zinc-500' }}">
+                                <div class="w-10 h-10 mx-auto rounded-full flex items-center justify-center font-bold text-xs transition-all {{ in_array($order->status, ['ready', 'completed']) ? 'bg-emerald-400 text-zinc-950 shadow-lg shadow-emerald-400/20' : 'bg-zinc-800 text-zinc-500' }}">
                                     3
                                 </div>
-                                <span class="block text-xs font-bold text-white">Selesai</span>
+                                <span class="block text-xs font-bold text-white">{{ $order->status === 'ready' ? 'Siap Diambil' : 'Selesai' }}</span>
                                 <span class="block text-[10px] text-zinc-500">Siap dinikmati</span>
                             </div>
                         </div>

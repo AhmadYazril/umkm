@@ -90,14 +90,18 @@
     </header>
 
     {{-- HERO --}}
+    @php
+        $nucomuContact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
+        $nucomuBrand = $brand ?? \App\Http\Controllers\NucomuController::resolveBrandSettings();
+    @endphp
     <section class="pt-10 pb-6 px-6 text-center relative z-10">
         <div class="max-w-4xl mx-auto flex flex-col items-center">
             <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E5E5E5] text-[11px] font-semibold text-[#1C1C1C] shadow-2xs font-body mb-3">
-                <span class="w-2 h-2 rounded-full bg-[#1C1C1C] animate-pulse"></span> Open Daily: 08:00 - 23:00 WIB
+                <span class="w-2 h-2 rounded-full bg-[#1C1C1C] animate-pulse"></span> {{ $nucomuContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}
             </div>
             <h1 class="text-3xl sm:text-5xl font-bold tracking-tight leading-tight text-[#1C1C1C] font-editorial mx-auto">
                 Suasana, Rasa, &amp; 
-                <span>Cerita Nucomu Cafe</span>
+                <span>Cerita {{ $nucomuBrand['name'] ?? 'Nucomu Cafe' }}</span>
             </h1>
             <p class="text-[#666666] text-xs sm:text-sm font-body max-w-3xl mx-auto mt-3.5 leading-relaxed">Nikmati momen harian dan ulasan pengunjung yang berganti otomatis.</p>
         </div>
@@ -252,6 +256,7 @@
         // ============================================
         // DATA FROM SERVER (PHP → JS)
         // ============================================
+        const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80';
         const stories = @json($stories);
         const reviews = @json($reviews);
 

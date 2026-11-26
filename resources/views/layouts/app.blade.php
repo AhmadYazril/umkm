@@ -1,3 +1,7 @@
+@php
+    $layoutBrand = $brand ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::resolveBrandSettings() : config('nucomu.brand', []));
+    $layoutBrandName = $layoutBrand['name'] ?? config('nucomu.brand.name', 'Nucomu Cafe');
+@endphp
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
@@ -7,8 +11,11 @@
     <meta name="theme-color" content="#0C0C0C">
     <meta name="color-scheme" content="dark">
     <style>:root{color-scheme:dark;}html,body{background-color:#0C0C0C;color:#F5F5F5;}</style>
-    <title>@yield('title', 'Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
-    <meta name="description" content="@yield('meta_description', 'Nucomu Cafe — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
+    <title>@yield('title', $layoutBrandName . ' — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
+    <meta name="description" content="@yield('meta_description', $layoutBrandName . ' — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
+    @if(!empty($layoutBrand['favicon_url']))
+        <link rel="icon" href="{{ $layoutBrand['favicon_url'] }}">
+    @endif
 
     <!-- Anti-flicker Early State Resolver for Nucomu Opening Intro (Main Page Only) -->
     @if(request()->routeIs('home') || request()->is('/'))
@@ -136,6 +143,7 @@
         window.NUCOMU_WA_NUMBER = "{{ $globalContact['whatsapp_clean'] ?? config('nucomu.contact.whatsapp_number', '6281234567890') }}";
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+    <script src="{{ asset('js/nucomu-barcode.js') }}" defer></script>
     <script>
         window.__SERVER_UPLOAD_LIMITS__ = {
             uploadMaxBytes: {{ \App\Support\FileUploadHelper::getServerUploadLimits()['upload_max_filesize_bytes'] }},

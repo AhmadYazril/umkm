@@ -21,7 +21,7 @@ class OrderController extends Controller
         $tables = Table::where('is_active', true)->get();
         $total = collect($cart)->sum('line_total');
 
-        return view('public.checkout', compact('cart', 'total', 'tables'));
+        return view('public.cart', compact('cart', 'total', 'tables'));
     }
 
     public function store(Request $request)
@@ -45,10 +45,14 @@ class OrderController extends Controller
 
         try {
             $order = DB::transaction(function () use ($request, $cart, $subtotal) {
-                // Generate kode pesanan
+                // Generate kode pesanan unik
                 $date = Carbon::now()->format('Ymd');
                 $count = Order::whereDate('created_at', today())->count() + 1;
-                $code = 'NCM-'.$date.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
+                while (Order::where('code', $code)->exists()) {
+                    $count++;
+                    $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
+                }
 
                 $order = Order::create([
                     'code' => $code,

@@ -19,8 +19,8 @@
             {{-- Image & Badges --}}
             <div class="space-y-4">
                 <div class="relative rounded-2xl overflow-hidden bg-zinc-950 aspect-square border border-zinc-800/80 flex items-center justify-center">
-                    @if($menu->image && file_exists(public_path('storage/' . $menu->image)))
-                        <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
+                    @if($menu->image)
+                        <img src="{{ $menu->image_url }}" alt="{{ $menu->name }}" class="w-full h-full object-cover">
                     @else
                         <div class="flex flex-col items-center justify-center text-zinc-600 p-6 text-center">
                             <svg class="w-16 h-16 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -83,7 +83,7 @@
                                 <span class="font-bold text-ink-black text-sm block">{{ $event->title }}</span>
                                 <span class="text-[10px] font-mono text-charcoal font-semibold block mt-0.5">
                                     <i class="fa-regular fa-calendar mr-1"></i>
-                                    {{ date('d F Y', strtotime($event->date)) }}
+                                    {{ $event->date ? \Carbon\Carbon::parse($event->date)->format('d F Y') : 'Jadwal Fleksibel' }}
                                 </span>
                             </td>
 

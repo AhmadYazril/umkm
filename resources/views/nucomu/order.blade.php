@@ -112,9 +112,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 relative z-10 pb-28 lg:pb-12">
 
         {{-- HERO --}}
+        @php
+            $orderPageContact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
+        @endphp
         <div class="text-center mb-6 sm:mb-8">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-semibold text-goldAccent mb-2.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Buka Sekarang · 08:00 - 23:00
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> {{ $orderPageContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}
             </div>
             <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">Pilih <span class="text-goldAccent">Menu</span> & Proses Transaksi</h1>
             <p class="text-gray-400 text-xs sm:text-sm max-w-2xl mx-auto" id="orderHeroSubtitle">
@@ -191,9 +194,21 @@
                                         $mVideo = 'videos/kopsu.mp4';
                                         $fallbackPoster = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCPqLrA-TY5mFKhRtn4JKGIrRcBH3BdS1fNJjmW2YLU-LfY2vZYIA_IREh3dxqIRd_3_6MPxGC-J7zRVl8pKRzlzudFwVSwuU9vphdP0N_CE1PyBfm3Du_d5hJkNoLQixpClSDb4DslruxOf4KXQRbVYsb7BsgAoHgevN1ubGxFM6t1k9fceENXwk2soL3QsW9DfXM101g70CDkDFHiMpgGjdyd2NpQBTUZONVX29AZoUp8LvPw3fbk';
                                     }
-                                    $posterImg = ($menu->image && file_exists(public_path('storage/' . $menu->image))) 
-                                        ? asset('storage/' . $menu->image) 
-                                        : (($menu->image && (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://'))) ? $menu->image : $fallbackPoster);
+                                    $resolvedMenuImg = null;
+                                    if (! empty($menu->image)) {
+                                        if ($menu instanceof \App\Models\Menu) {
+                                            $resolvedMenuImg = $menu->image_url;
+                                        } elseif (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://')) {
+                                            $resolvedMenuImg = $menu->image;
+                                        } elseif (file_exists(public_path('uploads/menus/' . $menu->image))) {
+                                            $resolvedMenuImg = asset('uploads/menus/' . $menu->image);
+                                        } elseif (file_exists(public_path('storage/' . $menu->image))) {
+                                            $resolvedMenuImg = asset('storage/' . $menu->image);
+                                        } elseif (file_exists(public_path($menu->image))) {
+                                            $resolvedMenuImg = asset($menu->image);
+                                        }
+                                    }
+                                    $posterImg = $resolvedMenuImg ?: $fallbackPoster;
                                 @endphp
 
                                 @if($mVideo)
@@ -202,12 +217,9 @@
                                            poster="{{ $posterImg }}">
                                         <source src="{{ asset($mVideo) }}" type="video/mp4">
                                     </video>
-                                @elseif($menu->image && file_exists(public_path('storage/' . $menu->image)))
-                                    <img src="{{ asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}"
+                                @elseif($resolvedMenuImg)
+                                    <img src="{{ $resolvedMenuImg }}" alt="{{ $menu->name }}"
                                          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
-                                @elseif($menu->image && (str_starts_with($menu->image, 'http://') || str_starts_with($menu->image, 'https://')))
-                                    <img src="{{ $menu->image }}" alt="{{ $menu->name }}"
-                                         class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center text-gray-600">
                                         <i class="fa-solid fa-mug-hot text-4xl opacity-30"></i>

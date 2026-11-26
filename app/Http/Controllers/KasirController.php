@@ -221,6 +221,8 @@ class KasirController extends Controller
     public static function ensureDatabaseSchemaAndSync(): void
     {
         try {
+            Order::ensureChannelColumnsExist();
+
             if (Schema::hasTable('menus') && ! Schema::hasColumn('menus', 'stock')) {
                 Schema::table('menus', function (Blueprint $table) {
                     $table->integer('stock')->default(25)->after('price');
@@ -423,7 +425,7 @@ class KasirController extends Controller
         $pendingOrdersCount = 0;
 
         try {
-            $recentOrders = Order::with(['items', 'table'])->latest()->take(25)->get();
+            $recentOrders = Order::with(['items', 'table'])->latest()->take(60)->get();
             $tables = Table::orderBy('number')->get();
             $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
             $todayRevenue = (int) Order::whereDate('created_at', today())
@@ -482,6 +484,8 @@ class KasirController extends Controller
             'customer_name' => ['nullable', 'string', 'max:100'],
             'customer_phone' => ['nullable', 'string', 'max:30'],
             'order_type' => ['required', 'string', 'in:dine_in,take_away'],
+            'order_channel' => ['nullable', 'string', 'in:direct,zendo,grab'],
+            'barcode_type' => ['nullable', 'string', 'in:qr,barcode'],
             'table_no' => ['nullable', 'string', 'max:50'],
             'payment_method' => ['required', 'string', 'in:cash,qris,transfer'],
             'payment_status' => ['nullable', 'string', 'in:paid,unpaid'],
@@ -496,10 +500,26 @@ class KasirController extends Controller
             'items.*.item_notes' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $customerName = trim((string) ($validated['customer_name'] ?? '')) ?: 'Pelanggan Kasir';
+        $orderChannel = strtolower((string) ($validated['order_channel'] ?? Order::CHANNEL_DIRECT));
+        if (! in_array($orderChannel, [Order::CHANNEL_DIRECT, Order::CHANNEL_ZENDO, Order::CHANNEL_GRAB], true)) {
+            $orderChannel = Order::CHANNEL_DIRECT;
+        }
+
+        // Only direct (Di Tempat) transactions use QR/1D barcodes; Zendo & Grab never use barcodes
+        $barcodeType = $orderChannel === Order::CHANNEL_DIRECT
+            ? (($validated['barcode_type'] ?? Order::BARCODE_QR) === Order::BARCODE_LINEAR ? Order::BARCODE_LINEAR : Order::BARCODE_QR)
+            : null;
+
+        $defaultCustomerName = match ($orderChannel) {
+            Order::CHANNEL_ZENDO => 'Pelanggan Zendo',
+            Order::CHANNEL_GRAB => 'Pelanggan GrabFood',
+            default => 'Pelanggan Kasir',
+        };
+
+        $customerName = trim((string) ($validated['customer_name'] ?? '')) ?: $defaultCustomerName;
         $customerPhone = trim((string) ($validated['customer_phone'] ?? '')) ?: '-';
-        $orderType = $validated['order_type'];
-        $tableNo = trim((string) ($validated['table_no'] ?? ''));
+        $orderType = $orderChannel === Order::CHANNEL_DIRECT ? $validated['order_type'] : 'take_away';
+        $tableNo = $orderChannel === Order::CHANNEL_DIRECT ? trim((string) ($validated['table_no'] ?? '')) : '';
         $paymentMethod = $validated['payment_method'];
         $paymentStatus = $validated['payment_status'] ?? 'paid';
         $rawNotes = trim((string) ($validated['notes'] ?? ''));
@@ -534,7 +554,11 @@ class KasirController extends Controller
         $changeAmount = max(0, $cashReceived - $grandTotal);
 
         $noteParts = [];
-        if ($orderType === 'dine_in' && $tableNo !== '') {
+        if ($orderChannel === Order::CHANNEL_ZENDO) {
+            $noteParts[] = '[KURIR ZENDO] [KASIR ZENDO]';
+        } elseif ($orderChannel === Order::CHANNEL_GRAB) {
+            $noteParts[] = '[GRABFOOD] [KASIR GRAB]';
+        } elseif ($orderType === 'dine_in' && $tableNo !== '') {
             $noteParts[] = "[Nomor Meja: {$tableNo}]";
         } elseif ($orderType === 'take_away') {
             $noteParts[] = '[Bawa Pulang / Take Away]';
@@ -548,6 +572,9 @@ class KasirController extends Controller
             $customerName,
             $customerPhone,
             $orderType,
+            $orderChannel,
+            $barcodeType,
+            $tableNo,
             $storedNotes,
             $subtotal,
             $grandTotal,
@@ -564,18 +591,33 @@ class KasirController extends Controller
                 $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
             }
 
-            $order = Order::create([
+            $orderPayload = [
                 'code' => $code,
                 'customer_name' => $customerName,
                 'customer_phone' => $customerPhone,
                 'order_type' => $orderType,
+                'form_data' => [
+                    'channel' => $orderChannel,
+                    'barcode_type' => $barcodeType,
+                    'source' => 'kasir',
+                    'table_no' => $tableNo,
+                ],
                 'notes' => $storedNotes,
                 'subtotal' => $subtotal,
                 'total' => $grandTotal,
                 'payment_method' => $paymentMethod,
                 'payment_status' => $paymentStatus,
                 'status' => $paymentStatus === 'paid' ? 'processing' : 'pending',
-            ]);
+            ];
+
+            if (Schema::hasColumn('orders', 'order_channel')) {
+                $orderPayload['order_channel'] = $orderChannel;
+            }
+            if (Schema::hasColumn('orders', 'barcode_type')) {
+                $orderPayload['barcode_type'] = $barcodeType;
+            }
+
+            $order = Order::create($orderPayload);
 
             foreach ($normalizedItems as $item) {
                 $menuIdVal = $item['menu_id'];
@@ -614,7 +656,7 @@ class KasirController extends Controller
             }
         }
         $portSuffix = ($port && ! in_array($port, [80, 443], true)) ? ":{$port}" : '';
-        $qrUrl = "{$scheme}://{$host}{$portSuffix}/qr/pesanan/{$order->code}";
+        $qrUrl = $order->uses_barcode ? "{$scheme}://{$host}{$portSuffix}/qr/pesanan/{$order->code}" : null;
 
         return response()->json([
             'success' => true,
@@ -624,6 +666,11 @@ class KasirController extends Controller
                 'code' => $order->code,
                 'customer_name' => $order->customer_name,
                 'order_type' => $order->order_type,
+                'order_channel' => $order->channel,
+                'channel_label' => $order->channel_label,
+                'channel_logo' => $order->channel_logo,
+                'uses_barcode' => $order->uses_barcode,
+                'barcode_type' => $order->effective_barcode_type,
                 'table_no' => $tableNo,
                 'payment_method' => $order->payment_method,
                 'payment_status' => $order->payment_status,
@@ -645,7 +692,13 @@ class KasirController extends Controller
                 ])->values()->all(),
             ],
             'qr_url' => $qrUrl,
-            'slip_url' => route('nucomu.order.slip', ['code' => $order->code, 'method' => 'kasir']),
+            'slip_url' => $order->uses_barcode
+                ? route('nucomu.order.slip', [
+                    'code' => $order->code,
+                    'method' => 'kasir',
+                    'barcode_mode' => $order->effective_barcode_type ?? Order::BARCODE_QR,
+                ])
+                : null,
             'receipt_url' => route('kasir.orders.receipt', $order->id),
             'stocks' => $updatedStocks,
             'stats' => [
@@ -751,17 +804,23 @@ class KasirController extends Controller
                 ->sum('total');
             $pendingOrdersCount = Order::where('status', 'pending')->count();
 
-            $recentOrders = Order::with(['items', 'table'])->latest()->take(25)->get()->map(fn (Order $o) => [
+            $recentOrders = Order::with(['items', 'table'])->latest()->take(60)->get()->map(fn (Order $o) => [
                 'id' => $o->id,
                 'code' => $o->code,
                 'customer_name' => $o->customer_name,
                 'order_type' => $o->order_type,
+                'order_channel' => $o->channel,
+                'channel_label' => $o->channel_label,
+                'channel_logo' => $o->channel_logo,
+                'uses_barcode' => $o->uses_barcode,
+                'barcode_type' => $o->effective_barcode_type,
                 'status' => $o->status,
                 'status_label' => $o->status_label,
                 'payment_method' => $o->payment_method ?? 'cash',
                 'payment_status' => $o->payment_status ?? 'unpaid',
                 'total' => $o->total,
                 'notes' => $o->notes,
+                'created_at_display' => $o->created_at?->format('d M H:i'),
                 'created_at_time' => $o->created_at?->format('H:i'),
                 'receipt_url' => route('kasir.orders.receipt', $o->id),
                 'items' => $o->items->map(fn (OrderItem $i) => [
@@ -833,6 +892,11 @@ class KasirController extends Controller
                     'customer_name' => $order->customer_name,
                     'customer_phone' => $order->customer_phone,
                     'order_type' => $order->order_type,
+                    'order_channel' => $order->channel,
+                    'channel_label' => $order->channel_label,
+                    'channel_logo' => $order->channel_logo,
+                    'uses_barcode' => $order->uses_barcode,
+                    'barcode_type' => $order->effective_barcode_type,
                     'table_number' => $order->table?->number,
                     'status' => $order->status,
                     'status_label' => $order->status_label,
@@ -850,7 +914,7 @@ class KasirController extends Controller
                         'line_total' => $i->line_total,
                     ])->values()->all(),
                 ],
-                'qr_url' => "{$scheme}://{$host}{$portSuffix}/qr/pesanan/{$order->code}",
+                'qr_url' => $order->uses_barcode ? "{$scheme}://{$host}{$portSuffix}/qr/pesanan/{$order->code}" : null,
                 'receipt_url' => route('kasir.orders.receipt', $order->id),
                 'status_url' => route('kasir.orders.status', $order->id),
             ]);

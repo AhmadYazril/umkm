@@ -626,10 +626,12 @@
                     <select name="kind"
                             id="recapKindSelect"
                             class="w-full px-3.5 py-2.5 rounded-xl border border-[#E6E8E4] bg-white text-xs font-semibold text-ink-black focus:outline-none focus:border-neutral-800 transition cursor-pointer">
-                        <option value="all">Semua Jenis Layanan</option>
-                        <option value="dine_in" {{ request('kind') === 'dine_in' ? 'selected' : '' }}>Makan di Cafe / Kasir</option>
+                        <option value="all">Semua Sumber &amp; Layanan</option>
+                        <option value="dine_in" {{ request('kind') === 'dine_in' || request('channel') === 'direct' ? 'selected' : '' }}>Di Tempat (Barcode / Langsung)</option>
+                        <option value="zendo" {{ request('kind') === 'zendo' || request('channel') === 'zendo' ? 'selected' : '' }}>Semua Zendo (Pelacakan + Chat + Kasir)</option>
                         <option value="zendo_tracking" {{ request('kind') === 'zendo_tracking' ? 'selected' : '' }}>Antar via Zendo (Pelacakan)</option>
                         <option value="zendo_chat" {{ request('kind') === 'zendo_chat' ? 'selected' : '' }}>Chat Zendo (WhatsApp)</option>
+                        <option value="grab" {{ request('kind') === 'grab' || request('channel') === 'grab' ? 'selected' : '' }}>GrabFood (Input Kasir)</option>
                     </select>
                 </div>
 
@@ -677,42 +679,136 @@
         </form>
     </div>
 
+    {{-- =========================================================================
+         4 & 5. RIWAYAT TRANSAKSI TERPISAH (Barcode/Langsung, Zendo, GrabFood)
+         Dibungkus id="transaction-history-section" agar mudah dihubungkan dengan toggle hide riwayat transaksi
+         ========================================================================= --}}
+    <div id="transaction-history-section" data-section="transaction-history" class="space-y-4">
+
+    {{-- 4A. Pemisahan 3 Sumber Riwayat Transaksi (Di Tempat/Barcode, Zendo, GrabFood) --}}
+    <div class="bg-white border rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-sm anim-fade-up space-y-3.5" style="border-color: var(--admin-border-card, #E6E8E4);">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+                <h3 class="text-sm sm:text-base font-extrabold flex items-center gap-2 m-0" style="color: var(--admin-text-main, #1B1F1D);">
+                    <i class="fa-solid fa-layer-group text-xs text-[#2F6B4F]"></i>
+                    <span>Riwayat Transaksi Terpisah per Sumber</span>
+                </h3>
+                <p class="text-[11.5px] mt-0.5 m-0" style="color: var(--admin-text-sub, #555D58);">
+                    Pilih kategori di bawah untuk melihat riwayat transaksi <strong>Di Tempat (Barcode)</strong>, <strong>Zendo</strong>, atau <strong>GrabFood</strong> secara terpisah.
+                </p>
+            </div>
+            @if(request('channel') || request('kind'))
+                <a href="{{ route('admin.orders.index', request()->except('channel', 'kind', 'page')) }}"
+                   class="px-3 py-1.5 rounded-xl bg-warm-stone hover:bg-neutral-200 text-ink-black text-xs font-bold transition inline-flex items-center gap-1.5 self-start sm:self-auto">
+                    <i class="fa-solid fa-rotate-left text-[10px]"></i>
+                    <span>Tampilkan Semua ({{ $totalOrders }})</span>
+                </a>
+            @endif
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {{-- Kartu 1: Di Tempat / Barcode (Langsung) --}}
+            <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'direct'])) }}"
+               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'direct' || request('kind') === 'dine_in') ? 'bg-[#FAFDFB] border-[#2F6B4F] ring-2 ring-[#2F6B4F]/20 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-[#2F6B4F]/60' }}">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-11 h-11 rounded-xl bg-[#E6F0EA] text-[#2F6B4F] flex items-center justify-center text-lg shrink-0">
+                        <i class="fa-solid fa-barcode"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Di Tempat (Barcode)</span>
+                        <span class="block text-[10.5px] text-muted-text truncate">Transaksi langsung &bull; QR / Garis</span>
+                        <span class="block text-xs font-mono font-bold text-[#2F6B4F] mt-0.5">Rp {{ number_format($revenueChannelDirect, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-[#E6F0EA] text-[#2F6B4F] font-mono font-extrabold text-sm shrink-0">
+                    {{ number_format($totalChannelDirect, 0, ',', '.') }}
+                </span>
+            </a>
+
+            {{-- Kartu 2: Zendo --}}
+            <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'zendo'])) }}"
+               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'zendo' || in_array(request('kind'), ['zendo', 'zendo_tracking', 'zendo_chat'], true)) ? 'bg-rose-50/70 border-rose-500 ring-2 ring-rose-200 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-rose-400' }}">
+                <div class="flex items-center gap-3 min-w-0">
+                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-11 h-11 rounded-full object-cover border border-rose-200 bg-white shrink-0 shadow-2xs">
+                    <div class="min-w-0">
+                        <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Riwayat Zendo</span>
+                        <span class="block text-[10.5px] text-muted-text truncate">Kurir Zendo &bull; Tanpa Barcode</span>
+                        <span class="block text-xs font-mono font-bold text-rose-700 mt-0.5">Rp {{ number_format($revenueChannelZendo, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-mono font-extrabold text-sm shrink-0">
+                    {{ number_format($totalChannelZendo, 0, ',', '.') }}
+                </span>
+            </a>
+
+            {{-- Kartu 3: GrabFood --}}
+            <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'grab'])) }}"
+               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'grab' || request('kind') === 'grab') ? 'bg-emerald-50/80 border-[#00B14F] ring-2 ring-emerald-200 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-[#00B14F]' }}">
+                <div class="flex items-center gap-3 min-w-0">
+                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="Logo GrabFood" class="w-11 h-11 rounded-xl object-contain border border-emerald-200 bg-white p-1 shrink-0 shadow-2xs">
+                    <div class="min-w-0">
+                        <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Riwayat GrabFood</span>
+                        <span class="block text-[10.5px] text-muted-text truncate">Mitra Grab &bull; Tanpa Barcode</span>
+                        <span class="block text-xs font-mono font-bold text-[#008C3E] mt-0.5">Rp {{ number_format($revenueChannelGrab, 0, ',', '.') }}</span>
+                    </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-xl bg-emerald-50 text-[#008C3E] border border-emerald-200 font-mono font-extrabold text-sm shrink-0">
+                    {{ number_format($totalChannelGrab, 0, ',', '.') }}
+                </span>
+            </a>
+        </div>
+    </div>
+
     {{-- 4. Filter Jenis Pemesanan, Filter Status Tabs & Pencarian --}}
     <div class="space-y-3 anim-fade-up">
 
-        {{-- Baris 1: Filter Berdasarkan Jenis Pemesanan (Semua, Di cafe, Antar Zendo, Chat Zendo) --}}
+        {{-- Baris 1: Filter Berdasarkan Jenis Pemesanan --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border text-xs" style="border-color: var(--admin-border-card, #E6E8E4);">
             <div class="flex items-center gap-2 text-muted-text font-bold uppercase tracking-wider text-[11px] shrink-0">
                 <i class="fa-solid fa-filter text-xs"></i>
-                <span>Jenis Pemesanan:</span>
+                <span>Filter Detail:</span>
             </div>
 
             <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pb-1 sm:pb-0 w-full sm:w-auto">
                 {{-- Semua Jenis --}}
-                <a href="{{ route('admin.orders.index', request()->except('kind', 'page')) }}" 
-                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold {{ !request('kind') ? 'bg-[#1B1F1D] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
-                    Semua Jenis ({{ $totalOrders }})
+                <a href="{{ route('admin.orders.index', request()->except('kind', 'channel', 'page')) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold {{ (!request('kind') && !request('channel')) ? 'bg-[#1B1F1D] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    Semua ({{ $totalOrders }})
                 </a>
 
-                {{-- Di Cafe (Kasir) --}}
-                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['kind' => 'dine_in'])) }}" 
-                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'dine_in' ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
-                    <i class="fa-solid fa-store text-[11px]"></i>
-                    <span>Di Cafe ({{ $totalDineIn }})</span>
+                {{-- Di Tempat (Barcode) --}}
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'direct'])) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ (request('channel') === 'direct' || request('kind') === 'dine_in') ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    <i class="fa-solid fa-barcode text-[11px]"></i>
+                    <span>Di Tempat / Barcode ({{ $totalChannelDirect }})</span>
+                </a>
+
+                {{-- Zendo (Semua) --}}
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'zendo'])) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('channel') === 'zendo' ? 'bg-rose-600 text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-4 h-4 rounded-full object-cover bg-white">
+                    <span>Zendo ({{ $totalChannelZendo }})</span>
                 </a>
 
                 {{-- Antar Zendo (Pelacakan) --}}
-                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['kind' => 'zendo_tracking'])) }}" 
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('channel', 'page'), ['kind' => 'zendo_tracking'])) }}" 
                    class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_tracking' ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
                     <i class="fa-solid fa-map-location-dot text-[11px]"></i>
                     <span>Antar Zendo ({{ $totalZendoTracking }})</span>
                 </a>
 
                 {{-- Chat Zendo (WA) --}}
-                <a href="{{ route('admin.orders.index', array_merge(request()->except('page'), ['kind' => 'zendo_chat'])) }}" 
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('channel', 'page'), ['kind' => 'zendo_chat'])) }}" 
                    class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_chat' ? 'bg-emerald-700 text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
                     <i class="fa-brands fa-whatsapp text-[12px]"></i>
                     <span>Chat Zendo ({{ $totalZendoChat }})</span>
+                </a>
+
+                {{-- GrabFood --}}
+                <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'grab'])) }}" 
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ (request('channel') === 'grab' || request('kind') === 'grab') ? 'bg-[#00B14F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-4 h-4 rounded object-contain bg-white">
+                    <span>GrabFood ({{ $totalChannelGrab }})</span>
                 </a>
             </div>
         </div>
@@ -750,6 +846,9 @@
 
             {{-- Search Input (Preserves current filters) --}}
             <form action="{{ route('admin.orders.index') }}" method="GET" class="relative w-full sm:w-72">
+                @if(request('channel'))
+                    <input type="hidden" name="channel" value="{{ request('channel') }}">
+                @endif
                 @if(request('kind'))
                     <input type="hidden" name="kind" value="{{ request('kind') }}">
                 @endif
@@ -806,17 +905,24 @@
 
                     <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#E6E8E4]/70">
                         <div>
-                            @if($order->kind === 'zendo_tracking')
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
-                                    <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Antar Zendo
+                            @if($order->channel === 'grab')
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-3.5 h-3.5 object-contain rounded bg-white">
+                                    <span>GrabFood</span>
                                 </span>
-                            @elseif($order->kind === 'zendo_chat')
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
-                                    <i class="fa-brands fa-whatsapp text-emerald-600"></i> Chat Zendo
+                            @elseif($order->kind === 'zendo_tracking')
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-bold">
+                                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-3.5 h-3.5 rounded-full object-cover">
+                                    <span>Antar Zendo</span>
+                                </span>
+                            @elseif($order->channel === 'zendo')
+                                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-bold">
+                                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-3.5 h-3.5 rounded-full object-cover">
+                                    <span>{{ $order->kind === 'zendo_kasir' ? 'Zendo (Kasir)' : 'Chat Zendo' }}</span>
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-100 text-charcoal border border-[#E6E8E4] text-[10px] font-bold">
-                                    <i class="fa-solid fa-store text-[#2F6B4F]"></i> {{ $order->order_type === 'take_away' ? 'Take Away' : 'Dine-In' }}
+                                    <i class="fa-solid fa-barcode text-[#2F6B4F]"></i> Di Tempat ({{ $order->order_type === 'take_away' ? 'Take Away' : 'Dine-In' }})
                                 </span>
                             @endif
                         </div>
@@ -892,29 +998,41 @@
                                 @endif
                             </td>
 
-                            {{-- Jenis Transaksi (Terpetakan Akurat) --}}
+                            {{-- Jenis Transaksi (Terpetakan Akurat + Logo Mitra) --}}
                             <td class="px-6 py-4">
-                                @if($order->kind === 'zendo_tracking')
+                                @if($order->channel === 'grab')
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
-                                        <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Antar Zendo (Pelacakan)
+                                        <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-4 h-4 rounded object-contain bg-white">
+                                        <span>GrabFood (Input Kasir)</span>
+                                    </span>
+                                    <span class="text-[10px] text-muted-text font-mono block mt-1">Tanpa Barcode</span>
+                                @elseif($order->kind === 'zendo_tracking')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-bold">
+                                        <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-4 h-4 rounded-full object-cover">
+                                        <span>Antar Zendo (Pelacakan)</span>
                                     </span>
                                     @if($order->delivery_fee > 0)
                                         <span class="text-[10px] text-muted-text font-mono block mt-1">Ongkir: Rp {{ number_format($order->delivery_fee, 0, ',', '.') }}</span>
+                                    @else
+                                        <span class="text-[10px] text-muted-text font-mono block mt-1">Tanpa Barcode</span>
                                     @endif
-                                @elseif($order->kind === 'zendo_chat')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-[10px] font-bold">
-                                        <i class="fa-brands fa-whatsapp text-emerald-600"></i> Chat Zendo (WA)
+                                @elseif($order->channel === 'zendo')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-bold">
+                                        <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-4 h-4 rounded-full object-cover">
+                                        <span>{{ $order->kind === 'zendo_kasir' ? 'Zendo (Input Kasir)' : 'Chat Zendo (WA)' }}</span>
                                     </span>
                                     @if($order->delivery_fee > 0)
                                         <span class="text-[10px] text-muted-text font-mono block mt-1">Ongkir: Rp {{ number_format($order->delivery_fee, 0, ',', '.') }}</span>
+                                    @else
+                                        <span class="text-[10px] text-muted-text font-mono block mt-1">Tanpa Barcode</span>
                                     @endif
                                 @else
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-neutral-100 text-charcoal border border-[#E6E8E4] text-[10px] font-bold">
-                                        <i class="fa-solid fa-store text-[#2F6B4F]"></i> Di Cafe ({{ $order->order_type === 'take_away' ? 'Bawa Pulang' : 'Makan di Tempat' }})
+                                        <i class="fa-solid fa-barcode text-[#2F6B4F]"></i> Di Tempat ({{ $order->order_type === 'take_away' ? 'Bawa Pulang' : 'Makan di Tempat' }})
                                     </span>
-                                    @if($order->table)
-                                        <span class="text-[10px] text-muted-text font-mono block mt-1">Meja #{{ $order->table->number }}</span>
-                                    @endif
+                                    <span class="text-[10px] text-muted-text font-mono block mt-1">
+                                        {{ $order->effective_barcode_type === 'barcode' ? 'Barcode Garis' : 'QR Code' }}@if($order->table) &bull; Meja #{{ $order->table->number }}@endif
+                                    </span>
                                 @endif
                             </td>
 
@@ -1024,6 +1142,8 @@
             @endif
         </div>
     </div>
+
+    </div>{{-- /#transaction-history-section --}}
 
 </div>
 

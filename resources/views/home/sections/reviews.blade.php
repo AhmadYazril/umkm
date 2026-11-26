@@ -601,7 +601,7 @@
 
             <div class="nucomu-reviews-header-right">
                 <div class="nucomu-reviews-header-actions font-body">
-                    <a href="{{ config('nucomu.contact.google_maps_url') }}"
+                    <a href="{{ $contact['maps_url'] ?? config('nucomu.contact.google_maps_url') }}"
                        target="_blank"
                        rel="noopener noreferrer"
                        aria-label="Lihat semua ulasan Nucomu Cafe di Google Maps (buka di tab baru)"

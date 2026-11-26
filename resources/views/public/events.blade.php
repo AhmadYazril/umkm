@@ -21,8 +21,22 @@
                     <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-3xl overflow-hidden hover:border-zinc-700 transition-all flex flex-col justify-between">
                         <div>
                             <div class="h-48 bg-zinc-950 relative overflow-hidden">
-                                @if($event->image && file_exists(public_path('storage/' . $event->image)))
-                                    <img src="{{ asset('storage/' . $event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
+                                @php
+                                    $eventImageUrl = null;
+                                    if (! empty($event->image)) {
+                                        if (str_starts_with($event->image, 'http://') || str_starts_with($event->image, 'https://')) {
+                                            $eventImageUrl = $event->image;
+                                        } elseif (file_exists(public_path('uploads/events/' . $event->image))) {
+                                            $eventImageUrl = asset('uploads/events/' . $event->image);
+                                        } elseif (file_exists(public_path('storage/' . $event->image))) {
+                                            $eventImageUrl = asset('storage/' . $event->image);
+                                        } elseif (file_exists(public_path($event->image))) {
+                                            $eventImageUrl = asset($event->image);
+                                        }
+                                    }
+                                @endphp
+                                @if($eventImageUrl)
+                                    <img src="{{ $eventImageUrl }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full flex flex-col items-center justify-center bg-zinc-900 text-zinc-600 p-4 text-center">
                                         <svg class="w-12 h-12 mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,9 +46,11 @@
                                     </div>
                                 @endif
 
-                                <div class="absolute top-4 left-4 bg-white text-zinc-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
-                                    {{ date('d M Y', strtotime($event->date)) }}
-                                </div>
+                                @if($event->date)
+                                    <div class="absolute top-4 left-4 bg-white text-zinc-950 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                                        {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="p-6">

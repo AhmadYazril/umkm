@@ -297,7 +297,7 @@
                 <p class="text-xs text-zinc-500 dark:text-zinc-400 italic font-semibold">
                     "New, Unforgettable, Comfy, Musings"
                 </p>
-                <a href="{{ route('about') }}" class="btn-primary rounded-full px-7 py-3 text-xs tracking-widest uppercase flex items-center gap-2 group shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                <a href="{{ route('home') }}#about" class="btn-primary rounded-full px-7 py-3 text-xs tracking-widest uppercase flex items-center gap-2 group shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
                     <span>Baca Cerita Selengkapnya</span>
                     <svg class="w-3.5 h-3.5 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>

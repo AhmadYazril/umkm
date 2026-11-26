@@ -1,6 +1,7 @@
 <!-- SECTION 8: CONTACT & LOCATION (MODERN MONOCHROME EDITORIAL EXACT MATCH) -->
 @php
     $contact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
+    $operatingHours = $operatingHours ?? \App\Http\Controllers\NucomuController::getOperatingHoursSchedule();
     $mapsEmbedSrc = !empty($contact['maps_embed']) 
         ? $contact['maps_embed'] 
         : 'https://maps.google.com/maps?q=' . urlencode($contact['address'] ?? 'Nucomu Cafe Plosokandang Kedungwaru Tulungagung') . '&t=&z=16&ie=UTF8&iwloc=&output=embed';
@@ -132,22 +133,20 @@
                         <!-- Status Pill Badge -->
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F5F5F5] border border-[#E5E5E5] text-xs font-medium text-[#1C1C1C] mb-3.5">
                             <span class="w-2 h-2 rounded-full bg-[#1C1C1C] shrink-0"></span>
-                            <span id="contact-section-hours-status">Buka sekarang &middot; tutup 21:00 WIB</span>
+                            <span id="contact-section-hours-status">{!! $operatingHours['status_text_middot'] !!}</span>
                         </div>
 
                         <!-- Schedule Rows -->
                         <div class="space-y-2 font-body text-sm text-[#444444] mb-2.5">
-                            <div class="flex items-center justify-between sm:justify-start sm:gap-8">
-                                <span class="w-28 text-[#666666]">Senin &ndash; Sabtu</span>
-                                <span class="font-bold text-[#1C1C1C]">11:00 &ndash; 21:00 WIB</span>
-                            </div>
-                            <div class="flex items-center justify-between sm:justify-start sm:gap-8">
-                                <span class="w-28 text-[#666666]">Minggu</span>
-                                <span class="font-bold text-[#1C1C1C]">11:00 &ndash; 22:00 WIB</span>
-                            </div>
+                            @foreach($operatingHours['groups'] as $opGroup)
+                                <div class="flex items-center justify-between sm:justify-start sm:gap-8">
+                                    <span class="w-28 text-[#666666]">{{ $opGroup['label'] }}</span>
+                                    <span class="font-bold text-[#1C1C1C]">{{ $opGroup['hours'] }}</span>
+                                </div>
+                            @endforeach
                         </div>
                         <p class="font-body text-xs text-[#8A8A8A]">
-                            {{ config('nucomu.contact.hours_brew', 'Bar kopi & dine-in buka setiap hari.') }}
+                            {{ $contact['hours_brew'] ?? config('nucomu.contact.hours_brew', 'Bar kopi & dine-in buka setiap hari.') }}
                         </p>
                     </div>
 
@@ -298,7 +297,7 @@
                             <svg class="w-4 h-4 text-red-600 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                             </svg>
-                            <span class="font-medium text-[#222222]">Jl. Mayor Sujadi, Plosokandang, Tulungagung</span>
+                            <span class="font-medium text-[#222222]">{{ $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Tulungagung') }}</span>
                         </div>
                         <a href="{{ $mapsDirectUrl }}" 
                            target="_blank" 
@@ -588,26 +587,43 @@
             }
         }
 
-        // Live Operational Hours Calculator
+        // Live Operational Hours Calculator (Database-backed)
         try {
+            const scheduleDays = @json($operatingHours['days']);
+            const parseTimeMins = function(str, fallback) {
+                if (!str || str.indexOf(':') === -1) return fallback;
+                const parts = str.split(':');
+                return (parseInt(parts[0], 10) * 60) + parseInt(parts[1], 10);
+            };
             const now = new Date();
             const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
             const wibDate = new Date(utcTime + (3600000 * 7));
             const day = wibDate.getDay();
-            const hour = wibDate.getHours();
-            const minute = wibDate.getMinutes();
-            const timeDecimal = hour + (minute / 60);
+            const currentMins = (wibDate.getHours() * 60) + wibDate.getMinutes();
 
-            const isSunday = (day === 0);
-            const closingHour = isSunday ? 22 : 21;
-            const isOpen = (timeDecimal >= 11 && timeDecimal < closingHour);
+            const todayCfg = scheduleDays[day] || { open_time: '11:00', close_time: day === 0 ? '22:00' : '21:00', is_closed: false };
+            const openMins = parseTimeMins(todayCfg.open_time, 11 * 60);
+            const closeMins = parseTimeMins(todayCfg.close_time, (day === 0 ? 22 : 21) * 60);
+            const isOpen = !todayCfg.is_closed && (currentMins >= openMins && currentMins < closeMins);
 
             const statusEl = document.getElementById('contact-section-hours-status');
             if (statusEl) {
                 if (isOpen) {
-                    statusEl.innerHTML = 'Buka sekarang &middot; tutup ' + closingHour + ':00 WIB';
+                    statusEl.innerHTML = 'Buka sekarang &middot; tutup ' + (todayCfg.close_time || '21:00') + ' WIB';
                 } else {
-                    statusEl.innerHTML = 'Tutup &middot; buka kembali 11:00 WIB';
+                    let reopenText = 'buka kembali ' + (todayCfg.open_time || '11:00') + ' WIB';
+                    if (todayCfg.is_closed || currentMins >= closeMins) {
+                        for (let offset = 1; offset <= 7; offset++) {
+                            const nextCfg = scheduleDays[(day + offset) % 7];
+                            if (nextCfg && !nextCfg.is_closed) {
+                                reopenText = offset === 1
+                                    ? 'buka besok ' + (nextCfg.open_time || '11:00') + ' WIB'
+                                    : 'buka ' + (nextCfg.day_name || '') + ' ' + (nextCfg.open_time || '11:00') + ' WIB';
+                                break;
+                            }
+                        }
+                    }
+                    statusEl.innerHTML = 'Tutup &middot; ' + reopenText;
                 }
             }
         } catch(e) {}

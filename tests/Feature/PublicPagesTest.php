@@ -69,8 +69,8 @@ class PublicPagesTest extends TestCase
         $response->assertSee('OUR STORY / TENTANG KAMI');
         $response->assertSee('Berawal dari Rasa,');
         $response->assertSee('Kembali karena Rindu.');
-        $response->assertSee('Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.');
-        $response->assertSee('Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.');
+        $response->assertSee('Nucomu Cafe adalah tempat nongkrong yang nyaman di Tulungagung, Jawa Timur. Suasananya santai dan cocok untuk bersantai sendirian, ngobrol bareng teman, mengerjakan tugas, atau berkumpul bersama keluarga.');
+        $response->assertSee('Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.');
         $response->assertDontSee('Jelajahi Pilihan Menu');
         $response->assertSee('id="menu"', false);
         $response->assertSee('id="story-typewriter-text"', false);

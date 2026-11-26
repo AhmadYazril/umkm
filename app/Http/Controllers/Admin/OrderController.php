@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\NucomuController;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Support\TransactionReportPdfGenerator;
@@ -27,47 +28,24 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+        Order::ensureChannelColumnsExist();
+
         $query = Order::with(['table', 'items', 'zendoDelivery']);
+
+        $activeChannel = null;
+        if ($request->filled('channel')) {
+            $requestedChannel = strtolower(trim((string) $request->channel));
+            if (in_array($requestedChannel, [Order::CHANNEL_DIRECT, Order::CHANNEL_ZENDO, Order::CHANNEL_GRAB], true)) {
+                $activeChannel = $requestedChannel;
+                $query->forChannel($activeChannel);
+            }
+        }
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         if ($request->filled('kind')) {
-            $kind = $request->kind;
-            if ($kind === 'dine_in') {
-                $query->where(function ($q) {
-                    $q->whereNull('delivery_address')
-                        ->where(function ($n) {
-                            $n->whereNull('notes')
-                                ->orWhere('notes', 'not like', '%[KURIR ZENDO]%');
-                        });
-                });
-            } elseif ($kind === 'zendo_tracking') {
-                $query->where(function ($q) {
-                    $q->where(function ($sub) {
-                        $sub->where('notes', 'like', '%[KURIR ZENDO]%')
-                            ->orWhereNotNull('delivery_address');
-                    })->where(function ($sub2) {
-                        $sub2->where('notes', 'like', '%Pin:%')
-                            ->orWhere('notes', 'like', '%Tahap_Zendo%')
-                            ->orWhere('form_data', 'like', '%customer_lat%')
-                            ->orWhereHas('zendoDelivery');
-                    });
-                });
-            } elseif ($kind === 'zendo_chat') {
-                $query->where(function ($q) {
-                    $q->where(function ($sub) {
-                        $sub->where('notes', 'like', '%[KURIR ZENDO]%')
-                            ->orWhereNotNull('delivery_address');
-                    })->where('notes', 'not like', '%Pin:%')
-                        ->where('notes', 'not like', '%Tahap_Zendo%')
-                        ->where(function ($sub3) {
-                            $sub3->whereNull('form_data')
-                                ->orWhere('form_data', 'not like', '%customer_lat%');
-                        })
-                        ->whereDoesntHave('zendoDelivery');
-                });
-            }
+            $this->applyOrderKindFilter($query, (string) $request->kind);
         }
         if ($request->filled('type')) {
             $query->where('order_type', $request->type);
@@ -95,39 +73,56 @@ class OrderController extends Controller
         $cancelledOrders = Order::where('status', 'cancelled')->count();
         $totalRevenue = (int) Order::where('status', 'completed')->sum('total');
 
-        // Kind Counts
-        $totalDineIn = Order::where(function ($q) {
-            $q->whereNull('delivery_address')
-                ->where(function ($n) {
-                    $n->whereNull('notes')
-                        ->orWhere('notes', 'not like', '%[KURIR ZENDO]%');
-                });
-        })->count();
+        // Separated Channel Counts & Revenues (Di Tempat/Barcode, Zendo, GrabFood)
+        $totalChannelDirect = Order::forChannel(Order::CHANNEL_DIRECT)->count();
+        $totalChannelZendo = Order::forChannel(Order::CHANNEL_ZENDO)->count();
+        $totalChannelGrab = Order::forChannel(Order::CHANNEL_GRAB)->count();
 
-        $totalZendoTracking = Order::where(function ($q) {
-            $q->where(function ($sub) {
-                $sub->where('notes', 'like', '%[KURIR ZENDO]%')
-                    ->orWhereNotNull('delivery_address');
-            })->where(function ($sub2) {
+        $revenueChannelDirect = (int) Order::forChannel(Order::CHANNEL_DIRECT)
+            ->where('status', '!=', 'cancelled')
+            ->where(function ($q): void {
+                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
+            })
+            ->sum('total');
+        $revenueChannelZendo = (int) Order::forChannel(Order::CHANNEL_ZENDO)
+            ->where('status', '!=', 'cancelled')
+            ->where(function ($q): void {
+                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
+            })
+            ->sum('total');
+        $revenueChannelGrab = (int) Order::forChannel(Order::CHANNEL_GRAB)
+            ->where('status', '!=', 'cancelled')
+            ->where(function ($q): void {
+                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
+            })
+            ->sum('total');
+
+        // Granular Kind Counts (backward-compatible)
+        $totalDineIn = $totalChannelDirect;
+
+        $totalZendoTracking = Order::forChannel(Order::CHANNEL_ZENDO)
+            ->where(function ($sub2): void {
                 $sub2->where('notes', 'like', '%Pin:%')
                     ->orWhere('notes', 'like', '%Tahap_Zendo%')
                     ->orWhere('form_data', 'like', '%customer_lat%')
                     ->orWhereHas('zendoDelivery');
-            });
-        })->count();
+            })
+            ->count();
 
-        $totalZendoChat = Order::where(function ($q) {
-            $q->where(function ($sub) {
-                $sub->where('notes', 'like', '%[KURIR ZENDO]%')
-                    ->orWhereNotNull('delivery_address');
-            })->where('notes', 'not like', '%Pin:%')
-                ->where('notes', 'not like', '%Tahap_Zendo%')
-                ->where(function ($sub3) {
-                    $sub3->whereNull('form_data')
-                        ->orWhere('form_data', 'not like', '%customer_lat%');
-                })
-                ->whereDoesntHave('zendoDelivery');
-        })->count();
+        $totalZendoChat = Order::forChannel(Order::CHANNEL_ZENDO)
+            ->where(function ($q): void {
+                $q->whereNull('notes')
+                    ->orWhere(function ($n): void {
+                        $n->where('notes', 'not like', '%Pin:%')
+                            ->where('notes', 'not like', '%Tahap_Zendo%');
+                    });
+            })
+            ->where(function ($sub3): void {
+                $sub3->whereNull('form_data')
+                    ->orWhere('form_data', 'not like', '%customer_lat%');
+            })
+            ->whereDoesntHave('zendoDelivery')
+            ->count();
 
         // Mode Toggles & Settings with Backward-Compatible Fallback
         $dbSettings = Setting::pluck('value', 'key');
@@ -185,6 +180,13 @@ class OrderController extends Controller
             'completedOrders',
             'cancelledOrders',
             'totalRevenue',
+            'activeChannel',
+            'totalChannelDirect',
+            'totalChannelZendo',
+            'totalChannelGrab',
+            'revenueChannelDirect',
+            'revenueChannelZendo',
+            'revenueChannelGrab',
             'totalDineIn',
             'totalZendoTracking',
             'totalZendoChat',
@@ -352,8 +354,11 @@ class OrderController extends Controller
     public function printReceipt(Order $order)
     {
         $order->load(['table', 'items']);
+        $settings = Setting::pluck('value', 'key')->all();
+        $contact = NucomuController::getContactSettings();
+        $brand = NucomuController::resolveBrandSettings();
 
-        return view('admin.orders.receipt', compact('order'));
+        return view('admin.orders.receipt', compact('order', 'settings', 'contact', 'brand'));
     }
 
     /**
@@ -387,7 +392,17 @@ class OrderController extends Controller
     {
         $order = null;
         if ($request->filled('code')) {
-            $order = Order::where('code', strtoupper($request->code))->with('items')->first();
+            $rawCode = trim((string) $request->code);
+            if (preg_match('/(NCM-\d{8}-\d+)/i', $rawCode, $matches)) {
+                $cleanCode = strtoupper($matches[1]);
+            } elseif (str_contains($rawCode, '/')) {
+                $segments = array_values(array_filter(explode('/', parse_url($rawCode, PHP_URL_PATH) ?: $rawCode)));
+                $cleanCode = strtoupper((string) end($segments));
+            } else {
+                $cleanCode = strtoupper($rawCode);
+            }
+
+            $order = Order::where('code', $cleanCode)->with(['items', 'table'])->first();
         }
 
         $recentOrders = Order::with('items')->latest()->take(5)->get();
@@ -490,13 +505,27 @@ class OrderController extends Controller
             $filterParts[] = 'Status: '.ucfirst($statusFilter);
         }
 
+        if ($request->filled('channel') && $request->query('channel') !== 'all') {
+            $channelFilter = strtolower(trim((string) $request->query('channel')));
+            if (in_array($channelFilter, [Order::CHANNEL_DIRECT, Order::CHANNEL_ZENDO, Order::CHANNEL_GRAB], true)) {
+                $query->forChannel($channelFilter);
+                $filterParts[] = 'Sumber: '.match ($channelFilter) {
+                    Order::CHANNEL_DIRECT => 'Di Tempat (Barcode)',
+                    Order::CHANNEL_ZENDO => 'Zendo',
+                    Order::CHANNEL_GRAB => 'GrabFood',
+                };
+            }
+        }
+
         if ($request->filled('kind') && $request->query('kind') !== 'all') {
             $kindFilter = (string) $request->query('kind');
             $this->applyOrderKindFilter($query, $kindFilter);
             $filterParts[] = 'Jenis: '.match ($kindFilter) {
-                'dine_in' => 'Di Cafe',
+                'dine_in', 'direct' => 'Di Tempat (Barcode)',
+                'zendo' => 'Zendo',
                 'zendo_tracking' => 'Antar Zendo',
                 'zendo_chat' => 'Chat Zendo',
+                'grab' => 'GrabFood',
                 default => $kindFilter,
             };
         }
@@ -519,9 +548,11 @@ class OrderController extends Controller
             'delivery_fee_total' => (int) $nonCancelled->sum('delivery_fee'),
             'cash_count' => $nonCancelled->filter(fn (Order $o) => strtolower((string) $o->payment_method) !== 'qris')->count(),
             'qris_count' => $nonCancelled->filter(fn (Order $o) => strtolower((string) $o->payment_method) === 'qris')->count(),
-            'dine_in_count' => $nonCancelled->filter(fn (Order $o) => $o->kind === 'dine_in')->count(),
+            'dine_in_count' => $nonCancelled->filter(fn (Order $o) => $o->channel === Order::CHANNEL_DIRECT)->count(),
             'zendo_tracking_count' => $nonCancelled->filter(fn (Order $o) => $o->kind === 'zendo_tracking')->count(),
-            'zendo_chat_count' => $nonCancelled->filter(fn (Order $o) => $o->kind === 'zendo_chat')->count(),
+            'zendo_chat_count' => $nonCancelled->filter(fn (Order $o) => in_array($o->kind, ['zendo_chat', 'zendo_kasir'], true))->count(),
+            'zendo_count' => $nonCancelled->filter(fn (Order $o) => $o->channel === Order::CHANNEL_ZENDO)->count(),
+            'grab_count' => $nonCancelled->filter(fn (Order $o) => $o->channel === Order::CHANNEL_GRAB)->count(),
         ];
 
         // Build Daily Breakdown for Weekly & Monthly recaps
@@ -610,43 +641,38 @@ class OrderController extends Controller
     }
 
     /**
-     * Apply kind filter (dine_in, zendo_tracking, zendo_chat) to an Order query builder.
+     * Apply kind or channel filter (dine_in/direct, zendo, zendo_tracking, zendo_chat, grab) to an Order query builder.
      */
     protected function applyOrderKindFilter(Builder $query, string $kind): void
     {
-        if ($kind === 'dine_in') {
-            $query->where(function ($q) {
-                $q->whereNull('delivery_address')
-                    ->where(function ($n) {
-                        $n->whereNull('notes')
-                            ->orWhere('notes', 'not like', '%[KURIR ZENDO]%');
-                    });
-            });
+        if (in_array($kind, ['dine_in', Order::CHANNEL_DIRECT], true)) {
+            $query->forChannel(Order::CHANNEL_DIRECT);
+        } elseif ($kind === Order::CHANNEL_GRAB) {
+            $query->forChannel(Order::CHANNEL_GRAB);
+        } elseif ($kind === Order::CHANNEL_ZENDO) {
+            $query->forChannel(Order::CHANNEL_ZENDO);
         } elseif ($kind === 'zendo_tracking') {
-            $query->where(function ($q) {
-                $q->where(function ($sub) {
-                    $sub->where('notes', 'like', '%[KURIR ZENDO]%')
-                        ->orWhereNotNull('delivery_address');
-                })->where(function ($sub2) {
+            $query->forChannel(Order::CHANNEL_ZENDO)
+                ->where(function ($sub2): void {
                     $sub2->where('notes', 'like', '%Pin:%')
                         ->orWhere('notes', 'like', '%Tahap_Zendo%')
                         ->orWhere('form_data', 'like', '%customer_lat%')
                         ->orWhereHas('zendoDelivery');
                 });
-            });
         } elseif ($kind === 'zendo_chat') {
-            $query->where(function ($q) {
-                $q->where(function ($sub) {
-                    $sub->where('notes', 'like', '%[KURIR ZENDO]%')
-                        ->orWhereNotNull('delivery_address');
-                })->where('notes', 'not like', '%Pin:%')
-                    ->where('notes', 'not like', '%Tahap_Zendo%')
-                    ->where(function ($sub3) {
-                        $sub3->whereNull('form_data')
-                            ->orWhere('form_data', 'not like', '%customer_lat%');
-                    })
-                    ->whereDoesntHave('zendoDelivery');
-            });
+            $query->forChannel(Order::CHANNEL_ZENDO)
+                ->where(function ($q): void {
+                    $q->whereNull('notes')
+                        ->orWhere(function ($n): void {
+                            $n->where('notes', 'not like', '%Pin:%')
+                                ->where('notes', 'not like', '%Tahap_Zendo%');
+                        });
+                })
+                ->where(function ($sub3): void {
+                    $sub3->whereNull('form_data')
+                        ->orWhere('form_data', 'not like', '%customer_lat%');
+                })
+                ->whereDoesntHave('zendoDelivery');
         }
     }
 

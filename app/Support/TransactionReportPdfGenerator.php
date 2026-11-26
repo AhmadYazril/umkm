@@ -70,9 +70,9 @@ class TransactionReportPdfGenerator
                 'sub' => 'Menu: Rp '.number_format((int) ($summary['subtotal_menu'] ?? 0), 0, ',', '.'),
             ],
             [
-                'title' => 'METODE & LAYANAN',
+                'title' => 'METODE & SUMBER',
                 'value' => 'Tunai: '.(int) ($summary['cash_count'] ?? 0).' | QRIS: '.(int) ($summary['qris_count'] ?? 0),
-                'sub' => 'Cafe: '.(int) ($summary['dine_in_count'] ?? 0).' | Zendo: '.((int) ($summary['zendo_tracking_count'] ?? 0) + (int) ($summary['zendo_chat_count'] ?? 0)),
+                'sub' => 'Cafe: '.(int) ($summary['dine_in_count'] ?? 0).' | Zendo: '.(int) ($summary['zendo_count'] ?? ((int) ($summary['zendo_tracking_count'] ?? 0) + (int) ($summary['zendo_chat_count'] ?? 0))).' | Grab: '.(int) ($summary['grab_count'] ?? 0),
             ],
         ];
 
@@ -173,9 +173,11 @@ class TransactionReportPdfGenerator
 
                 $customerLabel = self::truncate((string) $order->customer_name, 18);
                 $kindLabel = match ($order->kind) {
+                    'grab' => 'GrabFood',
                     'zendo_tracking' => 'Antar Zendo',
+                    'zendo_kasir' => 'Zendo (Kasir)',
                     'zendo_chat' => 'Chat Zendo',
-                    default => $order->order_type === 'take_away' ? 'Cafe (Takeaway)' : 'Makan di Cafe',
+                    default => $order->order_type === 'take_away' ? 'Di Tempat (TA)' : 'Di Tempat',
                 };
                 $payLabel = strtoupper((string) ($order->payment_method ?: 'CASH')).($order->payment_status === 'paid' ? ' (Lunas)' : '');
                 $statusLabel = $order->status_label;

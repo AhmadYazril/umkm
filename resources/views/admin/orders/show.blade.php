@@ -126,6 +126,25 @@
                     <span>Informasi Pemesan</span>
                 </h2>
                 <div>
+                    <span class="text-muted-text block text-[11px]">Sumber Transaksi</span>
+                    @if($order->channel === 'zendo')
+                        <div class="mt-1 inline-flex items-center gap-2 px-2.5 py-1 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 font-bold text-xs">
+                            <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-5 h-5 rounded-full object-cover bg-white">
+                            <span>Zendo &bull; Tanpa Barcode</span>
+                        </div>
+                    @elseif($order->channel === 'grab')
+                        <div class="mt-1 inline-flex items-center gap-2 px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-xs">
+                            <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-5 h-5 rounded object-contain bg-white">
+                            <span>GrabFood &bull; Tanpa Barcode</span>
+                        </div>
+                    @else
+                        <div class="mt-1 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-warm-stone border border-hairline text-ink-black font-bold text-xs">
+                            <i class="fa-solid fa-barcode text-[#2F6B4F]"></i>
+                            <span>Di Tempat ({{ $order->effective_barcode_type === 'barcode' ? 'Barcode Garis' : 'QR Code' }})</span>
+                        </div>
+                    @endif
+                </div>
+                <div>
                     <span class="text-muted-text block text-[11px]">Nama Pemesan</span>
                     <span class="font-bold text-ink-black text-sm">{{ $order->customer_name }}</span>
                 </div>

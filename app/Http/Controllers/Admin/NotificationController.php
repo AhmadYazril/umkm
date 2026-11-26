@@ -209,12 +209,13 @@ class NotificationController extends Controller
 
             foreach ($orders as $o) {
                 $key = 'order_'.$o->id;
+                $isZendoOrder = in_array($o->kind, ['zendo_tracking', 'zendo_chat'], true);
                 $notifications[] = [
                     'key' => $key,
                     'type' => 'order',
                     'type_label' => 'Pesanan Masuk',
                     'title' => "Pesanan Baru #{$o->code}",
-                    'message' => 'Total Rp '.number_format($o->total, 0, ',', '.')." ({$o->customer_name}) • ".($o->order_type === 'zendo_delivery' ? 'Antar Kurir Zendo' : 'Makan di Tempat').'.',
+                    'message' => 'Total Rp '.number_format($o->total, 0, ',', '.')." ({$o->customer_name}) • ".($isZendoOrder ? 'Antar Kurir Zendo' : 'Makan di Tempat').'.',
                     'time' => $o->created_at ?: $now,
                     'time_ago' => $o->created_at ? $o->created_at->diffForHumans() : 'Baru saja',
                     'status_color' => 'blue',

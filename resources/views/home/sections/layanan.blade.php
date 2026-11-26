@@ -5,7 +5,7 @@
     $rawGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
     $layananGrabfoodUrl = !empty(trim((string) $rawGrabfoodUrl)) ? trim((string) $rawGrabfoodUrl) : 'https://food.grab.com';
 @endphp
-<section id="layanan" class="relative py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] border-b border-[#E5E5E5] overflow-hidden">
+<section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] border-b border-[#E5E5E5] overflow-hidden relative">
     <!-- Background Ambient Glow & Blueprint Dot Matrix Texture -->
     <div class="absolute inset-0 pointer-events-none opacity-35 bg-[radial-gradient(#1c1c1c_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_35%,#000_60%,transparent_100%)]" aria-hidden="true"></div>
     <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[650px] h-[320px] bg-gradient-to-b from-black/[0.035] to-transparent rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
@@ -72,7 +72,7 @@
                                     <span class="sr-only">Reservasi Tempat &amp; Acara</span>
                                 </h3>
                                 <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    Pesan meja khusus untuk kebutuhan acara spesial, mulai dari pertemuan, ulang tahun, hingga acara privat lainnya.
+                                    {{ $brand['services_reservasi_desc'] ?? 'Pesan meja khusus untuk kebutuhan acara spesial, mulai dari pertemuan, ulang tahun, hingga acara privat lainnya.' }}
                                 </p>
                             </div>
 
@@ -141,7 +141,7 @@
                                     Delivery via WhatsApp (Zendo)
                                 </h4>
                                 <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    Nikmati menu favoritmu dengan mudah melalui WhatsApp. Pesanan akan segera diproses dan diantar ke lokasi kamu.
+                                    {{ $brand['services_delivery_desc'] ?? 'Nikmati menu favoritmu dengan mudah melalui WhatsApp. Pesanan akan segera diproses dan diantar ke lokasi kamu.' }}
                                 </p>
                             </div>
 
@@ -206,7 +206,7 @@
                                     Pesan Menu Favoritmu di GrabFood
                                 </h4>
                                 <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    Dapatkan menu Nucomu favoritmu melalui aplikasi GrabFood dengan proses yang praktis dan cepat.
+                                    {{ $brand['services_online_desc'] ?? 'Dapatkan menu Nucomu favoritmu melalui aplikasi GrabFood dengan proses yang praktis dan cepat.' }}
                                 </p>
                             </div>
 
@@ -503,50 +503,79 @@
 
     </div>
 
-    <!-- Data Foto Asli Nucomu untuk Galeri Area Indoor & Outdoor -->
-    <script>
-        window.NUCOMU_LAYANAN_PHOTOS = {
-            indoor: [
-                {
-                    src: "{{ asset('images/nucomu/nucomu_story_4.png') }}",
-                    alt: "Area Meja Indoor & Sudut Nucomu Cafe",
-                    title: "Area Indoor",
-                    subtitle: "Bebas pilih area Indoor AC sejuk"
-                },
-                {
-                    src: "{{ asset('images/nucomu/nucomu_story_2.png') }}",
-                    alt: "Indoor Lounge & Meja Kerja Nucomu Cafe",
-                    title: "Area Indoor",
-                    subtitle: "Bebas pilih area Indoor AC sejuk"
-                },
-                {
-                    src: "{{ asset('images/nucomu/nucomu_story_1.png') }}",
-                    alt: "Espresso Bar & Counter Seduh Nucomu Cafe",
-                    title: "Area Indoor",
-                    subtitle: "Bebas pilih area Indoor AC sejuk"
-                }
+    <!-- Data Foto Asli Nucomu untuk Galeri Area Indoor & Outdoor (Sinkron Database Fasilitas) -->
+    @php
+        $defaultLayananIndoor = [
+            [
+                'src' => asset('images/nucomu/nucomu_story_4.png'),
+                'alt' => 'Area Meja Indoor & Sudut Nucomu Cafe',
+                'title' => 'Area Indoor',
+                'subtitle' => 'Bebas pilih area Indoor AC sejuk',
             ],
-            outdoor: [
-                {
-                    src: "{{ asset('images/nucomu/nucomu_outdoor_2.png') }}",
-                    alt: "Outdoor Garden Terrace Nucomu Cafe",
-                    title: "Area Outdoor",
-                    subtitle: "Bebas pilih area Outdoor Garden asri"
-                },
-                {
-                    src: "{{ asset('images/nucomu/nucomu_outdoor_3.png') }}",
-                    alt: "Outdoor Reserved Table Nucomu Cafe",
-                    title: "Area Outdoor",
-                    subtitle: "Bebas pilih area Outdoor Garden asri"
-                },
-                {
-                    src: "{{ asset('images/nucomu/Beranda Kafe Nucomu yang Hangat.png') }}",
-                    alt: "Teras Depan Kafe Nucomu",
-                    title: "Area Outdoor",
-                    subtitle: "Bebas pilih area Outdoor Garden asri"
-                }
-            ]
-        };
+            [
+                'src' => asset('images/nucomu/nucomu_story_2.png'),
+                'alt' => 'Indoor Lounge & Meja Kerja Nucomu Cafe',
+                'title' => 'Area Indoor',
+                'subtitle' => 'Bebas pilih area Indoor AC sejuk',
+            ],
+            [
+                'src' => asset('images/nucomu/nucomu_story_1.png'),
+                'alt' => 'Espresso Bar & Counter Seduh Nucomu Cafe',
+                'title' => 'Area Indoor',
+                'subtitle' => 'Bebas pilih area Indoor AC sejuk',
+            ],
+        ];
+        $defaultLayananOutdoor = [
+            [
+                'src' => asset('images/nucomu/nucomu_outdoor_2.png'),
+                'alt' => 'Outdoor Garden Terrace Nucomu Cafe',
+                'title' => 'Area Outdoor',
+                'subtitle' => 'Bebas pilih area Outdoor Garden asri',
+            ],
+            [
+                'src' => asset('images/nucomu/nucomu_outdoor_3.png'),
+                'alt' => 'Outdoor Reserved Table Nucomu Cafe',
+                'title' => 'Area Outdoor',
+                'subtitle' => 'Bebas pilih area Outdoor Garden asri',
+            ],
+            [
+                'src' => asset('images/nucomu/Beranda Kafe Nucomu yang Hangat.png'),
+                'alt' => 'Teras Depan Kafe Nucomu',
+                'title' => 'Area Outdoor',
+                'subtitle' => 'Bebas pilih area Outdoor Garden asri',
+            ],
+        ];
+
+        $layananIndoorPhotos = $defaultLayananIndoor;
+        $layananOutdoorPhotos = $defaultLayananOutdoor;
+
+        if (isset($dbFacilities) && $dbFacilities->isNotEmpty()) {
+            $indoorFacility = $dbFacilities->first(fn ($f) => strtolower((string) ($f->slug ?? $f->tab_name ?? '')) === 'indoor');
+            if ($indoorFacility && ! empty($indoorFacility->formatted_photos)) {
+                $layananIndoorPhotos = array_map(static fn (array $p): array => [
+                    'src' => $p['src'],
+                    'alt' => $p['alt'],
+                    'title' => $indoorFacility->title ?: 'Area Indoor',
+                    'subtitle' => $p['caption'] ?: 'Bebas pilih area Indoor AC sejuk',
+                ], $indoorFacility->formatted_photos);
+            }
+
+            $outdoorFacility = $dbFacilities->first(fn ($f) => strtolower((string) ($f->slug ?? $f->tab_name ?? '')) === 'outdoor');
+            if ($outdoorFacility && ! empty($outdoorFacility->formatted_photos)) {
+                $layananOutdoorPhotos = array_map(static fn (array $p): array => [
+                    'src' => $p['src'],
+                    'alt' => $p['alt'],
+                    'title' => $outdoorFacility->title ?: 'Area Outdoor',
+                    'subtitle' => $p['caption'] ?: 'Bebas pilih area Outdoor Garden asri',
+                ], $outdoorFacility->formatted_photos);
+            }
+        }
+    @endphp
+    <script>
+        window.NUCOMU_LAYANAN_PHOTOS = @json([
+            'indoor' => $layananIndoorPhotos,
+            'outdoor' => $layananOutdoorPhotos,
+        ]);
     </script>
 
     <!-- Interactive Card Click Ripple & Tactile Feedback Animation -->

@@ -26,6 +26,16 @@
             </div>
 
             <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                @php
+                    $firstBestMenu = $bestMenu[0] ?? [
+                        'name' => 'Nucomu Signature',
+                        'display_title' => 'Nucomu<br>Signature',
+                        'category_label' => 'Menu Pilihan',
+                        'description' => 'Racikan pilihan terbaik dari dapur Nucomu Cafe.',
+                        'image' => asset('images/nucomu-latte-hero.jpg'),
+                        'price_formatted' => 'Rp 0',
+                    ];
+                @endphp
                 
                 <!-- 1. LEFT COLUMN: Editorial Display Typography & Menu Story (~4 cols) -->
                 <div class="lg:col-span-4 flex flex-col justify-center text-left">
@@ -37,18 +47,18 @@
                         <span class="material-symbols-outlined text-sm text-[#8A8A86] font-light">restaurant</span>
                     </div>
                     <h3 id="best-hero-title" class="nucomu-serif-display text-4xl sm:text-5xl lg:text-[54px] font-semibold text-[#191919] leading-[1.05] tracking-[-0.02em] transition-all duration-300">
-                        {!! $bestMenu[0]['display_title'] ?? $bestMenu[0]['name'] !!}
+                        {!! $firstBestMenu['display_title'] ?? $firstBestMenu['name'] !!}
                     </h3>
 
                     <div class="flex items-center space-x-3 my-4">
                         <span class="w-7 h-px bg-[#191919]"></span>
                         <span id="best-hero-category" class="nucomu-sans text-xs font-medium tracking-wide text-[#30302D]">
-                            {{ $bestMenu[0]['category_label'] }}
+                            {{ $firstBestMenu['category_label'] ?? 'Menu Pilihan' }}
                         </span>
                     </div>
 
                     <p id="best-hero-desc" class="nucomu-sans text-[13px] sm:text-sm text-[#8A8A86] leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
-                        {{ $bestMenu[0]['description'] }}
+                        {{ $firstBestMenu['description'] ?? '' }}
                     </p>
 
                     <div class="mt-8 flex items-center space-x-2 select-none opacity-55">
@@ -63,12 +73,12 @@
                     <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-[#FFFFFF] shadow-[0_18px_44px_-14px_rgba(25,25,25,0.16)] transition-all duration-500 ease-out border border-[#E5E4E0] flex items-center justify-center">
                         <button type="button"
                                 onclick="openCurrentBestMenuPhoto()"
-                                aria-label="Lihat foto {{ $bestMenu[0]['name'] }}"
+                                aria-label="Lihat foto {{ $firstBestMenu['name'] }}"
                                 title="Klik untuk melihat foto"
                                 class="group relative w-full h-full rounded-full overflow-hidden cursor-pointer focus:outline-none">
                             <img id="best-hero-img" 
-                                 src="{{ $bestMenu[0]['image'] }}" 
-                                 alt="{{ $bestMenu[0]['name'] }}" 
+                                 src="{{ $firstBestMenu['image'] }}" 
+                                 alt="{{ $firstBestMenu['name'] }}" 
                                  class="w-full h-full object-cover rounded-full shadow-inner transition-transform duration-500 ease-out group-hover:scale-[1.06]">
                         </button>
                     </div>
@@ -79,7 +89,7 @@
                                 type="button" 
                                 onclick="orderCurrentBestMenuItem()" 
                                 class="nucomu-sans group px-7 sm:px-8 py-2.5 rounded-full bg-[#191919] hover:bg-[#30302D] text-[#FFFFFF] font-semibold text-xs sm:text-[13px] uppercase tracking-[0.12em] flex items-center space-x-2 shadow-[0_10px_24px_-6px_rgba(25,25,25,0.28)] transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer">
-                            <span id="best-hero-price" class="font-bold tabular-nums">{{ $bestMenu[0]['price_formatted'] }}</span>
+                            <span id="best-hero-price" class="font-bold tabular-nums">{{ $firstBestMenu['price_formatted'] }}</span>
                             <span class="font-semibold tracking-[0.14em]">ORDER</span>
                             <span class="material-symbols-outlined text-sm transition-transform duration-200 group-hover:translate-x-0.5">chevron_right</span>
                         </button>
@@ -671,9 +681,6 @@
                 @else
                     <span class="nucomu-sans text-[13px] font-medium text-[#8A8A86] shrink-0">
                         Pemesanan langsung di kasir
-                    </span>
-                @endif
-            </div>
                     </span>
                 @endif
             </div>

@@ -9,6 +9,7 @@ use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\Menu;
 use App\Models\MenuOption;
+use App\Models\OperatingHour;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Reservation;
@@ -35,8 +36,9 @@ class NucomuController extends Controller
      */
     public function index()
     {
-        $brand = config('nucomu.brand');
-        $contact = config('nucomu.contact');
+        $brand = self::resolveBrandSettings();
+        $contact = array_merge(config('nucomu.contact'), self::getContactSettings());
+        $operatingHours = self::getOperatingHoursSchedule();
         $facilities = config('nucomu.facilities');
         $bestMenu = config('nucomu.best_menu');
         $allMenu = config('nucomu.all_menu');
@@ -47,73 +49,8 @@ class NucomuController extends Controller
         $recommendations = config('nucomu.recommendations');
         $reviews = config('nucomu.reviews');
 
-        // Check if database settings override brand, contact, and content info
         try {
             $dbSettings = Setting::pluck('value', 'key');
-            if (! empty($dbSettings['cafe_name'])) {
-                $brand['name'] = $dbSettings['cafe_name'];
-            }
-            if (! empty($dbSettings['cafe_tagline'])) {
-                $brand['tagline'] = $dbSettings['cafe_tagline'];
-            }
-            if (! empty($dbSettings['hero_title'])) {
-                $brand['hero_title'] = $dbSettings['hero_title'];
-            }
-            if (! empty($dbSettings['hero_subtitle'])) {
-                $brand['hero_subtitle'] = $dbSettings['hero_subtitle'];
-            }
-            if (! empty($dbSettings['hero_badge'])) {
-                $brand['hero_badge'] = $dbSettings['hero_badge'];
-            }
-            if (! empty($dbSettings['cafe_story_headline'])) {
-                $brand['story_headline'] = $dbSettings['cafe_story_headline'];
-                $brand['cafe_story_headline'] = $dbSettings['cafe_story_headline'];
-            }
-            if (! empty($dbSettings['cafe_story_p1'])) {
-                $brand['story_p1'] = $dbSettings['cafe_story_p1'];
-                $brand['cafe_story_p1'] = $dbSettings['cafe_story_p1'];
-            }
-            $brand['story_p2'] = ! empty($dbSettings['cafe_story_p2'])
-                ? $dbSettings['cafe_story_p2']
-                : 'Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.';
-            $brand['cafe_story_p2'] = $brand['story_p2'];
-            if (! empty($dbSettings['cafe_story_p3'])) {
-                $brand['cafe_story_p3'] = $dbSettings['cafe_story_p3'];
-            }
-            if (! empty($dbSettings['about_label'])) {
-                $brand['about_label'] = $dbSettings['about_label'];
-            }
-            if (! empty($dbSettings['about_quote'])) {
-                $brand['about_quote'] = $dbSettings['about_quote'];
-            }
-            if (! empty($dbSettings['about_button_text'])) {
-                $brand['about_button_text'] = $dbSettings['about_button_text'];
-            }
-            if (! empty($dbSettings['about_button_link'])) {
-                $brand['about_button_link'] = $dbSettings['about_button_link'];
-            }
-            $brand['about_media_type'] = $dbSettings['about_media_type'] ?? 'video';
-            $aboutMediaPath = $dbSettings['about_media_path'] ?? null;
-            if ($aboutMediaPath) {
-                if (str_starts_with($aboutMediaPath, 'http://') || str_starts_with($aboutMediaPath, 'https://')) {
-                    $brand['about_media_url'] = $aboutMediaPath;
-                } elseif (file_exists(public_path('uploads/about/'.$aboutMediaPath))) {
-                    $brand['about_media_url'] = asset('uploads/about/'.$aboutMediaPath);
-                } elseif (file_exists(public_path($aboutMediaPath))) {
-                    $brand['about_media_url'] = asset($aboutMediaPath);
-                } else {
-                    $brand['about_media_url'] = asset($aboutMediaPath);
-                }
-            } else {
-                $brand['about_media_url'] = asset('videos/tiramisu.mp4');
-            }
-            if (! empty($dbSettings['cafe_story'])) {
-                $brand['story'] = $dbSettings['cafe_story'];
-            }
-            if (! empty($dbSettings['cafe_concept'])) {
-                $brand['concept'] = $dbSettings['cafe_concept'];
-            }
-            $contact = array_merge($contact, self::getContactSettings());
             if (! empty($dbSettings['google_places_api_key'])) {
                 $integrations['google_places_api_key'] = $dbSettings['google_places_api_key'];
             }
@@ -247,6 +184,7 @@ class NucomuController extends Controller
             'activeBanners',
             'brand',
             'contact',
+            'operatingHours',
             'facilities',
             'dbFacilities',
             'dbCategories',
@@ -276,10 +214,10 @@ class NucomuController extends Controller
     {
         $googleMapsReviews = collect();
 
-        // 1. Optional live Google Places API reviews if API key & Place ID are configured
+        // 1. Optional live Google Places API reviews if API key & Place ID are configured (DB first, then config)
         try {
-            $apiKey = config('nucomu.integrations.google_places_api_key');
-            $placeId = config('nucomu.integrations.google_place_id');
+            $apiKey = Setting::get('google_places_api_key') ?: config('nucomu.integrations.google_places_api_key');
+            $placeId = Setting::get('google_place_id') ?: config('nucomu.integrations.google_place_id');
 
             if (! empty($apiKey) && ! empty($placeId)) {
                 $livePlacesReviews = Cache::remember('nucomu_google_places_reviews', now()->addHours(6), function () use ($apiKey, $placeId) {
@@ -356,6 +294,7 @@ class NucomuController extends Controller
                 ->where(function ($q) {
                     $q->where('is_sample', false)->orWhereNull('is_sample');
                 })
+                ->orderByDesc('is_pinned')
                 ->latest()
                 ->get()
                 ->reject(function (Testimonial $t) use ($sampleNames) {
@@ -397,8 +336,9 @@ class NucomuController extends Controller
      */
     public function allMenu(Request $request)
     {
-        $brand = config('nucomu.brand');
-        $contact = config('nucomu.contact');
+        $brand = self::resolveBrandSettings();
+        $contact = array_merge(config('nucomu.contact'), self::getContactSettings());
+        $operatingHours = self::getOperatingHoursSchedule();
 
         $recOptions = collect(config('nucomu.recommendations', []))->keyBy(function ($r) {
             return strtolower(trim($r['name'] ?? ''));
@@ -415,41 +355,20 @@ class NucomuController extends Controller
             return $item;
         });
 
-        // Attempt to load from database and merge
+        // Load live menus from database; fall back to config only when database has no active menus
         try {
-            $dbMenus = Menu::available()->with(['category', 'options'])->get()->map(function ($m) {
-                $catSlug = $m->category ? strtolower($m->category->slug ?? $m->category->name) : 'coffee';
-                if (str_contains($catSlug, 'non') || str_contains($catSlug, 'tea') || str_contains($catSlug, 'beverage')) {
-                    $normCat = 'non-coffee';
-                } elseif (str_contains($catSlug, 'dessert') || str_contains($catSlug, 'pastry') || str_contains($catSlug, 'cake')) {
-                    $normCat = 'dessert';
-                } elseif (str_contains($catSlug, 'snack') || str_contains($catSlug, 'meal') || str_contains($catSlug, 'food')) {
-                    $normCat = 'snacks';
-                } else {
-                    $normCat = 'coffee';
-                }
+            $liveMenus = Menu::available()
+                ->with(['category', 'options'])
+                ->where(function ($query): void {
+                    $query->whereNull('category_id')
+                        ->orWhereHas('category', fn ($q) => $q->where('is_active', true));
+                })
+                ->orderBy('sort_order')
+                ->orderBy('id')
+                ->get();
 
-                $img = ! empty($m->image) ? $m->image_url : null;
-
-                $opts = $m->options && $m->options->isNotEmpty()
-                    ? $this->formatMenuOptionsForCard($m->options)
-                    : [];
-
-                return [
-                    'id' => $m->slug ?: 'menu-'.$m->id,
-                    'name' => $m->name,
-                    'category' => $normCat,
-                    'category_label' => $m->category->name ?? ucfirst($normCat),
-                    'price' => (int) $m->price,
-                    'price_formatted' => 'Rp '.number_format($m->price, 0, ',', '.'),
-                    'short_info' => $m->description ?? 'Racikan pilihan Nucomu Cafe.',
-                    'image' => $img ?: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=800',
-                    'options' => $opts,
-                ];
-            });
-
-            if ($dbMenus->isNotEmpty()) {
-                $allMenu = $dbMenus->concat($configMenu)->unique('name')->values();
+            if ($liveMenus->isNotEmpty()) {
+                $allMenu = collect($this->mapMenusForHomeCards($liveMenus));
             } else {
                 $allMenu = $configMenu;
             }
@@ -457,7 +376,10 @@ class NucomuController extends Controller
             $allMenu = $configMenu;
         }
 
-        $selectedCategory = $request->query('category', 'all');
+        $selectedCategory = strtolower(trim((string) $request->query('category', 'all')));
+        if ($selectedCategory === '') {
+            $selectedCategory = 'all';
+        }
 
         $dbCategories = collect();
         try {
@@ -466,8 +388,26 @@ class NucomuController extends Controller
         }
 
         if ($selectedCategory !== 'all') {
-            $filteredMenu = $allMenu->filter(function ($item) use ($selectedCategory) {
-                return $item['category'] === $selectedCategory;
+            $categoryAliases = [
+                'coffee' => ['coffee', 'kopi'],
+                'kopi' => ['kopi', 'coffee'],
+                'meals' => ['meals', 'makanan', 'food'],
+                'makanan' => ['makanan', 'meals', 'food'],
+                'food' => ['food', 'makanan', 'meals'],
+                'dessert' => ['dessert', 'desserts'],
+                'desserts' => ['desserts', 'dessert'],
+                'beverages' => ['beverages', 'non-kopi', 'non-coffee', 'minuman'],
+                'non-kopi' => ['non-kopi', 'non-coffee', 'beverages', 'minuman'],
+                'non-coffee' => ['non-coffee', 'non-kopi', 'beverages', 'minuman'],
+                'snacks' => ['snacks', 'snack'],
+                'snack' => ['snack', 'snacks'],
+            ];
+            $acceptedSlugs = $categoryAliases[$selectedCategory] ?? [$selectedCategory];
+
+            $filteredMenu = $allMenu->filter(function (array $item) use ($acceptedSlugs): bool {
+                $itemCat = strtolower((string) ($item['category'] ?? ''));
+
+                return in_array($itemCat, $acceptedSlugs, true);
             })->values();
         } else {
             $filteredMenu = $allMenu;
@@ -477,7 +417,7 @@ class NucomuController extends Controller
         $transactionMode = $txSettings['transaction_mode'];
         $zendoWhatsapp = $txSettings['zendo_whatsapp_clean'];
 
-        return view('menu.all', compact('brand', 'contact', 'filteredMenu', 'selectedCategory', 'dbCategories', 'txSettings', 'transactionMode', 'zendoWhatsapp'));
+        return view('menu.all', compact('brand', 'contact', 'operatingHours', 'filteredMenu', 'selectedCategory', 'dbCategories', 'txSettings', 'transactionMode', 'zendoWhatsapp'));
     }
 
     /**
@@ -529,8 +469,306 @@ class NucomuController extends Controller
 
         // Combine all Google Maps reviews and website-submitted reviews
         $reviews = $this->getCombinedReviews();
+        $brand = self::resolveBrandSettings();
+        $contact = self::getContactSettings();
 
-        return view('nucomu.index', compact('stories', 'reviews'));
+        return view('nucomu.index', compact('stories', 'reviews', 'brand', 'contact'));
+    }
+
+    /**
+     * Resolve brand profile, media, logo, favicon, and service copy from database settings with config fallbacks.
+     *
+     * @return array<string, mixed>
+     */
+    public static function resolveBrandSettings(): array
+    {
+        $brand = config('nucomu.brand', []);
+        $brand['about_media_type'] = 'video';
+        $brand['about_media_url'] = asset('videos/room-tour.mp4');
+        $brand['logo_url'] = asset('images/nucomu/nucomu_logo_brand.png');
+        $brand['has_custom_logo'] = false;
+        $brand['favicon_url'] = null;
+
+        try {
+            $dbSettings = Setting::pluck('value', 'key');
+            $isPlaceholder = static fn (?string $val): bool => empty($val) || str_starts_with(trim($val), '[ISI:');
+
+            if (! $isPlaceholder($dbSettings['cafe_name'] ?? null)) {
+                $brand['name'] = trim((string) $dbSettings['cafe_name']);
+            }
+            if (! $isPlaceholder($dbSettings['cafe_tagline'] ?? null)) {
+                $brand['tagline'] = trim((string) $dbSettings['cafe_tagline']);
+            }
+            if (! $isPlaceholder($dbSettings['cafe_subtitle'] ?? null)) {
+                $brand['subtitle'] = trim((string) $dbSettings['cafe_subtitle']);
+            }
+            if (! $isPlaceholder($dbSettings['hero_title'] ?? null)) {
+                $brand['hero_title'] = trim((string) $dbSettings['hero_title']);
+            }
+            if (! $isPlaceholder($dbSettings['hero_subtitle'] ?? null)) {
+                $brand['hero_subtitle'] = trim((string) $dbSettings['hero_subtitle']);
+            }
+            if (! $isPlaceholder($dbSettings['hero_badge'] ?? null)) {
+                $brand['hero_badge'] = trim((string) $dbSettings['hero_badge']);
+            }
+            if (! $isPlaceholder($dbSettings['cafe_story_headline'] ?? null)) {
+                $brand['story_headline'] = trim((string) $dbSettings['cafe_story_headline']);
+                $brand['cafe_story_headline'] = $brand['story_headline'];
+            }
+            if (! $isPlaceholder($dbSettings['cafe_story_p1'] ?? null)) {
+                $brand['story_p1'] = trim((string) $dbSettings['cafe_story_p1']);
+                $brand['cafe_story_p1'] = $brand['story_p1'];
+            }
+            if (! $isPlaceholder($dbSettings['cafe_story_p2'] ?? null)) {
+                $brand['story_p2'] = trim((string) $dbSettings['cafe_story_p2']);
+                $brand['cafe_story_p2'] = $brand['story_p2'];
+            }
+            if (isset($dbSettings['cafe_story_p3'])) {
+                $p3Val = trim((string) $dbSettings['cafe_story_p3']);
+                if ($p3Val !== '' && ! str_starts_with($p3Val, '[ISI:')) {
+                    $brand['cafe_story_p3'] = $p3Val;
+                }
+            }
+            if (! $isPlaceholder($dbSettings['about_label'] ?? null)) {
+                $brand['about_label'] = trim((string) $dbSettings['about_label']);
+            }
+            if (! $isPlaceholder($dbSettings['about_quote'] ?? null)) {
+                $brand['about_quote'] = trim((string) $dbSettings['about_quote']);
+            }
+            if (! $isPlaceholder($dbSettings['about_button_text'] ?? null)) {
+                $brand['about_button_text'] = trim((string) $dbSettings['about_button_text']);
+            }
+            if (! $isPlaceholder($dbSettings['about_button_link'] ?? null)) {
+                $brand['about_button_link'] = trim((string) $dbSettings['about_button_link']);
+            }
+            if (! $isPlaceholder($dbSettings['cafe_story'] ?? null)) {
+                $brand['story'] = trim((string) $dbSettings['cafe_story']);
+            }
+            if (! $isPlaceholder($dbSettings['cafe_concept'] ?? null)) {
+                $brand['concept'] = trim((string) $dbSettings['cafe_concept']);
+            }
+            if (! $isPlaceholder($dbSettings['services_reservasi_desc'] ?? null)) {
+                $brand['services_reservasi_desc'] = trim((string) $dbSettings['services_reservasi_desc']);
+            }
+            if (! $isPlaceholder($dbSettings['services_delivery_desc'] ?? null)) {
+                $brand['services_delivery_desc'] = trim((string) $dbSettings['services_delivery_desc']);
+            }
+            if (! $isPlaceholder($dbSettings['services_online_desc'] ?? null)) {
+                $brand['services_online_desc'] = trim((string) $dbSettings['services_online_desc']);
+            }
+
+            if (in_array($dbSettings['about_media_type'] ?? null, ['image', 'video'], true)) {
+                $brand['about_media_type'] = $dbSettings['about_media_type'];
+            }
+
+            $aboutMediaPath = trim((string) ($dbSettings['about_media_path'] ?? ''));
+            if ($aboutMediaPath !== '') {
+                if (str_starts_with($aboutMediaPath, 'http://') || str_starts_with($aboutMediaPath, 'https://')) {
+                    $brand['about_media_url'] = $aboutMediaPath;
+                } elseif (file_exists(public_path('uploads/about/'.$aboutMediaPath))) {
+                    $brand['about_media_url'] = asset('uploads/about/'.$aboutMediaPath);
+                } elseif (file_exists(public_path($aboutMediaPath))) {
+                    $brand['about_media_url'] = asset($aboutMediaPath);
+                } elseif (file_exists(public_path('videos/'.basename($aboutMediaPath)))) {
+                    $brand['about_media_url'] = asset('videos/'.basename($aboutMediaPath));
+                } else {
+                    $brand['about_media_url'] = asset('uploads/about/'.$aboutMediaPath);
+                }
+            } elseif ($brand['about_media_type'] === 'image') {
+                $brand['about_media_url'] = asset('images/nucomu/nucomu_story_1.png');
+            }
+
+            $logoPath = trim((string) ($dbSettings['cafe_logo'] ?? ''));
+            if ($logoPath !== '' && ! str_starts_with($logoPath, '[ISI:')) {
+                if (str_starts_with($logoPath, 'http://') || str_starts_with($logoPath, 'https://')) {
+                    $brand['logo_url'] = $logoPath;
+                    $brand['has_custom_logo'] = true;
+                } elseif (file_exists(public_path('uploads/branding/'.$logoPath))) {
+                    $brand['logo_url'] = asset('uploads/branding/'.$logoPath);
+                    $brand['has_custom_logo'] = true;
+                } elseif (file_exists(public_path($logoPath))) {
+                    $brand['logo_url'] = asset($logoPath);
+                    $brand['has_custom_logo'] = true;
+                } else {
+                    $brand['logo_url'] = asset('uploads/branding/'.$logoPath);
+                    $brand['has_custom_logo'] = true;
+                }
+            }
+
+            $faviconPath = trim((string) ($dbSettings['cafe_favicon'] ?? ''));
+            if ($faviconPath !== '' && ! str_starts_with($faviconPath, '[ISI:')) {
+                if (str_starts_with($faviconPath, 'http://') || str_starts_with($faviconPath, 'https://')) {
+                    $brand['favicon_url'] = $faviconPath;
+                } elseif (file_exists(public_path('uploads/branding/'.$faviconPath))) {
+                    $brand['favicon_url'] = asset('uploads/branding/'.$faviconPath);
+                } elseif (file_exists(public_path($faviconPath))) {
+                    $brand['favicon_url'] = asset($faviconPath);
+                } else {
+                    $brand['favicon_url'] = asset('uploads/branding/'.$faviconPath);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Fallback gracefully to config defaults
+        }
+
+        return $brand;
+    }
+
+    /**
+     * Resolve weekly operating hours schedule from database (`operating_hours` table)
+     * with clean grouped display rows and live Asia/Jakarta open/closed status.
+     *
+     * @return array{
+     *     has_db_rows: bool,
+     *     days: array<int, array{day_of_week: int, day_name: string, open_time: ?string, close_time: ?string, is_closed: bool}>,
+     *     groups: array<int, array{label: string, hours: string, is_closed: bool}>,
+     *     is_open: bool,
+     *     status_text_html: string,
+     *     status_text_middot: string
+     * }
+     */
+    public static function getOperatingHoursSchedule(): array
+    {
+        $dayNames = [
+            0 => 'Minggu',
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+        ];
+
+        $days = [];
+        for ($d = 0; $d <= 6; $d++) {
+            $days[$d] = [
+                'day_of_week' => $d,
+                'day_name' => $dayNames[$d],
+                'open_time' => '11:00',
+                'close_time' => $d === 0 ? '22:00' : '21:00',
+                'is_closed' => false,
+            ];
+        }
+
+        $hasDbRows = false;
+        try {
+            $rows = OperatingHour::orderBy('day_of_week')->get();
+            if ($rows->isNotEmpty()) {
+                $hasDbRows = true;
+                foreach ($rows as $row) {
+                    $dow = (int) $row->day_of_week;
+                    if ($dow >= 0 && $dow <= 6) {
+                        $days[$dow] = [
+                            'day_of_week' => $dow,
+                            'day_name' => $row->day_name ?: $dayNames[$dow],
+                            'open_time' => $row->is_closed ? null : ($row->open_time ? substr((string) $row->open_time, 0, 5) : '11:00'),
+                            'close_time' => $row->is_closed ? null : ($row->close_time ? substr((string) $row->close_time, 0, 5) : '21:00'),
+                            'is_closed' => (bool) $row->is_closed,
+                        ];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Fallback gracefully to default weekly hours
+        }
+
+        // Group consecutive days in Monday -> Sunday order when schedule matches identically
+        $orderedIndexes = [1, 2, 3, 4, 5, 6, 0];
+        $groups = [];
+        foreach ($orderedIndexes as $dow) {
+            $entry = $days[$dow];
+            $sig = $entry['is_closed']
+                ? 'CLOSED'
+                : (($entry['open_time'] ?? '11:00').'-'.($entry['close_time'] ?? '21:00'));
+
+            $lastIdx = count($groups) - 1;
+            if ($lastIdx >= 0 && $groups[$lastIdx]['sig'] === $sig) {
+                $groups[$lastIdx]['end_name'] = $entry['day_name'];
+                $groups[$lastIdx]['count']++;
+            } else {
+                $groups[] = [
+                    'sig' => $sig,
+                    'start_name' => $entry['day_name'],
+                    'end_name' => $entry['day_name'],
+                    'count' => 1,
+                    'is_closed' => $entry['is_closed'],
+                    'hours' => $entry['is_closed']
+                        ? 'Libur / Tutup'
+                        : (($entry['open_time'] ?? '11:00').' – '.($entry['close_time'] ?? '21:00').' WIB'),
+                ];
+            }
+        }
+
+        $formattedGroups = array_map(static function (array $g): array {
+            $label = $g['count'] > 1
+                ? $g['start_name'].' – '.$g['end_name']
+                : $g['start_name'];
+
+            return [
+                'label' => $label,
+                'hours' => $g['hours'],
+                'is_closed' => $g['is_closed'],
+            ];
+        }, $groups);
+
+        $nowWib = Carbon::now('Asia/Jakarta');
+        $todayDow = (int) $nowWib->dayOfWeek;
+        $currentMinutes = (int) ($nowWib->hour * 60 + $nowWib->minute);
+        $todaySchedule = $days[$todayDow];
+
+        $parseTimeToMins = static function (?string $timeStr, int $fallback): int {
+            if (! $timeStr || ! str_contains($timeStr, ':')) {
+                return $fallback;
+            }
+            [$h, $m] = array_map('intval', explode(':', substr($timeStr, 0, 5), 2));
+
+            return ($h * 60) + $m;
+        };
+
+        $isOpen = false;
+        $closeTimeStr = $todaySchedule['close_time'] ?? '21:00';
+        $openTimeStr = $todaySchedule['open_time'] ?? '11:00';
+
+        if (! $todaySchedule['is_closed']) {
+            $openMins = $parseTimeToMins($openTimeStr, 11 * 60);
+            $closeMins = $parseTimeToMins($closeTimeStr, 21 * 60);
+            $isOpen = ($currentMinutes >= $openMins && $currentMinutes < $closeMins);
+        }
+
+        if ($isOpen) {
+            $statusDetail = 'tutup '.$closeTimeStr.' WIB';
+            $statusTextHtml = 'Buka sekarang &bull; '.$statusDetail;
+            $statusTextMiddot = 'Buka sekarang &middot; '.$statusDetail;
+        } else {
+            // Find next opening time
+            $reopenLabel = 'buka kembali '.$openTimeStr.' WIB';
+            if ($todaySchedule['is_closed'] || $currentMinutes >= $parseTimeToMins($closeTimeStr, 21 * 60)) {
+                $nextOpen = null;
+                for ($offset = 1; $offset <= 7; $offset++) {
+                    $nextDow = ($todayDow + $offset) % 7;
+                    if (! $days[$nextDow]['is_closed']) {
+                        $nextTime = $days[$nextDow]['open_time'] ?? '11:00';
+                        $nextOpen = $offset === 1
+                            ? 'buka besok '.$nextTime.' WIB'
+                            : 'buka '.$days[$nextDow]['day_name'].' '.$nextTime.' WIB';
+                        break;
+                    }
+                }
+                $reopenLabel = $nextOpen ?: 'libur sementara';
+            }
+
+            $statusTextHtml = 'Tutup &bull; '.$reopenLabel;
+            $statusTextMiddot = 'Tutup &middot; '.$reopenLabel;
+        }
+
+        return [
+            'has_db_rows' => $hasDbRows,
+            'days' => $days,
+            'groups' => $formattedGroups,
+            'is_open' => $isOpen,
+            'status_text_html' => $statusTextHtml,
+            'status_text_middot' => $statusTextMiddot,
+        ];
     }
 
     /**
@@ -581,11 +819,18 @@ class NucomuController extends Controller
         $hours = ! $isPlaceholder($settings['cafe_opening_hours'] ?? null)
             ? trim($settings['cafe_opening_hours'])
             : (string) config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB');
+        $landmark = ! $isPlaceholder($settings['cafe_landmark'] ?? null)
+            ? trim($settings['cafe_landmark'])
+            : (string) config('nucomu.contact.landmark', '200 meter ke timur dari Bravo Swalayan (sisi utara jalan sebelum perempatan).');
+        $hoursBrew = ! $isPlaceholder($settings['cafe_hours_brew'] ?? null)
+            ? trim($settings['cafe_hours_brew'])
+            : (string) config('nucomu.contact.hours_brew', 'Bar kopi & dine-in buka setiap hari.');
 
         $displayWa = '+'.substr($cleanCafeWa, 0, 2).' '.substr($cleanCafeWa, 2, 3).'-'.substr($cleanCafeWa, 5, 4).'-'.substr($cleanCafeWa, 9);
 
         return [
             'address' => $address,
+            'landmark' => $landmark,
             'whatsapp_number' => $cleanCafeWa,
             'whatsapp_clean' => $cleanCafeWa,
             'whatsapp_display' => $displayWa,
@@ -601,6 +846,7 @@ class NucomuController extends Controller
             'maps_embed' => $mapsEmbed,
             'hours' => $hours,
             'opening_hours' => $hours,
+            'hours_brew' => $hoursBrew,
         ];
     }
 
@@ -1597,6 +1843,8 @@ class NucomuController extends Controller
      */
     public function storeOrder(Request $request)
     {
+        Order::ensureChannelColumnsExist();
+
         $txSettings = $this->getTransactionSettings();
         $isAnyModeActive = (bool) ($txSettings['is_any_mode_active'] ?? true);
         $orderModeDineIn = (bool) ($txSettings['order_mode_dine_in'] ?? true);
@@ -1702,15 +1950,32 @@ class NucomuController extends Controller
             $menuIdVal = $item['menu_id'] ?? $item['id'] ?? null;
             $menu = null;
             if (is_numeric($menuIdVal)) {
-                $menu = Menu::find((int) $menuIdVal);
-            }
-            if (! $menu && ! empty($item['menu_name'] ?? $item['name'] ?? null)) {
-                $itemName = trim((string) ($item['menu_name'] ?? $item['name']));
-                $menu = Menu::where('name', $itemName)->first()
-                    ?? Menu::where('name', 'LIKE', '%'.$itemName.'%')->first();
+                $menu = Menu::with('options')->find((int) $menuIdVal);
+            } else {
+                if (is_string($menuIdVal) && trim($menuIdVal) !== '') {
+                    $trimmedId = trim($menuIdVal);
+                    $menu = Menu::with('options')->where('slug', $trimmedId)->first();
+                    if (! $menu && str_starts_with($trimmedId, 'menu-') && is_numeric(substr($trimmedId, 5))) {
+                        $menu = Menu::with('options')->find((int) substr($trimmedId, 5));
+                    }
+                }
+                if (! $menu && ! empty($item['menu_name'] ?? $item['name'] ?? null)) {
+                    $itemName = trim((string) ($item['menu_name'] ?? $item['name']));
+                    $menu = Menu::with('options')->where('name', $itemName)->first()
+                        ?? Menu::with('options')->where('name', 'LIKE', '%'.$itemName.'%')->first();
+                }
             }
 
-            if ($menuExistsInDb && $menu) {
+            if ($menuExistsInDb) {
+                if (! $menu) {
+                    $displayName = trim((string) ($item['menu_name'] ?? $item['name'] ?? ('#'.$menuIdVal)));
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Menu '{$displayName}' tidak ditemukan dalam daftar menu kami.",
+                    ], 422);
+                }
+
                 if (! $menu->is_available) {
                     return response()->json([
                         'success' => false,
@@ -1719,12 +1984,24 @@ class NucomuController extends Controller
                 }
 
                 $unitPrice = (int) $menu->price;
+                if ($menu->options->isNotEmpty() && ! empty($item['options']) && is_array($item['options'])) {
+                    $optionPricesByName = $menu->options->keyBy(fn (MenuOption $opt) => strtolower(trim($opt->name)));
+                    foreach ($item['options'] as $selectedOpt) {
+                        $optLabel = is_array($selectedOpt)
+                            ? strtolower(trim((string) ($selectedOpt['name'] ?? $selectedOpt['value'] ?? '')))
+                            : strtolower(trim((string) $selectedOpt));
+                        if ($optLabel !== '' && $optionPricesByName->has($optLabel)) {
+                            $unitPrice += max(0, (int) $optionPricesByName->get($optLabel)->price);
+                        }
+                    }
+                }
+
                 $menuName = $menu->name;
                 $validMenuId = $menu->id;
             } else {
                 $unitPrice = (int) ($item['unit_price'] ?? $item['price'] ?? 0);
                 $menuName = (string) ($item['menu_name'] ?? $item['name'] ?? 'Menu');
-                $validMenuId = is_numeric($menuIdVal) && Menu::whereKey($menuIdVal)->exists() ? (int) $menuIdVal : null;
+                $validMenuId = null;
             }
 
             $lineTotal = $unitPrice * $qty;
@@ -1759,6 +2036,7 @@ class NucomuController extends Controller
             'customer_lng' => 'nullable|numeric',
             'courier_index' => 'nullable|integer|min:1',
             'process_method' => 'nullable|string|in:kasir,zendo',
+            'barcode_type' => 'nullable|string|in:qr,barcode',
             'dine_type' => 'nullable|string|in:dine_in,take_away',
             'table_no' => 'nullable|string|max:50',
             'items' => 'required|array|min:1',
@@ -1842,15 +2120,38 @@ class NucomuController extends Controller
             $storedNotes = implode(' | ', $zendoParts);
         }
 
-        $paymentMethod = ($processMethod === 'kasir' && $request->input('payment_method') === 'qris') ? 'qris' : 'cash';
+        $allowCash = (bool) ($txSettings['order_dine_in_cash'] ?? true);
+        $allowQris = (bool) ($txSettings['order_dine_in_qris'] ?? true);
+        $requestedPayment = strtolower((string) $request->input('payment_method', 'cash'));
+        if ($processMethod === 'kasir') {
+            if ($requestedPayment === 'qris' && $allowQris) {
+                $paymentMethod = 'qris';
+            } elseif (! $allowCash && $allowQris) {
+                $paymentMethod = 'qris';
+            } else {
+                $paymentMethod = 'cash';
+            }
+        } else {
+            $paymentMethod = 'cash';
+        }
+
+        $orderChannel = $processMethod === 'zendo' ? Order::CHANNEL_ZENDO : Order::CHANNEL_DIRECT;
+        $requestedBarcodeType = strtolower(trim((string) $request->input('barcode_type', Order::BARCODE_QR)));
+        $barcodeType = $orderChannel === Order::CHANNEL_DIRECT
+            ? ($requestedBarcodeType === Order::BARCODE_LINEAR ? Order::BARCODE_LINEAR : Order::BARCODE_QR)
+            : null;
 
         try {
-            $order = DB::transaction(function () use ($request, $processMethod, $paymentMethod, $dineType, $customerPhone, $storedNotes, $subtotal, $grandTotal, $deliveryAddress, $deliveryFee, $distanceKm, $tableNo, $customerLat, $customerLng) {
+            $order = DB::transaction(function () use ($request, $processMethod, $orderChannel, $barcodeType, $paymentMethod, $dineType, $customerPhone, $storedNotes, $subtotal, $grandTotal, $deliveryAddress, $deliveryFee, $distanceKm, $tableNo, $customerLat, $customerLng) {
                 $date = Carbon::now()->format('Ymd');
                 $count = Order::whereDate('created_at', today())->count() + 1;
-                $code = 'NCM-'.$date.'-'.str_pad($count, 3, '0', STR_PAD_LEFT);
+                $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
+                while (Order::where('code', $code)->exists()) {
+                    $count++;
+                    $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
+                }
 
-                $order = Order::create([
+                $orderPayload = [
                     'code' => $code,
                     'customer_name' => $request->customer_name,
                     'customer_phone' => $customerPhone !== '' ? $customerPhone : ($processMethod === 'zendo' ? 'Via Zendo WA' : '-'),
@@ -1858,6 +2159,9 @@ class NucomuController extends Controller
                     'delivery_address' => $processMethod === 'zendo' ? $deliveryAddress : null,
                     'delivery_fee' => $deliveryFee,
                     'form_data' => [
+                        'channel' => $orderChannel,
+                        'barcode_type' => $barcodeType,
+                        'source' => 'web',
                         'customer_lat' => $customerLat,
                         'customer_lng' => $customerLng,
                         'distance_km' => $distanceKm,
@@ -1870,7 +2174,16 @@ class NucomuController extends Controller
                     'payment_method' => $paymentMethod,
                     'payment_status' => 'unpaid',
                     'status' => $processMethod === 'zendo' ? 'processing' : 'pending',
-                ]);
+                ];
+
+                if (Schema::hasColumn('orders', 'order_channel')) {
+                    $orderPayload['order_channel'] = $orderChannel;
+                }
+                if (Schema::hasColumn('orders', 'barcode_type')) {
+                    $orderPayload['barcode_type'] = $barcodeType;
+                }
+
+                $order = Order::create($orderPayload);
 
                 foreach ($request->items as $item) {
                     $menuIdVal = $item['menu_id'] ?? null;
@@ -1976,6 +2289,9 @@ class NucomuController extends Controller
             return response()->json([
                 'success' => true,
                 'process_method' => $processMethod,
+                'order_channel' => $orderChannel,
+                'barcode_type' => $barcodeType,
+                'uses_barcode' => $orderChannel === Order::CHANNEL_DIRECT,
                 'send_mode' => $zendoSendMode,
                 'auto_sent' => $autoSent,
                 'courier_index' => $courierIndex,
@@ -1993,6 +2309,7 @@ class NucomuController extends Controller
                 'slip_url' => $processMethod === 'kasir' ? route('nucomu.order.slip', [
                     'code' => $orderCode,
                     'method' => 'kasir',
+                    'barcode_mode' => $barcodeType ?? Order::BARCODE_QR,
                 ]) : null,
                 'tracking_url' => $hideLiveTracking ? null : $trackingUrl,
                 'hide_live_tracking' => $hideLiveTracking,
@@ -2064,13 +2381,19 @@ class NucomuController extends Controller
         $transactionMode = $txSettings['transaction_mode'];
         $zendoWaClean = $txSettings['zendo_whatsapp_clean'];
 
-        $isZendoOrder = str_starts_with((string) $order->notes, '[KURIR ZENDO]')
+        $isZendoOrder = $order->channel === Order::CHANNEL_ZENDO
             || $request->query('method') === 'zendo'
             || ($order->order_type === 'take_away' && $transactionMode === 'zendo');
+        $isPartnerOrder = ! $order->uses_barcode || $isZendoOrder;
 
-        if ($isZendoOrder) {
+        if ($isPartnerOrder) {
             return redirect()->route('nucomu.order');
         }
+
+        $requestedBarcodeMode = strtolower(trim((string) $request->query('barcode_mode', '')));
+        $initialBarcodeMode = in_array($requestedBarcodeMode, [Order::BARCODE_QR, Order::BARCODE_LINEAR], true)
+            ? $requestedBarcodeMode
+            : ($order->effective_barcode_type ?? Order::BARCODE_QR);
 
         // Detect appropriate host for scanning via Google Lens / mobile phone
         $host = $request->getHost();
@@ -2138,8 +2461,13 @@ class NucomuController extends Controller
             $customerLng
         );
 
+        $brand = self::resolveBrandSettings();
+        $contact = self::getContactSettings();
+
         return view('nucomu.order-slip', compact(
             'order',
+            'brand',
+            'contact',
             'adminOrderUrl',
             'host',
             'portSuffix',
@@ -2153,7 +2481,8 @@ class NucomuController extends Controller
             'customerLng',
             'cleanNotes',
             'zendoWaClean',
-            'zendoWhatsappUrl'
+            'zendoWhatsappUrl',
+            'initialBarcodeMode'
         ));
     }
 
@@ -2641,6 +2970,7 @@ class NucomuController extends Controller
 
             return [
                 'id' => $menu->slug ?: 'menu-'.$menu->id,
+                'menu_id' => $menu->id,
                 'name' => $menu->name,
                 'category' => $catSlug,
                 'category_label' => $menu->category->name ?? ucfirst($catSlug),
@@ -2680,6 +3010,7 @@ class NucomuController extends Controller
 
             return [
                 'id' => $menu->slug ?: 'menu-'.$menu->id,
+                'menu_id' => $menu->id,
                 'name' => $menu->name,
                 'display_title' => $this->formatBestMenuDisplayTitle($menu->name),
                 'category' => $catSlug,

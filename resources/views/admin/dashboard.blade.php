@@ -289,6 +289,8 @@
                                     <span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Pending</span>
                                 @elseif($order->status === 'processing')
                                     <span class="bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Diproses</span>
+                                @elseif($order->status === 'ready')
+                                    <span class="bg-indigo-50 text-indigo-800 border border-indigo-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Siap</span>
                                 @elseif($order->status === 'completed')
                                     <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase inline-block">Selesai</span>
                                 @else
@@ -370,6 +372,8 @@
                                         <span class="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Pending</span>
                                     @elseif($order->status === 'processing')
                                         <span class="bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Diproses</span>
+                                    @elseif($order->status === 'ready')
+                                        <span class="bg-indigo-50 text-indigo-800 border border-indigo-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Siap</span>
                                     @elseif($order->status === 'completed')
                                         <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Selesai</span>
                                     @else

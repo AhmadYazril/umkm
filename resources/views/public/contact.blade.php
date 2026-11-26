@@ -278,9 +278,4 @@
     })();
 </script>
 @endpush
-
-        </div>
-
-    </div>
-</section>
 @endsection

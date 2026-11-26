@@ -51,19 +51,33 @@
                     </div>
                     @php
                         $statusMap = [
-                            'pending'    => ['label' => 'Menunggu',  'cls' => 'bg-amber-50 text-amber-800 border-amber-200'],
-                            'processing' => ['label' => 'Diproses',  'cls' => 'bg-blue-50 text-blue-800 border-blue-200'],
-                            'completed'  => ['label' => 'Selesai',   'cls' => 'bg-emerald-50 text-emerald-800 border-emerald-200'],
-                            'cancelled'  => ['label' => 'Dibatalkan','cls' => 'bg-rose-50 text-rose-800 border-rose-200'],
+                            'pending'    => ['label' => 'Menunggu',    'cls' => 'bg-amber-50 text-amber-800 border-amber-200'],
+                            'processing' => ['label' => 'Diproses',    'cls' => 'bg-blue-50 text-blue-800 border-blue-200'],
+                            'ready'      => ['label' => 'Siap Diambil','cls' => 'bg-indigo-50 text-indigo-800 border-indigo-200'],
+                            'completed'  => ['label' => 'Selesai',     'cls' => 'bg-emerald-50 text-emerald-800 border-emerald-200'],
+                            'cancelled'  => ['label' => 'Dibatalkan',  'cls' => 'bg-rose-50 text-rose-800 border-rose-200'],
                         ];
                         $s = $statusMap[$order->status] ?? ['label' => $order->status, 'cls' => 'bg-warm-stone text-gray-800 border-hairline'];
                     @endphp
                     <span class="text-xs font-bold px-3 py-1 rounded-full border {{ $s['cls'] }}">{{ $s['label'] }}</span>
                 </div>
 
-                <div class="mt-3 pt-3 border-t border-hairline">
-                    <p class="text-xs text-gray-500">Nama Pemesan</p>
-                    <p class="font-bold text-ink-black text-base">{{ $order->customer_name }}</p>
+                <div class="mt-3 pt-3 border-t border-hairline flex items-center justify-between gap-2">
+                    <div>
+                        <p class="text-xs text-gray-500">Nama Pemesan</p>
+                        <p class="font-bold text-ink-black text-base">{{ $order->customer_name }}</p>
+                    </div>
+                    @if($order->channel === 'zendo')
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-[10px] font-bold">
+                            <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-4 h-4 rounded-full object-cover">
+                            <span>Zendo</span>
+                        </span>
+                    @elseif($order->channel === 'grab')
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
+                            <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-4 h-4 rounded object-contain">
+                            <span>GrabFood</span>
+                        </span>
+                    @endif
                 </div>
 
                 <div class="mt-2 flex items-center gap-3 text-[11px] text-gray-500 font-mono">
