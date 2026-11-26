@@ -41,6 +41,25 @@
 @endphp
 
 <style>
+    :root {
+        --menu-avatar-border: #FFFFFF;
+        --menu-avatar-shadow: 0 6px 16px rgba(0, 0, 0, 0.14), 0 14px 28px -6px rgba(0, 0, 0, 0.16);
+        --menu-avatar-hover-shadow: 0 18px 36px -6px rgba(0, 0, 0, 0.24);
+        --menu-card-hover-shadow: 0 22px 44px -12px rgba(0, 0, 0, 0.16);
+        --menu-card-open-shadow: 0 26px 52px -12px rgba(0, 0, 0, 0.20);
+        --floating-cart-hover-shadow: 0 18px 40px -8px rgba(0, 0, 0, 0.22);
+    }
+
+    [data-theme="dark"],
+    .dark {
+        --menu-avatar-border: #1E1E1E;
+        --menu-avatar-shadow: 0 6px 16px rgba(0, 0, 0, 0.55), 0 16px 32px -4px rgba(0, 0, 0, 0.65);
+        --menu-avatar-hover-shadow: 0 22px 42px rgba(0, 0, 0, 0.75);
+        --menu-card-hover-shadow: 0 24px 54px rgba(0, 0, 0, 0.72);
+        --menu-card-open-shadow: 0 28px 60px rgba(0, 0, 0, 0.78);
+        --floating-cart-hover-shadow: 0 22px 52px rgba(0, 0, 0, 0.72);
+    }
+
     /* Typography: Tabular numbers for price consistency */
     .menu-card-price-row, .card-price, .font-editorial-num, .lining-nums {
         font-variant-numeric: tabular-nums;
@@ -83,28 +102,31 @@
         position: relative;
     }
 
-    /* Menu Card: In-flow card with rounded corners, layered 3D shadow, and smooth border transitions */
+    /* Menu Card: In-flow glass/surface card with rounded corners, soft glow, and smooth border transitions */
     .menu-card {
         position: relative;
         width: 100%;
-        background-color: #ffffff;
+        background-color: var(--surface-solid);
+        background-image: var(--glow);
         border-radius: 24px;
-        border: 1.5px solid #ece7de;
-        box-shadow:
-            0 2px 5px rgba(44, 40, 37, 0.05),
-            0 8px 18px -4px rgba(44, 40, 37, 0.10);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
         padding: 56px 11px 14px 11px;
         text-align: center;
         box-sizing: border-box;
-        transition: border-color 0.28s ease, box-shadow 0.28s ease;
+        transition: border-color 0.28s ease, box-shadow 0.28s ease, background-color 0.28s ease;
+    }
+    @supports ((backdrop-filter: blur(10px)) or (-webkit-backdrop-filter: blur(10px))) {
+        .menu-card {
+            background-color: var(--surface);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
     }
     @media (min-width: 640px) {
         .menu-card {
             border-radius: 28px;
-            box-shadow:
-                0 2px 6px rgba(44, 40, 37, 0.06),
-                0 10px 24px -4px rgba(44, 40, 37, 0.12),
-                0 22px 42px -10px rgba(44, 40, 37, 0.14);
+            box-shadow: var(--shadow);
             padding: 72px 16px 20px 16px;
         }
     }
@@ -123,12 +145,12 @@
         user-select: none;
     }
     .menu-card-header-btn:focus-visible {
-        outline: 2px solid #78726b;
+        outline: 2px solid var(--field-focus);
         outline-offset: 4px;
         border-radius: 16px;
     }
 
-    /* Overhanging Large Circular Photo with Thick White Border (Overhangs card top edge) */
+    /* Overhanging Large Circular Photo */
     .menu-card-avatar {
         position: absolute;
         top: -44px;
@@ -138,12 +160,10 @@
         width: 94px;
         height: 94px;
         border-radius: 50%;
-        border: 4px solid #ffffff;
-        box-shadow:
-            0 4px 10px rgba(44, 40, 37, 0.10),
-            0 10px 20px -4px rgba(44, 40, 37, 0.18);
+        border: 4px solid var(--menu-avatar-border);
+        box-shadow: var(--menu-avatar-shadow);
         overflow: hidden;
-        background-color: #faf7f2;
+        background-color: var(--media-bg);
         padding: 0;
         margin: 0;
         display: block;
@@ -155,7 +175,7 @@
         will-change: transform, box-shadow;
     }
     .menu-card-avatar:focus-visible {
-        outline: 2px solid #242424;
+        outline: 2px solid var(--field-focus);
         outline-offset: 3px;
     }
     @media (min-width: 640px) {
@@ -163,11 +183,8 @@
             top: -62px;
             width: 126px;
             height: 126px;
-            border-width: 6px;
-            box-shadow:
-                0 4px 10px rgba(44, 40, 37, 0.10),
-                0 12px 24px -4px rgba(44, 40, 37, 0.22),
-                0 20px 36px -8px rgba(44, 40, 37, 0.16);
+            border-width: 5px;
+            box-shadow: var(--menu-avatar-shadow);
         }
     }
     .menu-card-avatar img {
@@ -177,13 +194,13 @@
         display: block;
     }
 
-    /* Menu Title: Nunito bold with consistent min-height for clean row alignment */
+    /* Menu Title: bold with consistent min-height for clean row alignment */
     .menu-card-name {
         font-family: var(--font-sans), sans-serif;
         font-size: 0.92rem;
         font-weight: 700;
         line-height: 1.22;
-        color: #191919;
+        color: var(--text);
         margin-bottom: 4px;
         min-height: 2.3rem;
         display: flex;
@@ -208,7 +225,7 @@
         font-family: var(--font-sans), sans-serif;
         font-size: 0.94rem;
         font-weight: 700;
-        color: #191919;
+        color: var(--text);
         white-space: nowrap;
         font-variant-numeric: tabular-nums;
     }
@@ -221,7 +238,7 @@
     .menu-card-unit {
         font-size: 0.75rem;
         font-weight: 500;
-        color: #8a8a86;
+        color: var(--text-muted);
     }
 
     /* Drawer Container: in-flow collapsible section */
@@ -236,10 +253,10 @@
     /* Divider Line: becomes visible inside drawer when opened */
     .menu-card-divider {
         height: 1px;
-        background-color: #ded8ce;
+        background-color: var(--border);
         margin: 10px auto 10px auto;
         width: 80%;
-        opacity: 0.85;
+        opacity: 0.9;
     }
 
     /* Drawer Inner Content: options, description, and action button */
@@ -250,63 +267,46 @@
         padding-top: 2px;
     }
 
-    /* Keadaan 1: HOVER (Kursor di atas kartu: foto membesar 1.10x & naik 3px, kartu tidak berubah ukuran sama sekali) */
+    /* Keadaan 1: HOVER */
     @media (hover: hover) and (pointer: fine) {
         .menu-card:hover {
             z-index: 25;
             cursor: pointer;
         }
         .menu-card:not(.is-open):hover {
-            border-color: #ffffff;
-            box-shadow:
-                0 4px 10px rgba(44, 40, 37, 0.08),
-                0 14px 30px -4px rgba(44, 40, 37, 0.18),
-                0 26px 48px -10px rgba(44, 40, 37, 0.18);
+            border-color: var(--card-hover-border);
+            box-shadow: var(--menu-card-hover-shadow);
         }
         /* Foto bulat membesar mendekat ke depan dan bayangan lebih tegas */
         .menu-card:hover .menu-card-avatar {
             transform: translateX(-50%) translateY(-3px) scale(1.10);
-            box-shadow:
-                0 6px 14px rgba(44, 40, 37, 0.12),
-                0 16px 32px -4px rgba(44, 40, 37, 0.26),
-                0 24px 44px -8px rgba(44, 40, 37, 0.20);
+            box-shadow: var(--menu-avatar-hover-shadow);
             z-index: 30;
         }
     }
 
-    /* Fokus Keyboard (:has(:focus-visible)) hanya memberi zoom saat navigasi keyboard, bukan klik mouse */
+    /* Fokus Keyboard (:has(:focus-visible)) */
     .menu-card:has(:focus-visible):not(.is-open) {
-        border-color: #ffffff;
-        box-shadow:
-            0 4px 10px rgba(44, 40, 37, 0.08),
-            0 14px 30px -4px rgba(44, 40, 37, 0.18),
-            0 26px 48px -10px rgba(44, 40, 37, 0.18);
+        border-color: var(--border-strong);
+        box-shadow: var(--menu-card-hover-shadow);
         z-index: 25;
     }
     .menu-card:has(:focus-visible) .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
-        box-shadow:
-            0 6px 14px rgba(44, 40, 37, 0.12),
-            0 16px 32px -4px rgba(44, 40, 37, 0.26),
-            0 24px 44px -8px rgba(44, 40, 37, 0.20);
+        box-shadow: var(--menu-avatar-hover-shadow);
         z-index: 30;
     }
 
-    /* Keadaan 2: KLIK (Kartu terbuka penuh: border putih #ffffff, bayangan netral 3D lembut, foto TETAP membesar selama kartu terbuka) */
+    /* Keadaan 2: KLIK (Kartu terbuka penuh) */
     .menu-card.is-open {
         z-index: 35;
-        border-color: #ffffff !important;
-        box-shadow:
-            0 4px 12px rgba(0, 0, 0, 0.08),
-            0 18px 36px -4px rgba(0, 0, 0, 0.18),
-            0 28px 54px -10px rgba(0, 0, 0, 0.18) !important;
+        background-color: var(--surface-elevated);
+        border-color: var(--border-strong) !important;
+        box-shadow: var(--menu-card-open-shadow) !important;
     }
     .menu-card.is-open .menu-card-avatar {
         transform: translateX(-50%) translateY(-3px) scale(1.10);
-        box-shadow:
-            0 6px 14px rgba(44, 40, 37, 0.12),
-            0 16px 32px -4px rgba(44, 40, 37, 0.26),
-            0 24px 44px -8px rgba(44, 40, 37, 0.20);
+        box-shadow: var(--menu-avatar-hover-shadow);
         z-index: 30;
     }
     .menu-card.is-open .menu-card-drawer-content {
@@ -332,7 +332,7 @@
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.04em;
-        color: #3a3632;
+        color: var(--text);
         margin-bottom: 4px;
         display: block;
     }
@@ -341,17 +341,17 @@
         align-items: center;
         gap: 5px;
         font-size: 0.72rem;
-        color: #5c5751;
+        color: var(--text-muted);
         cursor: pointer;
         padding: 1.5px 0;
         transition: color 0.15s ease;
         user-select: none;
     }
     .radio-pill-label:hover {
-        color: #191919;
+        color: var(--text);
     }
     .radio-pill-label input[type="radio"] {
-        accent-color: #191919;
+        accent-color: var(--accent-solid);
         width: 12px;
         height: 12px;
         cursor: pointer;
@@ -359,10 +359,10 @@
         flex-shrink: 0;
     }
 
-    /* Short Description for Menu without Options: max 2 lines, gray, small, centered */
+    /* Short Description for Menu without Options */
     .menu-card-desc {
         font-size: 0.72rem;
-        color: #78726b;
+        color: var(--text-muted);
         line-height: 1.35;
         margin: 6px 0 10px 0;
         text-align: center;
@@ -377,8 +377,8 @@
         width: 100%;
         padding: 8px 12px;
         border-radius: 9999px;
-        background-color: #191919;
-        color: #ffffff;
+        background-color: var(--accent-solid);
+        color: var(--accent-solid-text);
         font-size: 0.75rem;
         font-weight: 700;
         letter-spacing: 0.02em;
@@ -388,12 +388,12 @@
         gap: 6px;
         border: none;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(25, 25, 25, 0.15);
+        box-shadow: var(--shadow-soft);
         transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
     }
     .btn-add-cart:hover {
-        background-color: #000000;
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+        background-color: var(--accent-solid-hover);
+        box-shadow: var(--shadow);
     }
     .btn-add-cart:active {
         transform: scale(0.97);
@@ -403,7 +403,8 @@
         color: #ffffff !important;
     }
     .btn-add-cart.disabled {
-        background-color: #a8a29e !important;
+        background-color: var(--badge-bg) !important;
+        color: var(--text-faint) !important;
         cursor: not-allowed;
         box-shadow: none;
     }
@@ -419,14 +420,16 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        background-color: #191919;
-        border: 1.5px solid rgba(255, 255, 255, 0.14);
+        background-color: var(--glass-surface-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
         border-radius: 18px;
         padding: 11px 16px;
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28), 0 2px 8px rgba(0, 0, 0, 0.12);
+        box-shadow: var(--shadow);
         cursor: pointer;
         transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, opacity 0.3s ease;
-        color: #ffffff;
+        color: var(--text);
     }
     @media (min-width: 640px) {
         .floating-cart-pill {
@@ -435,18 +438,14 @@
             right: 24px;
             justify-content: flex-start;
             gap: 8px;
-            background-color: #ffffff;
-            border: 1.5px solid #ded8ce;
             border-radius: 9999px;
             padding: 8px 18px 8px 12px;
-            box-shadow: 0 10px 30px rgba(44, 40, 37, 0.12), 0 2px 6px rgba(44, 40, 37, 0.04);
-            color: #191919;
         }
     }
     .floating-cart-pill:hover {
         transform: translateY(-2px);
-        border-color: #242424;
-        box-shadow: 0 14px 38px rgba(0, 0, 0, 0.14);
+        border-color: var(--border-strong);
+        box-shadow: var(--floating-cart-hover-shadow);
     }
     .floating-cart-pill:active {
         transform: scale(0.97);
@@ -465,11 +464,11 @@
     /* Drawer Scrollbar */
     .drawer-scroll {
         scrollbar-width: thin;
-        scrollbar-color: rgba(0, 0, 0, 0.25) #F9F9F9;
+        scrollbar-color: var(--scrollbar-thumb) var(--surface-solid);
     }
     .drawer-scroll::-webkit-scrollbar { width: 5px; }
-    .drawer-scroll::-webkit-scrollbar-track { background: #F9F9F9; }
-    .drawer-scroll::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 9999px; }
+    .drawer-scroll::-webkit-scrollbar-track { background: var(--surface-solid); }
+    .drawer-scroll::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 9999px; }
 
     /* Reduced Motion: matikan zoom dan gerak naik, ganti dengan perubahan garis tepi dan bayangan saja */
     @media (prefers-reduced-motion: reduce) {
@@ -493,8 +492,8 @@
 <div id="cart-aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <!-- =========================================================================
-     1. FLOATING BOTTOM-RIGHT CAPSULE BUTTON (Exact Match to Video Scene 3)
-     White Pill with thin border, shopping cart icon, count badge, and "My cart: Rp [total]"
+     1. FLOATING BOTTOM-RIGHT CAPSULE BUTTON
+     Pill with thin border, shopping cart icon, count badge, and "My cart: Rp [total]"
      ========================================================================= -->
 @if($isAnyOrderModeActive)
 <button type="button" 
@@ -504,50 +503,49 @@
         aria-label="Lihat Keranjang Belanja">
     <div class="flex items-center gap-2.5 sm:gap-2">
         <div class="relative flex items-center">
-            <span class="material-symbols-outlined text-white sm:text-neutral-900 text-xl">shopping_cart</span>
+            <span class="material-symbols-outlined text-[var(--text)] text-xl">shopping_cart</span>
             <span id="floating-cart-badge" 
-                  class="absolute -top-2 -right-2 bg-white text-neutral-900 sm:bg-neutral-900 sm:text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                  class="absolute -top-2 -right-2 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
                 0
             </span>
         </div>
-        <span class="font-body text-xs font-bold sm:font-semibold text-white sm:text-neutral-800 tracking-wide">
+        <span class="font-body text-xs font-bold sm:font-semibold text-[var(--text-muted)] tracking-wide">
             My cart:
         </span>
     </div>
     <div class="flex items-center gap-1.5">
-        <span id="floating-cart-total" class="font-editorial-num text-xs sm:text-xs font-bold text-white sm:text-neutral-900">
+        <span id="floating-cart-total" class="font-editorial-num text-xs font-bold text-[var(--text)]">
             Rp 0
         </span>
-        <span class="material-symbols-outlined text-base text-white/80 sm:hidden">chevron_right</span>
+        <span class="material-symbols-outlined text-base text-[var(--text-muted)] sm:hidden">chevron_right</span>
     </div>
 </button>
 @endif
 
 <!-- =========================================================================
-     2. BACKDROP OVERLAY & SLIDE-OVER DRAWER (Exact Match to Video Scene 4)
-     Slides in from right (w-full max-w-[420px], ~90% on mobile)
+     2. BACKDROP OVERLAY & SLIDE-OVER DRAWER
      ========================================================================= -->
 <div id="cart-drawer-backdrop" 
-     class="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300"
+     class="fixed inset-0 bg-black/70 backdrop-blur-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300"
      onclick="closeCartDrawer()"
      aria-hidden="true">
 </div>
 
 <aside id="cart-drawer-panel" 
-       class="fixed top-0 right-0 h-full w-full max-w-[420px] bg-white z-50 shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-stone-200"
+       class="fixed top-0 right-0 h-full w-full max-w-[420px] bg-[var(--surface-solid)] z-50 shadow-2xl flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-in-out border-l border-[var(--border)]"
        role="dialog"
        aria-modal="true"
        aria-labelledby="drawer-cart-title">
     
     <!-- DRAWER HEADER -->
-    <div class="p-4 sm:p-5 border-b border-stone-200/90 flex items-center justify-between bg-stone-50/90 shrink-0">
+    <div class="p-4 sm:p-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--surface-strong-solid)] shrink-0">
         <!-- View 1: Cart Header -->
         <div id="cart-header-items" class="flex items-center space-x-2.5">
-            <span class="material-symbols-outlined text-neutral-900 text-2xl">shopping_cart</span>
-            <h3 id="drawer-cart-title" class="font-editorial text-2xl font-bold text-neutral-900 tracking-tight">
+            <span class="material-symbols-outlined text-[var(--text)] text-2xl">shopping_cart</span>
+            <h3 id="drawer-cart-title" class="font-editorial text-2xl font-bold text-[var(--text)] tracking-tight">
                 My cart
             </h3>
-            <span id="cart-header-count" class="px-2 py-0.5 text-xs font-bold rounded-full bg-neutral-100 border border-neutral-200 text-neutral-900">
+            <span id="cart-header-count" class="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)]">
                 0
             </span>
         </div>
@@ -556,19 +554,19 @@
         <div id="cart-header-checkout" class="hidden items-center space-x-2.5">
             <button type="button" 
                     onclick="switchCartView('items')" 
-                    class="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 flex items-center justify-center transition-colors cursor-pointer"
+                    class="w-8 h-8 rounded-full bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="Kembali ke keranjang">
                 <span class="material-symbols-outlined text-base">arrow_back</span>
             </button>
-            <h3 class="font-editorial text-xl font-bold text-neutral-900 tracking-tight">
+            <h3 class="font-editorial text-xl font-bold text-[var(--text)] tracking-tight">
                 Checkout Pesanan
             </h3>
         </div>
 
         <!-- View 3: Success Header (Initially hidden) -->
         <div id="cart-header-success" class="hidden items-center space-x-2.5">
-            <span class="material-symbols-outlined text-emerald-600 text-2xl">check_circle</span>
-            <h3 class="font-editorial text-xl font-bold text-neutral-900 tracking-tight">
+            <span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-2xl">check_circle</span>
+            <h3 class="font-editorial text-xl font-bold text-[var(--text)] tracking-tight">
                 Pesanan Berhasil
             </h3>
         </div>
@@ -577,14 +575,14 @@
         <button type="button" 
                 id="cart-drawer-close-btn"
                 onclick="closeCartDrawer()" 
-                class="w-9 h-9 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-600 hover:text-stone-900 flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
+                class="w-9 h-9 rounded-full bg-[var(--badge-bg)] hover:bg-[var(--accent-solid)] hover:text-[var(--accent-solid-text)] text-[var(--text-muted)] flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
                 aria-label="Tutup Keranjang">
             <span class="material-symbols-outlined text-xl">close</span>
         </button>
     </div>
 
     <!-- =========================================================================
-         VIEW 1: CART ITEMS LIST (Scene 4 Reference Design)
+         VIEW 1: CART ITEMS LIST
          ========================================================================= -->
     <div id="cart-view-items" class="flex flex-col flex-grow overflow-hidden">
         <!-- Scrollable Items Area -->
@@ -592,11 +590,11 @@
             
             <!-- Empty State -->
             <div id="cart-empty-state" class="py-16 text-center">
-                <div class="w-16 h-16 mx-auto rounded-full bg-stone-100 flex items-center justify-center text-stone-400 mb-3">
+                <div class="w-16 h-16 mx-auto rounded-full bg-[var(--badge-bg)] border border-[var(--border-soft)] flex items-center justify-center text-[var(--text-faint)] mb-3">
                     <span class="material-symbols-outlined text-3xl">remove_shopping_cart</span>
                 </div>
-                <h4 class="font-editorial text-lg font-bold text-neutral-800">Keranjang Masih Kosong</h4>
-                <p class="font-body text-xs text-neutral-500 max-w-xs mx-auto mt-1 leading-relaxed">
+                <h4 class="font-editorial text-lg font-bold text-[var(--text)]">Keranjang Masih Kosong</h4>
+                <p class="font-body text-xs text-[var(--text-muted)] max-w-xs mx-auto mt-1 leading-relaxed">
                     Pilih sajian favorit Anda di daftar menu untuk mulai memesan.
                 </p>
             </div>
@@ -608,19 +606,19 @@
         </div>
 
         <!-- Cart View Footer: Pricing Breakdown & Checkout Button -->
-        <div id="cart-footer-panel" class="p-4 sm:p-5 border-t border-stone-200 bg-stone-50/90 space-y-3 shrink-0">
+        <div id="cart-footer-panel" class="p-4 sm:p-5 border-t border-[var(--border)] bg-[var(--surface-strong-solid)] space-y-3 shrink-0">
             <div class="space-y-1.5 text-xs sm:text-sm">
-                <div class="flex items-center justify-between text-neutral-600 font-medium">
+                <div class="flex items-center justify-between text-[var(--text-muted)] font-medium">
                     <span>Subtotal Menu</span>
-                    <span id="cart-subtotal" class="font-semibold text-neutral-900 font-editorial-num">Rp 0</span>
+                    <span id="cart-subtotal" class="font-semibold text-[var(--text)] font-editorial-num">Rp 0</span>
                 </div>
-                <div class="flex items-center justify-between text-neutral-500 text-[11px] sm:text-xs">
+                <div class="flex items-center justify-between text-[var(--text-muted)] text-[11px] sm:text-xs">
                     <span>Diskon / Promo</span>
-                    <span class="font-medium text-emerald-600 font-editorial-num">Rp 0</span>
+                    <span class="font-medium text-emerald-600 dark:text-emerald-400 font-editorial-num">Rp 0</span>
                 </div>
-                <div class="pt-2 border-t border-stone-200/80 flex items-baseline justify-between">
-                    <span class="font-bold text-sm sm:text-base text-neutral-900">Final Total</span>
-                    <span id="cart-final-total" class="font-editorial text-xl font-bold text-neutral-900 font-editorial-num">
+                <div class="pt-2 border-t border-[var(--border-soft)] flex items-baseline justify-between">
+                    <span class="font-bold text-sm sm:text-base text-[var(--text)]">Final Total</span>
+                    <span id="cart-final-total" class="font-editorial text-xl font-bold text-[var(--text)] font-editorial-num">
                         Rp 0
                     </span>
                 </div>
@@ -631,7 +629,7 @@
             <button type="button" 
                     id="cart-checkout-btn"
                     onclick="switchCartView('checkout')" 
-                    class="w-full py-3.5 px-5 rounded-2xl bg-neutral-900 hover:bg-black text-white font-bold text-sm tracking-wide shadow-md shadow-neutral-900/15 active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                    class="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
                 <span>Checkout / Pesan Sekarang</span>
                 <span class="material-symbols-outlined text-lg">arrow_forward</span>
             </button>
@@ -640,7 +638,7 @@
     </div>
 
     <!-- =========================================================================
-         VIEW 2: IN-DRAWER CHECKOUT FORM (Integrated Modul 8)
+         VIEW 2: IN-DRAWER CHECKOUT FORM
          ========================================================================= -->
     <div id="cart-view-checkout" class="hidden flex-col flex-grow overflow-hidden">
         <form id="drawer-checkout-form" onsubmit="submitDrawerCheckout(event)" class="flex flex-col flex-grow overflow-hidden">
@@ -650,29 +648,29 @@
                 <!-- 1. METODE PROSES TRANSAKSI (Kasir vs Zendo Courier) -->
                 @if($orderModeDineIn && $orderModeZendo)
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-neutral-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <label class="text-xs font-bold text-[var(--text)] uppercase tracking-wider flex items-center gap-1.5">
                         <span>1. Metode Pesanan</span>
                     </label>
                     <div class="grid grid-cols-2 gap-2.5">
                         <div id="method-card-kasir" 
                              onclick="selectDrawerMethod('kasir')" 
-                             class="drawer-method-card active p-3 rounded-2xl bg-white border-2 border-neutral-900 shadow-xs cursor-pointer transition-all">
+                             class="drawer-method-card active p-3 rounded-2xl bg-[var(--surface-strong)] border-2 border-[var(--accent-solid)] shadow-xs cursor-pointer transition-all">
                             <div class="flex items-start justify-between">
-                                <span class="material-symbols-outlined text-neutral-900 text-xl">store</span>
-                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-neutral-900"></span>
+                                <span class="material-symbols-outlined text-[var(--text)] text-xl">store</span>
+                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-[var(--accent-solid)]"></span>
                             </div>
-                            <h5 class="text-xs font-bold text-neutral-900 mt-2">Kasir Kafe</h5>
-                            <p class="text-[10px] text-neutral-500 mt-0.5">Dine-In / Takeaway</p>
+                            <h5 class="text-xs font-bold text-[var(--text)] mt-2">Kasir Kafe</h5>
+                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Dine-In / Takeaway</p>
                         </div>
                         <div id="method-card-zendo" 
                              onclick="selectDrawerMethod('zendo')" 
-                             class="drawer-method-card p-3 rounded-2xl bg-white border-2 border-stone-200 hover:border-stone-400 cursor-pointer transition-all">
+                             class="drawer-method-card p-3 rounded-2xl bg-[var(--surface)] border-2 border-[var(--border)] hover:border-[var(--border-strong)] cursor-pointer transition-all">
                             <div class="flex items-start justify-between">
-                                <span class="material-symbols-outlined text-stone-400 text-xl">two_wheeler</span>
-                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-stone-300"></span>
+                                <span class="material-symbols-outlined text-[var(--text-muted)] text-xl">two_wheeler</span>
+                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-[var(--border-strong)]"></span>
                             </div>
-                            <h5 class="text-xs font-bold text-neutral-900 mt-2">Kurir Zendo</h5>
-                            <p class="text-[10px] text-neutral-500 mt-0.5">{{ count($zendoCouriers) }} Kurir Siaga</p>
+                            <h5 class="text-xs font-bold text-[var(--text)] mt-2">Kurir Zendo</h5>
+                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">{{ count($zendoCouriers) }} Kurir Siaga</p>
                         </div>
                     </div>
                 </div>
@@ -681,26 +679,27 @@
                 <!-- 2. DATA PEMESAN -->
                 <div class="space-y-3">
                     <div>
-                        <label for="drawer-customer-name" class="block text-xs font-bold text-neutral-800 uppercase tracking-wider mb-1">
-                            Nama Pemesan <span class="text-rose-500">*</span>
+                        <label for="drawer-customer-name" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Nama Pemesan <span class="text-[var(--error-text)]">*</span>
                         </label>
                         <input type="text" 
                                id="drawer-customer-name" 
                                required 
                                placeholder="Nama lengkap atau panggilan..." 
-                               class="w-full py-2.5 px-3 rounded-xl bg-white border border-stone-200 text-neutral-900 text-xs focus:outline-none focus:border-neutral-900 transition-all placeholder:text-stone-400">
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                     </div>
                     <div>
-                        <label for="drawer-customer-phone" class="block text-xs font-bold text-neutral-800 uppercase tracking-wider mb-1">
-                            Nomor WhatsApp <span class="text-rose-500">*</span>
+                        <label for="drawer-customer-phone" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Nomor WhatsApp <span class="text-[var(--error-text)]">*</span>
                         </label>
                         <input type="tel" 
                                id="drawer-customer-phone" 
                                required 
                                placeholder="08xxxxxxxxxx" 
-                               class="w-full py-2.5 px-3 rounded-xl bg-white border border-stone-200 text-neutral-900 text-xs focus:outline-none focus:border-neutral-900 transition-all placeholder:text-stone-400">
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                     </div>
 
+<<<<<<< HEAD
                     <!-- Kasir Specific: Nomor Meja & Pilihan Format Barcode -->
                     <div id="drawer-field-table" class="space-y-3">
                         <div>
@@ -740,11 +739,54 @@
                                 </button>
                             </div>
                             <p class="text-[10px] text-neutral-500">Bisa diubah kapan saja saat menunjukkan slip ke kasir.</p>
+=======
+                    <!-- Kasir Specific: Nomor Meja -->
+                    <div id="drawer-field-table">
+                        <label for="drawer-customer-table" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Nomor Meja <span class="text-[var(--text-muted)] font-normal">(Kosongkan jika Take Away)</span>
+                        </label>
+                        <input type="text" 
+                               id="drawer-customer-table" 
+                               placeholder="Contoh: Meja 05 / Take Away" 
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
+                    </div>
+
+                    <!-- Kasir Specific: Metode Pembayaran (Dine-In / Take Away) -->
+                    <div id="drawer-field-payment" class="space-y-2 {{ $initialProcessMethod === 'zendo' ? 'hidden' : '' }}">
+                        <label class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider">
+                            Metode Pembayaran
+                        </label>
+                        <input type="hidden" id="drawer-payment-method" value="{{ $orderDineInCash ? 'cash' : ($orderDineInQris ? 'qris' : 'transfer') }}">
+                        <div class="grid grid-cols-3 gap-2">
+                            @if($orderDineInCash)
+                                <button type="button"
+                                        data-drawer-pay="cash"
+                                        onclick="selectDrawerPaymentMethod('cash')"
+                                        class="drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]">
+                                    Tunai
+                                </button>
+                            @endif
+                            @if($orderDineInQris)
+                                <button type="button"
+                                        data-drawer-pay="qris"
+                                        onclick="selectDrawerPaymentMethod('qris')"
+                                        class="drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer {{ ! $orderDineInCash ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]' : 'bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]' }}">
+                                    QRIS
+                                </button>
+                            @endif
+                            <button type="button"
+                                    data-drawer-pay="transfer"
+                                    onclick="selectDrawerPaymentMethod('transfer')"
+                                    class="drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer {{ ! $orderDineInCash && ! $orderDineInQris ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]' : 'bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]' }}">
+                                Transfer
+                            </button>
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         </div>
                     </div>
 
                     <!-- Zendo Specific: Alamat Pengiriman -->
                     <div id="drawer-field-address" class="hidden space-y-2">
+<<<<<<< HEAD
                         <div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-rose-50/70 border border-rose-200/80">
                             <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Kurir Zendo" class="w-8 h-8 rounded-full object-cover shrink-0 bg-white">
                             <p class="text-[10.5px] text-neutral-700 leading-snug">
@@ -753,41 +795,45 @@
                         </div>
                         <label for="drawer-customer-address" class="block text-xs font-bold text-neutral-800 uppercase tracking-wider mb-1">
                             Alamat Pengantaran Zendo <span class="text-rose-500">*</span>
+=======
+                        <label for="drawer-customer-address" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Alamat Pengantaran Zendo <span class="text-[var(--error-text)]">*</span>
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         </label>
                         <textarea id="drawer-customer-address" 
                                   rows="2" 
                                   placeholder="Nama jalan, nomor rumah, patokan..." 
-                                  class="w-full py-2.5 px-3 rounded-xl bg-white border border-stone-200 text-neutral-900 text-xs focus:outline-none focus:border-neutral-900 transition-all placeholder:text-stone-400"></textarea>
+                                  class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]"></textarea>
                     </div>
 
                     <!-- Catatan Tambahan -->
                     <div>
-                        <label for="drawer-order-notes" class="block text-xs font-bold text-neutral-800 uppercase tracking-wider mb-1">
-                            Catatan Tambahan <span class="text-stone-400 font-normal">(opsional)</span>
+                        <label for="drawer-order-notes" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                            Catatan Tambahan <span class="text-[var(--text-muted)] font-normal">(opsional)</span>
                         </label>
                         <input type="text" 
                                id="drawer-order-notes" 
                                placeholder="Contoh: Kurangi es, saus dipisah..." 
-                               class="w-full py-2.5 px-3 rounded-xl bg-white border border-stone-200 text-neutral-900 text-xs focus:outline-none focus:border-neutral-900 transition-all placeholder:text-stone-400">
+                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                     </div>
 
                     <!-- Error Banner -->
-                    <div id="drawer-checkout-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"></div>
+                    <div id="drawer-checkout-error" class="hidden p-3 rounded-xl bg-[var(--error-bg)] border border-[var(--error-border)] text-[var(--error-text)] text-xs"></div>
                 </div>
 
             </div>
 
             <!-- Checkout View Footer: Submit & Back -->
-            <div class="p-4 sm:p-5 border-t border-stone-200 bg-stone-50/90 space-y-2 shrink-0">
+            <div class="p-4 sm:p-5 border-t border-[var(--border)] bg-[var(--surface-strong-solid)] space-y-2 shrink-0">
                 <button type="submit" 
                         id="drawer-submit-btn" 
-                        class="w-full py-3.5 px-5 rounded-2xl bg-neutral-900 hover:bg-black text-white font-bold text-sm tracking-wide shadow-md shadow-neutral-900/15 active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                        class="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
                     <span id="drawer-submit-text">Konfirmasi Pesanan</span>
                     <span id="drawer-submit-spinner" class="hidden animate-spin material-symbols-outlined text-base">progress_activity</span>
                 </button>
                 <button type="button" 
                         onclick="switchCartView('items')" 
-                        class="w-full py-2 text-center text-xs font-semibold text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer">
+                        class="w-full py-2 text-center text-xs font-semibold text-[var(--text-muted)] hover:text-[var(--text)] transition-colors cursor-pointer">
                     ← Kembali ke Daftar Menu
                 </button>
             </div>
@@ -798,18 +844,19 @@
          VIEW 3: SUCCESS & ORDER SLIP QR
          ========================================================================= -->
     <div id="cart-view-success" class="hidden flex-col flex-grow overflow-hidden p-5 sm:p-6 text-center space-y-4 drawer-scroll overflow-y-auto">
-        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+        <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/15 border border-emerald-500/35 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
             <span class="material-symbols-outlined text-3xl">check_circle</span>
         </div>
 
         <div>
-            <span class="text-[11px] font-bold uppercase tracking-widest text-neutral-700 block">PESANAN DITERIMA</span>
-            <h4 class="font-editorial text-2xl font-bold text-neutral-900 mt-0.5" id="success-order-code">NCM-ORDER</h4>
-            <p class="text-xs text-neutral-500 mt-1" id="success-subtext">
+            <span class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-muted)] block">PESANAN DITERIMA</span>
+            <h4 class="font-editorial text-2xl font-bold text-[var(--text)] mt-0.5" id="success-order-code">NCM-ORDER</h4>
+            <p class="text-xs text-[var(--text-muted)] mt-1" id="success-subtext">
                 Tunjukkan QR code ini ke kasir untuk proses pembayaran.
             </p>
         </div>
 
+<<<<<<< HEAD
         <!-- Zendo Partner Banner (Shown only for Zendo — NO barcode) -->
         <div id="drawer-zendo-partner-badge" class="hidden mx-auto w-full p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-center gap-3 text-left">
             <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-11 h-11 rounded-full object-cover shrink-0 shadow-xs bg-white">
@@ -851,23 +898,30 @@
             </div>
 
             <span class="text-[10px] text-neutral-600 font-bold uppercase tracking-wider block" id="success-qr-label">
+=======
+        <!-- QR Code Plate (White quiet-zone preserved for reliable camera QR scanning) -->
+        <div class="bg-white p-4 rounded-3xl border border-[var(--border)] shadow-md mx-auto w-fit flex flex-col items-center justify-center" id="drawer-qr-container">
+            <div id="drawer-qrcode-target"></div>
+            <img id="drawer-qr-fallback" class="hidden w-40 h-40 object-contain rounded" alt="QR Code">
+            <span class="text-[10px] text-[#191919] font-bold uppercase tracking-wider mt-2.5 block" id="success-qr-label">
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                 SCAN DI KASIR
             </span>
         </div>
 
         <!-- Summary Details -->
-        <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 text-xs text-left space-y-1.5">
-            <div class="flex justify-between text-neutral-600">
+        <div class="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-xs text-left space-y-1.5">
+            <div class="flex justify-between text-[var(--text-muted)]">
                 <span>Pemesan:</span>
-                <span id="success-customer-name" class="font-bold text-neutral-900">-</span>
+                <span id="success-customer-name" class="font-bold text-[var(--text)]">-</span>
             </div>
-            <div class="flex justify-between text-neutral-600">
+            <div class="flex justify-between text-[var(--text-muted)]">
                 <span>Tipe:</span>
-                <span id="success-order-type" class="font-bold text-neutral-900">-</span>
+                <span id="success-order-type" class="font-bold text-[var(--text)]">-</span>
             </div>
-            <div class="flex justify-between text-neutral-600 pt-1.5 border-t border-stone-200">
+            <div class="flex justify-between text-[var(--text-muted)] pt-1.5 border-t border-[var(--border-soft)]">
                 <span>Total:</span>
-                <span id="success-total-amount" class="font-bold text-emerald-600 text-sm font-editorial-num">Rp 0</span>
+                <span id="success-total-amount" class="font-bold text-emerald-600 dark:text-emerald-400 text-sm font-editorial-num">Rp 0</span>
             </div>
         </div>
 
@@ -883,13 +937,13 @@
             <a id="success-slip-link" 
                href="#" 
                target="_blank" 
-               class="w-full py-3 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-neutral-800 font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors">
+               class="w-full py-3 px-4 rounded-xl bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] text-[var(--text)] border border-[var(--border)] font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors">
                 <span class="material-symbols-outlined text-sm">receipt_long</span>
                 <span>Buka Slip Lengkap & Cetak Struk</span>
             </a>
             <button type="button" 
                     onclick="resetDrawerToCart()" 
-                    class="w-full py-3 px-4 rounded-xl bg-neutral-900 hover:bg-black text-white font-bold text-xs shadow-md shadow-neutral-900/15 transition-all cursor-pointer">
+                    class="w-full py-3 px-4 rounded-xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-xs shadow-md transition-all cursor-pointer">
                 Selesai / Pesan Menu Lain
             </button>
         </div>
@@ -1066,7 +1120,7 @@
     window.removeModalCartItem = window.removeDrawerCartItem;
 
     // ============================================
-    // MENU CARD RESPONSIVE N-COLUMN & EXPANSION ENGINE
+    // MENU CARD RESPONSIVE N-COLUMN, PAGINATED CAROUSEL & EXPANSION ENGINE
     // ============================================
     window.getMenuBreakpointColumns = function() {
         if (window.innerWidth >= 1280) return 5;
@@ -1074,6 +1128,7 @@
         return 2;
     };
 
+<<<<<<< HEAD
     window.menuCarouselState = {
         currentPage: 0,
         totalPages: 1
@@ -1088,16 +1143,128 @@
         if (!controls) return;
 
         const { currentPage, totalPages } = window.menuCarouselState;
+=======
+    const buildMenuColumns = (parentEl, cards, numCols) => {
+        const columns = [];
+        for (let c = 0; c < numCols; c++) {
+            const col = document.createElement('div');
+            col.className = 'menu-column flex-1 flex flex-col gap-y-24 sm:gap-y-28 min-w-0';
+            parentEl.appendChild(col);
+            columns.push(col);
+        }
+
+        cards.forEach((wrap, idx) => {
+            columns[idx % numCols].appendChild(wrap);
+        });
+    };
+
+    const syncOpenMenuCard = (container, openCardId, allowedParent = null) => {
+        if (!openCardId) {
+            return;
+        }
+        const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
+        if (!restoredCard) {
+            return;
+        }
+        if (allowedParent && !allowedParent.contains(restoredCard)) {
+            if (typeof window.closeMenuCard === 'function') {
+                window.closeMenuCard(restoredCard);
+            } else {
+                restoredCard.classList.remove('is-open');
+            }
+            return;
+        }
+        restoredCard.classList.add('is-open');
+        const drawer = restoredCard.querySelector('.menu-card-drawer');
+        if (drawer) {
+            drawer.style.height = drawer.scrollHeight + 'px';
+        }
+    };
+
+    const bindMenuViewportSwipe = () => {
+        const viewport = document.getElementById('recommendations-viewport');
+        if (!viewport || viewport.dataset.swipeBound === 'true') {
+            return;
+        }
+        viewport.dataset.swipeBound = 'true';
+
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+
+        viewport.addEventListener('touchstart', (e) => {
+            if (!e.touches || e.touches.length !== 1) {
+                tracking = false;
+                return;
+            }
+            if (e.target && e.target.closest('input, label, select, textarea')) {
+                tracking = false;
+                return;
+            }
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            tracking = true;
+        }, { passive: true });
+
+        viewport.addEventListener('touchcancel', () => {
+            tracking = false;
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', (e) => {
+            if (!tracking || !e.changedTouches || e.changedTouches.length !== 1) {
+                tracking = false;
+                return;
+            }
+            tracking = false;
+            const dx = e.changedTouches[0].clientX - startX;
+            const dy = e.changedTouches[0].clientY - startY;
+            if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.2) {
+                if (dx < 0) {
+                    window.nextMenuPage();
+                } else {
+                    window.prevMenuPage();
+                }
+            }
+        }, { passive: true });
+    };
+
+    window.updateMenuCarouselControls = function(currentPage, totalPages) {
+        const controls = document.getElementById('recommendations-carousel-controls');
+        if (!controls) {
+            return;
+        }
+
+        const prevBtn = document.getElementById('rec-prev-btn');
+        const nextBtn = document.getElementById('rec-next-btn');
+        const dotsContainer = document.getElementById('rec-page-dots');
+        const counter = document.getElementById('rec-page-counter');
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
         if (totalPages <= 1) {
             controls.classList.add('hidden');
             controls.classList.remove('flex');
+<<<<<<< HEAD
+=======
+            if (dotsContainer) {
+                dotsContainer.innerHTML = '';
+            }
+            if (counter) {
+                counter.textContent = '';
+            }
+            if (prevBtn) {
+                prevBtn.disabled = true;
+            }
+            if (nextBtn) {
+                nextBtn.disabled = true;
+            }
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             return;
         }
 
         controls.classList.remove('hidden');
         controls.classList.add('flex');
 
+<<<<<<< HEAD
         if (counter) {
             const curStr = String(currentPage + 1).padStart(2, '0');
             const totStr = String(totalPages).padStart(2, '0');
@@ -1119,10 +1286,39 @@
                     window.goToMenuPage(i);
                 };
                 dotsWrap.appendChild(dot);
+=======
+        if (prevBtn) {
+            prevBtn.disabled = currentPage <= 0;
+        }
+        if (nextBtn) {
+            nextBtn.disabled = currentPage >= totalPages - 1;
+        }
+        if (counter) {
+            const activeStr = String(currentPage + 1).padStart(2, '0');
+            const totalStr = String(totalPages).padStart(2, '0');
+            counter.textContent = `${activeStr} / ${totalStr}`;
+        }
+
+        if (dotsContainer) {
+            dotsContainer.innerHTML = '';
+            for (let p = 0; p < totalPages; p++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.className = 'nucomu-menu-dot' + (p === currentPage ? ' is-active' : '');
+                dot.setAttribute('aria-label', `Halaman menu ${p + 1} dari ${totalPages}`);
+                dot.setAttribute('aria-current', p === currentPage ? 'true' : 'false');
+                dot.addEventListener('click', () => {
+                    if (typeof window.goToMenuPage === 'function') {
+                        window.goToMenuPage(p);
+                    }
+                });
+                dotsContainer.appendChild(dot);
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             }
         }
     };
 
+<<<<<<< HEAD
     window.goToMenuPage = function(pageIndex, animate = true) {
         const container = document.getElementById('recommendations-columns-container');
         if (!container) return;
@@ -1168,13 +1364,113 @@
         const current = (window.menuCarouselState && window.menuCarouselState.currentPage) || 0;
         if (current > 0) {
             window.goToMenuPage(current - 1);
+=======
+    window.goToMenuPage = function(targetIndex) {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const track = container.querySelector('.menu-slide-track');
+        if (!track) {
+            return;
+        }
+
+        const slides = Array.from(track.querySelectorAll('.menu-page-slide'));
+        const totalPages = slides.length;
+        if (totalPages <= 1) {
+            return;
+        }
+
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        const parsedTarget = parseInt(targetIndex, 10);
+        const safeTarget = Number.isNaN(parsedTarget) ? 0 : parsedTarget;
+        const clampedTarget = Math.max(0, Math.min(totalPages - 1, safeTarget));
+
+        if (clampedTarget === currentPage) {
+            return;
+        }
+
+        container.querySelectorAll('.menu-card.is-open').forEach(openCard => {
+            if (typeof window.closeMenuCard === 'function') {
+                window.closeMenuCard(openCard);
+            } else {
+                openCard.classList.remove('is-open');
+            }
+        });
+
+        if (container._collapseTimer) {
+            clearTimeout(container._collapseTimer);
+            container._collapseTimer = null;
+        }
+
+        const minIdx = Math.min(currentPage, clampedTarget);
+        const maxIdx = Math.max(currentPage, clampedTarget);
+
+        slides.forEach((slide, idx) => {
+            const isTarget = idx === clampedTarget;
+            if (idx >= minIdx && idx <= maxIdx) {
+                slide.classList.remove('is-collapsed-page');
+            }
+            slide.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
+            slide.inert = !isTarget;
+        });
+
+        void track.offsetWidth;
+
+        container.dataset.currentPage = String(clampedTarget);
+        track.style.transform = clampedTarget === 0
+            ? 'translate3d(0, 0, 0)'
+            : `translate3d(calc(-${clampedTarget} * (100% + 24px)), 0, 0)`;
+
+        window.updateMenuCarouselControls(clampedTarget, totalPages);
+
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const finalizeSlides = () => {
+            const settledPage = parseInt(container.dataset.currentPage || '0', 10);
+            slides.forEach((slide, idx) => {
+                if (idx !== settledPage) {
+                    slide.classList.add('is-collapsed-page');
+                } else {
+                    slide.classList.remove('is-collapsed-page');
+                }
+            });
+            container._collapseTimer = null;
+        };
+
+        if (prefersReducedMotion) {
+            finalizeSlides();
+        } else {
+            container._collapseTimer = setTimeout(finalizeSlides, 480);
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
         }
     };
 
     window.nextMenuPage = function() {
+<<<<<<< HEAD
         const state = window.menuCarouselState || { currentPage: 0, totalPages: 1 };
         if (state.currentPage < state.totalPages - 1) {
             window.goToMenuPage(state.currentPage + 1);
+=======
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        const totalPages = parseInt(container.dataset.totalPages || '1', 10);
+        if (currentPage < totalPages - 1) {
+            window.goToMenuPage(currentPage + 1);
+        }
+    };
+
+    window.prevMenuPage = function() {
+        const container = document.getElementById('recommendations-columns-container');
+        if (!container) {
+            return;
+        }
+        const currentPage = parseInt(container.dataset.currentPage || '0', 10);
+        if (currentPage > 0) {
+            window.goToMenuPage(currentPage - 1);
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
         }
     };
 
@@ -1183,7 +1479,11 @@
         const container = document.getElementById(containerId);
         if (!container) return;
 
+        const isHomepageCarousel = containerId === 'recommendations-columns-container';
         const numCols = window.getMenuBreakpointColumns();
+        const previousCategory = container.dataset.activeCategory || null;
+        const categoryChanged = previousCategory !== null && previousCategory !== categoryFilter;
+        container.dataset.activeCategory = categoryFilter;
 
         // Collect all card wrappers from pool and container
         let wrappers = [];
@@ -1192,7 +1492,12 @@
         }
         wrappers = wrappers.concat(Array.from(container.querySelectorAll('.menu-card-wrapper')));
 
-        if (wrappers.length === 0) return;
+        if (wrappers.length === 0) {
+            if (isHomepageCarousel) {
+                window.updateMenuCarouselControls(0, 0);
+            }
+            return;
+        }
 
         // Deduplicate wrappers by dataset index and id
         const seen = new Set();
@@ -1223,13 +1528,17 @@
                 visibleCards.push(w);
             } else {
                 w.style.display = 'none';
+                const cardEl = w.querySelector('.menu-card.is-open');
+                if (cardEl && typeof window.closeMenuCard === 'function') {
+                    window.closeMenuCard(cardEl);
+                }
                 if (pool) pool.appendChild(w);
             }
         });
 
         // Empty state toggling
-        const emptyStateId = containerId === 'recommendations-columns-container' 
-            ? 'recommendations-empty-state' 
+        const emptyStateId = isHomepageCarousel
+            ? 'recommendations-empty-state'
             : (containerId === 'catalog-columns-container' ? 'catalog-empty-state' : null);
         if (emptyStateId) {
             const emptyState = document.getElementById(emptyStateId);
@@ -1244,6 +1553,7 @@
             }
         }
 
+<<<<<<< HEAD
         // Rebuild layout
         container.innerHTML = '';
         container.dataset.renderedCols = String(numCols);
@@ -1300,18 +1610,85 @@
                 columns[targetCol].appendChild(wrap);
             });
         }
+=======
+        if (isHomepageCarousel) {
+            if (container._collapseTimer) {
+                clearTimeout(container._collapseTimer);
+                container._collapseTimer = null;
+            }
 
-        // Restore drawer height for open card
-        if (openCardId) {
-            const restoredCard = container.querySelector(`.menu-card[data-card-id="${openCardId}"]`);
-            if (restoredCard) {
-                restoredCard.classList.add('is-open');
-                const drawer = restoredCard.querySelector('.menu-card-drawer');
-                if (drawer) {
-                    drawer.style.height = drawer.scrollHeight + 'px';
+            container.innerHTML = '';
+            container.dataset.renderedCols = String(numCols);
+
+            const pageSize = numCols * 2;
+            const totalPages = visibleCards.length > 0 ? Math.ceil(visibleCards.length / pageSize) : 0;
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+
+            if (totalPages === 0) {
+                container.dataset.currentPage = '0';
+                container.dataset.totalPages = '0';
+                window.updateMenuCarouselControls(0, 0);
+                return;
+            }
+
+            let currentPage = categoryChanged ? 0 : parseInt(container.dataset.currentPage || '0', 10);
+            if (Number.isNaN(currentPage)) {
+                currentPage = 0;
+            }
+
+            if (!categoryChanged && openCardId) {
+                const openMatchIndex = visibleCards.findIndex(wrap => {
+                    return Boolean(wrap.querySelector(`.menu-card[data-card-id="${openCardId}"]`));
+                });
+                if (openMatchIndex !== -1) {
+                    currentPage = Math.floor(openMatchIndex / pageSize);
                 }
             }
+
+            currentPage = Math.max(0, Math.min(totalPages - 1, currentPage));
+            container.dataset.currentPage = String(currentPage);
+            container.dataset.totalPages = String(totalPages);
+
+            const track = document.createElement('div');
+            track.className = 'menu-slide-track';
+            track.style.transition = 'none';
+            track.style.transform = currentPage === 0
+                ? 'translate3d(0, 0, 0)'
+                : `translate3d(calc(-${currentPage} * (100% + 24px)), 0, 0)`;
+            container.appendChild(track);
+
+            let activeSlide = null;
+            for (let pageIdx = 0; pageIdx < totalPages; pageIdx++) {
+                const isActivePage = pageIdx === currentPage;
+                const slide = document.createElement('div');
+                slide.className = 'menu-page-slide menu-columns-container' + (isActivePage ? '' : ' is-collapsed-page');
+                slide.dataset.pageIndex = String(pageIdx);
+                slide.setAttribute('aria-hidden', isActivePage ? 'false' : 'true');
+                slide.inert = !isActivePage;
+                track.appendChild(slide);
+
+                if (isActivePage) {
+                    activeSlide = slide;
+                }
+
+                const pageItems = visibleCards.slice(pageIdx * pageSize, (pageIdx + 1) * pageSize);
+                buildMenuColumns(slide, pageItems, numCols);
+            }
+
+            void track.offsetWidth;
+            track.style.transition = '';
+
+            syncOpenMenuCard(container, openCardId, activeSlide);
+            window.updateMenuCarouselControls(currentPage, totalPages);
+            bindMenuViewportSwipe();
+            return;
         }
+
+        // Rebuild independent vertical flex columns (/menu full catalog)
+        container.innerHTML = '';
+        container.dataset.renderedCols = String(numCols);
+        buildMenuColumns(container, visibleCards, numCols);
+        syncOpenMenuCard(container, openCardId);
     };
 
     window.openMenuCard = function(cardEl) {
@@ -1518,23 +1895,23 @@
             if (item.options && item.options.length > 0) {
                 chipsHtml = '<div class="flex flex-wrap gap-1 mt-1">';
                 item.options.forEach(opt => {
-                    chipsHtml += `<span class="inline-block px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 text-[10px] font-medium leading-none">${opt}</span>`;
+                    chipsHtml += `<span class="inline-block px-2 py-0.5 rounded-full bg-[var(--badge-bg)] text-[var(--text-muted)] text-[10px] font-medium leading-none">${opt}</span>`;
                 });
                 chipsHtml += '</div>';
             }
 
             html += `
-            <div class="flex items-center gap-3 p-3 rounded-2xl bg-stone-50/70 border border-stone-200/80 transition-all">
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-[var(--surface)] border border-[var(--border)] transition-all">
                 <img src="${item.image || 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=200'}" 
                      alt="${item.name}" 
-                     class="w-12 h-12 rounded-xl object-cover shrink-0 border border-white shadow-xs">
+                     class="w-12 h-12 rounded-xl object-cover shrink-0 border border-[var(--border)] shadow-xs">
                 
                 <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-neutral-900 leading-tight truncate">
+                    <p class="text-xs font-bold text-[var(--text)] leading-tight truncate">
                         ${item.qty}× ${item.name}
                     </p>
                     ${chipsHtml}
-                    <p class="text-[11px] font-bold text-neutral-800 font-editorial-num mt-1">
+                    <p class="text-[11px] font-bold text-[var(--text-muted)] font-editorial-num mt-1">
                         Rp ${lineTotal.toLocaleString('id-ID')}
                     </p>
                 </div>
@@ -1542,16 +1919,16 @@
                 <div class="flex items-center gap-1.5 shrink-0">
                     <button type="button" 
                             onclick="updateDrawerQty('${key}', -1)" 
-                            class="w-6 h-6 rounded-full bg-white border border-stone-200 hover:border-neutral-900 text-neutral-800 text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
+                            class="w-6 h-6 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] hover:border-[var(--border-strong)] text-[var(--text)] text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
                             aria-label="Kurangi jumlah">−</button>
-                    <span class="text-xs font-bold text-neutral-900 w-4 text-center font-mono">${item.qty}</span>
+                    <span class="text-xs font-bold text-[var(--text)] w-4 text-center font-mono">${item.qty}</span>
                     <button type="button" 
                             onclick="updateDrawerQty('${key}', 1)" 
-                            class="w-6 h-6 rounded-full bg-neutral-900 hover:bg-black text-white text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
+                            class="w-6 h-6 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] text-xs flex items-center justify-center font-bold transition-all cursor-pointer" 
                             aria-label="Tambah jumlah">+</button>
                     <button type="button" 
                             onclick="removeDrawerCartItem('${key}')" 
-                            class="w-6 h-6 rounded-full text-stone-400 hover:text-rose-600 flex items-center justify-center ml-1 text-xs transition-colors cursor-pointer" 
+                            class="w-6 h-6 rounded-full text-[var(--text-faint)] hover:text-[var(--error-text)] flex items-center justify-center ml-1 text-xs transition-colors cursor-pointer" 
                             title="Hapus menu" 
                             aria-label="Hapus menu">
                         <span class="material-symbols-outlined text-sm">delete</span>
@@ -1606,6 +1983,7 @@
         if (headSuccess) headSuccess.classList.toggle('hidden', viewName !== 'success');
     };
 
+<<<<<<< HEAD
     window.selectDrawerBarcodeType = function(type) {
         const normalized = type === 'barcode' ? 'barcode' : 'qr';
         window.currentDrawerBarcodeType = normalized;
@@ -1673,6 +2051,17 @@
                 slipLink.href = u.toString();
             } catch (e) {}
         }
+=======
+    window.selectDrawerPaymentMethod = function(payMethod) {
+        const input = document.getElementById('drawer-payment-method');
+        if (input) input.value = payMethod;
+        document.querySelectorAll('.drawer-pay-btn').forEach(btn => {
+            const m = btn.getAttribute('data-drawer-pay');
+            btn.className = m === payMethod
+                ? 'drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]'
+                : 'drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]';
+        });
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
     };
 
     window.selectDrawerMethod = function(method) {
@@ -1680,6 +2069,7 @@
         const cardKasir = document.getElementById('method-card-kasir');
         const cardZendo = document.getElementById('method-card-zendo');
         const fieldTable = document.getElementById('drawer-field-table');
+        const fieldPayment = document.getElementById('drawer-field-payment');
         const fieldAddress = document.getElementById('drawer-field-address');
         const submitText = document.getElementById('drawer-submit-text');
 
@@ -1690,36 +2080,38 @@
 
         if (method === 'kasir') {
             if (cardKasir) {
-                cardKasir.classList.add('border-neutral-900');
-                cardKasir.classList.remove('border-stone-200');
+                cardKasir.classList.add('border-[var(--accent-solid)]');
+                cardKasir.classList.remove('border-[var(--border)]');
             }
             if (cardZendo) {
-                cardZendo.classList.remove('border-neutral-900');
-                cardZendo.classList.add('border-stone-200');
+                cardZendo.classList.remove('border-[var(--accent-solid)]');
+                cardZendo.classList.add('border-[var(--border)]');
             }
-            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
-            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
-            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
-            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--accent-solid)]'; }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--border-strong)]'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-[var(--text)] text-xl'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-[var(--text-muted)] text-xl'; }
 
             if (fieldTable) fieldTable.classList.remove('hidden');
+            if (fieldPayment) fieldPayment.classList.remove('hidden');
             if (fieldAddress) fieldAddress.classList.add('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kasir)';
         } else {
             if (cardZendo) {
-                cardZendo.classList.add('border-neutral-900');
-                cardZendo.classList.remove('border-stone-200');
+                cardZendo.classList.add('border-[var(--accent-solid)]');
+                cardZendo.classList.remove('border-[var(--border)]');
             }
             if (cardKasir) {
-                cardKasir.classList.remove('border-neutral-900');
-                cardKasir.classList.add('border-stone-200');
+                cardKasir.classList.remove('border-[var(--accent-solid)]');
+                cardKasir.classList.add('border-[var(--border)]');
             }
-            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-neutral-900'; }
-            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-stone-300'; }
-            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-neutral-900 text-xl'; }
-            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-stone-400 text-xl'; }
+            if (dotZendo) { dotZendo.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--accent-solid)]'; }
+            if (dotKasir) { dotKasir.className = 'method-dot w-2.5 h-2.5 rounded-full bg-[var(--border-strong)]'; }
+            if (iconZendo) { iconZendo.className = 'material-symbols-outlined text-[var(--text)] text-xl'; }
+            if (iconKasir) { iconKasir.className = 'material-symbols-outlined text-[var(--text-muted)] text-xl'; }
 
             if (fieldTable) fieldTable.classList.add('hidden');
+            if (fieldPayment) fieldPayment.classList.add('hidden');
             if (fieldAddress) fieldAddress.classList.remove('hidden');
             if (submitText) submitText.innerText = 'Konfirmasi Pesanan (Kurir Zendo)';
         }
@@ -1797,6 +2189,10 @@
         let subtotal = 0;
         payloadItems.forEach(it => subtotal += it.line_total);
 
+        const selectedPayMethod = isZendo
+            ? 'cash'
+            : (document.getElementById('drawer-payment-method')?.value || 'cash');
+
         const payload = {
             process_method: isZendo ? 'zendo' : 'kasir',
             barcode_type: isZendo ? null : window.currentDrawerBarcodeType,
@@ -1807,7 +2203,7 @@
             dine_type: tableNumber ? 'dine_in' : 'take_away',
             delivery_address: address,
             notes: notes,
-            payment_method: 'cash',
+            payment_method: selectedPayMethod,
             items: payloadItems,
             total: subtotal,
             subtotal: subtotal,

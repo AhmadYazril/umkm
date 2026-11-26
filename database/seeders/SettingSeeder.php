@@ -33,5 +33,10 @@ class SettingSeeder extends Seeder
         foreach ($settings as $key => $value) {
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
+
+        Setting::firstOrCreate(
+            ['key' => Setting::THEME_KEY],
+            ['value' => Setting::THEME_LIGHT]
+        );
     }
 }

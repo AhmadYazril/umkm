@@ -222,11 +222,11 @@ class OrderTahap8aTest extends TestCase
         $this->assertStringContainsString('• Ongkir (perkiraan, final dikonfirmasi kurir): Rp 10.000', $chatMsg);
         $this->assertStringContainsString('• Total Pembayaran: Rp 46.000', $chatMsg);
 
-        // Verify order in database
+        // Verify order in database (starts pending awaiting Zendo courier arrival/confirmation at Kasir)
         $this->assertDatabaseHas('orders', [
             'customer_name' => 'Siti Aisyah',
             'delivery_address' => 'Jl. Pahlawan No. 12, Kedungwaru, Tulungagung',
-            'status' => 'processing',
+            'status' => 'pending',
         ]);
     }
 

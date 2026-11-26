@@ -27,14 +27,15 @@ class AboutController extends Controller
         $aboutData = [
             'about_label' => $settings['about_label'] ?? 'OUR STORY / TENTANG KAMI',
             'cafe_story_headline' => $settings['cafe_story_headline'] ?? 'Berawal dari Rasa, Kembali karena Rindu.',
-            'cafe_story_p1' => $settings['cafe_story_p1'] ?? 'Nucomu Cafe adalah tempat nongkrong yang nyaman di Tulungagung, Jawa Timur. Suasananya santai dan cocok untuk bersantai sendirian, ngobrol bareng teman, mengerjakan tugas, atau berkumpul bersama keluarga.',
-            'cafe_story_p2' => $settings['cafe_story_p2'] ?? 'Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.',
-            'cafe_story_p3' => $settings['cafe_story_p3'] ?? 'Dengan suasana yang hangat dan pelayanan yang ramah, Nucomu Cafe menjadi pilihan menarik untuk menghabiskan waktu, baik di siang hari maupun malam hari.',
+            'cafe_story_p1' => $settings['cafe_story_p1'] ?? 'Nucomu Cafe menghadirkan ruang yang tenang dan nyaman di Tulungagung untuk menikmati kopi, dessert, makanan, serta waktu bersama orang-orang terdekat.',
+            'cafe_story_p2' => $settings['cafe_story_p2'] ?? 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.',
+            'cafe_story_p3' => $settings['cafe_story_p3'] ?? '',
+            'about_tagline' => $settings['about_tagline'] ?? 'Find your favorite taste.',
             'about_quote' => $settings['about_quote'] ?? 'Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.',
             'about_button_text' => $settings['about_button_text'] ?? 'Jelajahi Pilihan Menu',
             'about_button_link' => $settings['about_button_link'] ?? '#menu',
             'about_media_type' => $settings['about_media_type'] ?? 'video',
-            'about_media_path' => $settings['about_media_path'] ?? 'video/tiramisu.mp4',
+            'about_media_path' => $settings['about_media_path'] ?? 'videos/room-tour.mp4',
         ];
 
         // Resolve absolute URL for media preview
@@ -66,6 +67,7 @@ class AboutController extends Controller
             'cafe_story_p1' => ['required', 'string', 'max:1500'],
             'cafe_story_p2' => ['nullable', 'string', 'max:1500'],
             'cafe_story_p3' => ['nullable', 'string', 'max:1500'],
+            'about_tagline' => ['nullable', 'string', 'max:200'],
             'about_quote' => ['nullable', 'string', 'max:500'],
             'about_button_text' => ['nullable', 'string', 'max:100'],
             'about_button_link' => ['nullable', 'string', 'max:255'],
@@ -95,9 +97,10 @@ class AboutController extends Controller
                 'cafe_story_p1' => $validated['cafe_story_p1'],
                 'cafe_story_p2' => $validated['cafe_story_p2'] ?? '',
                 'cafe_story_p3' => $validated['cafe_story_p3'] ?? '',
+                'about_tagline' => $validated['about_tagline'] ?? 'Find your favorite taste.',
                 'about_quote' => $validated['about_quote'] ?? '',
-                'about_button_text' => $validated['about_button_text'] ?: 'Jelajahi Pilihan Menu',
-                'about_button_link' => $validated['about_button_link'] ?: '#menu',
+                'about_button_text' => ! empty($validated['about_button_text']) ? $validated['about_button_text'] : 'Jelajahi Pilihan Menu',
+                'about_button_link' => ! empty($validated['about_button_link']) ? $validated['about_button_link'] : '#menu',
                 'about_media_type' => $validated['media_type'],
             ];
 
@@ -142,7 +145,7 @@ class AboutController extends Controller
     {
         if (empty($path)) {
             return $type === 'video'
-                ? asset('videos/tiramisu.mp4')
+                ? asset('videos/room-tour.mp4')
                 : asset('images/reviews/dya-3.jpg');
         }
 

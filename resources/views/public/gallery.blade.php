@@ -6,16 +6,16 @@
 @include('home.sections.gallery', ['stories' => $gallery])
 
 <!-- Grid Arsip Visual Nucomu (Museum Exhibition Index) -->
-<section class="py-16 sm:py-20 relative bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800">
+<section class="py-16 sm:py-20 relative bg-[var(--bg-page)] border-t border-[var(--border-soft)]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        <div class="mb-10 pb-6 border-b border-zinc-200 dark:border-zinc-800">
+        <div class="mb-10 pb-6 border-b border-[var(--border-soft)]">
             <div class="max-w-4xl mx-auto text-center flex flex-col items-center">
-                <span class="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500 block mb-3 pl-[0.2em]">Koleksi Visual Lengkap</span>
-                <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-zinc-950 dark:text-white font-editorial mx-auto">
+                <span class="text-xs font-mono uppercase tracking-[0.2em] text-[var(--text-muted)] block mb-3 pl-[0.2em]">Koleksi Visual Lengkap</span>
+                <h2 class="text-2xl sm:text-4xl font-bold tracking-tight text-[var(--text)] font-editorial mx-auto">
                     Arsip Foto &amp; Dokumentasi
                 </h2>
-                <p class="text-xs sm:text-sm text-zinc-500 max-w-3xl font-body leading-relaxed mx-auto mt-3.5">
+                <p class="text-xs sm:text-sm text-[var(--text-muted)] max-w-3xl font-body leading-relaxed mx-auto mt-3.5">
                     Eksplorasi sudut ruang, detail material, dan suasana yang terekam di Nucomu Cafe Tulungagung.
                 </p>
             </div>
@@ -29,40 +29,40 @@
                         $caption = $item->caption ?? ($item->title ?? 'Nucomu Cafe');
                         $cat = $item->category_badge ?? ($item->category ?? 'Nucomu');
                     @endphp
-                    <div class="group relative bg-[#FAFAFA] dark:bg-zinc-900 border-2 border-zinc-900 dark:border-zinc-700 p-3 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer"
+                    <div class="nu-glass-card group relative bg-[var(--surface)] border border-[var(--border)] p-3 shadow-[var(--shadow)] hover:border-[var(--border-strong)] transition-all duration-300 cursor-pointer"
                          onclick="openPublicModal('{{ $imgSrc }}', '{{ addslashes($caption) }}', '{{ addslashes($item->description ?? '') }}', '{{ addslashes($cat) }}', '{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}')">
                         
                         <!-- Inner Photo Frame -->
-                        <div class="relative aspect-[4/3] overflow-hidden bg-zinc-200 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700">
+                        <div class="relative aspect-[4/3] overflow-hidden bg-[var(--media-bg)] border border-[var(--border-soft)]">
                             <img src="{{ $imgSrc }}"
                                  alt="{{ $caption }}"
                                  class="w-full h-full object-cover filter grayscale contrast-105 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
                                  loading="lazy">
 
                             <!-- Corner Mark -->
-                            <div class="absolute top-2 right-2 px-1.5 py-0.5 bg-black/60 backdrop-blur-xs text-white font-mono text-[9px] uppercase tracking-widest">
+                            <div class="absolute top-2 right-2 px-1.5 py-0.5 bg-black/75 backdrop-blur-xs text-white font-mono text-[9px] uppercase tracking-widest border border-white/15">
                                 {{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}
                             </div>
                         </div>
 
                         <!-- Technical Caption Strip -->
-                        <div class="mt-3 pt-2.5 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-between text-[11px] font-mono">
-                            <span class="text-zinc-500 uppercase tracking-widest truncate">{{ $cat }}</span>
-                            <span class="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">&rarr;</span>
+                        <div class="mt-3 pt-2.5 border-t border-[var(--border-soft)] flex items-center justify-between text-[11px] font-mono">
+                            <span class="text-[var(--text-muted)] uppercase tracking-widest truncate">{{ $cat }}</span>
+                            <span class="text-[var(--text-faint)] group-hover:text-[var(--text)] transition-colors">&rarr;</span>
                         </div>
-                        <h3 class="text-xs font-bold text-zinc-900 dark:text-zinc-100 truncate mt-1">
+                        <h3 class="text-xs font-bold text-[var(--text)] truncate mt-1">
                             {{ $caption }}
                         </h3>
                     </div>
                 @endforeach
             </div>
         @else
-            <div class="text-center py-20 bg-white/70 dark:bg-zinc-900/40 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/80 rounded-3xl p-8">
-                <svg class="w-16 h-16 text-zinc-400 dark:text-zinc-600 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="nu-glass-card text-center py-20 bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8">
+                <svg class="w-16 h-16 text-[var(--text-faint)] mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                <h3 class="text-lg font-bold text-zinc-950 dark:text-white mb-2">Galeri Foto Belum Tersedia</h3>
-                <p class="text-zinc-600 dark:text-zinc-400 text-sm">Foto galeri akan segera diperbarui oleh Admin Nucomu Cafe.</p>
+                <h3 class="text-lg font-bold text-[var(--text)] mb-2">Galeri Foto Belum Tersedia</h3>
+                <p class="text-[var(--text-muted)] text-sm">Foto galeri akan segera diperbarui oleh Admin Nucomu Cafe.</p>
             </div>
         @endif
 

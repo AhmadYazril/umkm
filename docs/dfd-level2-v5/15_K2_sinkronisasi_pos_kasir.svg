@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="'Segoe UI', Arial, sans-serif">
+<defs>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr-flow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#334155"/>
+    </marker>
+    <marker id="arr-valid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#15803D"/>
+    </marker>
+    <marker id="arr-invalid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arr-ds" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+  </defs>
+<rect width="1600" height="900" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1600" height="68" fill="#F8FAFC"/>
+<line x1="0" y1="68" x2="1600" y2="68" stroke="#CBD5E1" stroke-width="1.2"/>
+<rect x="0" y="0" width="7" height="68" fill="#1E3A8A"/>
+<text x="24" y="30" font-size="19" font-weight="700" fill="#0F172A">Level 2 - Sinkronisasi Katalog, Meja &amp; Antrean POS (turunan proses 11.0 Level 1)</text>
+<text x="24" y="52" font-size="12.5" font-weight="500" fill="#475569">Fitur K2 • Aktor: Kasir • Langkah: 11.2.1–11.2.6 • Status: Berdasarkan kode, tidak teruji</text>
+<g transform="translate(1105, 13)">
+    <rect x="0" y="0" width="475" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <rect x="12" y="13" width="18" height="14" rx="2" fill="#EFF6FF" stroke="#1E293B" stroke-width="1.6"/>
+    <text x="36" y="24" font-size="11" font-weight="600" fill="#334155">Entitas</text>
+    <circle cx="96" cy="20" r="9" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+    <text x="110" y="24" font-size="11" font-weight="600" fill="#334155">Langkah</text>
+    <rect x="167" y="12" width="18" height="15" rx="3" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.6"/>
+    <ellipse cx="176" cy="13" rx="9" ry="3.2" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.3"/>
+    <text x="191" y="24" font-size="11" font-weight="600" fill="#334155">Data Store</text>
+    <line x1="258" y1="20" x2="282" y2="20" stroke="#15803D" stroke-width="2.2" marker-end="url(#arr-valid)"/>
+    <text x="288" y="24" font-size="11" font-weight="600" fill="#15803D">Valid</text>
+    <line x1="330" y1="20" x2="354" y2="20" stroke="#DC2626" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr-invalid)"/>
+    <text x="360" y="24" font-size="11" font-weight="600" fill="#B91C1C">Tidak Valid / Ulang</text>
+  </g>
+<path d="M 161.0 292.0 L 271.0 292.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 399.0 292.0 L 701.0 292.0" fill="none" stroke="#15803D" stroke-width="2.1" marker-end="url(#arr-valid)"/>
+<path d="M 335.0 356.0 L 335.0 415.0 Q 335.0 425.0 325.0 425.0 L 150.0 425.0 Q 140.0 425.0 139.7 415.0 L 137.0 335.0" fill="none" stroke="#DC2626" stroke-width="2.1" stroke-dasharray="6,4" marker-end="url(#arr-invalid)"/>
+<path d="M 829.0 292.0 L 1151.0 292.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1215.0 356.0 L 1215.0 531.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1151.0 595.0 L 829.0 595.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 701.0 595.0 L 399.0 595.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 271.0 595.0 L 105.0 595.0 Q 95.0 595.0 95.0 585.0 L 95.0 335.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 335.0 139.0 L 335.0 228.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 765.0 228.0 L 750.8 208.1 Q 745.0 200.0 735.0 200.0 L 695.0 200.0 Q 685.0 200.0 685.0 190.0 L 685.0 139.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 765.0 228.0 L 779.2 208.1 Q 785.0 200.0 795.0 200.0 L 835.0 200.0 Q 845.0 200.0 845.0 190.0 L 845.0 139.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 1135.0 139.0 L 1135.0 188.0 Q 1135.0 198.0 1145.0 198.0 L 1185.0 198.0 Q 1195.0 198.0 1200.5 206.3 L 1215.0 228.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1295.0 139.0 L 1295.0 188.0 Q 1295.0 198.0 1285.0 198.0 L 1245.0 198.0 Q 1235.0 198.0 1229.5 206.3 L 1215.0 228.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1055.0 758.0 L 1055.0 720.0 Q 1055.0 710.0 1065.0 710.0 L 1175.0 710.0 Q 1185.0 710.0 1190.1 701.4 L 1215.0 659.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1215.0 758.0 L 1215.0 659.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1375.0 758.0 L 1375.0 720.0 Q 1375.0 710.0 1365.0 710.0 L 1255.0 710.0 Q 1245.0 710.0 1239.9 701.4 L 1215.0 659.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 765.0 758.0 L 765.0 659.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<g filter="url(#shadow)">
+        <rect x="29" y="249" width="132" height="86" rx="6" fill="#F0FDFA" stroke="#0F766E" stroke-width="2.4"/>
+        <rect x="29" y="249" width="132" height="23" rx="5" fill="#0F766E"/>
+        <rect x="29" y="265" width="132" height="7" fill="#0F766E"/>
+        <text x="95" y="264.5" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.8">AKTOR EKSTERNAL</text>
+        <text x="95" y="303" font-size="16" font-weight="700" fill="#134E4A" text-anchor="middle">Kasir</text>
+        <text x="95" y="321" font-size="10.5" font-weight="500" fill="#475569" text-anchor="middle">Terautentikasi</text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="335" cy="292" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="308" y="258" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="335" y="270" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.2.1</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="335" y="295.0">Verifikasi Sesi</tspan><tspan x="335" y="309.5">&amp; Terima Req POS</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="765" cy="292" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="738" y="258" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="765" y="270" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.2.2</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="765" y="295.0">Sinkron Skema &amp;</tspan><tspan x="765" y="309.5">Stok Awal</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1215" cy="292" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1188" y="258" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1215" y="270" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.2.3</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1215" y="295.0">Muat Kategori &amp;</tspan><tspan x="1215" y="309.5">Katalog POS</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1215" cy="595" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1188" y="561" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1215" y="573" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.2.4</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1215" y="598.0">Muat Meja &amp;</tspan><tspan x="1215" y="612.5">Antrean Order</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="765" cy="595" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="738" y="561" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="765" y="573" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.2.5</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="765" y="598.0">Hitung Statistik</tspan><tspan x="765" y="612.5">Harian POS</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="335" cy="595" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="308" y="561" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="335" y="573" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.2.6</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="335" y="598.0">Kirim View POS /</tspan><tspan x="335" y="612.5">JSON Sinkron</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 273 94 L 273 130 A 62 9 0 0 0 397 130 L 397 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="335" cy="94" rx="62" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="335" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D1</text>
+        <text x="335" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">users</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 625 94 L 625 130 A 60 9 0 0 0 745 130 L 745 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="685" cy="94" rx="60" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="685" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="685" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 785 94 L 785 130 A 60 9 0 0 0 905 130 L 905 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="845" cy="94" rx="60" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="845" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="845" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1075 94 L 1075 130 A 60 9 0 0 0 1195 130 L 1195 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1135" cy="94" rx="60" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1135" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D2</text>
+        <text x="1135" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">categories</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1235 94 L 1235 130 A 60 9 0 0 0 1355 130 L 1355 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1295" cy="94" rx="60" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1295" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="1295" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 996 767 L 996 803 A 59 9 0 0 0 1114 803 L 1114 767 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1055" cy="767" rx="59" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1055" y="790" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D5</text>
+        <text x="1055" y="805" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">tables</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1156 767 L 1156 803 A 59 9 0 0 0 1274 803 L 1274 767 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1215" cy="767" rx="59" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1215" y="790" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D6</text>
+        <text x="1215" y="805" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">orders</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1314 767 L 1314 803 A 61 9 0 0 0 1436 803 L 1436 767 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1375" cy="767" rx="61" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1375" y="790" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D7</text>
+        <text x="1375" y="805" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">order_items</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 703 767 L 703 803 A 62 9 0 0 0 827 803 L 827 767 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="765" cy="767" rx="62" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="765" y="790" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D6</text>
+        <text x="765" y="805" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">orders</text>
+      </g>
+<g>
+      <rect x="138.5" y="251.0" width="147" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="212" y="264.5">GET /kasir atau</tspan><tspan x="212" y="277.5">polling /kasir/sinkron</tspan></text>
+    </g>
+<g>
+      <rect x="491.5" y="257.5" width="117" height="21" rx="5" fill="#F0FDF4" fill-opacity="0.96" stroke="#86EFAC" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#14532D" text-anchor="middle"><tspan x="550" y="271.0">[Sesi/Cookie sah]</tspan></text>
+    </g>
+<g>
+      <rect x="166.5" y="408.0" width="147" height="34" rx="5" fill="#FEF2F2" fill-opacity="0.96" stroke="#FCA5A5" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#991B1B" text-anchor="middle"><tspan x="240" y="421.5">[Sesi mati -&gt; redirect</tspan><tspan x="240" y="434.5">/kasir/login]</tspan></text>
+    </g>
+<g>
+      <rect x="922.5" y="257.5" width="135" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="990" y="271.0">Peta stok tersinkron</tspan></text>
+    </g>
+<g>
+      <rect x="1226.5" y="428.0" width="147" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="1300" y="441.5">Daftar kategori &amp; menu</tspan><tspan x="1300" y="454.5">POS</tspan></text>
+    </g>
+<g>
+      <rect x="922.5" y="561.5" width="135" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="990" y="575.0">Meja &amp; antrean order</tspan></text>
+    </g>
+<g>
+      <rect x="476.5" y="561.5" width="147" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="550" y="575.0">Payload data &amp; KPI POS</tspan></text>
+    </g>
+<g>
+      <rect x="47.5" y="468.0" width="135" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="115" y="481.5">Antarmuka POS / JSON</tspan><tspan x="115" y="494.5">real-time ter-update</tspan></text>
+    </g>
+<g>
+      <rect x="255.5" y="181.5" width="159" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="335" y="195.0">Baca: cek user isKasir()</tspan></text>
+    </g>
+<g>
+      <rect x="581.5" y="174.5" width="147" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="655" y="188.0">Baca/Tulis: sync stock</tspan></text>
+    </g>
+<g>
+      <rect x="821.5" y="168.0" width="117" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="880" y="181.5">Baca/Tulis:</tspan><tspan x="880" y="194.5">kasir_menu_stocks</tspan></text>
+    </g>
+<g>
+      <rect x="1075.5" y="174.5" width="99" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1125" y="188.0">Baca: kategori</tspan></text>
+    </g>
+<g>
+      <rect x="1248.5" y="174.5" width="123" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1310" y="188.0">Baca: katalog menu</tspan></text>
+    </g>
+<g>
+      <rect x="1022.5" y="709.5" width="75" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1060" y="723.0">Baca: meja</tspan></text>
+    </g>
+<g>
+      <rect x="1168.5" y="689.5" width="93" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1215" y="703.0">Baca: antrean</tspan></text>
+    </g>
+<g>
+      <rect x="1332.5" y="709.5" width="75" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1370" y="723.0">Baca: item</tspan></text>
+    </g>
+<g>
+      <rect x="691.5" y="688.0" width="147" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="765" y="701.5">Baca: agregasi omzet &amp;</tspan><tspan x="765" y="714.5">order</tspan></text>
+    </g>
+</svg>

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Setting;
 use App\Support\FileUploadHelper;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Validator;
@@ -29,6 +30,20 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Throwable $e) {
             // Ignore if in CLI/testing without full view environment
         }
+
+        // Share active global site theme ('light' | 'dark') across public and settings views
+        View::composer([
+            'layouts.app',
+            'home.*',
+            'components.*',
+            'menu.*',
+            'nucomu.*',
+            'public.*',
+            'errors.*',
+            'admin.settings.*',
+        ], function ($view): void {
+            $view->with('siteTheme', Setting::getSiteTheme());
+        });
 
         // Custom replacer for 'uploaded' validation rule to provide specific Indonesian error messages
         Validator::replacer('uploaded', function ($message, $attribute, $rule, $parameters, $validator) {

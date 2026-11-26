@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 850" width="1600" height="850" font-family="'Segoe UI', Arial, sans-serif">
+<defs>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr-flow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#334155"/>
+    </marker>
+    <marker id="arr-valid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#15803D"/>
+    </marker>
+    <marker id="arr-invalid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arr-ds" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+  </defs>
+<rect width="1600" height="850" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1600" height="68" fill="#F8FAFC"/>
+<line x1="0" y1="68" x2="1600" y2="68" stroke="#CBD5E1" stroke-width="1.2"/>
+<rect x="0" y="0" width="7" height="68" fill="#1E3A8A"/>
+<text x="24" y="30" font-size="19" font-weight="700" fill="#0F172A">Level 2 - Kirim Ulasan Pelanggan (turunan proses 12.0 Level 1)</text>
+<text x="24" y="52" font-size="12.5" font-weight="500" fill="#475569">Fitur P4 • Aktor: Pelanggan • Langkah: 12.1–12.5 • Status: Berdasarkan kode, tidak teruji (bug field comment vs content)</text>
+<g transform="translate(1105, 13)">
+    <rect x="0" y="0" width="475" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <rect x="12" y="13" width="18" height="14" rx="2" fill="#EFF6FF" stroke="#1E293B" stroke-width="1.6"/>
+    <text x="36" y="24" font-size="11" font-weight="600" fill="#334155">Entitas</text>
+    <circle cx="96" cy="20" r="9" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+    <text x="110" y="24" font-size="11" font-weight="600" fill="#334155">Langkah</text>
+    <rect x="167" y="12" width="18" height="15" rx="3" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.6"/>
+    <ellipse cx="176" cy="13" rx="9" ry="3.2" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.3"/>
+    <text x="191" y="24" font-size="11" font-weight="600" fill="#334155">Data Store</text>
+    <line x1="258" y1="20" x2="282" y2="20" stroke="#15803D" stroke-width="2.2" marker-end="url(#arr-valid)"/>
+    <text x="288" y="24" font-size="11" font-weight="600" fill="#15803D">Valid</text>
+    <line x1="330" y1="20" x2="354" y2="20" stroke="#DC2626" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr-invalid)"/>
+    <text x="360" y="24" font-size="11" font-weight="600" fill="#B91C1C">Tidak Valid / Ulang</text>
+  </g>
+<path d="M 166.0 270.0 L 316.0 270.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 444.0 270.0 L 796.0 270.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 924.0 270.0 L 1226.0 270.0" fill="none" stroke="#15803D" stroke-width="2.1" marker-end="url(#arr-valid)"/>
+<path d="M 860.0 334.0 L 860.0 395.0 Q 860.0 405.0 850.0 405.0 L 390.0 405.0 Q 380.0 405.0 380.0 395.0 L 380.0 334.0" fill="none" stroke="#DC2626" stroke-width="2.1" stroke-dasharray="6,4" marker-end="url(#arr-invalid)"/>
+<path d="M 1290.0 334.0 L 1290.0 555.0 Q 1290.0 565.0 1280.0 565.0 L 1084.0 565.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 956.0 565.0 L 584.0 565.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 456.0 565.0 L 110.0 565.0 Q 100.0 565.0 100.0 555.0 L 100.0 313.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1020.0 629.0 L 1020.0 732.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<g filter="url(#shadow)">
+        <rect x="34" y="227" width="132" height="86" rx="6" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2.4"/>
+        <rect x="34" y="227" width="132" height="23" rx="5" fill="#1D4ED8"/>
+        <rect x="34" y="243" width="132" height="7" fill="#1D4ED8"/>
+        <text x="100" y="242.5" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.8">AKTOR EKSTERNAL</text>
+        <text x="100" y="281" font-size="16" font-weight="700" fill="#1E3A8A" text-anchor="middle">Pelanggan</text>
+        <text x="100" y="299" font-size="10.5" font-weight="500" fill="#475569" text-anchor="middle">Tanpa Login</text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="380" cy="270" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="353" y="236" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="380" y="248" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">12.1</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="380" y="273.0">Buka Modal &amp; Isi</tspan><tspan x="380" y="287.5">Ulasan + Foto</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="860" cy="270" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="833" y="236" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="860" y="248" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">12.2</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="860" y="273.0">Validasi Rating,</tspan><tspan x="860" y="287.5">Teks &amp; File Foto</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1290" cy="270" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1263" y="236" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1290" y="248" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">12.3</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1290" y="273.0">Unggah File Foto</tspan><tspan x="1290" y="287.5">Ulasan</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1020" cy="565" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="993" y="531" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1020" y="543" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">12.4</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1020" y="568.0">Simpan Ulasan ke</tspan><tspan x="1020" y="582.5">Basis Data</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="520" cy="565" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="493" y="531" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="520" y="543" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">12.5</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="520" y="568.0">Tampilkan</tspan><tspan x="520" y="582.5">Notifikasi Hasil</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 952 741 L 952 779 A 68 9 0 0 0 1088 779 L 1088 741 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1020" cy="741" rx="68" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1020" y="765" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D13</text>
+        <text x="1020" y="780" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">testimonials</text>
+      </g>
+<g>
+      <rect x="181.5" y="237.5" width="117" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="240" y="251.0">Klik Tulis Ulasan</tspan></text>
+    </g>
+<g>
+      <rect x="570.5" y="231.0" width="99" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="620" y="244.5">Kirim POST</tspan><tspan x="620" y="257.5">/nucomu/ulasan</tspan></text>
+    </g>
+<g>
+      <rect x="998.5" y="221.5" width="153" height="47" rx="5" fill="#F0FDF4" fill-opacity="0.96" stroke="#86EFAC" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#14532D" text-anchor="middle"><tspan x="1075" y="235.0">[Valid]</tspan><tspan x="1075" y="248.0">Nama, rating 1-5, isi &amp;</tspan><tspan x="1075" y="261.0">foto</tspan></text>
+    </g>
+<g>
+      <rect x="546.5" y="381.5" width="147" height="47" rx="5" fill="#FEF2F2" fill-opacity="0.96" stroke="#FCA5A5" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#991B1B" text-anchor="middle"><tspan x="620" y="395.0">[Tidak valid -&gt; ulang]</tspan><tspan x="620" y="408.0">Error wajib / bug</tspan><tspan x="620" y="421.0">comment vs content</tspan></text>
+    </g>
+<g>
+      <rect x="1218.5" y="419.5" width="153" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="1295" y="433.0">Data ulasan &amp; path foto</tspan></text>
+    </g>
+<g>
+      <rect x="693.5" y="526.0" width="153" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="770" y="539.5">Status simpan (sukses /</tspan><tspan x="770" y="552.5">gagal DB)</tspan></text>
+    </g>
+<g>
+      <rect x="68.5" y="448.0" width="153" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="145" y="461.5">Notifikasi flash ulasan</tspan><tspan x="145" y="474.5">dikirim / gagal simpan</tspan></text>
+    </g>
+<g>
+      <rect x="949.5" y="665.0" width="141" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1020" y="678.5">Tulis: name, content,</tspan><tspan x="1020" y="691.5">rating, source</tspan></text>
+    </g>
+</svg>

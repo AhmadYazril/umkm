@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 980" width="1600" height="980" font-family="'Segoe UI', Arial, sans-serif">
+<defs>
+    <filter id="l1-shadow" x="-8%" y="-8%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr-Admin" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arr-Kasir" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#EA580C"/>
+    </marker>
+    <marker id="arr-Pelanggan" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#16A34A"/>
+    </marker>
+  </defs>
+<rect width="1600" height="980" fill="#FFFFFF"/>
+<text x="800" y="44" font-size="25" font-weight="800" fill="#0F172A" text-anchor="middle" letter-spacing="0.4">DFD LEVEL 1 — FITUR SISTEM DAN PENGGUNANYA</text>
+<text x="800" y="72" font-size="14" font-weight="500" fill="#475569" text-anchor="middle">Sistem Informasi UMKM Nucomu Cafe  •  Warna menunjukkan pengguna fitur: Biru = Admin, Oranye = Kasir, Hijau = Pelanggan</text>
+<line x1="180" y1="88" x2="1420" y2="88" stroke="#E2E8F0" stroke-width="1.2"/>
+<circle cx="800" cy="540" r="420" fill="#FAFCFF" stroke="#1E293B" stroke-width="2.6" filter="url(#l1-shadow)"/>
+<text x="800" y="180" font-size="11.5" font-weight="700" fill="#64748B" text-anchor="middle" letter-spacing="1.0">SISTEM INFORMASI UMKM NUCOMU CAFE (0.0)</text>
+<line x1="230" y1="315" x2="543" y2="232" stroke="#2563EB" stroke-width="2.2" marker-end="url(#arr-Admin)"/>
+<line x1="230" y1="315" x2="543" y2="287.5" stroke="#2563EB" stroke-width="2.2" marker-end="url(#arr-Admin)"/>
+<line x1="230" y1="315" x2="543" y2="343" stroke="#2563EB" stroke-width="2.2" marker-end="url(#arr-Admin)"/>
+<line x1="230" y1="315" x2="543" y2="398.5" stroke="#2563EB" stroke-width="2.2" marker-end="url(#arr-Admin)"/>
+<line x1="230" y1="560" x2="543" y2="454" stroke="#EA580C" stroke-width="2.2" marker-end="url(#arr-Kasir)"/>
+<line x1="230" y1="560" x2="543" y2="509.5" stroke="#EA580C" stroke-width="2.2" marker-end="url(#arr-Kasir)"/>
+<line x1="230" y1="560" x2="543" y2="565" stroke="#EA580C" stroke-width="2.2" marker-end="url(#arr-Kasir)"/>
+<line x1="230" y1="560" x2="543" y2="620.5" stroke="#EA580C" stroke-width="2.2" marker-end="url(#arr-Kasir)"/>
+<line x1="1370" y1="760" x2="1057" y2="676" stroke="#16A34A" stroke-width="2.2" marker-end="url(#arr-Pelanggan)"/>
+<line x1="1370" y1="760" x2="1057" y2="731.5" stroke="#16A34A" stroke-width="2.2" marker-end="url(#arr-Pelanggan)"/>
+<line x1="1370" y1="760" x2="1057" y2="787" stroke="#16A34A" stroke-width="2.2" marker-end="url(#arr-Pelanggan)"/>
+<line x1="1370" y1="760" x2="1057" y2="842.5" stroke="#16A34A" stroke-width="2.2" marker-end="url(#arr-Pelanggan)"/>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="210" width="504" height="44" rx="22" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+      <text x="790" y="229" font-size="13.5" font-weight="700" fill="#1E3A8A" text-anchor="middle">Login Admin</text>
+      <text x="790" y="245" font-size="10.5" font-weight="500" fill="#334155" text-anchor="middle">1.0 • Autentikasi akun &amp; sesi admin (/admin/login)</text>
+      <circle cx="1028" cy="232" r="5.5" fill="#2563EB"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="265.5" width="504" height="44" rx="22" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+      <text x="790" y="284.5" font-size="13.5" font-weight="700" fill="#1E3A8A" text-anchor="middle">Kelola Konten Website (CRUD Terpadu)</text>
+      <text x="790" y="300.5" font-size="10.5" font-weight="500" fill="#334155" text-anchor="middle">2.0 • Banner, Fasilitas, Galeri, About, Event &amp; Kontak</text>
+      <circle cx="1028" cy="287.5" r="5.5" fill="#2563EB"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="321" width="504" height="44" rx="22" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+      <text x="790" y="340" font-size="13.5" font-weight="700" fill="#1E3A8A" text-anchor="middle">Kelola Menu, Kategori, Varian &amp; Stok</text>
+      <text x="790" y="356" font-size="10.5" font-weight="500" fill="#334155" text-anchor="middle">3.0 • CRUD katalog, opsi varian, arsip &amp; pulihkan menu</text>
+      <circle cx="1028" cy="343" r="5.5" fill="#2563EB"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="376.5" width="504" height="44" rx="22" fill="#EFF6FF" stroke="#2563EB" stroke-width="2"/>
+      <text x="790" y="395.5" font-size="13.5" font-weight="700" fill="#1E3A8A" text-anchor="middle">Rekap &amp; Laporan Penjualan</text>
+      <text x="790" y="411.5" font-size="10.5" font-weight="500" fill="#334155" text-anchor="middle">4.0 • Filter periode &amp; ekspor PDF, CSV / Print</text>
+      <circle cx="1028" cy="398.5" r="5.5" fill="#2563EB"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="432" width="504" height="44" rx="22" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+      <text x="790" y="451" font-size="13.5" font-weight="700" fill="#9A3412" text-anchor="middle">Login Kasir</text>
+      <text x="790" y="467" font-size="10.5" font-weight="500" fill="#7C2D12" text-anchor="middle">5.0 • Autentikasi operator POS (/kasir/login)</text>
+      <circle cx="1028" cy="454" r="5.5" fill="#EA580C"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="487.5" width="504" height="44" rx="22" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+      <text x="790" y="506.5" font-size="13.5" font-weight="700" fill="#9A3412" text-anchor="middle">Pembayaran Dine-In / Take Away (QR)</text>
+      <text x="790" y="522.5" font-size="10.5" font-weight="500" fill="#7C2D12" text-anchor="middle">6.0 • Scan QR slip, konfirmasi bayar &amp; cetak struk</text>
+      <circle cx="1028" cy="509.5" r="5.5" fill="#EA580C"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="543" width="504" height="44" rx="22" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+      <text x="790" y="562" font-size="13.5" font-weight="700" fill="#9A3412" text-anchor="middle">Pembayaran &amp; Penyerahan Pesanan Zendo</text>
+      <text x="790" y="578" font-size="10.5" font-weight="500" fill="#7C2D12" text-anchor="middle">7.0 • Antrean / cari kode #NCM-*, bayar kurir &amp; struk</text>
+      <circle cx="1028" cy="565" r="5.5" fill="#EA580C"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="598.5" width="504" height="44" rx="22" fill="#FFF7ED" stroke="#EA580C" stroke-width="2"/>
+      <text x="790" y="617.5" font-size="13.5" font-weight="700" fill="#9A3412" text-anchor="middle">Update Stok &amp; Ketersediaan Menu</text>
+      <text x="790" y="633.5" font-size="10.5" font-weight="500" fill="#7C2D12" text-anchor="middle">8.0 • Ubah stok cepat &amp; sinkronisasi ke web/admin</text>
+      <circle cx="1028" cy="620.5" r="5.5" fill="#EA580C"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="654" width="504" height="44" rx="22" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+      <text x="790" y="673" font-size="13.5" font-weight="700" fill="#14532D" text-anchor="middle">Pemesanan Dine-In / Take Away</text>
+      <text x="790" y="689" font-size="10.5" font-weight="500" fill="#166534" text-anchor="middle">9.0 • Menu, varian, keranjang, checkout &amp; QR pesanan</text>
+      <circle cx="1028" cy="676" r="5.5" fill="#16A34A"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="709.5" width="504" height="44" rx="22" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+      <text x="790" y="728.5" font-size="13.5" font-weight="700" fill="#14532D" text-anchor="middle">Pemesanan Online via Zendo</text>
+      <text x="790" y="744.5" font-size="10.5" font-weight="500" fill="#166534" text-anchor="middle">10.0 • Menu, alamat antar, ongkir &amp; arahkan WA Zendo</text>
+      <circle cx="1028" cy="731.5" r="5.5" fill="#16A34A"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="765" width="504" height="44" rx="22" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+      <text x="790" y="784" font-size="13.5" font-weight="700" fill="#14532D" text-anchor="middle">Pengajuan Reservasi Meja &amp; Acara</text>
+      <text x="790" y="800" font-size="10.5" font-weight="500" fill="#166534" text-anchor="middle">11.0 • Form dinamis, simpan reservasi &amp; tautan WA Admin</text>
+      <circle cx="1028" cy="787" r="5.5" fill="#16A34A"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="548" y="820.5" width="504" height="44" rx="22" fill="#F0FDF4" stroke="#16A34A" stroke-width="2"/>
+      <text x="790" y="839.5" font-size="13.5" font-weight="700" fill="#14532D" text-anchor="middle">Kirim Ulasan Pelanggan</text>
+      <text x="790" y="855.5" font-size="10.5" font-weight="500" fill="#166534" text-anchor="middle">12.0 • Rating bintang, komentar &amp; foto ulasan</text>
+      <circle cx="1028" cy="842.5" r="5.5" fill="#16A34A"/>
+    </g>
+<g filter="url(#l1-shadow)">
+      <rect x="140" y="280" width="70" height="70" rx="14" fill="#2563EB"/>
+      <circle cx="175" cy="305" r="12" fill="#FFFFFF"/>
+      <path d="M 155 339 C 155 323, 195 323, 195 339 Z" fill="#FFFFFF"/>
+    </g>
+<text x="175" y="372" font-size="18" font-weight="800" fill="#1E3A8A" text-anchor="middle">Admin</text>
+<text x="175" y="391" font-size="12.5" font-weight="500" fill="#64748B" text-anchor="middle">login internal</text>
+<g filter="url(#l1-shadow)">
+      <rect x="140" y="525" width="70" height="70" rx="14" fill="#EA580C"/>
+      <circle cx="175" cy="550" r="12" fill="#FFFFFF"/>
+      <path d="M 155 584 C 155 568, 195 568, 195 584 Z" fill="#FFFFFF"/>
+    </g>
+<text x="175" y="617" font-size="18" font-weight="800" fill="#9A3412" text-anchor="middle">Kasir</text>
+<text x="175" y="636" font-size="12.5" font-weight="500" fill="#64748B" text-anchor="middle">login internal POS</text>
+<g filter="url(#l1-shadow)">
+      <rect x="1390" y="725" width="70" height="70" rx="14" fill="#16A34A"/>
+      <circle cx="1425" cy="750" r="12" fill="#FFFFFF"/>
+      <path d="M 1405 784 C 1405 768, 1445 768, 1445 784 Z" fill="#FFFFFF"/>
+    </g>
+<text x="1425" y="817" font-size="18" font-weight="800" fill="#14532D" text-anchor="middle">Pelanggan</text>
+<text x="1425" y="836" font-size="12.5" font-weight="500" fill="#64748B" text-anchor="middle">tanpa login</text>
+</svg>

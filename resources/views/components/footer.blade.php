@@ -29,8 +29,8 @@
 
 <footer id="global-footer" 
         data-navbar-theme="dark"
-        class="relative bg-[#111113] text-zinc-300 pt-10 md:pt-16 pb-8 border-t border-white/10 overflow-hidden font-body select-none-bg"
-        style="background-color: #111113;">
+        class="relative bg-[#111113] dark:bg-[#0C0C0C] text-[#D4D4D4] pt-10 md:pt-16 pb-8 border-t border-white/10 overflow-hidden font-body select-none-bg"
+        style="background-color: var(--footer-bg, #111113);">
 
     <!-- Background Artwork Layer (Monochrome Exact Match) -->
     <div class="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden">
@@ -74,15 +74,15 @@
                          aria-label="Nucomu Cafe Slogan">
 
                         <!-- Ambient Radial Backlight Glow on hover -->
-                        <div class="absolute -inset-2 rounded-2xl bg-gradient-to-r from-white/[0.06] via-[#c2a378]/[0.05] to-transparent opacity-0 group-hover/quote:opacity-100 transition-opacity duration-700 pointer-events-none blur-md"></div>
+                        <div class="absolute -inset-2 rounded-2xl bg-gradient-to-r from-white/[0.06] via-white/[0.04] to-transparent opacity-0 group-hover/quote:opacity-100 transition-opacity duration-700 pointer-events-none blur-md"></div>
 
                         <!-- Oversized Decorative Quotation Mark Watermark -->
-                        <span class="absolute -top-3 left-1 font-sans italic font-bold text-5xl sm:text-6xl text-white/[0.05] select-none pointer-events-none leading-none transition-all duration-500 group-hover/quote:text-[#c2a378]/25 group-hover/quote:-translate-y-0.5" aria-hidden="true">&ldquo;</span>
+                        <span class="absolute -top-3 left-1 font-sans italic font-bold text-5xl sm:text-6xl text-white/[0.05] select-none pointer-events-none leading-none transition-all duration-500 group-hover/quote:text-white/25 group-hover/quote:-translate-y-0.5" aria-hidden="true">&ldquo;</span>
 
                         <!-- Vertical Accent Bar with Slow-Drip Traveling Light Bead -->
                         <div class="w-[2.5px] bg-zinc-800/90 rounded-full relative overflow-hidden shrink-0 self-stretch min-h-[52px]">
                             <!-- Base gradient bar: scaleY(0) -> scaleY(1) on scroll reveal -->
-                            <div class="footer-quote-line absolute inset-0 bg-gradient-to-b from-white via-zinc-200 to-[#c2a378] w-full rounded-full origin-top transition-transform duration-700 ease-out" style="transform: scaleY(0);"></div>
+                            <div class="footer-quote-line absolute inset-0 bg-gradient-to-b from-white via-zinc-300 to-[#F5F2EE] w-full rounded-full origin-top transition-transform duration-700 ease-out" style="transform: scaleY(0);"></div>
                             <!-- Slow-Drip Traveling Glowing Light Droplet -->
                             <div class="footer-quote-bead"></div>
                         </div>
@@ -155,6 +155,7 @@
                 </div>
 
                 <!-- Hours Card with Elevation & Row Highlight & Icon Micro-Animations -->
+<<<<<<< HEAD
                 @php $footerOpGroups = $operatingHours['groups'] ?? []; @endphp
                 <div class="footer-hours-card {{ count($footerOpGroups) === 2 ? 'grid grid-cols-2 divide-x divide-white/10' : 'block space-y-1' }} md:block md:divide-x-0 rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/10 p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
                     @foreach($footerOpGroups as $opIdx => $opGroup)
@@ -183,6 +184,16 @@
                                 <p class="text-[9.5px] md:text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">{{ strtoupper($opGroup['label']) }}</p>
                                 <p class="text-[12px] sm:text-[13px] md:text-sm font-bold text-white tracking-wide mt-0.5 tabular-nums whitespace-nowrap">{{ $opGroup['hours'] }}</p>
                             </div>
+=======
+                <div class="footer-hours-card grid grid-cols-2 divide-x divide-white/10 md:block md:divide-x-0 rounded-2xl bg-zinc-900/75 dark:bg-white/[0.04] border border-white/12 backdrop-blur-md p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
+                    <!-- Row: Senin – Sabtu -->
+                    <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
+                        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
+                            <svg class="footer-sun-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="4"/>
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                            </svg>
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         </div>
                     @endforeach
                 </div>
@@ -334,6 +345,17 @@
 
 <!-- FOOTER STYLES & MICRO-INTERACTIONS -->
 <style>
+    #global-footer {
+        --footer-bg: #111113;
+        --footer-accent: #c2a378;
+        --footer-shimmer-mid: #edd5be;
+    }
+    [data-theme="dark"] #global-footer,
+    .dark #global-footer {
+        --footer-bg: #0C0C0C;
+        --footer-accent: #f5f2ee;
+        --footer-shimmer-mid: #f5f2ee;
+    }
     /* 1. Staggered Navigation Items */
     .footer-nav-item {
         opacity: 0;
@@ -433,7 +455,7 @@
             #d4d4d8 0%,
             #e4e4e7 25%,
             #ffffff 45%,
-            #edd5be 52%,
+            #f5f2ee 52%,
             #ffffff 60%,
             #e4e4e7 75%,
             #d4d4d8 100%
@@ -447,7 +469,7 @@
 
     .quote-revealed .footer-quote-line {
         transform: scaleY(1) !important;
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.6), 0 0 18px rgba(194, 163, 120, 0.35);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.55), 0 0 18px rgba(190, 172, 182, 0.28);
     }
 
     .quote-revealed .footer-quote-row {
@@ -475,9 +497,9 @@
         left: 0;
         width: 100%;
         height: 35%;
-        background: linear-gradient(180deg, transparent 0%, #ffffff 50%, #c2a378 80%, transparent 100%);
+        background: linear-gradient(180deg, transparent 0%, #ffffff 50%, #f5f2ee 80%, transparent 100%);
         border-radius: 9999px;
-        box-shadow: 0 0 8px #ffffff, 0 0 14px #c2a378;
+        box-shadow: 0 0 8px #ffffff, 0 0 14px rgba(255, 255, 255, 0.45);
         opacity: 0;
         pointer-events: none;
     }
@@ -515,11 +537,11 @@
 
     /* Hover State: brighter luminous sheen & glowing drop shadow */
     .footer-quote-box:hover .footer-quote-row {
-        filter: drop-shadow(0 0 12px rgba(237, 213, 190, 0.45));
+        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.42));
     }
 
     .footer-quote-box:hover .footer-quote-line {
-        box-shadow: 0 0 14px rgba(255, 255, 255, 0.9), 0 0 24px rgba(194, 163, 120, 0.7) !important;
+        box-shadow: 0 0 14px rgba(255, 255, 255, 0.9), 0 0 24px rgba(245, 242, 238, 0.55) !important;
     }
 
     .footer-quote-box:hover .footer-quote-bead {
@@ -532,7 +554,7 @@
     }
     @keyframes footerQuoteSparkle {
         0% {
-            filter: drop-shadow(0 0 18px rgba(255, 255, 255, 1)) drop-shadow(0 0 26px rgba(194, 163, 120, 0.9));
+            filter: drop-shadow(0 0 18px rgba(255, 255, 255, 1)) drop-shadow(0 0 26px rgba(245, 242, 238, 0.75));
         }
         100% {
             filter: drop-shadow(0 0 0px transparent);

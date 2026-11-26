@@ -4,11 +4,12 @@
  * Lightbox, Service detail modal, and WhatsApp reservation validation.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-    initNucomuIntro();
-    initMobileHomePages();
-    initHeroSlider();
-    initNavbarScroll();
+let deferredSectionsInitialized = false;
+
+function initDeferredSections() {
+    if (deferredSectionsInitialized) return;
+    deferredSectionsInitialized = true;
+
     initScrollSpy();
     initScrollReveal();
     initOurStory();
@@ -16,8 +17,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initBestMenuCarousel();
     initGalleryLightbox();
     initLayananSection();
-    initKeyboardShortcuts();
     initMenuVideoLazyLoading();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initNucomuIntro();
+    initMobileHomePages();
+    initHeroSlider();
+    initNavbarScroll();
+    initKeyboardShortcuts();
+
+    const isIntroPending = document.documentElement.classList.contains('nucomu-intro-active') && !window.nucomuIntroIsDone;
+    if (isIntroPending) {
+        window.addEventListener('nucomu:intro-done', () => {
+            initDeferredSections();
+        }, { once: true });
+    } else {
+        initDeferredSections();
+    }
 });
 
 /* ==========================================================================
@@ -27,24 +44,42 @@ window.nucomuIntroIsDone = false;
 let introTimerOutro = null;
 let introTimerFinish = null;
 let introSafetyTimer = null;
+let introRafId = null;
 let introIsFinished = false;
 
 window.skipNucomuIntro = function() {
     if (introIsFinished) return;
     window.nucomuIntroIsDone = true;
+
+    if (introRafId) {
+        cancelAnimationFrame(introRafId);
+        introRafId = null;
+    }
+    if (introTimerOutro) clearTimeout(introTimerOutro);
+    if (introTimerFinish) clearTimeout(introTimerFinish);
+
     const overlay = document.getElementById('nucomu-intro-overlay');
     if (!overlay) {
         finishNucomuIntro();
         return;
     }
 
-    if (introTimerOutro) clearTimeout(introTimerOutro);
-    if (introTimerFinish) clearTimeout(introTimerFinish);
-
-    overlay.classList.add('is-fading');
-    setTimeout(() => {
+    let done = false;
+    const completeSkip = () => {
+        if (done) return;
+        done = true;
+        overlay.removeEventListener('transitionend', onSkipEnd);
         finishNucomuIntro();
-    }, 300);
+    };
+    const onSkipEnd = (e) => {
+        if (e.target === overlay && e.propertyName === 'opacity') {
+            completeSkip();
+        }
+    };
+
+    overlay.addEventListener('transitionend', onSkipEnd);
+    overlay.classList.add('is-fading');
+    introTimerFinish = setTimeout(completeSkip, 360);
 };
 
 function finishNucomuIntro() {
@@ -52,6 +87,10 @@ function finishNucomuIntro() {
     introIsFinished = true;
     window.nucomuIntroIsDone = true;
 
+    if (introRafId) {
+        cancelAnimationFrame(introRafId);
+        introRafId = null;
+    }
     if (introTimerOutro) clearTimeout(introTimerOutro);
     if (introTimerFinish) clearTimeout(introTimerFinish);
     if (introSafetyTimer) clearTimeout(introSafetyTimer);
@@ -68,7 +107,7 @@ function finishNucomuIntro() {
         overlay.remove();
     }
 
-    document.documentElement.classList.remove('nucomu-intro-active');
+    document.documentElement.classList.remove('nucomu-intro-active', 'nucomu-intro-play');
     document.documentElement.classList.add('nucomu-intro-seen');
     document.documentElement.style.overflow = '';
     document.body.style.overflow = '';
@@ -114,51 +153,62 @@ function initNucomuIntro() {
             overlay.classList.add('is-fading');
             introTimerFinish = setTimeout(() => {
                 finishNucomuIntro();
-            }, 300);
+            }, 340);
         }, 500);
         return;
     }
 
-    // Normal timeline synchronized with SVG render time:
-    // 0.0s - 1.2s: Ring draws
-    // 0.6s - 2.2s: Mark draws
-    // 2.1s - 3.0s: Dot drops
-    // 2.6s: Trigger text "NUCOMU CAFE" fade up (checks font load with max 1s wait to prevent FOUT)
-    // 3.5s - 4.2s: Overlay lifts (translateY -100%) over 0.7s
-    // 4.2s (total ±4.2s): Finish and remove overlay from DOM
-    const startOrigin = window.__nucomuIntroStartTime || performance.now();
-    const elapsed = Math.max(0, performance.now() - startOrigin);
+    // Preload Montserrat for .intro-text before starting CSS timeline (capped at 220ms)
+    const fontWait = ('fonts' in document)
+        ? Promise.race([
+            document.fonts.load('700 14px "Montserrat"').catch(() => {}),
+            new Promise((resolve) => setTimeout(resolve, 220))
+        ])
+        : Promise.resolve();
 
-    const textDelay = Math.max(0, 2600 - elapsed);
-    setTimeout(() => {
-        if (introIsFinished) return;
-        const textEl = overlay.querySelector('.intro-text');
-        if (textEl) {
-            const showText = () => {
-                if (!introIsFinished) {
-                    textEl.classList.add('is-visible');
-                }
-            };
-            if ('fonts' in document) {
-                const fontPromise = Promise.all([
-                    document.fonts.load('700 14px "Playfair Display"'),
-                    document.fonts.load('600 14px "Montserrat"')
-                ]).catch(() => {});
-                const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1000));
-                Promise.race([fontPromise, timeoutPromise]).then(showText);
-            } else {
-                showText();
-            }
-        }
-    }, textDelay);
+    // Wait for initial DOM/Tailwind layout settle + two animation frames so frame 0 plays at steady 60fps
+    fontWait.then(() => {
+        if (introIsFinished || window.nucomuIntroIsDone) return;
+        introRafId = requestAnimationFrame(() => {
+            if (introIsFinished || window.nucomuIntroIsDone) return;
+            introRafId = requestAnimationFrame(() => {
+                introRafId = null;
+                if (introIsFinished || window.nucomuIntroIsDone) return;
 
-    const outroDelay = Math.max(0, 3500 - elapsed);
-    introTimerOutro = setTimeout(() => {
-        overlay.classList.add('is-leaving');
-        introTimerFinish = setTimeout(() => {
-            finishNucomuIntro();
-        }, 700);
-    }, outroDelay);
+                // Start synchronized CSS timeline:
+                // 0.00s - 1.15s: Ring draws
+                // 0.45s - 1.85s: Mark draws
+                // 1.70s - 2.45s: Dot drops
+                // 2.05s - 2.65s: Text "NUCOMU CAFE" fades & glides up
+                // 2.95s - 3.70s: Curtain lifts smoothly via pure GPU translate3d
+                document.documentElement.classList.add('nucomu-intro-play');
+
+                introTimerOutro = setTimeout(() => {
+                    if (introIsFinished || window.nucomuIntroIsDone) return;
+                    requestAnimationFrame(() => {
+                        if (introIsFinished || window.nucomuIntroIsDone) return;
+
+                        let done = false;
+                        const completeOutro = () => {
+                            if (done) return;
+                            done = true;
+                            overlay.removeEventListener('transitionend', onOutroEnd);
+                            finishNucomuIntro();
+                        };
+                        const onOutroEnd = (e) => {
+                            if (e.target === overlay && e.propertyName === 'transform') {
+                                completeOutro();
+                            }
+                        };
+
+                        overlay.addEventListener('transitionend', onOutroEnd);
+                        overlay.classList.add('is-leaving');
+                        introTimerFinish = setTimeout(completeOutro, 880);
+                    });
+                }, 2950);
+            });
+        });
+    });
 }
 
 /* ==========================================================================
@@ -172,16 +222,14 @@ const SLIDE_INTERVAL = 7000;
 
 /**
  * PALET WARNA BACKGROUND HERO
- * [0] Slide 0 (Welcome Latte)    -> #140E0A (Dark Coffee)
- * [1] Slide 1 (Fresh Beans)      -> #242424 (Dark Charcoal Canvas)
- * [2] Slide 2 (Fresh Brew)       -> #EDEDED (Light Warm Gray)
- * [3] Slide 3 (Sweet Moment)     -> #FAFAFA (Off-White)
+ * [0] Slide 0 (Fresh Beans)      -> #242424 (Dark Charcoal Canvas)
+ * [1] Slide 1 (Fresh Brew)       -> #141414 (Dark Charcoal)
+ * [2] Slide 2 (Sweet Moment)     -> #1A1A1A (Dark Slate)
  */
 const HERO_BG_COLORS = [
-    '#140E0A',
     '#242424',
-    '#EDEDED',
-    '#FAFAFA'
+    '#141414',
+    '#1A1A1A'
 ];
 
 let heroCurrentIndex = 0;
@@ -681,8 +729,8 @@ function syncHeroThemeAndColor(activeSlide, index) {
 
     // Sinkronisasi data-navbar-theme pada hero section dengan tema slide/banner aktif
     const slideTheme = activeSlide.getAttribute('data-theme');
-    const isDarkSlide = (slideTheme === 'dark');
-    heroSection.setAttribute('data-navbar-theme', isDarkSlide ? 'dark' : 'light');
+    const navTheme = slideTheme === 'gold' ? 'gold' : (slideTheme === 'light' ? 'light' : 'dark');
+    heroSection.setAttribute('data-navbar-theme', navTheme);
 
     if (typeof window.updateNavbarTheme === 'function') {
         window.updateNavbarTheme();
@@ -729,13 +777,13 @@ function renderHeroSlide(index) {
         const isBanner = slides[index]?.classList.contains('hero-banner-slide');
         if (idx === index) {
             dot.className = isBanner
-                ? 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#1F1F1F] transition-all duration-300'
+                ? 'hero-dot-btn w-6 h-1.5 rounded-full bg-[#F5F2EE] transition-all duration-300'
                 : 'hero-dot-btn h-1.5 rounded-full transition-all duration-300 w-6 bg-white';
             dot.setAttribute('aria-selected', 'true');
             dot.setAttribute('aria-current', 'true');
         } else {
             dot.className = isBanner
-                ? 'hero-dot-btn w-2 h-1.5 rounded-full bg-neutral-600/40 hover:bg-neutral-800 transition-all duration-300'
+                ? 'hero-dot-btn w-2 h-1.5 rounded-full bg-white/35 hover:bg-white/70 transition-all duration-300'
                 : 'hero-dot-btn h-1.5 rounded-full transition-all duration-300 w-2 bg-white/35 hover:bg-white/70';
             dot.setAttribute('aria-selected', 'false');
             dot.removeAttribute('aria-current');
@@ -846,26 +894,28 @@ function initNavbarScroll() {
             if (heroRect.top > 0 && heroRect.top <= navHeight + 12 && heroRect.bottom > navHeight) {
                 const heroTheme = heroSection.getAttribute('data-navbar-theme');
                 return {
-                    theme: heroTheme === 'dark' ? 'dark' : 'light',
+                    theme: heroTheme === 'gold' ? 'gold' : (heroTheme === 'dark' ? 'dark' : 'light'),
                     flushHero: true,
                     bgColor: null
                 };
             }
         }
 
+        const isDarkDoc = document.documentElement.classList.contains('dark') || document.documentElement.getAttribute('data-theme') === 'dark';
         const matchedSection = findSectionAtProbeY(probeY);
         if (!matchedSection) {
             return {
-                theme: 'light',
+                theme: isDarkDoc ? 'dark' : 'light',
                 flushHero: false,
                 bgColor: null
             };
         }
 
         const resolvedBg = resolveSectionBackground(matchedSection);
-        let theme = 'light';
+        let theme = isDarkDoc ? 'dark' : 'light';
         if (matchedSection.hasAttribute('data-navbar-theme')) {
-            theme = matchedSection.getAttribute('data-navbar-theme') === 'dark' ? 'dark' : 'light';
+            const attrTheme = matchedSection.getAttribute('data-navbar-theme');
+            theme = attrTheme === 'gold' ? 'gold' : (attrTheme === 'dark' ? 'dark' : 'light');
         } else if (resolvedBg) {
             theme = isDarkRgb(resolvedBg.rgb) ? 'dark' : 'light';
         }
@@ -899,12 +949,15 @@ function initNavbarScroll() {
             navbar.style.removeProperty('--navbar-section-bg');
         }
 
-        if (theme === 'dark') {
+        if (theme === 'gold') {
+            navbar.classList.add('navbar--over-hero-gold');
+            navbar.classList.remove('navbar--over-hero', 'navbar--scrolled', 'navbar-scrolled', 'navbar--past-hero');
+        } else if (theme === 'dark') {
             navbar.classList.add('navbar--over-hero');
-            navbar.classList.remove('navbar--scrolled', 'navbar-scrolled', 'navbar--past-hero');
+            navbar.classList.remove('navbar--over-hero-gold', 'navbar--scrolled', 'navbar-scrolled', 'navbar--past-hero');
         } else {
             navbar.classList.add('navbar--scrolled');
-            navbar.classList.remove('navbar--over-hero');
+            navbar.classList.remove('navbar--over-hero', 'navbar--over-hero-gold');
         }
     }
 
@@ -993,11 +1046,11 @@ function initScrollSpy() {
                 mobileNavLinks.forEach(link => {
                     const href = link.getAttribute('href');
                     if (href === `#${activeId}` || (href && href.endsWith(`#${activeId}`))) {
-                        link.classList.add('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
-                        link.classList.remove('text-[#C8C8C8]', 'font-semibold');
+                        link.classList.add('bg-[var(--badge-bg)]', 'font-bold', 'text-[var(--text)]');
+                        link.classList.remove('text-[var(--text-muted)]', 'font-semibold');
                     } else if (href && href.includes('#')) {
-                        link.classList.remove('bg-white/8', 'font-bold', 'text-[#F5F5F5]');
-                        link.classList.add('text-[#C8C8C8]', 'font-semibold');
+                        link.classList.remove('bg-[var(--badge-bg)]', 'font-bold', 'text-[var(--text)]');
+                        link.classList.add('text-[var(--text-muted)]', 'font-semibold');
                     }
                 });
             }
@@ -1206,17 +1259,73 @@ function initScrollReveal() {
 
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && (entry.intersectionRatio >= 0.14 || entry.intersectionRect.height >= 64)) {
                 entry.target.classList.add('is-visible');
                 revealObserver.unobserve(entry.target);
             }
         });
     }, {
-        threshold: 0.12,
-        rootMargin: '0px 0px -40px 0px'
+        threshold: [0, 0.08, 0.14, 0.25],
+        rootMargin: '0px 0px -12% 0px'
     });
 
     reveals.forEach(el => revealObserver.observe(el));
+}
+
+/**
+ * Trigger an element's entrance CSS class only when the user scrolls or navigates it into view.
+ */
+function observeSectionEntrance(element, {
+    activeClass,
+    rootMargin = '0px 0px -22% 0px',
+    minRatio = 0.16,
+    minVisibleHeight = 96,
+    topViewportRatio = 0.6,
+    hashes = []
+}) {
+    if (!element) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const triggerEntrance = () => element.classList.add(activeClass);
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+        triggerEntrance();
+        return;
+    }
+
+    const shouldTrigger = (entry) => {
+        if (!entry.isIntersecting) return false;
+        return entry.intersectionRatio >= minRatio
+            || entry.intersectionRect.height >= minVisibleHeight
+            || entry.boundingClientRect.top <= window.innerHeight * topViewportRatio;
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (shouldTrigger(entry)) {
+                triggerEntrance();
+                observer.unobserve(element);
+            }
+        });
+    }, {
+        threshold: [0, 0.05, 0.1, 0.14, 0.18, 0.25, 0.35, 0.5],
+        rootMargin
+    });
+    observer.observe(element);
+
+    if (hashes.length > 0) {
+        window.addEventListener('hashchange', () => {
+            if (!hashes.includes(location.hash)) return;
+            setTimeout(() => {
+                if (element.classList.contains(activeClass)) return;
+                const rect = element.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.8 && rect.bottom > 80) {
+                    triggerEntrance();
+                    observer.unobserve(element);
+                }
+            }, 650);
+        });
+    }
 }
 
 /* ==========================================================================
@@ -1232,35 +1341,14 @@ function initOurStory() {
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // 1. Entrance animation for Our Story section (Single-trigger, no replay on ordinary scroll up/down)
-    function triggerEntrance() {
-        storySection.classList.add('story-in-view');
-    }
-
-    if (prefersReducedMotion) {
-        triggerEntrance();
-    } else {
-        const sectionObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    triggerEntrance();
-                    sectionObserver.unobserve(storySection);
-                }
-            });
-        }, {
-            threshold: 0.12,
-            rootMargin: '0px 0px -40px 0px'
-        });
-        sectionObserver.observe(storySection);
-    }
-
-    // Support re-triggering if user navigates back to #about or #our-story-section from elsewhere
-    window.addEventListener('hashchange', () => {
-        if (location.hash === '#about' || location.hash === '#our-story-section') {
-            if (!storySection.classList.contains('story-in-view')) {
-                triggerEntrance();
-            }
-        }
+    // 1. Entrance animation for Our Story section (Trigger only when user scrolls/navigates into view)
+    observeSectionEntrance(storySection, {
+        activeClass: 'story-in-view',
+        rootMargin: '0px 0px -26% 0px',
+        minRatio: 0.18,
+        minVisibleHeight: 100,
+        topViewportRatio: 0.55,
+        hashes: ['#about', '#our-story-section']
     });
 
     // 2. Automatic Image Carousel with Smooth Crossfade & Manual Controls
@@ -1308,15 +1396,15 @@ function initOurStory() {
         if (charIndex < quoteFullText.length) {
             typewriterTextEl.textContent = quoteFullText.slice(0, charIndex + 1);
             charIndex++;
-            // Kecepatan 30ms per karakter (spesifikasi: 28-34 ms per karakter)
-            quoteTimer = setTimeout(typeNextChar, 30);
+            // Kecepatan 22ms per karakter agar kutipan terasa mengalir lembut & tidak terburu-buru
+            quoteTimer = setTimeout(typeNextChar, 22);
         } else {
             // Pengetikan selesai utuh (termasuk tanda kutip dan tanda baca)
             isTyping = false;
             hasFinished = true;
             clearQuoteTimer();
 
-            // Kursor tampil sesaat setelahnya (±1.2 detik), lalu memudar dan dihapus dari DOM
+            // Kursor tampil sesaat setelahnya (±0.8 detik), lalu memudar dan dihapus dari DOM
             setTimeout(() => {
                 if (typewriterCursor && typewriterCursor.parentNode) {
                     typewriterCursor.style.transition = 'opacity 0.35s ease-out';
@@ -1327,11 +1415,11 @@ function initOurStory() {
                         }
                     }, 350);
                 }
-            }, 1200);
+            }, 800);
         }
     }
 
-    // Trigger IntersectionObserver saat kartu kutipan masuk viewport (threshold ±0.4)
+    // Trigger IntersectionObserver segera saat kartu kutipan mendekati viewport
     if ('IntersectionObserver' in window) {
         const quoteObserver = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
@@ -1344,7 +1432,8 @@ function initOurStory() {
                 }
             });
         }, {
-            threshold: 0.4
+            threshold: 0.01,
+            rootMargin: '0px 0px 120px 0px'
         });
 
         quoteObserver.observe(quoteWrapper);
@@ -1572,35 +1661,14 @@ function initFacilitiesGallery() {
     const AUTOPLAY_INTERVAL = 6000; // 6 detik per foto sesuai rancangan
     const MANUAL_PAUSE_DURATION = 8000; // Jeda 8 detik setelah klik manual sebelum lanjut autoplay
 
-    // 0. Entrance Animation: Sisi Kiri (Teks) dari Kiri, Sisi Kanan (Foto) dari Kanan (Slow & Ultra-Smooth)
-    function triggerEntrance() {
-        galleryEl.classList.add('facility-in-view');
-    }
-
-    if (prefersReducedMotion) {
-        triggerEntrance();
-    } else {
-        const galleryObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    triggerEntrance();
-                    galleryObserver.unobserve(galleryEl);
-                }
-            });
-        }, {
-            threshold: 0.12,
-            rootMargin: '0px 0px -40px 0px'
-        });
-        galleryObserver.observe(galleryEl);
-    }
-
-    // Support re-triggering if navigated via anchor hash (#facilities)
-    window.addEventListener('hashchange', () => {
-        if (location.hash === '#facilities' || location.hash === '#facilities-interactive-gallery') {
-            if (!galleryEl.classList.contains('facility-in-view')) {
-                triggerEntrance();
-            }
-        }
+    // 0. Entrance Animation: Sisi Kiri (Teks) dari Kiri, Sisi Kanan (Foto) dari Kanan (Trigger saat scroll masuk layar)
+    observeSectionEntrance(galleryEl, {
+        activeClass: 'facility-in-view',
+        rootMargin: '0px 0px -20% 0px',
+        minRatio: 0.14,
+        minVisibleHeight: 90,
+        topViewportRatio: 0.62,
+        hashes: ['#facilities', '#facilities-interactive-gallery']
     });
 
     // 1. Crossfade slide assignment logic for 2-slot asymmetric floating photo frames
@@ -1681,8 +1749,8 @@ function initFacilitiesGallery() {
                         const dot = document.createElement('span');
                         dot.className = `facility-counter-dot transition-all duration-300 ${
                             i === activeIndex
-                                ? 'w-3.5 h-1.5 bg-[#242424] rounded-full'
-                                : 'w-1.5 h-1.5 bg-[#D1D5DB] rounded-full'
+                                ? 'w-3.5 h-1.5 bg-[var(--accent-solid)] rounded-full'
+                                : 'w-1.5 h-1.5 bg-[var(--border-strong)] rounded-full'
                         }`;
                         cardBDots.appendChild(dot);
                     }
@@ -1728,9 +1796,9 @@ function initFacilitiesGallery() {
             const isTarget = btn.getAttribute('data-facility-category-trigger') === targetCategory;
             btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
             if (isTarget) {
-                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-[#242424] text-white shadow-xs focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2';
+                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-xs focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)]';
             } else {
-                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-transparent text-[#666666] hover:text-[#1C1C1C] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2';
+                btn.className = 'facility-category-tab px-5 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all duration-300 bg-transparent text-[var(--text-muted)] hover:text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)]';
             }
         });
 
@@ -1751,7 +1819,7 @@ function initFacilitiesGallery() {
                         const li = document.createElement('li');
                         li.className = 'flex items-center gap-3';
                         li.innerHTML = `
-                            <span class="w-5 h-5 rounded-full bg-[#1C1C1C]/6 border border-[#E5E5E5] flex items-center justify-center text-[#1C1C1C] shrink-0" aria-hidden="true">
+                            <span class="w-5 h-5 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] flex items-center justify-center text-[var(--text)] shrink-0" aria-hidden="true">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
                                 </svg>
@@ -2048,7 +2116,7 @@ function updateBestCarousel() {
         visibleCards.forEach((_, idx) => {
             const dot = document.createElement('button');
             dot.className = `h-2 rounded-full transition-all duration-300 ${
-                idx === bestCurrentIndex ? 'w-8 bg-neutral-900' : 'w-2 bg-neutral-300 hover:bg-neutral-500'
+                idx === bestCurrentIndex ? 'w-8 bg-[var(--accent-solid)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'
             }`;
             dot.setAttribute('aria-label', `Slide ${idx + 1}`);
             dot.onclick = () => window.goToBestSlide(idx);
@@ -2138,22 +2206,22 @@ window.switchBestMenuItem = function(index) {
         const priceSpan = pill.querySelector('.pill-price');
         
         if (idx === index) {
-            pill.className = 'best-menu-pill active bg-[#242424] text-white shadow-md flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-white';
-            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-bold block mt-0.5 text-white/90';
+            pill.className = 'best-menu-pill active bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-[var(--shadow)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[var(--accent-solid-text)]';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-bold block mt-0.5 tabular-nums text-[var(--accent-solid-text)] opacity-85';
         } else {
-            pill.className = 'best-menu-pill bg-white hover:bg-neutral-50 text-neutral-800 border border-stone-200/80 lg:border-0 lg:border-b lg:border-stone-100/90 flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
-            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-neutral-800';
-            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-medium block mt-0.5 text-neutral-500';
+            pill.className = 'best-menu-pill bg-[var(--surface)] text-[var(--text)] shadow-[var(--shadow)] hover:bg-[var(--surface-strong)] hover:border-[var(--border-strong)] hover:-translate-x-1 border border-[var(--border)] flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group';
+            if (titleSpan) titleSpan.className = 'pill-title text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate text-[var(--text)]';
+            if (priceSpan) priceSpan.className = 'pill-price text-[11px] sm:text-sm font-medium block mt-0.5 tabular-nums text-[var(--text-muted)]';
         }
     });
 
     // Update dots
     document.querySelectorAll('.best-menu-dot').forEach((dot, idx) => {
         if (idx === index) {
-            dot.className = 'best-menu-dot w-5 h-1.5 bg-[#242424] rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-5 h-1.5 bg-[var(--accent-solid)] rounded-full transition-all duration-300';
         } else {
-            dot.className = 'best-menu-dot w-1.5 h-1.5 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
+            dot.className = 'best-menu-dot w-1.5 h-1.5 bg-[var(--border-strong)] hover:bg-[var(--text-muted)] rounded-full transition-all duration-300';
         }
     });
 };
@@ -2164,15 +2232,15 @@ window.switchBestMenuItem = function(index) {
 window.filterRecommendations = function(category, buttonEl) {
     // 1. Update active tab button style
     document.querySelectorAll('.rec-tab-btn').forEach(btn => {
-        btn.classList.remove('active', 'text-[#C59D5F]');
-        btn.classList.add('text-neutral-600');
+        btn.classList.remove('active', 'text-[var(--text)]');
+        btn.classList.add('text-[var(--text-muted)]');
         const indicator = btn.querySelector('.tab-indicator');
         if (indicator) indicator.classList.add('hidden');
     });
 
     if (buttonEl) {
-        buttonEl.classList.add('active', 'text-[#C59D5F]');
-        buttonEl.classList.remove('text-neutral-600');
+        buttonEl.classList.add('active', 'text-[var(--text)]');
+        buttonEl.classList.remove('text-[var(--text-muted)]');
         const indicator = buttonEl.querySelector('.tab-indicator');
         if (indicator) indicator.classList.remove('hidden');
     }
@@ -2234,10 +2302,10 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
 
     document.querySelectorAll('.cat-circle-btn').forEach(btn => {
         btn.classList.remove('active-cat');
-        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-neutral-900', 'ring-2', 'ring-neutral-900/20', 'scale-105');
-        btn.querySelector('.cat-circle-img-wrap')?.classList.add('border-neutral-200/90');
-        btn.querySelector('.cat-circle-label')?.classList.remove('text-neutral-900', 'font-bold');
-        btn.querySelector('.cat-circle-label')?.classList.add('text-neutral-800');
+        btn.querySelector('.cat-circle-img-wrap')?.classList.remove('border-[var(--accent-solid)]', 'ring-2', 'ring-[var(--field-ring)]', 'scale-105');
+        btn.querySelector('.cat-circle-img-wrap')?.classList.add('border-[var(--border)]');
+        btn.querySelector('.cat-circle-label')?.classList.remove('text-[var(--text)]', 'font-bold');
+        btn.querySelector('.cat-circle-label')?.classList.add('text-[var(--text-muted)]');
     });
 
     let targetCategory = categoryId;
@@ -2245,10 +2313,10 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
         targetCategory = 'all';
     } else if (buttonEl) {
         buttonEl.classList.add('active-cat');
-        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-neutral-900', 'ring-2', 'ring-neutral-900/20', 'scale-105');
-        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.remove('border-neutral-200/90');
-        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-neutral-900', 'font-bold');
-        buttonEl.querySelector('.cat-circle-label')?.classList.remove('text-neutral-800');
+        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.add('border-[var(--accent-solid)]', 'ring-2', 'ring-[var(--field-ring)]', 'scale-105');
+        buttonEl.querySelector('.cat-circle-img-wrap')?.classList.remove('border-[var(--border)]');
+        buttonEl.querySelector('.cat-circle-label')?.classList.add('text-[var(--text)]', 'font-bold');
+        buttonEl.querySelector('.cat-circle-label')?.classList.remove('text-[var(--text-muted)]');
     }
 
     if (targetCategory === 'snacks' && !document.querySelector('#recommendations-cards-pool .rec-card[data-category~="snacks"]')) {
@@ -2265,13 +2333,13 @@ window.handleCircularCategoryClick = function(categoryId, buttonEl) {
 window.filterAllMenuCategory = function(category, buttonEl) {
     // Update tab indicators
     document.querySelectorAll('.all-menu-cat-btn').forEach(btn => {
-        btn.classList.remove('active-cat', 'border-neutral-900', 'text-neutral-900', 'font-bold');
-        btn.classList.add('border-transparent', 'text-neutral-500');
+        btn.classList.remove('active-cat', 'border-[var(--accent-solid)]', 'text-[var(--text)]', 'font-bold');
+        btn.classList.add('border-transparent', 'text-[var(--text-muted)]');
     });
 
     if (buttonEl) {
-        buttonEl.classList.add('active-cat', 'border-neutral-900', 'text-neutral-900', 'font-bold');
-        buttonEl.classList.remove('border-transparent', 'text-neutral-500');
+        buttonEl.classList.add('active-cat', 'border-[var(--accent-solid)]', 'text-[var(--text)]', 'font-bold');
+        buttonEl.classList.remove('border-transparent', 'text-[var(--text-muted)]');
     }
 
     const catalogGrid = document.getElementById('all-menu-grid');
@@ -2546,8 +2614,8 @@ window.selectLayananCategoryChip = function(category) {
     const descBridal = document.getElementById('layanan-desc-bridal');
     const descBirthday = document.getElementById('layanan-desc-birthday');
 
-    const activeClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[#242424] text-white shadow-xs focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 inline-flex items-center justify-center text-center whitespace-nowrap';
-    const inactiveClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-white border border-[#CCCCCC] text-[#444444] hover:border-[#8A8A8A] hover:text-[#1C1C1C] focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2 inline-flex items-center justify-center text-center whitespace-nowrap';
+    const activeClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-xs focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)] inline-flex items-center justify-center text-center whitespace-nowrap';
+    const inactiveClasses = 'layanan-chip w-full min-h-[36px] sm:min-h-[38px] px-1 sm:px-2 py-1.5 sm:py-2 rounded-full text-[9.5px] sm:text-[11px] xl:text-xs font-semibold tracking-tight sm:tracking-normal uppercase transition-all duration-200 bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)] inline-flex items-center justify-center text-center whitespace-nowrap';
 
     if (category === 'Bridal') {
         if (btnBridal) {
@@ -2617,8 +2685,8 @@ window.toggleLayananDetailPanel = function() {
         panelWrapper.classList.remove('hidden');
         panelWrapper.setAttribute('aria-hidden', 'false');
         toggleBtn.setAttribute('aria-expanded', 'true');
-        toggleBtn.classList.add('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
-        toggleBtn.classList.remove('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
+        toggleBtn.classList.add('is-active', 'bg-[var(--accent-solid)]', 'text-[var(--accent-solid-text)]', 'border-[var(--accent-solid)]');
+        toggleBtn.classList.remove('bg-[var(--badge-bg)]', 'text-[var(--text)]', 'border-[var(--border)]');
         if (toggleText) toggleText.textContent = 'Tutup Detail';
         if (toggleIcon) toggleIcon.classList.add('rotate-180');
 
@@ -2661,8 +2729,8 @@ window.closeLayananDetailPanel = function() {
     panelWrapper.setAttribute('aria-hidden', 'true');
     if (toggleBtn) {
         toggleBtn.setAttribute('aria-expanded', 'false');
-        toggleBtn.classList.remove('is-active', 'bg-[#242424]', 'text-white', 'border-[#242424]');
-        toggleBtn.classList.add('bg-[#F0F0F0]', 'text-[#1C1C1C]', 'border-[#D4D4D4]');
+        toggleBtn.classList.remove('is-active', 'bg-[var(--accent-solid)]', 'text-[var(--accent-solid-text)]', 'border-[var(--accent-solid)]');
+        toggleBtn.classList.add('bg-[var(--badge-bg)]', 'text-[var(--text)]', 'border-[var(--border)]');
         if (typeof toggleBtn.focus === 'function') {
             toggleBtn.focus();
         }
@@ -2952,41 +3020,41 @@ window.resetReservationEventCategory = function() {
     }
 
     if (btnBridal) {
-        btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
+        btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
     }
     if (iconBoxBridal) {
-        iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+        iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
     }
     if (labelBridal) {
-        labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+        labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
     }
     if (titleBridal) {
-        titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+        titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
     }
     if (subBridal) {
-        subBridal.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
+        subBridal.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
     }
     if (checkBridal) {
-        checkBridal.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+        checkBridal.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
     }
 
     if (btnBirthday) {
-        btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
+        btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
     }
     if (iconBoxBirthday) {
-        iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+        iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
     }
     if (labelBirthday) {
-        labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+        labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
     }
     if (titleBirthday) {
-        titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+        titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
     }
     if (subBirthday) {
-        subBirthday.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
+        subBirthday.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
     }
     if (checkBirthday) {
-        checkBirthday.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+        checkBirthday.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
     }
 
     const serviceInput = document.getElementById('res-service-type');
@@ -3038,44 +3106,44 @@ window.chooseReservationEventCategory = function(categoryKey) {
             });
         }
 
-        // Active Bridal Button: #242424 with white text, and label #B5B5B5 (WCAG AA compliant)
+        // Active Bridal Button
         if (btnBridal) {
-            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#242424] ring-2 ring-[#242424]/10 bg-[#242424] text-white transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[#242424]';
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[var(--accent-solid)] ring-2 ring-[var(--field-ring)] bg-[var(--surface-strong)] text-[var(--text)] transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBridal) {
-            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[var(--accent-solid)] border border-[var(--accent-solid)] text-[var(--accent-solid-text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBridal) {
-            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBridal) {
-            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-white block leading-tight transition-colors';
+            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBridal) {
-            subBridal.className = 'text-[11px] text-white/75 block mt-0.5 transition-colors';
+            subBridal.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBridal) {
-            checkBridal.className = 'w-6 h-6 rounded-full bg-white text-[#242424] border border-white flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
+            checkBridal.className = 'w-6 h-6 rounded-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border border-[var(--accent-solid)] flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
         }
 
-        // Inactive Birthday Button: clean white card with #8A8A8A label
+        // Inactive Birthday Button
         if (btnBirthday) {
-            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBirthday) {
-            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBirthday) {
-            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBirthday) {
-            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBirthday) {
-            subBirthday.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
+            subBirthday.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBirthday) {
-            checkBirthday.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+            checkBirthday.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
         }
 
         const firstBridalCard = document.querySelector('.res-pkg-card[data-section="Bridal"][data-pkg-code="A"]');
@@ -3104,44 +3172,44 @@ window.chooseReservationEventCategory = function(categoryKey) {
             });
         }
 
-        // Active Birthday Button: #242424 with white text, and label #B5B5B5 (WCAG AA compliant)
+        // Active Birthday Button
         if (btnBirthday) {
-            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[#242424] ring-2 ring-[#242424]/10 bg-[#242424] text-white transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[#242424]';
+            btnBirthday.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border-2 border-[var(--accent-solid)] ring-2 ring-[var(--field-ring)] bg-[var(--surface-strong)] text-[var(--text)] transition-all duration-200 flex items-center justify-between gap-3 shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBirthday) {
-            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-white/10 border border-white/20 text-white flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBirthday.className = 'w-11 h-11 rounded-xl bg-[var(--accent-solid)] border border-[var(--accent-solid)] text-[var(--accent-solid-text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBirthday) {
-            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#B5B5B5] block transition-colors';
+            labelBirthday.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBirthday) {
-            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-white block leading-tight transition-colors';
+            titleBirthday.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBirthday) {
-            subBirthday.className = 'text-[11px] text-white/75 block mt-0.5 transition-colors';
+            subBirthday.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBirthday) {
-            checkBirthday.className = 'w-6 h-6 rounded-full bg-white text-[#242424] border border-white flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
+            checkBirthday.className = 'w-6 h-6 rounded-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border border-[var(--accent-solid)] flex items-center justify-center text-xs font-bold transition-all shrink-0 res-check-pop';
         }
 
-        // Inactive Bridal Button: clean white card with #8A8A8A label
+        // Inactive Bridal Button
         if (btnBridal) {
-            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]';
+            btnBridal.className = 'res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]';
         }
         if (iconBoxBridal) {
-            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors';
+            iconBoxBridal.className = 'w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors';
         }
         if (labelBridal) {
-            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors';
+            labelBridal.className = 'text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors';
         }
         if (titleBridal) {
-            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors';
+            titleBridal.className = 'font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors';
         }
         if (subBridal) {
-            subBridal.className = 'text-[11px] text-[#666666] block mt-0.5 transition-colors';
+            subBridal.className = 'text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors';
         }
         if (checkBridal) {
-            checkBridal.className = 'w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
+            checkBridal.className = 'w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0';
         }
 
         const firstBirthdayCard = document.querySelector('.res-pkg-card[data-section="Birthday"][data-pkg-code="A"]');
@@ -3213,19 +3281,19 @@ window.selectReservationPackage = function(sectionName, packageName, priceShort,
     // Reset all package cards to monochrome default
     const allCards = document.querySelectorAll('.res-pkg-card');
     allCards.forEach(card => {
-        card.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[#E5E5E5] bg-white hover:border-[#CCCCCC] transition-all duration-200 flex flex-col justify-between relative shadow-2xs';
+        card.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[var(--border)] bg-[var(--surface-solid)] hover:border-[var(--border-strong)] transition-all duration-200 flex flex-col justify-between relative shadow-2xs';
         const check = card.querySelector('.res-pkg-check');
         if (check) {
-            check.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#F5F5F5] text-transparent border border-[#E5E5E5]';
+            check.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[var(--badge-bg)] text-transparent border border-[var(--border)]';
         }
     });
 
     // Highlight active card
     if (cardElement) {
-        cardElement.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border-2 border-[#242424] bg-white ring-2 ring-[#242424]/10 shadow-sm transition-all duration-200 flex flex-col justify-between relative';
+        cardElement.className = 'res-pkg-card cursor-pointer rounded-xl p-3.5 border-2 border-[var(--accent-solid)] bg-[var(--surface-strong)] ring-2 ring-[var(--field-ring)] shadow-sm transition-all duration-200 flex flex-col justify-between relative';
         const activeCheck = cardElement.querySelector('.res-pkg-check');
         if (activeCheck) {
-            activeCheck.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#242424] text-white border border-[#242424] res-check-pop';
+            activeCheck.className = 'res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border border-[var(--accent-solid)] res-check-pop';
         }
     }
 
@@ -3482,9 +3550,9 @@ window.switchReviewSlide = function(slideIndex) {
 
     dots.forEach((dot, idx) => {
         if (idx === slideIndex) {
-            dot.className = 'review-dot w-6 h-2 bg-[#1F1F1F] rounded-full transition-all duration-300';
+            dot.className = 'review-dot w-6 h-2 bg-[var(--accent-solid)] rounded-full transition-all duration-300';
         } else {
-            dot.className = 'review-dot w-2 h-2 bg-neutral-300 hover:bg-neutral-400 rounded-full transition-all duration-300';
+            dot.className = 'review-dot w-2 h-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)] rounded-full transition-all duration-300';
         }
     });
 };

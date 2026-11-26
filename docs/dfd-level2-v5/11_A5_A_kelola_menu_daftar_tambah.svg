@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="'Segoe UI', Arial, sans-serif">
+<defs>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr-flow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#334155"/>
+    </marker>
+    <marker id="arr-valid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#15803D"/>
+    </marker>
+    <marker id="arr-invalid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arr-ds" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+  </defs>
+<rect width="1600" height="900" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1600" height="68" fill="#F8FAFC"/>
+<line x1="0" y1="68" x2="1600" y2="68" stroke="#CBD5E1" stroke-width="1.2"/>
+<rect x="0" y="0" width="7" height="68" fill="#1E3A8A"/>
+<text x="24" y="30" font-size="19" font-weight="700" fill="#0F172A">Level 2 - CRUD Menu (turunan proses 8.0 Level 1) — Lembar A: Daftar/Filter &amp; Tambah Menu + Varian</text>
+<text x="24" y="52" font-size="12.5" font-weight="500" fill="#475569">Fitur A5 Lembar A • Aktor: Admin • Langkah: 8.1.1–8.1.6 • Status: Berdasarkan kode, tidak teruji (HTTP 500 lokal: DB categories)</text>
+<g transform="translate(1105, 13)">
+    <rect x="0" y="0" width="475" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <rect x="12" y="13" width="18" height="14" rx="2" fill="#EFF6FF" stroke="#1E293B" stroke-width="1.6"/>
+    <text x="36" y="24" font-size="11" font-weight="600" fill="#334155">Entitas</text>
+    <circle cx="96" cy="20" r="9" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+    <text x="110" y="24" font-size="11" font-weight="600" fill="#334155">Langkah</text>
+    <rect x="167" y="12" width="18" height="15" rx="3" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.6"/>
+    <ellipse cx="176" cy="13" rx="9" ry="3.2" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.3"/>
+    <text x="191" y="24" font-size="11" font-weight="600" fill="#334155">Data Store</text>
+    <line x1="258" y1="20" x2="282" y2="20" stroke="#15803D" stroke-width="2.2" marker-end="url(#arr-valid)"/>
+    <text x="288" y="24" font-size="11" font-weight="600" fill="#15803D">Valid</text>
+    <line x1="330" y1="20" x2="354" y2="20" stroke="#DC2626" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr-invalid)"/>
+    <text x="360" y="24" font-size="11" font-weight="600" fill="#B91C1C">Tidak Valid / Ulang</text>
+  </g>
+<path d="M 161.0 292.0 L 271.0 292.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 399.0 292.0 L 701.0 292.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 829.0 292.0 L 1151.0 292.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1215.0 356.0 L 1215.0 531.0" fill="none" stroke="#15803D" stroke-width="2.1" marker-end="url(#arr-valid)"/>
+<path d="M 1215.0 356.0 L 1175.6 413.7 Q 1170.0 422.0 1160.0 422.0 L 775.0 422.0 Q 765.0 422.0 765.0 412.0 L 765.0 356.0" fill="none" stroke="#DC2626" stroke-width="2.1" stroke-dasharray="6,4" marker-end="url(#arr-invalid)"/>
+<path d="M 1151.0 595.0 L 829.0 595.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 701.0 595.0 L 399.0 595.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 271.0 595.0 L 105.0 595.0 Q 95.0 595.0 95.0 585.0 L 95.0 335.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 215.0 139.0 L 215.0 182.0 Q 215.0 192.0 225.0 192.0 L 295.0 192.0 Q 305.0 192.0 311.4 199.7 L 335.0 228.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 326.0 228.6 L 341.0 139.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arr-ds)"/>
+<path d="M 359.0 139.0 L 344.0 228.6" fill="none" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arr-ds)"/>
+<path d="M 335.0 228.0 L 367.6 198.7 Q 375.0 192.0 385.0 192.0 L 475.0 192.0 Q 485.0 192.0 485.0 182.0 L 485.0 139.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 765.0 139.0 L 765.0 228.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1215.0 139.0 L 1215.0 228.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1215.0 659.0 L 1215.0 758.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 765.0 659.0 L 748.9 696.8 Q 745.0 706.0 735.0 706.0 L 695.0 706.0 Q 685.0 706.0 685.0 716.0 L 685.0 758.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 765.0 659.0 L 781.1 696.8 Q 785.0 706.0 795.0 706.0 L 835.0 706.0 Q 845.0 706.0 845.0 716.0 L 845.0 758.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<g filter="url(#shadow)">
+        <rect x="29" y="249" width="132" height="86" rx="6" fill="#F8FAFC" stroke="#1E293B" stroke-width="2.4"/>
+        <rect x="29" y="249" width="132" height="23" rx="5" fill="#1E293B"/>
+        <rect x="29" y="265" width="132" height="7" fill="#1E293B"/>
+        <text x="95" y="264.5" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.8">AKTOR EKSTERNAL</text>
+        <text x="95" y="303" font-size="16" font-weight="700" fill="#0F172A" text-anchor="middle">Admin</text>
+        <text x="95" y="321" font-size="10.5" font-weight="500" fill="#475569" text-anchor="middle">Terautentikasi</text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="335" cy="292" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="308" y="258" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="335" y="270" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">8.1.1</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="335" y="295.0">Sinkron &amp; Muat</tspan><tspan x="335" y="309.5">Katalog Menu</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="765" cy="292" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="738" y="258" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="765" y="270" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">8.1.2</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="765" y="295.0">Isi Form Menu &amp;</tspan><tspan x="765" y="309.5">Opsi Varian</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1215" cy="292" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1188" y="252" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1215" y="264" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">8.1.3</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1215" y="288.0">Validasi Menu,</tspan><tspan x="1215" y="302.5">Harga, Varian &amp;</tspan><tspan x="1215" y="317.0">Foto</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1215" cy="595" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1188" y="561" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1215" y="573" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">8.1.4</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1215" y="598.0">Simpan Foto &amp;</tspan><tspan x="1215" y="612.5">Data Menu</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="765" cy="595" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="738" y="561" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="765" y="573" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">8.1.5</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="765" y="598.0">Simpan Varian &amp;</tspan><tspan x="765" y="612.5">Sinkron Stok POS</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="335" cy="595" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="308" y="555" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="335" y="567" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">8.1.6</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="335" y="591.0">Tampilkan</tspan><tspan x="335" y="605.5">Katalog &amp; Alert</tspan><tspan x="335" y="620.0">Sukses</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 156 94 L 156 130 A 59 9 0 0 0 274 130 L 274 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="215" cy="94" rx="59" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="215" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D2</text>
+        <text x="215" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">categories</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 291 94 L 291 130 A 59 9 0 0 0 409 130 L 409 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="350" cy="94" rx="59" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="350" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="350" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 426 94 L 426 130 A 59 9 0 0 0 544 130 L 544 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="485" cy="94" rx="59" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="485" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="485" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 704 94 L 704 130 A 61 9 0 0 0 826 130 L 826 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="765" cy="94" rx="61" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="765" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D2</text>
+        <text x="765" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">categories</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1154 94 L 1154 130 A 61 9 0 0 0 1276 130 L 1276 94 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1215" cy="94" rx="61" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1215" y="117" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D2</text>
+        <text x="1215" y="132" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">categories</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1153 767 L 1153 803 A 62 9 0 0 0 1277 803 L 1277 767 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1215" cy="767" rx="62" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1215" y="790" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="1215" y="805" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 621 767 L 621 803 A 64 9 0 0 0 749 803 L 749 767 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="685" cy="767" rx="64" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="685" y="790" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D4</text>
+        <text x="685" y="805" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menu_options</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 783 767 L 783 803 A 62 9 0 0 0 907 803 L 907 767 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="845" cy="767" rx="62" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="845" y="790" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="845" y="805" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g>
+      <rect x="147.5" y="251.0" width="129" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="212" y="264.5">Buka /admin/menu</tspan><tspan x="212" y="277.5">&amp; filter kat./arsip</tspan></text>
+    </g>
+<g>
+      <rect x="488.5" y="257.5" width="123" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="550" y="271.0">Klik + Tambah Menu</tspan></text>
+    </g>
+<g>
+      <rect x="934.5" y="257.5" width="111" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="990" y="271.0">POST /admin/menu</tspan></text>
+    </g>
+<g>
+      <rect x="1220.5" y="428.0" width="159" height="34" rx="5" fill="#F0FDF4" fill-opacity="0.96" stroke="#86EFAC" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#14532D" text-anchor="middle"><tspan x="1300" y="441.5">[Valid]</tspan><tspan x="1300" y="454.5">Data menu, foto &amp; varian</tspan></text>
+    </g>
+<g>
+      <rect x="886.5" y="398.5" width="147" height="47" rx="5" fill="#FEF2F2" fill-opacity="0.96" stroke="#FCA5A5" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#991B1B" text-anchor="middle"><tspan x="960" y="412.0">[Tidak valid -&gt; ulang]</tspan><tspan x="960" y="425.0">Error</tspan><tspan x="960" y="438.0">kategori/harga/foto</tspan></text>
+    </g>
+<g>
+      <rect x="925.5" y="555.0" width="129" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="990" y="568.5">menu_id, options[],</tspan><tspan x="990" y="581.5">stock</tspan></text>
+    </g>
+<g>
+      <rect x="470.5" y="561.5" width="159" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="550" y="575.0">Menu, varian &amp; stok siap</tspan></text>
+    </g>
+<g>
+      <rect x="70.5" y="468.0" width="129" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="135" y="481.5">Daftar menu terbaru</tspan><tspan x="135" y="494.5">&amp; pesan sukses</tspan></text>
+    </g>
+<g>
+      <rect x="132.5" y="163.5" width="105" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="185" y="177.0">Baca: withCount</tspan></text>
+    </g>
+<g>
+      <rect x="285.5" y="193.5" width="129" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="350" y="207.0">Baca/Tulis: katalog</tspan></text>
+    </g>
+<g>
+      <rect x="439.5" y="163.5" width="141" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="510" y="177.0">Baca/Tulis: stok sync</tspan></text>
+    </g>
+<g>
+      <rect x="700.5" y="174.5" width="129" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="765" y="188.0">Baca: opsi kategori</tspan></text>
+    </g>
+<g>
+      <rect x="1144.5" y="174.5" width="141" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1215" y="188.0">Baca: cek category_id</tspan></text>
+    </g>
+<g>
+      <rect x="1135.5" y="695.5" width="159" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1215" y="709.0">Tulis: menu, stok, badge</tspan></text>
+    </g>
+<g>
+      <rect x="602.5" y="699.0" width="105" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="655" y="712.5">Baca/Tulis:</tspan><tspan x="655" y="725.5">syncMenuOptions</tspan></text>
+    </g>
+<g>
+      <rect x="821.5" y="699.0" width="117" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="880" y="712.5">Baca/Tulis:</tspan><tspan x="880" y="725.5">kasir_menu_stocks</tspan></text>
+    </g>
+</svg>

@@ -1,33 +1,33 @@
 <!-- Reservation Modal Form -->
 <div id="reservation-modal" 
-     class="fixed inset-0 z-50 bg-[#1C1C1C]/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 opacity-0 pointer-events-none transition-opacity duration-300"
+     class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 opacity-0 pointer-events-none transition-opacity duration-300"
      onclick="closeReservationModal()"
      role="dialog"
      aria-modal="true"
      aria-labelledby="reservation-modal-title">
     
     <div id="reservation-modal-dialog"
-         class="bg-[#FAFAFA] rounded-[24px] sm:rounded-[28px] max-w-2xl w-full p-5 sm:p-7 shadow-2xl border border-[#E5E5E5] relative max-h-[92vh] flex flex-col transform translate-y-6 scale-[0.98] transition-all duration-300 ease-out font-sans overflow-hidden"
+         class="bg-[var(--surface-solid)] rounded-[24px] sm:rounded-[28px] max-w-2xl w-full p-5 sm:p-7 shadow-[var(--shadow)] border border-[var(--border)] relative max-h-[92vh] flex flex-col transform translate-y-6 scale-[0.98] transition-all duration-300 ease-out font-sans overflow-hidden"
          onclick="event.stopPropagation()">
         
         <!-- Close Button (X) -->
         <button type="button"
                 id="res-close-btn"
                 onclick="closeReservationModal()" 
-                class="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 rounded-full bg-white border border-[#E5E5E5] text-[#1C1C1C] hover:bg-[#242424] hover:text-white transition-colors duration-200 flex items-center justify-center z-20 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]"
+                class="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] hover:bg-[var(--accent-solid)] hover:text-[var(--accent-solid-text)] transition-colors duration-200 flex items-center justify-center z-20 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]"
                 aria-label="Tutup Formulir Reservasi">
             <span class="material-symbols-outlined text-lg">close</span>
         </button>
 
         <!-- Modal Header -->
-        <div class="border-b border-[#E5E5E5] pb-4 mb-4 pr-10 shrink-0">
-            <span class="block text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8A8A8A] mb-1.5">
+        <div class="border-b border-[var(--border-soft)] pb-4 mb-4 pr-10 shrink-0">
+            <span class="block text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)] mb-1.5">
                 Formulir Reservasi &amp; Paket Acara
             </span>
-            <h3 id="reservation-modal-title" class="font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[#1C1C1C]">
+            <h3 id="reservation-modal-title" class="font-sans text-2xl sm:text-3xl font-semibold tracking-tight text-[var(--text)]">
                 Reservasi Nucomu Cafe
             </h3>
-            <p class="text-xs text-[#666666] leading-relaxed mt-1">
+            <p class="text-xs text-[var(--text-muted)] leading-relaxed mt-1">
                 Lengkapi data kunjungan dan pilih paket dekorasi acara spesial Anda. Rincian reservasi akan otomatis dirangkum ke WhatsApp resmi Nucomu.
             </p>
         </div>
@@ -35,12 +35,12 @@
         <!-- Scrollable Form Container -->
         <div id="reservation-modal-body" class="overflow-y-auto flex-1 pr-1 -mr-1 pb-4 space-y-4">
             <!-- Inline Error Box -->
-            <div id="res-error-box" class="hidden p-3.5 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl leading-relaxed">
+            <div id="res-error-box" class="hidden p-3.5 bg-[var(--error-bg)] border border-[var(--error-border)] text-[var(--error-text)] text-xs rounded-xl leading-relaxed">
                 <!-- Injected via JavaScript -->
             </div>
 
             <!-- Success Feedback Toast -->
-            <div id="res-success-toast" class="hidden p-3.5 bg-[#242424] border border-white/10 text-white text-xs rounded-xl text-center font-medium shadow-md">
+            <div id="res-success-toast" class="hidden p-3.5 bg-[var(--accent-solid)] border border-[var(--border)] text-[var(--accent-solid-text)] text-xs rounded-xl text-center font-medium shadow-md">
                 Pengajuan berhasil dirangkum. Membuka WhatsApp resmi Nucomu...
             </div>
 
@@ -55,40 +55,40 @@
                     @forelse($modalFields as $field)
                         @if($field->type === 'photo')
                             <div class="col-span-full">
-                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text)] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[var(--error-text)]">*</span>@endif
                                 </label>
-                                <div class="p-3.5 bg-white border border-[#E5E5E5] rounded-xl space-y-2">
+                                <div class="p-3.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl space-y-2">
                                     <input type="file" 
                                            id="modal-field-{{ $field->field_key }}" 
                                            name="{{ $field->field_key }}" 
                                            data-label="{{ $field->label }}"
                                            accept=".jpg,.jpeg,.png,.webp"
                                            {{ $field->is_required ? 'required' : '' }}
-                                           class="block w-full text-xs text-[#1C1C1C] file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#242424] file:text-white hover:file:bg-black cursor-pointer">
-                                    <p class="text-[10px] text-[#666666]">
-                                        <span class="font-semibold text-[#1C1C1C]">Panduan Ukuran:</span> Format JPG, PNG, atau WebP (Maksimal 2 MB).
+                                           class="block w-full text-xs text-[var(--text)] file:mr-3 file:py-2 file:px-3.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[var(--accent-solid)] file:text-[var(--accent-solid-text)] hover:file:bg-[var(--accent-solid-hover)] cursor-pointer">
+                                    <p class="text-[10px] text-[var(--text-muted)]">
+                                        <span class="font-semibold text-[var(--text)]">Panduan Ukuran:</span> Format JPG, PNG, atau WebP (Maksimal 2 MB).
                                     </p>
-                                    <p class="text-[10px] text-[#555555] bg-[#F5F5F5] border border-[#E5E5E5] rounded-lg p-2 leading-relaxed">
+                                    <p class="text-[10px] text-[var(--text-muted)] bg-[var(--badge-bg)] border border-[var(--border-soft)] rounded-lg p-2 leading-relaxed">
                                         💡 <strong>Catatan:</strong> Foto akan tersimpan di server kami &amp; link foto disertakan pada WhatsApp. Anda juga dapat melampirkan foto langsung di chat WhatsApp saat percakapan terbuka.
                                     </p>
                                 </div>
                             </div>
                         @elseif($field->type === 'checkbox')
                             <div class="col-span-full">
-                                <label class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                <label class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text)] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[var(--error-text)]">*</span>@endif
                                 </label>
                                 @if(!empty($field->options) && is_array($field->options))
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 bg-white border border-[#E5E5E5] rounded-xl">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl">
                                         @foreach($field->options as $optVal)
-                                            <label class="flex items-center gap-2 p-2 bg-[#FAFAFA] rounded-lg border border-[#EAEAEA] hover:border-[#CCCCCC] cursor-pointer text-xs text-[#1C1C1C]">
+                                            <label class="flex items-center gap-2 p-2 bg-[var(--surface-strong-solid)] rounded-lg border border-[var(--border-soft)] hover:border-[var(--border-strong)] cursor-pointer text-xs text-[var(--text)]">
                                                 <input type="checkbox" 
                                                        name="{{ $field->field_key }}[]" 
                                                        value="{{ $optVal }}" 
                                                        data-label="{{ $field->label }}"
                                                        {{ $field->is_required ? 'required' : '' }}
-                                                       class="w-4 h-4 rounded text-[#242424] border-stone-300 focus:ring-[#242424]">
+                                                       class="w-4 h-4 rounded accent-[var(--accent-solid)] bg-[var(--field-bg)] border-[var(--field-border)] focus:ring-[var(--field-ring)]">
                                                 <span>{{ $optVal }}</span>
                                             </label>
                                         @endforeach
@@ -97,8 +97,8 @@
                             </div>
                         @elseif($field->type === 'textarea')
                             <div class="col-span-full">
-                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text)] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[var(--error-text)]">*</span>@endif
                                 </label>
                                 <textarea id="modal-field-{{ $field->field_key }}" 
                                           name="{{ $field->field_key }}" 
@@ -106,12 +106,12 @@
                                           rows="2"
                                           placeholder="{{ $field->placeholder ?: 'Tuliskan ' . strtolower($field->label) . '...' }}" 
                                           {{ $field->is_required ? 'required' : '' }}
-                                          class="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors"></textarea>
+                                          class="w-full px-3.5 py-2 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs font-sans text-[var(--text)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] transition-colors"></textarea>
                             </div>
                         @elseif($field->type === 'date')
                             <div>
-                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text)] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[var(--error-text)]">*</span>@endif
                                 </label>
                                 <input type="date" 
                                        id="modal-field-{{ $field->field_key }}" 
@@ -120,12 +120,12 @@
                                        min="{{ date('Y-m-d') }}"
                                        value="{{ date('Y-m-d') }}"
                                        {{ $field->is_required ? 'required' : '' }}
-                                       class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                                       class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs font-sans text-[var(--text)] focus:outline-none focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] transition-colors">
                             </div>
                         @elseif($field->type === 'time')
                             <div>
-                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text)] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[var(--error-text)]">*</span>@endif
                                 </label>
                                 <input type="time" 
                                        id="modal-field-{{ $field->field_key }}" 
@@ -133,13 +133,13 @@
                                        data-label="{{ $field->label }}"
                                        value="15:00"
                                        {{ $field->is_required ? 'required' : '' }}
-                                       class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                                       class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs font-sans text-[var(--text)] focus:outline-none focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] transition-colors">
                             </div>
                         @else
                             {{-- text, tel, number --}}
                             <div>
-                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
-                                    {{ $field->label }} @if($field->is_required)<span class="text-[#1C1C1C]">*</span>@endif
+                                <label for="modal-field-{{ $field->field_key }}" class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text)] mb-1.5">
+                                    {{ $field->label }} @if($field->is_required)<span class="text-[var(--error-text)]">*</span>@endif
                                 </label>
                                 <input type="{{ $field->type === 'number' ? 'number' : ($field->type === 'tel' ? 'tel' : 'text') }}" 
                                        id="modal-field-{{ $field->field_key }}" 
@@ -147,11 +147,11 @@
                                        data-label="{{ $field->label }}"
                                        placeholder="{{ $field->placeholder ?: ($field->type === 'number' ? 'Contoh: 4' : ($field->type === 'tel' ? '08xxxxxxxxxx' : 'Masukkan ' . strtolower($field->label))) }}" 
                                        {{ $field->is_required ? 'required' : '' }}
-                                       class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                                       class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs font-sans text-[var(--text)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] transition-colors">
                             </div>
                         @endif
                     @empty
-                        <div class="col-span-full text-center py-4 text-xs text-[#8A8A8A]">
+                        <div class="col-span-full text-center py-4 text-xs text-[var(--text-muted)]">
                             Belum ada kolom formulir yang diaktifkan oleh admin.
                         </div>
                     @endforelse
@@ -190,14 +190,14 @@
                     ];
                 @endphp
 
-                <div class="rounded-2xl bg-white border border-[#E5E5E5] p-4 sm:p-5 space-y-4 shadow-2xs">
+                <div class="nu-glass-card rounded-2xl bg-[var(--surface)] border border-[var(--border)] p-4 sm:p-5 space-y-4 shadow-2xs">
                     <!-- STEP 1: PILIH KATEGORI PAKET ACARA TERLEBIH DAHULU -->
                     <div>
                         <div class="mb-3">
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-[#1C1C1C]">
-                                1. Pilih Kategori Paket Acara Terlebih Dahulu <span class="text-[#1C1C1C]">*</span>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-[var(--text)]">
+                                1. Pilih Kategori Paket Acara Terlebih Dahulu <span class="text-[var(--error-text)]">*</span>
                             </label>
-                            <p class="text-[11px] text-[#666666] mt-0.5">
+                            <p class="text-[11px] text-[var(--text-muted)] mt-0.5">
                                 Pilih acara <strong>Bridal</strong> atau <strong>Birthday</strong> di bawah ini untuk menampilkan daftar pilihan paket dekorasinya:
                             </p>
                         </div>
@@ -208,18 +208,18 @@
                                     id="btn-choose-bridal"
                                     onclick="chooseReservationEventCategory('bridal')"
                                     data-section-tab="bridal"
-                                    class="res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]">
+                                    class="res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]">
                                 <div class="flex items-center gap-3">
-                                    <div id="icon-box-bridal" class="w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors">
+                                    <div id="icon-box-bridal" class="w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors">
                                         <span class="material-symbols-outlined text-xl">favorite</span>
                                     </div>
                                     <div>
-                                        <span id="label-cat-bridal" class="text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors">Kategori 01</span>
-                                        <span id="title-cat-bridal" class="font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors">Paket Acara Bridal</span>
-                                        <span id="sub-cat-bridal" class="text-[11px] text-[#666666] block mt-0.5 transition-colors">Bridal Shower &amp; Intimate Party</span>
+                                        <span id="label-cat-bridal" class="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors">Kategori 01</span>
+                                        <span id="title-cat-bridal" class="font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors">Paket Acara Bridal</span>
+                                        <span id="sub-cat-bridal" class="text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors">Bridal Shower &amp; Intimate Party</span>
                                     </div>
                                 </div>
-                                <span id="check-cat-bridal" class="w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0">
+                                <span id="check-cat-bridal" class="w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0">
                                     ✓
                                 </span>
                             </button>
@@ -229,18 +229,18 @@
                                     id="btn-choose-birthday"
                                     onclick="chooseReservationEventCategory('birthday')"
                                     data-section-tab="birthday"
-                                    class="res-section-tab-btn group text-left rounded-2xl p-4 border border-[#E5E5E5] hover:border-[#CCCCCC] bg-white transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#242424]">
+                                    class="res-section-tab-btn group text-left rounded-2xl p-4 border border-[var(--border)] hover:border-[var(--border-strong)] bg-[var(--surface)] transition-all duration-200 flex items-center justify-between gap-3 shadow-2xs focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)]">
                                 <div class="flex items-center gap-3">
-                                    <div id="icon-box-birthday" class="w-11 h-11 rounded-xl bg-[#F5F5F5] border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0 transition-colors">
+                                    <div id="icon-box-birthday" class="w-11 h-11 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0 transition-colors">
                                         <span class="material-symbols-outlined text-xl">cake</span>
                                     </div>
                                     <div>
-                                        <span id="label-cat-birthday" class="text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A] block transition-colors">Kategori 02</span>
-                                        <span id="title-cat-birthday" class="font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] block leading-tight transition-colors">Paket Acara Birthday</span>
-                                        <span id="sub-cat-birthday" class="text-[11px] text-[#666666] block mt-0.5 transition-colors">Birthday Celebration &amp; Treats</span>
+                                        <span id="label-cat-birthday" class="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)] block transition-colors">Kategori 02</span>
+                                        <span id="title-cat-birthday" class="font-sans text-base sm:text-lg font-semibold text-[var(--text)] block leading-tight transition-colors">Paket Acara Birthday</span>
+                                        <span id="sub-cat-birthday" class="text-[11px] text-[var(--text-muted)] block mt-0.5 transition-colors">Birthday Celebration &amp; Treats</span>
                                     </div>
                                 </div>
-                                <span id="check-cat-birthday" class="w-6 h-6 rounded-full border border-[#E5E5E5] bg-white flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0">
+                                <span id="check-cat-birthday" class="w-6 h-6 rounded-full border border-[var(--border)] bg-transparent flex items-center justify-center text-xs font-bold text-transparent transition-all shrink-0">
                                     ✓
                                 </span>
                             </button>
@@ -253,12 +253,12 @@
                     <input type="hidden" id="res-event-package" name="eventPackage" value="">
 
                     <!-- Prompt Sebelum Kategori Dipilih -->
-                    <div id="res-empty-category-prompt" class="rounded-xl border border-dashed border-[#DDDDDD] bg-[#F5F5F5] px-4 py-4 text-center">
-                        <span class="material-symbols-outlined text-[#242424] text-xl mb-1 block">touch_app</span>
-                        <p class="text-xs font-semibold text-[#1C1C1C]">
+                    <div id="res-empty-category-prompt" class="rounded-xl border border-dashed border-[var(--border)] bg-[var(--badge-bg)] px-4 py-4 text-center">
+                        <span class="material-symbols-outlined text-[var(--text)] text-xl mb-1 block">touch_app</span>
+                        <p class="text-xs font-semibold text-[var(--text)]">
                             Silakan klik salah satu kategori di atas (<strong>Paket Acara Bridal</strong> atau <strong>Paket Acara Birthday</strong>)
                         </p>
-                        <p class="text-[11px] text-[#666666] mt-0.5">
+                        <p class="text-[11px] text-[var(--text-muted)] mt-0.5">
                             Pilihan <strong>Paket Dekorasi A (35K)</strong>, <strong>Paket Dekorasi B (60K)</strong>, dan <strong>Paket Dekorasi C (100K)</strong> akan muncul setelah kategori dipilih.
                         </p>
                     </div>
@@ -266,20 +266,20 @@
                     <!-- STEP 2A: PILIHAN PAKET DEKORASI UNTUK BRIDAL (MUNCUL SETELAH PILIH BRIDAL) -->
                     <div id="res-section-bridal"
                          data-package-section="bridal"
-                         class="res-package-section hidden rounded-2xl border border-[#E5E5E5] bg-[#F5F5F5] p-4 transition-all duration-300">
+                         class="res-package-section hidden rounded-2xl border border-[var(--border)] bg-[var(--badge-bg)] p-4 transition-all duration-300">
                         <div class="flex items-center justify-between gap-2 mb-3">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-white border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0">
+                                <div class="w-8 h-8 rounded-lg bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-base">favorite</span>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A]">2. Pilih Paket Dekorasi Bridal</span>
-                                        <span id="badge-active-bridal" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#242424] text-white">
+                                        <span class="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">2. Pilih Paket Dekorasi Bridal</span>
+                                        <span id="badge-active-bridal" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--accent-solid)] text-[var(--accent-solid-text)]">
                                             ✓ Bridal Aktif
                                         </span>
                                     </div>
-                                    <h4 class="font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] leading-tight mt-0.5">
+                                    <h4 class="font-sans text-base sm:text-lg font-semibold text-[var(--text)] leading-tight mt-0.5">
                                         Pilihan Paket Acara Bridal (Bridal Shower &amp; Party)
                                     </h4>
                                 </div>
@@ -291,30 +291,30 @@
                                 <div onclick="selectReservationPackage('Bridal', '{{ $pkg['name'] }}', '{{ $pkg['price'] }}', '{{ $pkg['desc'] }}', this)"
                                      data-section="Bridal"
                                      data-pkg-code="{{ $pkg['code'] }}"
-                                     class="res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[#E5E5E5] bg-white hover:border-[#CCCCCC] transition-all duration-200 flex flex-col justify-between relative shadow-2xs">
+                                     class="res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[var(--border)] bg-[var(--surface-solid)] hover:border-[var(--border-strong)] transition-all duration-200 flex flex-col justify-between relative shadow-2xs">
                                     <div>
                                         <div class="flex items-center justify-between gap-1 mb-1.5">
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EEEEEE] text-[#444444] border border-[#DDDDDD]">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--badge-bg)] text-[var(--text-secondary)] border border-[var(--border)]">
                                                 {{ $pkg['badge'] }}
                                             </span>
-                                            <span class="res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#F5F5F5] text-transparent border border-[#E5E5E5]">
+                                            <span class="res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[var(--badge-bg)] text-transparent border border-[var(--border)]">
                                                 ✓
                                             </span>
                                         </div>
 
                                         <div class="flex items-baseline justify-between gap-1 mb-1">
-                                            <h5 class="text-xs font-semibold text-[#1C1C1C]">{{ $pkg['name'] }}</h5>
-                                            <span class="text-sm font-semibold text-[#1C1C1C]">{{ $pkg['price'] }}</span>
+                                            <h5 class="text-xs font-semibold text-[var(--text)]">{{ $pkg['name'] }}</h5>
+                                            <span class="text-sm font-semibold text-[var(--text)] tabular-nums">{{ $pkg['price'] }}</span>
                                         </div>
 
-                                        <p class="text-[11px] text-[#666666] leading-snug mb-2.5">
+                                        <p class="text-[11px] text-[var(--text-muted)] leading-snug mb-2.5">
                                             {{ $pkg['desc'] }}
                                         </p>
                                     </div>
 
-                                    <div class="pt-2 border-t border-[#F0F0F0] flex flex-wrap gap-1">
+                                    <div class="pt-2 border-t border-[var(--border-soft)] flex flex-wrap gap-1">
                                         @foreach($pkg['highlights'] as $hl)
-                                            <span class="text-[10px] px-2 py-0.5 rounded-md bg-[#F5F5F5] text-[#444444] font-medium border border-[#E5E5E5]">
+                                            <span class="text-[10px] px-2 py-0.5 rounded-md bg-[var(--badge-bg)] text-[var(--text-secondary)] font-medium border border-[var(--border-soft)]">
                                                 {{ $hl }}
                                             </span>
                                         @endforeach
@@ -327,20 +327,20 @@
                     <!-- STEP 2B: PILIHAN PAKET DEKORASI UNTUK BIRTHDAY (MUNCUL SETELAH PILIH BIRTHDAY) -->
                     <div id="res-section-birthday"
                          data-package-section="birthday"
-                         class="res-package-section hidden rounded-2xl border border-[#E5E5E5] bg-[#F5F5F5] p-4 transition-all duration-300">
+                         class="res-package-section hidden rounded-2xl border border-[var(--border)] bg-[var(--badge-bg)] p-4 transition-all duration-300">
                         <div class="flex items-center justify-between gap-2 mb-3">
                             <div class="flex items-center gap-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-white border border-[#E5E5E5] text-[#1C1C1C] flex items-center justify-center shrink-0">
+                                <div class="w-8 h-8 rounded-lg bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0">
                                     <span class="material-symbols-outlined text-base">cake</span>
                                 </div>
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="text-[10px] font-semibold uppercase tracking-widest text-[#8A8A8A]">2. Pilih Paket Dekorasi Birthday</span>
-                                        <span id="badge-active-birthday" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#242424] text-white">
+                                        <span class="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-muted)]">2. Pilih Paket Dekorasi Birthday</span>
+                                        <span id="badge-active-birthday" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--accent-solid)] text-[var(--accent-solid-text)]">
                                             ✓ Birthday Aktif
                                         </span>
                                     </div>
-                                    <h4 class="font-sans text-base sm:text-lg font-semibold text-[#1C1C1C] leading-tight mt-0.5">
+                                    <h4 class="font-sans text-base sm:text-lg font-semibold text-[var(--text)] leading-tight mt-0.5">
                                         Pilihan Paket Acara Birthday (Birthday Celebration)
                                     </h4>
                                 </div>
@@ -352,30 +352,30 @@
                                 <div onclick="selectReservationPackage('Birthday', '{{ $pkg['name'] }}', '{{ $pkg['price'] }}', '{{ $pkg['desc'] }}', this)"
                                      data-section="Birthday"
                                      data-pkg-code="{{ $pkg['code'] }}"
-                                     class="res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[#E5E5E5] bg-white hover:border-[#CCCCCC] transition-all duration-200 flex flex-col justify-between relative shadow-2xs">
+                                     class="res-pkg-card cursor-pointer rounded-xl p-3.5 border border-[var(--border)] bg-[var(--surface-solid)] hover:border-[var(--border-strong)] transition-all duration-200 flex flex-col justify-between relative shadow-2xs">
                                     <div>
                                         <div class="flex items-center justify-between gap-1 mb-1.5">
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EEEEEE] text-[#444444] border border-[#DDDDDD]">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[var(--badge-bg)] text-[var(--text-secondary)] border border-[var(--border)]">
                                                 {{ $pkg['badge'] }}
                                             </span>
-                                            <span class="res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[#F5F5F5] text-transparent border border-[#E5E5E5]">
+                                            <span class="res-pkg-check w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-bold transition-all bg-[var(--badge-bg)] text-transparent border border-[var(--border)]">
                                                 ✓
                                             </span>
                                         </div>
 
                                         <div class="flex items-baseline justify-between gap-1 mb-1">
-                                            <h5 class="text-xs font-semibold text-[#1C1C1C]">{{ $pkg['name'] }}</h5>
-                                            <span class="text-sm font-semibold text-[#1C1C1C]">{{ $pkg['price'] }}</span>
+                                            <h5 class="text-xs font-semibold text-[var(--text)]">{{ $pkg['name'] }}</h5>
+                                            <span class="text-sm font-semibold text-[var(--text)] tabular-nums">{{ $pkg['price'] }}</span>
                                         </div>
 
-                                        <p class="text-[11px] text-[#666666] leading-snug mb-2.5">
+                                        <p class="text-[11px] text-[var(--text-muted)] leading-snug mb-2.5">
                                             {{ $pkg['desc'] }}
                                         </p>
                                     </div>
 
-                                    <div class="pt-2 border-t border-[#F0F0F0] flex flex-wrap gap-1">
+                                    <div class="pt-2 border-t border-[var(--border-soft)] flex flex-wrap gap-1">
                                         @foreach($pkg['highlights'] as $hl)
-                                            <span class="text-[10px] px-2 py-0.5 rounded-md bg-[#F5F5F5] text-[#444444] font-medium border border-[#E5E5E5]">
+                                            <span class="text-[10px] px-2 py-0.5 rounded-md bg-[var(--badge-bg)] text-[var(--text-secondary)] font-medium border border-[var(--border-soft)]">
                                                 {{ $hl }}
                                             </span>
                                         @endforeach
@@ -386,15 +386,15 @@
                     </div>
 
                     <!-- Selected Package Summary Bar (Muncul Setelah Kategori & Paket Dipilih) -->
-                    <div id="res-package-summary-bar" class="hidden rounded-xl bg-[#242424] text-white px-4 py-3 flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border border-white/10 shadow-sm">
+                    <div id="res-package-summary-bar" class="hidden rounded-xl bg-[var(--badge-bg)] text-[var(--text)] px-4 py-3 flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs border border-[var(--border)] shadow-sm">
                         <div class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-neutral-300 text-base">verified</span>
-                            <span class="text-white/75">Paket Terpilih:</span>
-                            <strong id="res-selected-package-summary" class="text-white font-semibold">
+                            <span class="material-symbols-outlined text-[var(--text)] text-base">verified</span>
+                            <span class="text-[var(--text-muted)]">Paket Terpilih:</span>
+                            <strong id="res-selected-package-summary" class="text-[var(--text)] font-semibold">
                                 Belum dipilih
                             </strong>
                         </div>
-                        <span id="res-selected-package-detail" class="text-[11px] text-white/70">
+                        <span id="res-selected-package-detail" class="text-[11px] text-[var(--text-muted)]">
                             Pilih kategori &amp; paket dekorasi di atas
                         </span>
                     </div>
@@ -403,29 +403,29 @@
                 @if($modalFields->where('field_key', 'notes')->isEmpty())
                     <!-- Catatan Khusus Tambahan (Jika belum ada di form builder) -->
                     <div>
-                        <label for="res-notes" class="block text-[11px] font-semibold uppercase tracking-wider text-[#1C1C1C] mb-1.5">
+                        <label for="res-notes" class="block text-[11px] font-semibold uppercase tracking-wider text-[var(--text)] mb-1.5">
                             Catatan Khusus / Tulisan Lettering (Opsional)
                         </label>
                         <input type="text"
                                id="res-notes" 
                                name="notes" 
                                placeholder="Contoh: Tulisan lettering 'Happy Bridal Rara', meja dekat jendela..." 
-                               class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E5E5E5] text-xs font-sans text-[#1C1C1C] placeholder-[#999999] focus:outline-none focus:border-[#242424] focus:ring-1 focus:ring-[#242424] transition-colors">
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-xs font-sans text-[var(--text)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--field-focus)] focus:ring-1 focus:ring-[var(--field-ring)] transition-colors">
                     </div>
                 @endif
             </form>
         </div>
 
         <!-- Submit Action - Sticky di Bawah pada Mobile, Tanpa Menutupi Konten Form -->
-        <div class="shrink-0 pt-3 border-t border-[#E5E5E5] bg-[#FAFAFA] z-10">
+        <div class="shrink-0 pt-3 border-t border-[var(--border-soft)] bg-[var(--surface-solid)] z-10">
             <button type="submit" 
                     form="reservation-form"
                     id="res-submit-btn"
-                    class="w-full min-h-[46px] py-3.5 bg-[#242424] text-white text-xs font-semibold uppercase tracking-widest rounded-xl hover:bg-[#1C1C1C] active:bg-black transition-colors flex items-center justify-center space-x-2 shadow-md focus:outline-none focus:ring-2 focus:ring-[#242424] focus:ring-offset-2">
+                    class="w-full min-h-[46px] py-3.5 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-xs font-semibold uppercase tracking-widest rounded-xl hover:bg-[var(--accent-solid-hover)] active:bg-[var(--accent-solid-hover)] transition-colors flex items-center justify-center space-x-2 shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--field-ring)] focus:ring-offset-2 focus:ring-offset-[var(--surface-solid)]">
                 <span>Lanjutkan Kirim via WhatsApp</span>
                 <span class="material-symbols-outlined text-sm">send</span>
             </button>
-            <p class="text-[10px] text-[#8A8A8A] text-center mt-2 leading-relaxed">
+            <p class="text-[10px] text-[var(--text-faint)] text-center mt-2 leading-relaxed">
                 *Pesan formulir beserta pilihan paket acara akan disusun otomatis dan dibuka di WhatsApp resmi Nucomu Cafe.
             </p>
         </div>

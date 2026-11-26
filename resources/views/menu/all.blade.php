@@ -4,7 +4,7 @@
 @section('meta_description', 'Jelajahi seluruh daftar menu minuman kopi, non-kopi, dessert artisanal, dan makanan ringan di Nucomu Cafe Tulungagung.')
 
 @section('content')
-<div id="catalog-menu-page" class="pt-28 pb-24 bg-[#FFFFFF] min-h-screen border-b border-[#E5E4E0] relative overflow-x-clip">
+<div id="catalog-menu-page" class="pt-28 pb-24 bg-[#FFFFFF] dark:bg-[var(--bg-page)] min-h-screen border-b border-[var(--border)] relative overflow-x-clip">
 
     <style>
         #catalog-menu-page {
@@ -14,7 +14,32 @@
             --menu-white: #FFFFFF;
             --menu-border: #E5E4E0;
             --menu-muted: #8A8A86;
+            --menu-btn-text: #FFFFFF;
+            --menu-kicker-line: #D2D0CA;
+            --menu-hover-border: rgba(25, 25, 25, 0.24);
+            --menu-card-shadow: 0 2px 10px -2px rgba(25, 25, 25, 0.04), 0 12px 28px -10px rgba(25, 25, 25, 0.08);
+            --menu-card-hover-shadow: 0 8px 18px -4px rgba(25, 25, 25, 0.06), 0 20px 36px -10px rgba(25, 25, 25, 0.12);
+            --menu-card-open-shadow: 0 10px 22px -4px rgba(25, 25, 25, 0.07), 0 24px 44px -10px rgba(25, 25, 25, 0.14);
+            --menu-avatar-shadow: 0 0 0 1px rgba(25, 25, 25, 0.06), 0 6px 16px rgba(25, 25, 25, 0.10), 0 12px 24px -6px rgba(25, 25, 25, 0.12);
+            --menu-cta-shadow: 0 6px 16px -4px rgba(25, 25, 25, 0.22);
             font-family: 'DM Sans', 'Manrope', system-ui, -apple-system, sans-serif;
+        }
+        [data-theme="dark"] #catalog-menu-page,
+        .dark #catalog-menu-page {
+            --menu-ink: #F5F5F5;
+            --menu-charcoal: #D4D4D4;
+            --menu-ivory: #0C0C0C;
+            --menu-white: #161616;
+            --menu-border: rgba(255, 255, 255, 0.14);
+            --menu-muted: #A3A3A3;
+            --menu-btn-text: #111111;
+            --menu-kicker-line: rgba(255, 255, 255, 0.24);
+            --menu-hover-border: rgba(255, 255, 255, 0.30);
+            --menu-card-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.45), 0 12px 28px -10px rgba(0, 0, 0, 0.62);
+            --menu-card-hover-shadow: 0 10px 22px -4px rgba(0, 0, 0, 0.55), 0 22px 40px -10px rgba(0, 0, 0, 0.72);
+            --menu-card-open-shadow: 0 12px 26px -4px rgba(0, 0, 0, 0.60), 0 26px 48px -10px rgba(0, 0, 0, 0.78);
+            --menu-avatar-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 20px rgba(0, 0, 0, 0.55), 0 14px 28px -6px rgba(0, 0, 0, 0.65);
+            --menu-cta-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.65);
         }
         #catalog-menu-page :focus-visible {
             outline: 2px solid var(--menu-ink);
@@ -46,7 +71,7 @@
             content: '';
             width: 24px;
             height: 1px;
-            background-color: #D2D0CA;
+            background-color: var(--menu-kicker-line);
         }
         #catalog-menu-page .nucomu-catalog-title {
             font-family: 'Cormorant Garamond', Georgia, serif;
@@ -81,9 +106,7 @@
             background-color: var(--menu-white);
             border: 1px solid var(--menu-border);
             border-radius: 20px;
-            box-shadow:
-                0 2px 10px -2px rgba(25, 25, 25, 0.04),
-                0 12px 28px -10px rgba(25, 25, 25, 0.08);
+            box-shadow: var(--menu-card-shadow);
             padding: 50px 14px 16px 14px;
             transition:
                 transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -99,17 +122,13 @@
         @media (hover: hover) and (pointer: fine) {
             #catalog-menu-page .menu-card:not(.is-open):hover {
                 transform: translateY(-3px);
-                border-color: rgba(25, 25, 25, 0.22);
-                box-shadow:
-                    0 8px 18px -4px rgba(25, 25, 25, 0.06),
-                    0 20px 36px -10px rgba(25, 25, 25, 0.12);
+                border-color: var(--menu-hover-border);
+                box-shadow: var(--menu-card-hover-shadow);
             }
         }
         #catalog-menu-page .menu-card.is-open {
-            border-color: rgba(25, 25, 25, 0.24) !important;
-            box-shadow:
-                0 10px 22px -4px rgba(25, 25, 25, 0.07),
-                0 24px 44px -10px rgba(25, 25, 25, 0.14) !important;
+            border-color: var(--menu-hover-border) !important;
+            box-shadow: var(--menu-card-open-shadow) !important;
         }
         #catalog-menu-page .menu-card-avatar {
             top: -42px;
@@ -117,10 +136,7 @@
             height: 84px;
             border: 3px solid var(--menu-white);
             background-color: var(--menu-white);
-            box-shadow:
-                0 0 0 1px rgba(25, 25, 25, 0.06),
-                0 6px 16px rgba(25, 25, 25, 0.10),
-                0 12px 24px -6px rgba(25, 25, 25, 0.12);
+            box-shadow: var(--menu-avatar-shadow);
         }
         @media (min-width: 640px) {
             #catalog-menu-page .menu-card-avatar {
@@ -184,12 +200,12 @@
         }
         #catalog-menu-page .btn-add-cart {
             background-color: var(--menu-ink);
-            color: var(--menu-white);
-            box-shadow: 0 6px 16px -4px rgba(25, 25, 25, 0.22);
+            color: var(--menu-btn-text);
+            box-shadow: var(--menu-cta-shadow);
         }
         #catalog-menu-page .btn-add-cart:hover {
             background-color: var(--menu-charcoal);
-            box-shadow: 0 10px 22px -4px rgba(25, 25, 25, 0.28);
+            box-shadow: var(--menu-cta-shadow);
         }
         #catalog-menu-page .btn-add-cart.disabled {
             background-color: var(--menu-muted) !important;
@@ -211,7 +227,7 @@
         
         <!-- Breadcrumbs & Back Link -->
         <div class="mb-6">
-            <a href="{{ route('home') }}#menu" class="nucomu-sans group inline-flex items-center space-x-2 text-xs uppercase tracking-[0.2em] font-semibold text-[#8A8A86] hover:text-[#191919] transition-colors">
+            <a href="{{ route('home') }}#menu" class="nucomu-sans group inline-flex items-center space-x-2 text-xs uppercase tracking-[0.2em] font-semibold text-[var(--menu-muted)] hover:text-[var(--menu-ink)] transition-colors">
                 <span class="material-symbols-outlined text-sm transition-transform duration-200 group-hover:-translate-x-0.5">arrow_back</span>
                 <span>Kembali ke Beranda</span>
             </a>
@@ -221,16 +237,16 @@
         <div class="text-center max-w-3xl mx-auto mb-10 flex flex-col items-center">
             <span class="nucomu-catalog-kicker mb-3">KATALOG LENGKAP MENU</span>
             <h1 class="nucomu-catalog-title mx-auto">Katalog Sajian Nucomu</h1>
-            <svg class="w-24 sm:w-28 h-2.5 mt-2 text-[#191919]/30" viewBox="0 0 120 10" fill="none" aria-hidden="true">
+            <svg class="w-24 sm:w-28 h-2.5 mt-2 text-[var(--menu-ink)] opacity-30" viewBox="0 0 120 10" fill="none" aria-hidden="true">
                 <path d="M4 7.5C36 2 84 2 116 7.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
             </svg>
-            <p class="nucomu-sans text-[13px] sm:text-sm text-[#8A8A86] mt-4 leading-relaxed max-w-2xl mx-auto">
+            <p class="nucomu-sans text-[13px] sm:text-sm text-[var(--menu-muted)] mt-4 leading-relaxed max-w-2xl mx-auto">
                 Koleksi racikan kopi single origin Sendang Tulungagung, seduhan daun teh bergamot, ceremonial matcha, dan sajian hangat dapur Nucomu.
             </p>
         </div>
 
         <!-- 1. Baris Kategori Dinamis dari Database (Editorial Pills) -->
-        <div class="flex items-center justify-center flex-wrap gap-2.5 sm:gap-3 mb-10 pb-6 border-b border-[#E5E4E0]" role="tablist">
+        <div class="flex items-center justify-center flex-wrap gap-2.5 sm:gap-3 mb-10 pb-6 border-b border-[var(--menu-border)]" role="tablist">
             @php
                 $activeCategories = $dbCategories->filter(function($c) {
                     return (bool) $c->is_active;
@@ -241,7 +257,7 @@
             <a href="{{ route('menu.all', ['category' => 'all']) }}" 
                role="tab"
                aria-selected="{{ $selectedCategory === 'all' ? 'true' : 'false' }}"
-               class="nucomu-sans inline-flex items-center justify-center rounded-full px-5 py-2 text-[12.5px] sm:text-[13px] font-semibold transition-all duration-200 border {{ $selectedCategory === 'all' ? 'bg-[#191919] text-[#FFFFFF] border-[#191919] shadow-[0_8px_20px_-6px_rgba(25,25,25,0.28)]' : 'bg-[#FFFFFF] text-[#30302D] border-[#E5E4E0] hover:border-[#191919]/35 hover:text-[#191919]' }}">
+               class="nucomu-sans inline-flex items-center justify-center rounded-full px-5 py-2 text-[12.5px] sm:text-[13px] font-semibold transition-all duration-200 border {{ $selectedCategory === 'all' ? 'bg-[var(--menu-ink)] text-[var(--menu-btn-text)] border-[var(--menu-ink)] shadow-[var(--menu-cta-shadow)]' : 'bg-[var(--menu-white)] text-[var(--menu-charcoal)] border-[var(--menu-border)] hover:border-[var(--menu-hover-border)] hover:text-[var(--menu-ink)]' }}">
                 Semua Menu
             </a>
 
@@ -253,15 +269,15 @@
                 <a href="{{ route('menu.all', ['category' => $catItem->slug]) }}" 
                    role="tab"
                    aria-selected="{{ $isCurrentCatActive ? 'true' : 'false' }}"
-                   class="nucomu-sans inline-flex items-center justify-center rounded-full px-5 py-2 text-[12.5px] sm:text-[13px] font-semibold transition-all duration-200 border {{ $isCurrentCatActive ? 'bg-[#191919] text-[#FFFFFF] border-[#191919] shadow-[0_8px_20px_-6px_rgba(25,25,25,0.28)]' : 'bg-[#FFFFFF] text-[#30302D] border-[#E5E4E0] hover:border-[#191919]/35 hover:text-[#191919]' }}">
+                   class="nucomu-sans inline-flex items-center justify-center rounded-full px-5 py-2 text-[12.5px] sm:text-[13px] font-semibold transition-all duration-200 border {{ $isCurrentCatActive ? 'bg-[var(--menu-ink)] text-[var(--menu-btn-text)] border-[var(--menu-ink)] shadow-[var(--menu-cta-shadow)]' : 'bg-[var(--menu-white)] text-[var(--menu-charcoal)] border-[var(--menu-border)] hover:border-[var(--menu-hover-border)] hover:text-[var(--menu-ink)]' }}">
                     {{ $catItem->name }}
                 </a>
             @endforeach
         </div>
 
         @if(! ($txSettings['is_any_mode_active'] ?? true))
-            <div class="nucomu-sans max-w-2xl mx-auto mb-10 p-4 rounded-2xl bg-[#FFFFFF] border border-[#E5E4E0] text-[#30302D] text-center text-xs sm:text-sm shadow-[0_4px_16px_-6px_rgba(25,25,25,0.06)]">
-                <i class="fa-solid fa-circle-info mr-1.5 text-[#191919]"></i>
+            <div class="nucomu-sans max-w-2xl mx-auto mb-10 p-4 rounded-2xl bg-[var(--menu-white)] border border-[var(--menu-border)] text-[var(--menu-charcoal)] text-center text-xs sm:text-sm shadow-[var(--menu-card-shadow)]">
+                <i class="fa-solid fa-circle-info mr-1.5 text-[var(--menu-ink)]"></i>
                 Pemesanan online sedang tidak tersedia saat ini. Silakan berkunjung langsung ke kafe kami.
             </div>
         @endif
@@ -462,13 +478,13 @@
             </noscript>
         @else
             <!-- Empty State -->
-            <div class="text-center py-16 bg-[#FFFFFF] border border-[#E5E4E0] rounded-2xl max-w-xl mx-auto p-8 shadow-[0_8px_24px_-8px_rgba(25,25,25,0.06)] my-10">
-                <span class="material-symbols-outlined text-[#8A8A86] text-5xl mb-3">coffee</span>
-                <h3 class="nucomu-catalog-title text-2xl sm:text-3xl font-semibold text-[#191919]" style="font-size: clamp(24px, 2.5vw, 30px);">Menu Belum Tersedia</h3>
-                <p class="nucomu-sans text-xs sm:text-[13px] text-[#8A8A86] mt-1.5 leading-relaxed">
+            <div class="text-center py-16 bg-[var(--menu-white)] border border-[var(--menu-border)] rounded-2xl max-w-xl mx-auto p-8 shadow-[var(--menu-card-shadow)] my-10">
+                <span class="material-symbols-outlined text-[var(--menu-muted)] text-5xl mb-3">coffee</span>
+                <h3 class="nucomu-catalog-title text-2xl sm:text-3xl font-semibold text-[var(--menu-ink)]" style="font-size: clamp(24px, 2.5vw, 30px);">Menu Belum Tersedia</h3>
+                <p class="nucomu-sans text-xs sm:text-[13px] text-[var(--menu-muted)] mt-1.5 leading-relaxed">
                     Daftar sajian untuk kategori ini sedang disiapkan oleh barista kami.
                 </p>
-                <a href="{{ route('menu.all', ['category' => 'all']) }}" class="nucomu-sans mt-5 inline-flex items-center gap-1.5 rounded-full bg-[#191919] hover:bg-[#30302D] text-[#FFFFFF] px-5 py-2 text-xs font-semibold transition-colors">
+                <a href="{{ route('menu.all', ['category' => 'all']) }}" class="nucomu-sans mt-5 inline-flex items-center gap-1.5 rounded-full bg-[var(--menu-ink)] hover:bg-[var(--menu-charcoal)] text-[var(--menu-btn-text)] px-5 py-2 text-xs font-semibold transition-colors">
                     <span>Kembali ke Semua Menu</span>
                     <span aria-hidden="true">&rarr;</span>
                 </a>

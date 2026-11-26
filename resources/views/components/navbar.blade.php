@@ -5,16 +5,17 @@
     $navBrandName = $navBrand['name'] ?? config('nucomu.brand.name', 'Nucomu Cafe');
     $navTxSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
     $isAnyOrderModeActive = (bool) ($navTxSettings['is_any_mode_active'] ?? true);
+    $isDarkTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark';
     $isHomeWithHero = request()->routeIs('home') || request()->is('/');
     $hasHeroBanners = isset($activeBanners) && $activeBanners->count() > 0;
     $firstHeroBannerMode = $hasHeroBanners ? ($activeBanners->first()->layout_mode ?: 'poster') : null;
-    $isInitialHeroDark = $isHomeWithHero && (!$hasHeroBanners || $firstHeroBannerMode === 'overlay');
+    $isInitialHeroDark = $isHomeWithHero && (!$hasHeroBanners || $firstHeroBannerMode === 'overlay' || $isDarkTheme);
     $initialHeroNavbarBg = !$isHomeWithHero
-        ? '#0C0C0C'
-        : ($hasHeroBanners ? ($firstHeroBannerMode === 'overlay' ? '#191919' : '#F9F9F9') : '#140E0A');
+        ? ($isDarkTheme ? '#0C0C0C' : '#FFFFFF')
+        : ($hasHeroBanners ? ($firstHeroBannerMode === 'overlay' ? '#191919' : ($isDarkTheme ? '#0C0C0C' : '#F9F9F9')) : '#140E0A');
     $initialNavbarThemeClass = $isHomeWithHero
         ? ($isInitialHeroDark ? 'navbar--over-hero navbar--flush-hero' : 'navbar--scrolled navbar--flush-hero')
-        : 'navbar--scrolled';
+        : ($isDarkTheme ? 'navbar--over-hero' : 'navbar--scrolled');
 @endphp
 @if($isHomeWithHero)
 <script>
@@ -98,83 +99,95 @@
     <!-- Click backdrop to close -->
     <div class="absolute inset-0" onclick="toggleMobileDrawer()"></div>
 
-    <!-- Slide-in Drawer Panel (Monochrome Dark Editorial) -->
-    <div id="mobile-drawer-panel" class="absolute top-0 right-0 w-[84%] max-w-[340px] h-full bg-[#121212] shadow-2xl p-5 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out border-l border-white/10 overflow-y-auto">
+    <!-- Slide-in Drawer Panel (Adaptive Monochrome Editorial) -->
+    <div id="mobile-drawer-panel" class="absolute top-0 right-0 w-[84%] max-w-[340px] h-full bg-[var(--surface-solid)] shadow-2xl p-5 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out border-l border-[var(--border)] overflow-y-auto">
         <div>
             <!-- Drawer Header -->
-            <div class="flex items-center justify-between pb-4 border-b border-white/10">
+            <div class="flex items-center justify-between pb-4 border-b border-[var(--border)]">
                 <div class="flex items-center gap-2.5">
+<<<<<<< HEAD
                     <img src="{{ $navLogoUrl }}" 
                          alt="{{ strtoupper($navBrandName) }}" 
                          class="h-6 w-auto object-contain brightness-0 invert">
+=======
+                    <img src="{{ asset('images/nucomu/nucomu_logo_brand.png') }}" 
+                         alt="NUCOMU CAFE" 
+                         class="h-6 w-auto object-contain dark:brightness-0 dark:invert">
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                 </div>
-                <button onclick="toggleMobileDrawer()" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 text-[#F5F5F5] flex items-center justify-center transition-colors active:scale-95" aria-label="Tutup Menu">
+                <button onclick="toggleMobileDrawer()" class="w-9 h-9 rounded-full bg-[var(--badge-bg)] hover:bg-[var(--surface-hover)] text-[var(--text)] flex items-center justify-center transition-colors active:scale-95" aria-label="Tutup Menu">
                     <span class="material-symbols-outlined text-xl">close</span>
                 </button>
             </div>
 
             <!-- Drawer Links -->
             <nav class="flex flex-col space-y-1 mt-4" aria-label="Menu Mobile">
-                <a href="{{ route('home') }}#home" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('home-about','home');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-[#F5F5F5] bg-white/8 hover:bg-white/12 transition-colors">
+                <a href="{{ route('home') }}#home" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('home-about','home');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-[var(--text)] bg-[var(--badge-bg)] hover:bg-[var(--surface-hover)] transition-colors">
                     <span class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[18px] text-white/80">home</span>
+                        <span class="material-symbols-outlined text-[18px] text-[var(--text)]">home</span>
                         <span>Home &amp; About</span>
                     </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 1</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--badge-bg)] border border-[var(--border-soft)] text-[var(--text-muted)]">Page 1</span>
                 </a>
-                <a href="{{ route('home') }}#menu" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('menu','menu');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                <a href="{{ route('home') }}#menu" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('menu','menu');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] transition-colors">
                     <span class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[18px] text-white/60">restaurant_menu</span>
+                        <span class="material-symbols-outlined text-[18px] opacity-75">restaurant_menu</span>
                         <span>Menu Favorit</span>
                     </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 2</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--badge-bg)] border border-[var(--border-soft)] text-[var(--text-muted)]">Page 2</span>
                 </a>
-                <a href="{{ route('home') }}#gallery" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('gallery-reviews','gallery');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                <a href="{{ route('home') }}#gallery" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('gallery-reviews','gallery');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] transition-colors">
                     <span class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[18px] text-white/60">photo_library</span>
+                        <span class="material-symbols-outlined text-[18px] opacity-75">photo_library</span>
                         <span>Galeri &amp; Ulasan</span>
                     </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 3</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--badge-bg)] border border-[var(--border-soft)] text-[var(--text-muted)]">Page 3</span>
                 </a>
-                <a href="{{ route('home') }}#layanan" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('layanan-contact','layanan');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                <a href="{{ route('home') }}#layanan" onclick="toggleMobileDrawer(); if(typeof switchMobileHomePage==='function'){switchMobileHomePage('layanan-contact','layanan');}" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] transition-colors">
                     <span class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[18px] text-white/60">concierge</span>
+                        <span class="material-symbols-outlined text-[18px] opacity-75">concierge</span>
                         <span>Layanan &amp; Kontak</span>
                     </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/70">Page 4</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--badge-bg)] border border-[var(--border-soft)] text-[var(--text-muted)]">Page 4</span>
                 </a>
-                <a href="{{ route('menu.all') }}" onclick="toggleMobileDrawer()" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[#C8C8C8] hover:text-white hover:bg-white/5 transition-colors">
+                <a href="{{ route('menu.all') }}" onclick="toggleMobileDrawer()" class="mobile-nav-link flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] transition-colors">
                     <span class="flex items-center gap-3">
-                        <span class="material-symbols-outlined text-[18px] text-white/60">menu_book</span>
+                        <span class="material-symbols-outlined text-[18px] opacity-75">menu_book</span>
                         <span>Katalog Menu Lengkap</span>
                     </span>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/80">All</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--badge-bg)] border border-[var(--border-soft)] text-[var(--text-muted)]">All</span>
                 </a>
             </nav>
         </div>
 
         <!-- Drawer Bottom Actions -->
-        <div class="pt-5 mt-4 border-t border-white/10 flex flex-col space-y-2.5">
+        <div class="pt-5 mt-4 border-t border-[var(--border)] flex flex-col space-y-2.5">
             @if($isAnyOrderModeActive)
             <button type="button" 
                     onclick="toggleMobileDrawer(); openCartModal();" 
-                    class="w-full py-3 px-4 bg-[#F5F2EE] hover:bg-white text-[#111111] border border-white/25 text-xs font-bold uppercase tracking-wider rounded-xl text-center transition-all shadow-sm active:scale-95 flex items-center justify-between">
+                    class="w-full py-3 px-4 bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] border border-[var(--border)] text-xs font-bold uppercase tracking-wider rounded-xl text-center transition-all shadow-sm active:scale-95 flex items-center justify-between">
                 <span class="flex items-center gap-2">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span>Keranjang Pesanan</span>
                 </span>
-                <span id="drawer-cart-badge" class="px-2 py-0.5 rounded-full bg-[#111111] text-[#F5F5F5] text-[10px] font-black">0</span>
+                <span id="drawer-cart-badge" class="px-2 py-0.5 rounded-full bg-[var(--accent-solid-text)] text-[var(--accent-solid)] text-[10px] font-black">0</span>
             </button>
             @endif
             <button type="button" 
                     onclick="toggleMobileDrawer(); openReservationModal('Mobile Drawer');" 
-                    class="w-full py-3 px-4 bg-white/5 hover:bg-white/12 text-[#F5F5F5] border border-white/20 text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95 flex items-center justify-center gap-2">
+                    class="w-full py-3 px-4 bg-[var(--badge-bg)] hover:bg-[var(--surface-hover)] text-[var(--text)] border border-[var(--border)] text-xs font-bold uppercase tracking-editorial-widest rounded-xl text-center transition-colors shadow-sm active:scale-95 flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-base">event_seat</span>
                 <span>Reservasi Tempat</span>
             </button>
+<<<<<<< HEAD
             <div class="pt-1 text-center text-[11px] text-white/50 font-medium flex items-center justify-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                 <span>{{ $navContact['hours'] ?? config('nucomu.contact.hours') }}</span>
+=======
+            <div class="pt-1 text-center text-[11px] text-[var(--text-muted)] font-medium flex items-center justify-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>{{ config('nucomu.contact.hours') }}</span>
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             </div>
         </div>
     </div>

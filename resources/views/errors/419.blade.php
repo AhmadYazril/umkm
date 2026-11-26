@@ -1,73 +1,69 @@
+@php
+    $activeTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark' ? 'dark' : 'light';
+    $isDarkTheme = $activeTheme === 'dark';
+@endphp
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-theme="{{ $activeTheme }}" class="{{ $isDarkTheme ? 'dark' : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="{{ $activeTheme }}">
     <title>Sesi Kedaluwarsa (419) — Nucomu Cafe</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/nucomu.css') }}?v={{ filemtime(public_path('css/nucomu.css')) }}">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        'ink-black': '#191919',
-                        'charcoal': '#30302D',
-                        'warm-ivory': '#F9F9F9',
-                        'warm-stone': '#E5E5E5',
-                        'hairline': '#E5E5E5',
-                        'muted-text': '#666666',
-                    },
                     fontFamily: {
                         sans: ['"Montserrat"', 'sans-serif'],
                         editorial: ['"Playfair Display"', 'Georgia', 'serif'],
                         mono: ['"JetBrains Mono"', 'monospace'],
                     },
-                    boxShadow: {
-                        'card': '0 4px 20px -2px rgba(25, 25, 25, 0.05), 0 2px 6px -1px rgba(25, 25, 25, 0.03)',
-                    }
                 }
             }
         }
     </script>
 </head>
-<body class="bg-warm-ivory text-ink-black font-sans min-h-screen flex items-center justify-center p-4 antialiased selection:bg-ink-black selection:text-white">
+<body class="bg-[var(--bg-page)] text-[var(--text)] font-sans min-h-screen flex items-center justify-center p-4 antialiased selection:bg-[var(--accent-solid)] selection:text-[var(--accent-solid-text)]">
 
-    <div class="w-full max-w-md bg-white border border-hairline rounded-3xl p-8 sm:p-10 shadow-card text-center">
+    <div class="w-full max-w-md bg-[var(--surface)] backdrop-blur-md border border-[var(--border)] rounded-3xl p-8 sm:p-10 shadow-[var(--shadow)] text-center">
         
         {{-- Shield / Clock Icon --}}
-        <div class="w-16 h-16 bg-amber-50 text-amber-600 border border-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xs">
+        <div class="w-16 h-16 bg-[var(--badge-bg)] text-[var(--text)] border border-[var(--border)] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xs">
             <i class="fa-solid fa-shield-halved text-2xl"></i>
         </div>
 
-        <div class="inline-block px-3 py-1 bg-warm-ivory border border-hairline rounded-full text-[11px] font-mono font-bold text-muted-text uppercase tracking-wider mb-3">
+        <div class="inline-block px-3 py-1 bg-[var(--badge-bg)] border border-[var(--border)] rounded-full text-[11px] font-mono font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3">
             Error 419 • Sesi Berakhir
         </div>
 
-        <h1 class="text-2xl font-black tracking-tight text-ink-black mb-2 uppercase">Sesi Keamanan Kedaluwarsa</h1>
-        <p class="text-muted-text text-xs leading-relaxed mb-6">
+        <h1 class="text-2xl font-black tracking-tight text-[var(--text)] mb-2 uppercase">Sesi Keamanan Kedaluwarsa</h1>
+        <p class="text-[var(--text-muted)] text-xs leading-relaxed mb-6">
             Halaman ini tidak aktif dalam waktu yang cukup lama sehingga token keamanan (CSRF) telah kedaluwarsa untuk melindungi akun Anda.
         </p>
 
         <div class="space-y-3">
-            <button onclick="handleReload()" class="w-full bg-ink-black hover:bg-charcoal text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer">
+            <button onclick="handleReload()" class="w-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl transition shadow-xs flex items-center justify-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-arrow-rotate-right text-xs"></i>
                 <span id="btnText">Muat Ulang Halaman Baru</span>
             </button>
 
-            <a href="{{ url('/') }}" class="w-full bg-warm-ivory hover:bg-warm-stone text-charcoal font-semibold text-xs py-3 rounded-xl transition border border-hairline flex items-center justify-center gap-2">
+            <a href="{{ url('/') }}" class="w-full bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] text-[var(--text)] font-semibold text-xs py-3 rounded-xl transition border border-[var(--border)] flex items-center justify-center gap-2">
                 <i class="fa-solid fa-house text-xs"></i>
                 <span>Kembali ke Beranda Utama</span>
             </a>
         </div>
 
-        <p class="text-[11px] text-muted-text mt-6">
-            Otomatis memuat ulang dalam <span id="countdown" class="font-bold text-ink-black font-mono">5</span> detik...
+        <p class="text-[11px] text-[var(--text-faint)] mt-6">
+            Otomatis memuat ulang dalam <span id="countdown" class="font-bold text-[var(--text)] font-mono">5</span> detik...
         </p>
 
     </div>

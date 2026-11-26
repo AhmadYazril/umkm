@@ -25,7 +25,7 @@
     <div id="mobile-page-menu"
          class="mobile-home-page"
          data-mobile-page="menu">
-        <div class="md:hidden h-14 bg-[#F9F9F9]" aria-hidden="true"></div>
+        <div class="md:hidden h-14 bg-[var(--bg-page)]" aria-hidden="true"></div>
         <!-- 3. Section Menu (Signature Best Menu Switcher & Categories) -->
         @include('home.sections.best-menu')
     </div>
@@ -37,7 +37,7 @@
     <div id="mobile-page-gallery-reviews"
          class="mobile-home-page"
          data-mobile-page="gallery-reviews">
-        <div class="md:hidden h-14 bg-[#FFFFFF]" aria-hidden="true"></div>
+        <div class="md:hidden h-14 bg-[var(--bg-page)]" aria-hidden="true"></div>
         <!-- 4. Section Gallery (Asymmetric Editorial Collage & Lightbox) -->
         @include('home.sections.gallery')
 
@@ -52,7 +52,7 @@
     <div id="mobile-page-layanan-contact"
          class="mobile-home-page"
          data-mobile-page="layanan-contact">
-        <div class="md:hidden h-14 bg-[#FAFAFA]" aria-hidden="true"></div>
+        <div class="md:hidden h-14 bg-[var(--bg-page)]" aria-hidden="true"></div>
         <!-- 7. Section Layanan (Detail Layanan & Modal Reservasi WhatsApp) -->
         @include('home.sections.layanan')
 

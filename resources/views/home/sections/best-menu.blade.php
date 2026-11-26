@@ -1,27 +1,26 @@
 <!-- SECTION 3: MENU SHOWCASE (EDITORIAL FOOD GALLERY, CATEGORIES & BEST MENU) -->
-<section id="menu" class="pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-20 bg-[#FFFFFF] border-t border-b border-[#E5E4E0] relative overflow-x-clip">
+<section id="menu" class="pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-20 bg-[#FFFFFF] dark:bg-[var(--bg-page)] border-t border-b border-[var(--border)] relative overflow-x-clip">
 
     <!-- =========================================================================
-         PART 0: BEST MENU INTERACTIVE SHOWCASE (EDITORIAL MONOCHROME)
-         Palette: Pure White #FFFFFF, Ink Black #191919, Subtle Border #E5E4E0
+         PART 0: BEST MENU INTERACTIVE SHOWCASE (EDITORIAL MONOCHROME — LIGHT & DARK)
          ========================================================================= -->
     <div class="relative z-10 max-w-7xl xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-14 lg:mb-16">
         
         <!-- Section Title & Subtitle (Editorial Cormorant Garamond + DM Sans) -->
         <div class="text-center max-w-3xl mx-auto mb-8 sm:mb-10 reveal-on-scroll flex flex-col items-center">
-            <h2 class="nucomu-best-title text-[#191919] uppercase mx-auto">
+            <h2 class="nucomu-best-title text-[var(--menu-ink)] uppercase mx-auto">
                 BEST MENU
             </h2>
-            <p class="nucomu-sans text-[13px] sm:text-sm text-[#8A8A86] mt-2.5 max-w-xl mx-auto leading-relaxed">
+            <p class="nucomu-sans text-[13px] sm:text-sm text-[var(--menu-muted)] mt-2.5 max-w-xl mx-auto leading-relaxed">
                 Explore our curated selection of fine artisanal coffees and gourmet delights.
             </p>
         </div>
 
-        <!-- The Showcase Card (Crisp Pure White Elevated on Warm Ivory) -->
-        <div class="relative bg-[#FFFFFF] rounded-[28px] sm:rounded-[36px] shadow-[0_14px_40px_-14px_rgba(25,25,25,0.08)] border border-[#E5E4E0] p-6 sm:p-10 lg:p-14 overflow-hidden">
+        <!-- The Showcase Card (Crisp Elevated Surface — Adapts to Light & Dark Theme) -->
+        <div class="relative bg-[var(--menu-white)] rounded-[28px] sm:rounded-[36px] shadow-[var(--menu-showcase-shadow)] border border-[var(--menu-border)] p-6 sm:p-10 lg:p-14 overflow-hidden">
             
             <!-- Subtle Editorial Watermark in Background -->
-            <div class="nucomu-serif-display absolute -left-4 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.03] font-semibold text-[110px] sm:text-[170px] lg:text-[210px] leading-none text-[#191919] z-0 tracking-tight">
+            <div class="nucomu-serif-display absolute -left-4 top-1/2 -translate-y-1/2 select-none pointer-events-none opacity-[0.035] font-semibold text-[110px] sm:text-[170px] lg:text-[210px] leading-none text-[var(--menu-ink)] z-0 tracking-tight">
                 FOOD<br>ZONE
             </div>
 
@@ -39,13 +38,14 @@
                 
                 <!-- 1. LEFT COLUMN: Editorial Display Typography & Menu Story (~4 cols) -->
                 <div class="lg:col-span-4 flex flex-col justify-center text-left">
-                    <span class="nucomu-sans text-[10.5px] uppercase tracking-[0.22em] font-semibold text-[#8A8A86] block mb-2.5">
+                    <span class="nucomu-sans text-[10.5px] uppercase tracking-[0.22em] font-semibold text-[var(--menu-muted)] block mb-2.5">
                         FOOD ZONE
                     </span>
                     <div class="flex items-center space-x-2 mb-2.5">
-                        <span class="nucomu-sans text-[11px] uppercase tracking-[0.18em] font-semibold text-[#191919]">FEATURED</span>
-                        <span class="material-symbols-outlined text-sm text-[#8A8A86] font-light">restaurant</span>
+                        <span class="nucomu-sans text-[11px] uppercase tracking-[0.18em] font-semibold text-[var(--menu-ink)]">FEATURED</span>
+                        <span class="material-symbols-outlined text-sm text-[var(--menu-muted)] font-light">restaurant</span>
                     </div>
+<<<<<<< HEAD
                     <h3 id="best-hero-title" class="nucomu-serif-display text-4xl sm:text-5xl lg:text-[54px] font-semibold text-[#191919] leading-[1.05] tracking-[-0.02em] transition-all duration-300">
                         {!! $firstBestMenu['display_title'] ?? $firstBestMenu['name'] !!}
                     </h3>
@@ -59,23 +59,38 @@
 
                     <p id="best-hero-desc" class="nucomu-sans text-[13px] sm:text-sm text-[#8A8A86] leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
                         {{ $firstBestMenu['description'] ?? '' }}
+=======
+                    <h3 id="best-hero-title" class="nucomu-serif-display text-4xl sm:text-5xl lg:text-[54px] font-semibold text-[var(--menu-ink)] leading-[1.05] tracking-[-0.02em] transition-all duration-300">
+                        {!! $bestMenu[0]['display_title'] ?? $bestMenu[0]['name'] !!}
+                    </h3>
+
+                    <div class="flex items-center space-x-3 my-4">
+                        <span class="w-7 h-px bg-[var(--menu-ink)]"></span>
+                        <span id="best-hero-category" class="nucomu-sans text-xs font-medium tracking-wide text-[var(--menu-charcoal)]">
+                            {{ $bestMenu[0]['category_label'] }}
+                        </span>
+                    </div>
+
+                    <p id="best-hero-desc" class="nucomu-sans text-[13px] sm:text-sm text-[var(--menu-muted)] leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
+                        {{ $bestMenu[0]['description'] }}
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                     </p>
 
-                    <div class="mt-8 flex items-center space-x-2 select-none opacity-55">
-                        <span class="material-symbols-outlined text-sm text-[#30302D]">verified</span>
-                        <span class="nucomu-sans text-[9.5px] font-semibold tracking-[0.26em] uppercase text-[#30302D]">NUCOMU</span>
+                    <div class="mt-8 flex items-center space-x-2 select-none opacity-60">
+                        <span class="material-symbols-outlined text-sm text-[var(--menu-charcoal)]">verified</span>
+                        <span class="nucomu-sans text-[9.5px] font-semibold tracking-[0.26em] uppercase text-[var(--menu-charcoal)]">NUCOMU</span>
                     </div>
                 </div>
 
-                <!-- 2. CENTER COLUMN: Prominent Circular Dish Plate, Ink CTA Pill, and Slide Dots (~5 cols) -->
+                <!-- 2. CENTER COLUMN: Prominent Circular Dish Plate, CTA Pill, and Slide Dots (~5 cols) -->
                 <div class="lg:col-span-5 flex flex-col items-center justify-center my-4 lg:my-0">
-                    <!-- Big Round Plate with Editorial White Frame -->
-                    <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-[#FFFFFF] shadow-[0_18px_44px_-14px_rgba(25,25,25,0.16)] transition-all duration-500 ease-out border border-[#E5E4E0] flex items-center justify-center">
+                    <!-- Big Round Plate with Adaptive Editorial Frame -->
+                    <div id="best-hero-dish-wrapper" class="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full p-2.5 bg-[var(--menu-white)] shadow-[var(--menu-plate-shadow)] transition-all duration-500 ease-out border border-[var(--menu-border)] flex items-center justify-center">
                         <button type="button"
                                 onclick="openCurrentBestMenuPhoto()"
                                 aria-label="Lihat foto {{ $firstBestMenu['name'] }}"
                                 title="Klik untuk melihat foto"
-                                class="group relative w-full h-full rounded-full overflow-hidden cursor-pointer focus:outline-none">
+                                class="group relative w-full h-full rounded-full overflow-hidden cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--field-focus)]">
                             <img id="best-hero-img" 
                                  src="{{ $firstBestMenu['image'] }}" 
                                  alt="{{ $firstBestMenu['name'] }}" 
@@ -83,13 +98,18 @@
                         </button>
                     </div>
 
-                    <!-- Ink Black Pill Order Button Underneath -->
+                    <!-- Primary Pill Order Button Underneath -->
                     <div class="mt-6 sm:-mt-5 relative z-20">
                         <button id="best-hero-order-btn" 
                                 type="button" 
                                 onclick="orderCurrentBestMenuItem()" 
+<<<<<<< HEAD
                                 class="nucomu-sans group px-7 sm:px-8 py-2.5 rounded-full bg-[#191919] hover:bg-[#30302D] text-[#FFFFFF] font-semibold text-xs sm:text-[13px] uppercase tracking-[0.12em] flex items-center space-x-2 shadow-[0_10px_24px_-6px_rgba(25,25,25,0.28)] transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer">
                             <span id="best-hero-price" class="font-bold tabular-nums">{{ $firstBestMenu['price_formatted'] }}</span>
+=======
+                                class="nucomu-sans group px-7 sm:px-8 py-2.5 rounded-full bg-[var(--menu-ink)] hover:bg-[var(--menu-charcoal)] text-[var(--menu-btn-text)] font-semibold text-xs sm:text-[13px] uppercase tracking-[0.12em] flex items-center space-x-2 shadow-[var(--menu-cta-shadow)] transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer">
+                            <span id="best-hero-price" class="font-bold tabular-nums">{{ $bestMenu[0]['price_formatted'] }}</span>
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                             <span class="font-semibold tracking-[0.14em]">ORDER</span>
                             <span class="material-symbols-outlined text-sm transition-transform duration-200 group-hover:translate-x-0.5">chevron_right</span>
                         </button>
@@ -100,7 +120,7 @@
                         @foreach($bestMenu as $idx => $m)
                             <button type="button" 
                                     onclick="switchBestMenuItem({{ $idx }})" 
-                                    class="best-menu-dot {{ $idx === 0 ? 'w-5 h-1.5 bg-[#191919]' : 'w-1.5 h-1.5 bg-[#D6D4CD] hover:bg-[#8A8A86]' }} rounded-full transition-all duration-300" 
+                                    class="best-menu-dot {{ $idx === 0 ? 'w-5 h-1.5 bg-[var(--menu-ink)]' : 'w-1.5 h-1.5 bg-[var(--menu-dot-idle)] hover:opacity-80' }} rounded-full transition-all duration-300" 
                                     aria-label="Menu {{ $idx + 1 }}">
                             </button>
                         @endforeach
@@ -111,10 +131,10 @@
                 <div class="lg:col-span-3 grid grid-cols-2 gap-2.5 lg:flex lg:flex-col lg:gap-0 lg:space-y-2.5 lg:-mr-14">
                     @foreach($bestMenu as $idx => $m)
                         <div onclick="switchBestMenuItem({{ $idx }})" 
-                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[#191919] text-white shadow-md' : 'bg-[#FFFFFF] hover:bg-[#F5F5F5] text-[#191919] border border-[#E5E4E0]' }} flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group hover:-translate-x-1">
+                             class="best-menu-pill {{ $idx === 0 ? 'active bg-[var(--menu-ink)] text-[var(--menu-btn-text)] shadow-md' : 'bg-[var(--menu-white)] hover:bg-[var(--menu-surface-subtle)] text-[var(--menu-ink)] border border-[var(--menu-border)]' }} flex items-center justify-between p-2 sm:p-2.5 pl-2.5 sm:pl-4 rounded-2xl lg:rounded-l-full transition-all duration-300 cursor-pointer group hover:-translate-x-1">
                             
-                            <!-- Left: Thumbnail in white circle -->
-                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden p-0.5 bg-[#FFFFFF] border border-[#E5E4E0] shadow-2xs shrink-0">
+                            <!-- Left: Thumbnail -->
+                            <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden p-0.5 bg-[var(--menu-white)] border border-[var(--menu-border)] shadow-2xs shrink-0">
                                 <img src="{{ $m['image'] }}" 
                                      alt="{{ $m['name'] }}" 
                                      class="w-full h-full object-cover rounded-full group-hover:scale-[1.06] transition-transform duration-300">
@@ -122,10 +142,10 @@
 
                             <!-- Right Info: Title & Price -->
                             <div class="flex-1 ml-2 sm:ml-3 mr-1 sm:mr-2 text-left min-w-0">
-                                <span class="pill-title nucomu-sans text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate {{ $idx === 0 ? 'text-white' : 'text-[#191919]' }}">
+                                <span class="pill-title nucomu-sans text-[10px] sm:text-xs font-bold uppercase tracking-wider block leading-tight truncate {{ $idx === 0 ? 'text-[var(--menu-btn-text)]' : 'text-[var(--menu-ink)]' }}">
                                     {{ $m['name'] }}
                                 </span>
-                                <span class="pill-price nucomu-sans text-[11px] sm:text-[13px] font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-white/80' : 'text-[#8A8A86]' }}">
+                                <span class="pill-price nucomu-sans text-[11px] sm:text-[13px] font-medium block mt-0.5 tabular-nums {{ $idx === 0 ? 'text-[var(--menu-btn-price)]' : 'text-[var(--menu-muted)]' }}">
                                     {{ $m['price_formatted'] }}
                                 </span>
                             </div>
@@ -155,7 +175,42 @@
             --menu-white: #FFFFFF;
             --menu-border: #E5E4E0;
             --menu-muted: #8A8A86;
+            --menu-btn-text: #FFFFFF;
+            --menu-btn-price: rgba(255, 255, 255, 0.78);
+            --menu-surface-subtle: #F5F5F5;
+            --menu-dot-idle: #D6D4CD;
+            --menu-kicker-line: #D2D0CA;
+            --menu-hover-border: rgba(25, 25, 25, 0.24);
+            --menu-showcase-shadow: 0 14px 40px -14px rgba(25, 25, 25, 0.08);
+            --menu-plate-shadow: 0 18px 44px -14px rgba(25, 25, 25, 0.16);
+            --menu-cta-shadow: 0 10px 24px -6px rgba(25, 25, 25, 0.28);
+            --menu-card-shadow: 0 2px 10px -2px rgba(25, 25, 25, 0.04), 0 12px 28px -10px rgba(25, 25, 25, 0.08);
+            --menu-card-hover-shadow: 0 8px 18px -4px rgba(25, 25, 25, 0.06), 0 20px 36px -10px rgba(25, 25, 25, 0.12);
+            --menu-card-open-shadow: 0 10px 22px -4px rgba(25, 25, 25, 0.07), 0 24px 44px -10px rgba(25, 25, 25, 0.14);
+            --menu-avatar-shadow: 0 0 0 1px rgba(25, 25, 25, 0.06), 0 6px 16px rgba(25, 25, 25, 0.10), 0 12px 24px -6px rgba(25, 25, 25, 0.12);
             font-family: 'DM Sans', 'Manrope', system-ui, -apple-system, sans-serif;
+        }
+        [data-theme="dark"] #menu,
+        .dark #menu {
+            --menu-ink: #F5F5F5;
+            --menu-charcoal: #D4D4D4;
+            --menu-ivory: #0C0C0C;
+            --menu-white: #161616;
+            --menu-border: rgba(255, 255, 255, 0.14);
+            --menu-muted: #A3A3A3;
+            --menu-btn-text: #111111;
+            --menu-btn-price: rgba(17, 17, 17, 0.72);
+            --menu-surface-subtle: #202020;
+            --menu-dot-idle: rgba(255, 255, 255, 0.24);
+            --menu-kicker-line: rgba(255, 255, 255, 0.24);
+            --menu-hover-border: rgba(255, 255, 255, 0.30);
+            --menu-showcase-shadow: 0 18px 46px -14px rgba(0, 0, 0, 0.65);
+            --menu-plate-shadow: 0 22px 50px -12px rgba(0, 0, 0, 0.75);
+            --menu-cta-shadow: 0 12px 26px -6px rgba(0, 0, 0, 0.65);
+            --menu-card-shadow: 0 2px 10px -2px rgba(0, 0, 0, 0.45), 0 12px 28px -10px rgba(0, 0, 0, 0.62);
+            --menu-card-hover-shadow: 0 10px 22px -4px rgba(0, 0, 0, 0.55), 0 22px 40px -10px rgba(0, 0, 0, 0.72);
+            --menu-card-open-shadow: 0 12px 26px -4px rgba(0, 0, 0, 0.60), 0 26px 48px -10px rgba(0, 0, 0, 0.78);
+            --menu-avatar-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 8px 20px rgba(0, 0, 0, 0.55), 0 14px 28px -6px rgba(0, 0, 0, 0.65);
         }
         #menu :focus-visible {
             outline: 2px solid var(--menu-ink);
@@ -191,19 +246,19 @@
             color: var(--menu-ink);
         }
         #menu .best-menu-pill:hover {
-            border-color: rgba(25, 25, 25, 0.25);
+            border-color: var(--menu-hover-border);
         }
         #menu .best-menu-pill.active {
             background-color: var(--menu-ink) !important;
             border-color: var(--menu-ink) !important;
-            color: var(--menu-white) !important;
-            box-shadow: 0 12px 26px -8px rgba(25, 25, 25, 0.26) !important;
+            color: var(--menu-btn-text) !important;
+            box-shadow: var(--menu-cta-shadow) !important;
         }
         #menu .best-menu-pill.active .pill-title {
-            color: var(--menu-white) !important;
+            color: var(--menu-btn-text) !important;
         }
         #menu .best-menu-pill.active .pill-price {
-            color: rgba(255, 255, 255, 0.78) !important;
+            color: var(--menu-btn-price) !important;
         }
         #menu .best-menu-dot.w-5 {
             background-color: var(--menu-ink) !important;
@@ -234,7 +289,7 @@
             content: '';
             width: 24px;
             height: 1px;
-            background-color: #D2D0CA;
+            background-color: var(--menu-kicker-line);
         }
         #menu .nucomu-explore-display {
             font-family: 'Cormorant Garamond', Georgia, serif;
@@ -268,7 +323,7 @@
         #menu .cat-circle-img-wrap {
             background-color: var(--menu-white);
             border: 1px solid var(--menu-border);
-            box-shadow: 0 8px 20px -6px rgba(25, 25, 25, 0.09);
+            box-shadow: var(--menu-card-shadow);
         }
         #menu .cat-circle-label {
             position: relative;
@@ -298,7 +353,7 @@
             box-shadow:
                 0 0 0 2px var(--menu-ivory),
                 0 0 0 3.5px var(--menu-ink),
-                0 12px 24px -6px rgba(25, 25, 25, 0.16) !important;
+                0 12px 24px -6px rgba(0, 0, 0, 0.22) !important;
         }
         #menu .cat-circle-btn.active-cat .cat-circle-label {
             color: var(--menu-ink) !important;
@@ -332,7 +387,7 @@
         #menu .nucomu-menu-nav-arrow:hover:not(:disabled) {
             background-color: var(--menu-ink);
             border-color: var(--menu-ink);
-            color: var(--menu-white);
+            color: var(--menu-btn-text);
         }
         #menu .nucomu-menu-nav-arrow:active:not(:disabled) {
             transform: scale(0.94);
@@ -366,7 +421,7 @@
             width: 6px;
             height: 6px;
             border-radius: 9999px;
-            background-color: #D2D0CA;
+            background-color: var(--menu-dot-idle);
             transition: width 220ms cubic-bezier(0.22, 1, 0.36, 1), background-color 200ms ease;
         }
         #menu .nucomu-menu-dot:hover::before {
@@ -412,7 +467,7 @@
             pointer-events: none;
         }
 
-        /* Editorial Monochrome 5-Column Grid & Elevated Pure White Card Surface */
+        /* Editorial Monochrome 5-Column Grid & Elevated Card Surface */
         #menu .menu-columns-container {
             gap: 16px;
         }
@@ -438,9 +493,7 @@
             background-color: var(--menu-white);
             border: 1px solid var(--menu-border);
             border-radius: 20px;
-            box-shadow:
-                0 2px 10px -2px rgba(25, 25, 25, 0.04),
-                0 12px 28px -10px rgba(25, 25, 25, 0.08);
+            box-shadow: var(--menu-card-shadow);
             padding: 50px 14px 16px 14px;
             transition:
                 transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -456,17 +509,13 @@
         @media (hover: hover) and (pointer: fine) {
             #menu .menu-card:not(.is-open):hover {
                 transform: translateY(-3px);
-                border-color: rgba(25, 25, 25, 0.22);
-                box-shadow:
-                    0 8px 18px -4px rgba(25, 25, 25, 0.06),
-                    0 20px 36px -10px rgba(25, 25, 25, 0.12);
+                border-color: var(--menu-hover-border);
+                box-shadow: var(--menu-card-hover-shadow);
             }
         }
         #menu .menu-card.is-open {
-            border-color: rgba(25, 25, 25, 0.24) !important;
-            box-shadow:
-                0 10px 22px -4px rgba(25, 25, 25, 0.07),
-                0 24px 44px -10px rgba(25, 25, 25, 0.14) !important;
+            border-color: var(--menu-hover-border) !important;
+            box-shadow: var(--menu-card-open-shadow) !important;
         }
         #menu .menu-card-avatar {
             top: -42px;
@@ -474,10 +523,7 @@
             height: 84px;
             border: 3px solid var(--menu-white);
             background-color: var(--menu-white);
-            box-shadow:
-                0 0 0 1px rgba(25, 25, 25, 0.06),
-                0 6px 16px rgba(25, 25, 25, 0.10),
-                0 12px 24px -6px rgba(25, 25, 25, 0.12);
+            box-shadow: var(--menu-avatar-shadow);
         }
         @media (min-width: 640px) {
             #menu .menu-card-avatar {
@@ -548,12 +594,12 @@
         }
         #menu .btn-add-cart {
             background-color: var(--menu-ink);
-            color: var(--menu-white);
-            box-shadow: 0 6px 16px -4px rgba(25, 25, 25, 0.22);
+            color: var(--menu-btn-text);
+            box-shadow: var(--menu-cta-shadow);
         }
         #menu .btn-add-cart:hover {
             background-color: var(--menu-charcoal);
-            box-shadow: 0 10px 22px -4px rgba(25, 25, 25, 0.28);
+            box-shadow: var(--menu-cta-shadow);
         }
         #menu .btn-add-cart.disabled {
             background-color: var(--menu-muted) !important;
@@ -629,7 +675,7 @@
             <h2 class="nucomu-explore-title mx-auto flex flex-col items-center" aria-label="Explore Our Menu">
                 <span class="nucomu-explore-kicker">Explore Our</span> <span class="nucomu-explore-display">Menu</span>
             </h2>
-            <svg class="w-24 sm:w-28 h-2.5 mt-1.5 text-[#191919]/35" viewBox="0 0 120 10" fill="none" aria-hidden="true">
+            <svg class="w-24 sm:w-28 h-2.5 mt-1.5 text-[var(--menu-ink)] opacity-35" viewBox="0 0 120 10" fill="none" aria-hidden="true">
                 <path d="M4 7.5C36 2 84 2 116 7.5" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
             </svg>
         </div>
@@ -643,12 +689,12 @@
                             onclick="handleCircularCategoryClick('{{ $cat['id'] }}', this)"
                             class="cat-circle-btn group shrink-0 flex flex-col items-center cursor-pointer focus:outline-none rounded-2xl transition-transform duration-300 hover:-translate-y-1"
                             data-cat-id="{{ $cat['id'] }}">
-                        <div class="cat-circle-img-wrap w-[78px] h-[78px] sm:w-[90px] sm:h-[90px] md:w-[96px] md:h-[96px] lg:w-[100px] lg:h-[100px] shrink-0 rounded-full overflow-hidden p-[4px] bg-[#FFFFFF] border border-[#E5E4E0] shadow-[0_8px_20px_-6px_rgba(25,25,25,0.09)] group-hover:shadow-[0_12px_26px_-6px_rgba(25,25,25,0.14)] transition-all duration-300">
+                        <div class="cat-circle-img-wrap w-[78px] h-[78px] sm:w-[90px] sm:h-[90px] md:w-[96px] md:h-[96px] lg:w-[100px] lg:h-[100px] shrink-0 rounded-full overflow-hidden p-[4px] bg-[var(--menu-white)] border border-[var(--menu-border)] transition-all duration-300">
                             <img src="{{ $cat['image'] }}"
                                  alt="{{ $cat['name'] }}"
                                  class="w-full h-full object-cover rounded-full group-hover:scale-[1.06] transition-transform duration-500 ease-out">
                         </div>
-                        <span class="cat-circle-label nucomu-sans mt-3 text-center whitespace-nowrap group-hover:text-[#191919] transition-colors">
+                        <span class="cat-circle-label nucomu-sans mt-3 text-center whitespace-nowrap group-hover:text-[var(--menu-ink)] transition-colors">
                             {{ $cat['name'] }}
                         </span>
                     </button>
@@ -657,7 +703,7 @@
         </div>
 
         <!-- 2. Top Checkout Guide & Slide Controls Bar (Above Menu Cards) -->
-        <div class="w-full mt-7 sm:mt-9 pb-3.5 border-b border-[#E5E4E0] flex items-center justify-between gap-3 sm:gap-4 reveal-on-scroll">
+        <div class="w-full mt-7 sm:mt-9 pb-3.5 border-b border-[var(--menu-border)] flex items-center justify-between gap-3 sm:gap-4 reveal-on-scroll">
             <!-- Left: Checkout Guide Toggle Trigger -->
             <div class="flex items-center shrink-0">
                 @if($guideActive)
@@ -666,20 +712,20 @@
                             onclick="window.toggleCaraPemesananGuide(this)"
                             aria-controls="cara-pemesanan-panel"
                             aria-expanded="false"
-                            class="nucomu-sans group shrink-0 inline-flex items-center gap-1.5 bg-transparent p-0 border-0 text-[13px] font-medium text-[#30302D] hover:text-[#191919] transition-colors duration-200 cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-[#8A8A86] group-hover:text-[#191919] transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            class="nucomu-sans group shrink-0 inline-flex items-center gap-1.5 bg-transparent p-0 border-0 text-[13px] font-medium text-[var(--menu-charcoal)] hover:text-[var(--menu-ink)] transition-colors duration-200 cursor-pointer">
+                        <svg class="w-3.5 h-3.5 text-[var(--menu-muted)] group-hover:text-[var(--menu-ink)] transition-colors shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                             <line x1="3" y1="6" x2="21" y2="6"/>
                             <path d="M16 10a4 4 0 0 1-8 0"/>
                         </svg>
-                        <span class="underline underline-offset-[4px] decoration-[#191919]/25 group-hover:decoration-[#191919]">Cara Pemesanan</span>
+                        <span class="underline underline-offset-[4px] decoration-[var(--menu-border)] group-hover:decoration-[var(--menu-ink)]">Cara Pemesanan</span>
                         <svg class="cara-arrow-icon w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M5 12h14"/>
                             <path d="m13 6 6 6-6 6"/>
                         </svg>
                     </button>
                 @else
-                    <span class="nucomu-sans text-[13px] font-medium text-[#8A8A86] shrink-0">
+                    <span class="nucomu-sans text-[13px] font-medium text-[var(--menu-muted)] shrink-0">
                         Pemesanan langsung di kasir
                     </span>
                 @endif
@@ -691,11 +737,11 @@
                  role="group"
                  aria-label="Navigasi halaman menu">
                 <span id="rec-page-counter"
-                      class="hidden sm:inline-block nucomu-sans text-[12px] font-medium text-[#8A8A86] tabular-nums tracking-wide select-none">
+                      class="hidden sm:inline-block nucomu-sans text-[12px] font-medium text-[var(--menu-muted)] tabular-nums tracking-wide select-none">
                     01 / 01
                 </span>
 
-                <span class="hidden sm:inline-block w-px h-3.5 bg-[#E5E4E0] mx-0.5" aria-hidden="true"></span>
+                <span class="hidden sm:inline-block w-px h-3.5 bg-[var(--menu-border)] mx-0.5" aria-hidden="true"></span>
 
                 <button type="button"
                         id="rec-prev-btn"
@@ -734,10 +780,10 @@
                  inert>
                 <div class="cara-pemesanan-panel-inner">
                     <div class="pb-1.5">
-                        <div class="w-full rounded-2xl bg-[#FFFFFF] border border-[#E5E4E0] shadow-[0_8px_24px_-12px_rgba(25,25,25,0.07)] overflow-hidden text-left">
-                            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#E5E4E0]">
+                        <div class="w-full rounded-2xl bg-[var(--menu-white)] border border-[var(--menu-border)] shadow-[var(--menu-card-shadow)] overflow-hidden text-left">
+                            <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[var(--menu-border)]">
                                 <div class="flex items-center gap-3.5 px-5 py-4 sm:px-6 sm:py-[18px]">
-                                    <span class="w-9 h-9 rounded-full bg-[#F5F5F5] border border-[#E5E4E0]/80 text-[#30302D] flex items-center justify-center shrink-0" aria-hidden="true">
+                                    <span class="w-9 h-9 rounded-full bg-[var(--menu-surface-subtle)] border border-[var(--menu-border)] text-[var(--menu-charcoal)] flex items-center justify-center shrink-0" aria-hidden="true">
                                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                             <circle cx="12" cy="12" r="9"/>
                                             <path d="M12 8v8"/>
@@ -745,17 +791,17 @@
                                         </svg>
                                     </span>
                                     <div class="min-w-0">
-                                        <p class="nucomu-sans text-[13.5px] font-semibold text-[#191919] leading-snug">
+                                        <p class="nucomu-sans text-[13.5px] font-semibold text-[var(--menu-ink)] leading-snug">
                                             01 &middot; Pilih Menu &amp; Varian
                                         </p>
-                                        <p class="nucomu-sans text-[12px] text-[#8A8A86] leading-snug mt-0.5">
+                                        <p class="nucomu-sans text-[12px] text-[var(--menu-muted)] leading-snug mt-0.5">
                                             Ketuk kartu sajian lalu tambah ke keranjang.
                                         </p>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center gap-3.5 px-5 py-4 sm:px-6 sm:py-[18px]">
-                                    <span class="w-9 h-9 rounded-full bg-[#F5F5F5] border border-[#E5E4E0]/80 text-[#30302D] flex items-center justify-center shrink-0" aria-hidden="true">
+                                    <span class="w-9 h-9 rounded-full bg-[var(--menu-surface-subtle)] border border-[var(--menu-border)] text-[var(--menu-charcoal)] flex items-center justify-center shrink-0" aria-hidden="true">
                                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
                                             <path d="M3 6h18"/>
@@ -763,17 +809,17 @@
                                         </svg>
                                     </span>
                                     <div class="min-w-0">
-                                        <p class="nucomu-sans text-[13.5px] font-semibold text-[#191919] leading-snug">
+                                        <p class="nucomu-sans text-[13.5px] font-semibold text-[var(--menu-ink)] leading-snug">
                                             02 &middot; Checkout di Keranjang
                                         </p>
-                                        <p class="nucomu-sans text-[12px] text-[#8A8A86] leading-snug mt-0.5">
+                                        <p class="nucomu-sans text-[12px] text-[var(--menu-muted)] leading-snug mt-0.5">
                                             {{ $guideStep2Desc }}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center gap-3.5 px-5 py-4 sm:px-6 sm:py-[18px]">
-                                    <span class="w-9 h-9 rounded-full bg-[#F5F5F5] border border-[#E5E4E0]/80 text-[#30302D] flex items-center justify-center shrink-0" aria-hidden="true">
+                                    <span class="w-9 h-9 rounded-full bg-[var(--menu-surface-subtle)] border border-[var(--menu-border)] text-[var(--menu-charcoal)] flex items-center justify-center shrink-0" aria-hidden="true">
                                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                             <rect x="3" y="3" width="7" height="7" rx="1"/>
                                             <rect x="14" y="3" width="7" height="7" rx="1"/>
@@ -785,10 +831,10 @@
                                         </svg>
                                     </span>
                                     <div class="min-w-0">
-                                        <p class="nucomu-sans text-[13.5px] font-semibold text-[#191919] leading-snug">
+                                        <p class="nucomu-sans text-[13.5px] font-semibold text-[var(--menu-ink)] leading-snug">
                                             03 &middot; Konfirmasi &amp; Bayar
                                         </p>
-                                        <p class="nucomu-sans text-[12px] text-[#8A8A86] leading-snug mt-0.5">
+                                        <p class="nucomu-sans text-[12px] text-[var(--menu-muted)] leading-snug mt-0.5">
                                             {{ $guideStep3Desc }}
                                         </p>
                                     </div>
@@ -1006,16 +1052,16 @@
         </script>
 
         <!-- Empty State Fallback -->
-        <div id="recommendations-empty-state" class="hidden text-center py-12 bg-[#FFFFFF] rounded-2xl border border-[#E5E4E0] mt-6 mb-8 p-8 shadow-[0_8px_24px_-8px_rgba(25,25,25,0.06)]">
-            <span class="material-symbols-outlined text-[#8A8A86] text-4xl mb-2">restaurant_menu</span>
-            <p class="nucomu-serif-display text-2xl font-semibold text-[#191919]">Sajian Sedang Disiapkan</p>
-            <p class="nucomu-sans text-[13px] text-[#8A8A86] mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
+        <div id="recommendations-empty-state" class="hidden text-center py-12 bg-[var(--menu-white)] rounded-2xl border border-[var(--menu-border)] mt-6 mb-8 p-8 shadow-[var(--menu-card-shadow)]">
+            <span class="material-symbols-outlined text-[var(--menu-muted)] text-4xl mb-2">restaurant_menu</span>
+            <p class="nucomu-serif-display text-2xl font-semibold text-[var(--menu-ink)]">Sajian Sedang Disiapkan</p>
+            <p class="nucomu-sans text-[13px] text-[var(--menu-muted)] mt-1">Daftar sajian untuk kategori ini sedang diperbarui bersama barista kami.</p>
         </div>
 
         <!-- Mobile Shortcut to Full Menu Catalog -->
         <div class="md:hidden text-center pb-4">
             <a href="{{ route('menu.all') }}"
-               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#191919] text-white text-xs font-bold uppercase tracking-wider shadow-md active:scale-95 transition-transform">
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] text-xs font-bold uppercase tracking-wider shadow-md active:scale-95 transition-transform">
                 <span class="material-symbols-outlined text-base">menu_book</span>
                 <span>Buka Katalog Menu Lengkap</span>
             </a>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 860" width="1600" height="860" font-family="'Segoe UI', Arial, sans-serif">
+<defs>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr-flow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#334155"/>
+    </marker>
+    <marker id="arr-valid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#15803D"/>
+    </marker>
+    <marker id="arr-invalid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arr-ds" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+  </defs>
+<rect width="1600" height="860" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1600" height="68" fill="#F8FAFC"/>
+<line x1="0" y1="68" x2="1600" y2="68" stroke="#CBD5E1" stroke-width="1.2"/>
+<rect x="0" y="0" width="7" height="68" fill="#1E3A8A"/>
+<text x="24" y="30" font-size="19" font-weight="700" fill="#0F172A">Level 2 - Pengajuan Reservasi Meja &amp; Acara (turunan proses 11.0 Level 1)</text>
+<text x="24" y="52" font-size="12.5" font-weight="500" fill="#475569">Fitur P3 • Aktor: Pelanggan • Langkah: 11.1–11.6 (Berhenti s.d. tautan WA Admin) • Status: Sisi Admin teruji sebelumnya</text>
+<g transform="translate(1105, 13)">
+    <rect x="0" y="0" width="475" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <rect x="12" y="13" width="18" height="14" rx="2" fill="#EFF6FF" stroke="#1E293B" stroke-width="1.6"/>
+    <text x="36" y="24" font-size="11" font-weight="600" fill="#334155">Entitas</text>
+    <circle cx="96" cy="20" r="9" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+    <text x="110" y="24" font-size="11" font-weight="600" fill="#334155">Langkah</text>
+    <rect x="167" y="12" width="18" height="15" rx="3" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.6"/>
+    <ellipse cx="176" cy="13" rx="9" ry="3.2" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.3"/>
+    <text x="191" y="24" font-size="11" font-weight="600" fill="#334155">Data Store</text>
+    <line x1="258" y1="20" x2="282" y2="20" stroke="#15803D" stroke-width="2.2" marker-end="url(#arr-valid)"/>
+    <text x="288" y="24" font-size="11" font-weight="600" fill="#15803D">Valid</text>
+    <line x1="330" y1="20" x2="354" y2="20" stroke="#DC2626" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr-invalid)"/>
+    <text x="360" y="24" font-size="11" font-weight="600" fill="#B91C1C">Tidak Valid / Ulang</text>
+  </g>
+<path d="M 166.0 280.0 L 316.0 280.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 444.0 280.0 L 736.0 280.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 864.0 280.0 L 1156.0 280.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1220.0 344.0 L 1220.0 516.0" fill="none" stroke="#15803D" stroke-width="2.1" marker-end="url(#arr-valid)"/>
+<path d="M 1192.0 337.5 L 1192.0 405.0 Q 1192.0 415.0 1182.0 415.0 L 834.0 415.0 Q 824.0 415.0 824.0 405.0 L 824.0 339.3" fill="none" stroke="#DC2626" stroke-width="2.1" stroke-dasharray="6,4" marker-end="url(#arr-invalid)"/>
+<path d="M 1156.0 580.0 L 864.0 580.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 736.0 580.0 L 444.0 580.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 316.0 580.0 L 110.0 580.0 Q 100.0 580.0 100.0 570.0 L 100.0 323.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 380.0 133.0 L 380.0 216.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1220.0 133.0 L 1220.0 216.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1220.0 644.0 L 1220.0 737.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 715.0 737.0 L 715.0 700.0 Q 715.0 690.0 725.0 690.0 L 768.0 690.0 Q 778.0 690.0 782.3 681.0 L 800.0 644.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 885.0 737.0 L 885.0 700.0 Q 885.0 690.0 875.0 690.0 L 832.0 690.0 Q 822.0 690.0 817.7 681.0 L 800.0 644.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<g filter="url(#shadow)">
+        <rect x="34" y="237" width="132" height="86" rx="6" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2.4"/>
+        <rect x="34" y="237" width="132" height="23" rx="5" fill="#1D4ED8"/>
+        <rect x="34" y="253" width="132" height="7" fill="#1D4ED8"/>
+        <text x="100" y="252.5" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.8">AKTOR EKSTERNAL</text>
+        <text x="100" y="291" font-size="16" font-weight="700" fill="#1E3A8A" text-anchor="middle">Pelanggan</text>
+        <text x="100" y="309" font-size="10.5" font-weight="500" fill="#475569" text-anchor="middle">Tanpa Login</text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="380" cy="280" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="353" y="246" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="380" y="258" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.1</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="380" y="283.0">Muat Form</tspan><tspan x="380" y="297.5">Dinamis &amp; Paket</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="800" cy="280" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="773" y="240" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="800" y="252" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.2</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="800" y="276.0">Isi Data</tspan><tspan x="800" y="290.5">Reservasi &amp;</tspan><tspan x="800" y="305.0">Lampiran</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1220" cy="280" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1193" y="246" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1220" y="258" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.3</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1220" y="283.0">Validasi Field &amp;</tspan><tspan x="1220" y="297.5">File Lampiran</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1220" cy="580" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1193" y="546" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1220" y="558" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.4</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1220" y="583.0">Simpan Lampiran</tspan><tspan x="1220" y="597.5">&amp; Data Reservasi</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="800" cy="580" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="773" y="546" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="800" y="558" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.5</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="800" y="583.0">Susun Pesan &amp;</tspan><tspan x="800" y="597.5">Tautan WA Admin</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="380" cy="580" r="64" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="353" y="540" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="380" y="552" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">11.6</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="380" y="576.0">Tampilkan</tspan><tspan x="380" y="590.5">Konfirmasi &amp;</tspan><tspan x="380" y="605.0">Tautan WA</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 307 86 L 307 124 A 73 9 0 0 0 453 124 L 453 86 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="380" cy="86" rx="73" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="380" y="110" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D9</text>
+        <text x="380" y="125" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">reservation_fields</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1147 86 L 1147 124 A 73 9 0 0 0 1293 124 L 1293 86 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1220" cy="86" rx="73" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1220" y="110" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D9</text>
+        <text x="1220" y="125" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">reservation_fields</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1152 746 L 1152 784 A 68 9 0 0 0 1288 784 L 1288 746 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1220" cy="746" rx="68" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1220" y="770" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D8</text>
+        <text x="1220" y="785" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">reservations</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 650 746 L 650 784 A 65 9 0 0 0 780 784 L 780 746 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="715" cy="746" rx="65" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="715" y="770" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D8</text>
+        <text x="715" y="785" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">reservations</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 820 746 L 820 784 A 65 9 0 0 0 950 784 L 950 746 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="885" cy="746" rx="65" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="885" y="770" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="885" y="785" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g>
+      <rect x="170.5" y="247.5" width="135" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="238" y="261.0">Buka modal reservasi</tspan></text>
+    </g>
+<g>
+      <rect x="519.5" y="241.0" width="141" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="590" y="254.5">Form dinamis &amp; daftar</tspan><tspan x="590" y="267.5">paket</tspan></text>
+    </g>
+<g>
+      <rect x="936.5" y="247.5" width="147" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="1010" y="261.0">Submit POST /reservasi</tspan></text>
+    </g>
+<g>
+      <rect x="1230.5" y="413.0" width="135" height="34" rx="5" fill="#F0FDF4" fill-opacity="0.96" stroke="#86EFAC" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#14532D" text-anchor="middle"><tspan x="1298" y="426.5">[Valid]</tspan><tspan x="1298" y="439.5">Data &amp; path lampiran</tspan></text>
+    </g>
+<g>
+      <rect x="910.5" y="391.5" width="159" height="47" rx="5" fill="#FEF2F2" fill-opacity="0.96" stroke="#FCA5A5" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#991B1B" text-anchor="middle"><tspan x="990" y="405.0">[Tidak valid -&gt; ulang]</tspan><tspan x="990" y="418.0">Error field wajib / file</tspan><tspan x="990" y="431.0">ditolak</tspan></text>
+    </g>
+<g>
+      <rect x="930.5" y="547.5" width="159" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="1010" y="561.0">ID &amp; data reservasi baru</tspan></text>
+    </g>
+<g>
+      <rect x="519.5" y="541.0" width="141" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="590" y="554.5">URL</tspan><tspan x="590" y="567.5">https://wa.me/{admin}</tspan></text>
+    </g>
+<g>
+      <rect x="75.5" y="453.0" width="129" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="140" y="466.5">Konfirmasi &amp; tombol</tspan><tspan x="140" y="479.5">buka WhatsApp Admin</tspan></text>
+    </g>
+<g>
+      <rect x="306.5" y="164.5" width="147" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="380" y="178.0">Baca: kolom aktif form</tspan></text>
+    </g>
+<g>
+      <rect x="1149.5" y="158.0" width="141" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1220" y="171.5">Baca: aturan validasi</tspan><tspan x="1220" y="184.5">field</tspan></text>
+    </g>
+<g>
+      <rect x="1158.5" y="671.0" width="123" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="1220" y="684.5">Tulis: form_data &amp;</tspan><tspan x="1220" y="697.5">pending</tspan></text>
+    </g>
+<g>
+      <rect x="630.5" y="685.5" width="129" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="695" y="699.0">Baca: jadwal &amp; tamu</tspan></text>
+    </g>
+<g>
+      <rect x="842.5" y="679.0" width="135" height="34" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="910" y="692.5">Baca:</tspan><tspan x="910" y="705.5">reservation_whatsapp</tspan></text>
+    </g>
+</svg>

@@ -73,21 +73,29 @@ class PublicPagesTest extends TestCase
         $response->assertSee('Kafe ini menyajikan kopi, minuman non-kopi, makanan ringan, dan makanan berat dengan harga yang bersahabat. Tersedia area indoor/outdoor, Wi-Fi, colokan listrik, area parkir untuk menunjang kenyamanan pengunjung.');
         $response->assertDontSee('Jelajahi Pilihan Menu');
         $response->assertSee('id="menu"', false);
-        $response->assertSee('id="story-typewriter-text"', false);
-        $response->assertSee('id="story-typewriter-cursor"', false);
+        $response->assertDontSee('id="story-quote-wrapper"', false);
+        $response->assertDontSee('id="story-typewriter-text"', false);
+        $response->assertDontSee('id="story-typewriter-cursor"', false);
         $response->assertDontSee('id="about-headline-cursor"', false);
         $response->assertDontSee('id="about-typing-cursor-1"', false);
         $response->assertDontSee('id="about-typing-cursor-2"', false);
         $response->assertSee('--color-about-bg: #FFFFFF', false);
         $response->assertSee('--color-about-backplate: #A5A5A5', false);
         $response->assertSee('--color-about-badge-dot: #242424', false);
+        $response->assertSee('--color-about-bg: #0A0A0A', false);
+        $response->assertSee('--color-about-backplate: #1A1A1A', false);
+        $response->assertSee('--color-about-badge-dot: #FFFFFF', false);
         $response->assertDontSee('#EADBC8');
         $response->assertDontSee('#D5C0A8');
         $response->assertDontSee('#E06D24');
         $response->assertDontSee('#7A6B60');
-        $response->assertSee('Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.');
+        $response->assertDontSee('Ruang ramah di Tulungagung di mana aroma kopi yang baru diseduh menyapa hangat, dan setiap cangkir disajikan dengan ketulusan tangan.');
         $response->assertSee('nucomu_story_1.png');
         $response->assertSee('nucomu_logo_icon.png');
+        $response->assertSee('story-anim-caption', false);
+        $response->assertSee('story-delay-6', false);
+        $response->assertDontSee('sm:-rotate-[2.6deg]', false);
+        $response->assertDontSee('story-anim-badge-coffee absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 lg:bottom-2.5 lg:right-2.5 z-20 w-[54px] h-[54px] sm:w-[60px] sm:h-[60px] lg:w-[66px] lg:h-[66px] bg-white hover:bg-neutral-200 active:scale-90 transition-all', false);
     }
 
     public function test_old_tentang_kami_route_no_longer_exists(): void

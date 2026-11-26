@@ -1,14 +1,20 @@
+@php
+    $activeTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark' ? 'dark' : 'light';
+    $isDarkTheme = $activeTheme === 'dark';
+@endphp
 <!DOCTYPE html>
-<html lang="id" class="dark scroll-smooth">
+<html lang="id" data-theme="{{ $activeTheme }}" class="{{ $isDarkTheme ? 'dark' : '' }} scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="{{ $activeTheme }}">
     <title>Pesan Menu — Nucomu Cafe</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/nucomu.css') }}?v={{ filemtime(public_path('css/nucomu.css')) }}">
     {{-- Leaflet Interactive Map CSS & JS --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -18,14 +24,15 @@
             theme: {
                 extend: {
                     colors: {
-                        obsidian: '#0c0c0f',
-                        goldAccent: '#f59e0b',
-                        violetAccent: '#8b5cf6',
-                        cyanAccent: '#06b6d4',
-                        roseAccent: '#f43f5e'
+                        obsidian: 'var(--bg-page)',
+                        goldAccent: 'var(--accent-solid)',
+                        violetAccent: 'var(--text-muted)',
+                        cyanAccent: 'var(--text-secondary)',
+                        roseAccent: 'var(--text-muted)'
                     },
                     fontFamily: {
                         sans: ['"Montserrat"', 'sans-serif'],
+                        editorial: ['"Playfair Display"', 'Georgia', 'serif'],
                         mono: ['JetBrains Mono', 'monospace']
                     }
                 }
@@ -33,33 +40,28 @@
         }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0c0c0f; }
-        ::-webkit-scrollbar-thumb { background: #272736; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
-
         .custom-panel-scroll {
             scrollbar-width: thin;
-            scrollbar-color: rgba(245, 158, 11, 0.35) rgba(12, 12, 15, 0.4);
+            scrollbar-color: var(--scrollbar-thumb) transparent;
         }
         .custom-panel-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-panel-scroll::-webkit-scrollbar-track { background: rgba(12, 12, 15, 0.4); border-radius: 9999px; }
-        .custom-panel-scroll::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.35); border-radius: 9999px; }
-        .custom-panel-scroll::-webkit-scrollbar-thumb:hover { background: rgba(245, 158, 11, 0.7); }
+        .custom-panel-scroll::-webkit-scrollbar-track { background: transparent; border-radius: 9999px; }
+        .custom-panel-scroll::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 9999px; }
+        .custom-panel-scroll::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
         .glass-card {
-            background: rgba(21, 21, 28, 0.82);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
         }
         .qty-btn { user-select: none; }
-        .menu-card.selected { border-color: rgba(245, 158, 11, 0.7) !important; background: rgba(245, 158, 11, 0.08); }
+        .menu-card.selected { border-color: var(--accent-solid) !important; background: var(--surface-strong); }
         #zendoMap { z-index: 10; }
         .leaflet-control-attribution { font-size: 9px !important; opacity: 0.7; }
     </style>
 </head>
-<body class="bg-obsidian text-gray-100 font-sans min-h-screen relative overflow-x-clip">
+<body class="bg-[var(--bg-page)] text-[var(--text)] font-sans min-h-screen relative overflow-x-clip">
     @php
         $transactionMode = $transactionMode ?? 'both';
         $zendoWhatsapp = $zendoWhatsapp ?? '6281234567890';
@@ -78,32 +80,32 @@
     @endphp
 
     {{-- Ambient Glow --}}
-    <div class="fixed top-10 left-1/4 w-96 h-96 rounded-full bg-goldAccent/10 pointer-events-none z-0 blur-3xl"></div>
-    <div class="fixed bottom-10 right-10 w-96 h-96 rounded-full bg-violetAccent/10 pointer-events-none z-0 blur-3xl"></div>
+    <div class="fixed top-10 left-1/4 w-96 h-96 rounded-full pointer-events-none z-0 blur-3xl" style="background: var(--ambient-glow-top);"></div>
+    <div class="fixed bottom-10 right-10 w-96 h-96 rounded-full pointer-events-none z-0 blur-3xl" style="background: var(--ambient-glow-top);"></div>
 
     {{-- HEADER --}}
-    <header class="sticky top-0 z-50 glass-card border-b border-white/5 px-4 sm:px-6 py-3.5">
+    <header class="sticky top-0 z-50 bg-[var(--glass-surface-bg)] backdrop-blur-md border-b border-[var(--border)] px-4 sm:px-6 py-3.5">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
             <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-goldAccent via-amber-500 to-rose-500 p-0.5 shadow-lg shadow-goldAccent/20">
-                    <div class="w-full h-full bg-obsidian rounded-[10px] flex items-center justify-center">
-                        <i class="fa-solid fa-mug-hot text-goldAccent text-sm"></i>
+                <div class="w-9 h-9 rounded-xl bg-[var(--badge-bg)] border border-[var(--border)] p-0.5 shadow-sm">
+                    <div class="w-full h-full bg-[var(--surface-solid)] rounded-[10px] flex items-center justify-center">
+                        <i class="fa-solid fa-mug-hot text-[var(--text)] text-sm"></i>
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-lg font-extrabold tracking-tight text-white">NUCOMU</span>
-                    <span class="text-[9px] uppercase tracking-widest text-goldAccent font-semibold -mt-1">Coffee & Stories</span>
+                    <span class="text-lg font-extrabold tracking-tight text-[var(--text)]">NUCOMU</span>
+                    <span class="text-[9px] uppercase tracking-widest text-[var(--text-muted)] font-semibold -mt-1">Coffee & Stories</span>
                 </div>
             </a>
 
             <div class="flex items-center gap-2 sm:gap-3">
-                <a href="{{ route('home') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white/5 border border-white/10 text-gray-300 hover:text-white text-xs font-semibold transition-all">
+                <a href="{{ route('home') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)] text-xs font-semibold transition-all">
                     <i class="fa-solid fa-house text-[10px]"></i> Beranda
                 </a>
-                <button type="button" onclick="scrollToCheckoutSection()" class="relative px-4 py-2 rounded-full glass-card border border-goldAccent/40 text-goldAccent text-xs font-bold hover:border-goldAccent transition-all flex items-center gap-1.5">
+                <button type="button" onclick="scrollToCheckoutSection()" class="relative px-4 py-2 rounded-full glass-card border border-[var(--border-strong)] text-[var(--text)] text-xs font-bold hover:border-[var(--accent-solid)] transition-all flex items-center gap-1.5">
                     <i class="fa-solid fa-bag-shopping"></i>
                     <span>Form Pesanan</span>
-                    <span id="cartBadge" class="hidden w-5 h-5 rounded-full bg-goldAccent text-black text-[10px] font-black flex items-center justify-center">0</span>
+                    <span id="cartBadge" class="hidden w-5 h-5 rounded-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-[10px] font-black flex items-center justify-center">0</span>
                 </button>
             </div>
         </div>
@@ -116,11 +118,16 @@
             $orderPageContact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
         @endphp
         <div class="text-center mb-6 sm:mb-8">
+<<<<<<< HEAD
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-semibold text-goldAccent mb-2.5">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> {{ $orderPageContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}
+=======
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-[11px] font-semibold text-[var(--text)] mb-2.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Buka Sekarang · 08:00 - 23:00
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             </div>
-            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">Pilih <span class="text-goldAccent">Menu</span> & Proses Transaksi</h1>
-            <p class="text-gray-400 text-xs sm:text-sm max-w-2xl mx-auto" id="orderHeroSubtitle">
+            <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--text)] font-editorial mb-2">Pilih <span class="italic">Menu</span> & Proses Transaksi</h1>
+            <p class="text-[var(--text-muted)] text-xs sm:text-sm max-w-2xl mx-auto" id="orderHeroSubtitle">
                 @if($transactionMode === 'zendo')
                     Pilih menu favorit Anda, tentukan titik alamat pada peta Zendo untuk hitung ongkir otomatis, lalu kirim langsung ke Kurir Zendo.
                 @elseif($transactionMode === 'kasir')
@@ -132,17 +139,17 @@
         </div>
 
         {{-- MOBILE QUICK JUMP BAR (agar di HP tidak perlu scroll habis seluruh menu untuk ke form pesanan) --}}
-        <div class="lg:hidden sticky top-[62px] z-40 mb-5 bg-[#121218]/95 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 grid grid-cols-2 gap-1.5 shadow-xl">
+        <div class="lg:hidden sticky top-[62px] z-40 mb-5 bg-[var(--glass-surface-bg)] backdrop-blur-xl p-1.5 rounded-2xl border border-[var(--border)] grid grid-cols-2 gap-1.5 shadow-xl">
             <button type="button" id="mobileJumpMenuBtn" onclick="scrollToMenuSection()"
-                class="py-2.5 px-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-goldAccent text-black transition-all flex items-center justify-center gap-1.5">
+                class="py-2.5 px-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-[var(--accent-solid)] text-[var(--accent-solid-text)] transition-all flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-utensils text-[11px]"></i>
                 <span>1. Pilih Menu</span>
             </button>
             <button type="button" id="mobileJumpFormBtn" onclick="scrollToCheckoutSection()"
-                class="py-2.5 px-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-white/5 text-gray-300 border border-white/10 transition-all flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-map-location-dot text-emerald-400 text-[11px]"></i>
+                class="py-2.5 px-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-[var(--badge-bg)] text-[var(--text)] border border-[var(--border)] transition-all flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-map-location-dot text-emerald-600 dark:text-emerald-400 text-[11px]"></i>
                 <span>2. Detail & Checkout</span>
-                <span id="mobileTabBadge" class="hidden px-1.5 py-0.2 rounded-full bg-emerald-400 text-black text-[10px] font-black">0</span>
+                <span id="mobileTabBadge" class="hidden px-1.5 py-0.2 rounded-full bg-emerald-500 text-white text-[10px] font-black">0</span>
             </button>
         </div>
 
@@ -155,12 +162,12 @@
                 {{-- CATEGORY FILTER --}}
                 <div class="flex items-center gap-2 overflow-x-auto pb-2.5 mb-5 no-scrollbar">
                     <button onclick="filterCategory('all')" data-cat="all"
-                        class="cat-btn active px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border border-goldAccent bg-goldAccent text-black transition-all">
+                        class="cat-btn active px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border border-[var(--accent-solid)] bg-[var(--accent-solid)] text-[var(--accent-solid-text)] transition-all">
                         Semua Menu
                     </button>
                     @foreach($categories as $cat)
                         <button onclick="filterCategory('{{ $cat->slug }}')" data-cat="{{ $cat->slug }}"
-                            class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border border-white/10 text-gray-400 glass-card transition-all hover:border-goldAccent/50 hover:text-white">
+                            class="cat-btn px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap border border-[var(--border)] text-[var(--text-muted)] glass-card transition-all hover:border-[var(--border-strong)] hover:text-[var(--text)]">
                             {{ $cat->name }}
                         </button>
                     @endforeach
@@ -169,14 +176,14 @@
                 {{-- MENU CARDS GRID (2-column compact on mobile, 2 on sm, 3 on xl) --}}
                 <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-4" id="menuGrid">
                     @forelse($menus as $menu)
-                        <div class="menu-card glass-card rounded-2xl overflow-hidden border border-white/10 transition-all duration-200 hover:border-white/25 flex flex-col"
+                        <div class="menu-card glass-card rounded-2xl overflow-hidden border border-[var(--border)] transition-all duration-200 hover:border-[var(--border-strong)] flex flex-col"
                              data-cat="{{ $menu->category?->slug ?? 'other' }}"
                              data-id="{{ $menu->id }}"
                              data-name="{{ $menu->name }}"
                              data-price="{{ $menu->price }}">
 
                             {{-- Image --}}
-                            <div class="relative h-32 sm:h-44 bg-zinc-900 overflow-hidden">
+                            <div class="relative h-32 sm:h-44 bg-[var(--media-bg)] overflow-hidden">
                                 @php
                                     $mLower = strtolower($menu->name);
                                     $mVideo = null;
@@ -221,25 +228,25 @@
                                     <img src="{{ $resolvedMenuImg }}" alt="{{ $menu->name }}"
                                          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                                 @else
-                                    <div class="w-full h-full flex items-center justify-center text-gray-600">
+                                    <div class="w-full h-full flex items-center justify-center text-[var(--text-faint)]">
                                         <i class="fa-solid fa-mug-hot text-4xl opacity-30"></i>
                                     </div>
                                 @endif
 
                                 @if($menu->is_featured)
-                                    <span class="absolute top-2 left-2 bg-goldAccent text-black text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
+                                    <span class="absolute top-2 left-2 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
                                         Unggulan
                                     </span>
                                 @endif
                                 @if($menu->is_best_seller)
-                                    <span class="absolute top-2 right-2 bg-rose-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
+                                    <span class="absolute top-2 right-2 bg-black/65 backdrop-blur-md border border-white/25 text-white text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full">
                                         Best Seller
                                     </span>
                                 @endif
 
                                 {{-- Category --}}
                                 <div class="absolute bottom-2 left-2">
-                                    <span class="bg-black/70 backdrop-blur text-gray-300 text-[10px] px-2 py-0.5 rounded-full border border-white/10">
+                                    <span class="bg-black/70 backdrop-blur text-white text-[10px] px-2 py-0.5 rounded-full border border-white/10">
                                         {{ $menu->category?->name ?? 'Menu' }}
                                     </span>
                                 </div>
@@ -247,24 +254,24 @@
 
                             {{-- Info --}}
                             <div class="p-2.5 sm:p-4 flex flex-col flex-1">
-                                <h3 class="font-bold text-white text-xs sm:text-sm mb-1 line-clamp-1">{{ $menu->name }}</h3>
+                                <h3 class="font-bold text-[var(--text)] text-xs sm:text-sm mb-1 line-clamp-1">{{ $menu->name }}</h3>
                                 @if($menu->description)
-                                    <p class="text-gray-400 text-[11px] sm:text-xs leading-relaxed line-clamp-2 flex-1">{{ $menu->description }}</p>
+                                    <p class="text-[var(--text-muted)] text-[11px] sm:text-xs leading-relaxed line-clamp-2 flex-1">{{ $menu->description }}</p>
                                 @endif
 
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-2.5 sm:mt-3">
-                                    <span class="text-goldAccent font-black text-xs sm:text-base font-mono">
+                                    <span class="text-[var(--text)] font-black text-xs sm:text-base font-mono tabular-nums">
                                         Rp {{ number_format($menu->price, 0, ',', '.') }}
                                     </span>
                                     <button type="button" onclick="addToCart({{ $menu->id }}, '{{ addslashes($menu->name) }}', {{ $menu->price }})"
-                                            class="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-goldAccent text-black text-[11px] sm:text-xs font-bold hover:bg-amber-400 active:scale-95 transition-all">
+                                            class="w-full sm:w-auto flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-[11px] sm:text-xs font-bold hover:bg-[var(--accent-solid-hover)] active:scale-95 transition-all">
                                         <i class="fa-solid fa-plus text-[10px] sm:text-xs"></i> Tambah
                                     </button>
                                 </div>
                             </div>
                         </div>
                     @empty
-                        <div class="col-span-full text-center py-16 text-gray-500">
+                        <div class="col-span-full text-center py-16 text-[var(--text-faint)]">
                             <i class="fa-solid fa-mug-hot text-4xl opacity-20 mb-3 block"></i>
                             <p class="text-sm">Belum ada menu tersedia.</p>
                         </div>
@@ -277,23 +284,23 @@
                 <div class="lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto custom-panel-scroll lg:pr-1.5 space-y-4">
 
                     {{-- Mobile Back-to-Menu Header --}}
-                    <div class="lg:hidden flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl px-4 py-2.5">
-                        <span class="text-xs font-extrabold uppercase tracking-wider text-goldAccent flex items-center gap-1.5">
+                    <div class="lg:hidden flex items-center justify-between bg-[var(--badge-bg)] border border-[var(--border)] rounded-2xl px-4 py-2.5">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-[var(--text)] flex items-center gap-1.5">
                             <i class="fa-solid fa-clipboard-check"></i> Formulir & Rincian Pesanan
                         </span>
-                        <button type="button" onclick="scrollToMenuSection()" class="text-[11px] font-bold text-gray-300 hover:text-white bg-white/10 px-2.5 py-1 rounded-lg">
+                        <button type="button" onclick="scrollToMenuSection()" class="text-[11px] font-bold text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-solid)] border border-[var(--border)] px-2.5 py-1 rounded-lg">
                             ↑ Tambah Menu Lain
                         </button>
                     </div>
 
                     {{-- 1. Process Method Selector (Kasir / Zendo / Both) --}}
-                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10" id="processMethodCard">
+                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-[var(--border)]" id="processMethodCard">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-sliders text-goldAccent"></i> 1. Metode Proses Transaksi
+                            <h3 class="text-xs sm:text-sm font-bold text-[var(--text)] flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-[var(--text)]"></i> 1. Metode Proses Transaksi
                             </h3>
                             @if($transactionMode === 'both')
-                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-goldAccent/15 text-goldAccent border border-goldAccent/30">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--badge-bg)] text-[var(--text)] border border-[var(--border)]">
                                     Kasir / Zendo
                                 </span>
                             @endif
@@ -304,74 +311,74 @@
                                 <button type="button"
                                         id="methodBtnKasir"
                                         onclick="setProcessMethod('kasir')"
-                                        class="p-3 rounded-xl border text-left transition-all flex flex-col justify-between {{ $initialProcessMethod === 'kasir' ? 'border-goldAccent bg-goldAccent/15 text-white' : 'border-white/10 bg-black/40 text-gray-400 hover:border-white/25' }}">
+                                        class="p-3 rounded-xl border text-left transition-all flex flex-col justify-between {{ $initialProcessMethod === 'kasir' ? 'border-[var(--accent-solid)] bg-[var(--badge-bg)] text-[var(--text)]' : 'border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:border-[var(--border-strong)]' }}">
                                     <div class="flex items-center justify-between mb-1.5">
-                                        <i class="fa-solid fa-qrcode text-sm {{ $initialProcessMethod === 'kasir' ? 'text-goldAccent' : 'text-gray-400' }}" id="iconMethodKasir"></i>
-                                        <span class="w-2 h-2 rounded-full {{ $initialProcessMethod === 'kasir' ? 'bg-goldAccent' : 'bg-white/20' }}" id="dotMethodKasir"></span>
+                                        <i class="fa-solid fa-qrcode text-sm {{ $initialProcessMethod === 'kasir' ? 'text-[var(--text)]' : 'text-[var(--text-muted)]' }}" id="iconMethodKasir"></i>
+                                        <span class="w-2 h-2 rounded-full {{ $initialProcessMethod === 'kasir' ? 'bg-[var(--accent-solid)]' : 'bg-[var(--border-strong)]' }}" id="dotMethodKasir"></span>
                                     </div>
                                     <span class="text-xs font-extrabold block leading-tight">Proses Kasir</span>
-                                    <span class="text-[10px] text-gray-400 mt-0.5 block">Slip & QR Kasir</span>
+                                    <span class="text-[10px] text-[var(--text-muted)] mt-0.5 block">Slip & QR Kasir</span>
                                 </button>
 
                                 <button type="button"
                                         id="methodBtnZendo"
                                         onclick="setProcessMethod('zendo')"
-                                        class="p-3 rounded-xl border text-left transition-all flex flex-col justify-between {{ $initialProcessMethod === 'zendo' ? 'border-emerald-400 bg-emerald-500/15 text-white' : 'border-white/10 bg-black/40 text-gray-400 hover:border-white/25' }}">
+                                        class="p-3 rounded-xl border text-left transition-all flex flex-col justify-between {{ $initialProcessMethod === 'zendo' ? 'border-emerald-500 bg-emerald-500/15 text-[var(--text)]' : 'border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:border-[var(--border-strong)]' }}">
                                     <div class="flex items-center justify-between mb-1.5">
-                                        <i class="fa-solid fa-motorcycle text-sm {{ $initialProcessMethod === 'zendo' ? 'text-emerald-400' : 'text-gray-400' }}" id="iconMethodZendo"></i>
-                                        <span class="w-2 h-2 rounded-full {{ $initialProcessMethod === 'zendo' ? 'bg-emerald-400' : 'bg-white/20' }}" id="dotMethodZendo"></span>
+                                        <i class="fa-solid fa-motorcycle text-sm {{ $initialProcessMethod === 'zendo' ? 'text-emerald-600 dark:text-emerald-400' : 'text-[var(--text-muted)]' }}" id="iconMethodZendo"></i>
+                                        <span class="w-2 h-2 rounded-full {{ $initialProcessMethod === 'zendo' ? 'bg-emerald-500' : 'bg-[var(--border-strong)]' }}" id="dotMethodZendo"></span>
                                     </div>
                                     <span class="text-xs font-extrabold block leading-tight">Kurir Zendo</span>
-                                    <span class="text-[10px] text-gray-400 mt-0.5 block">Peta & Kirim Otomatis</span>
+                                    <span class="text-[10px] text-[var(--text-muted)] mt-0.5 block">Peta & Kirim Otomatis</span>
                                 </button>
                             </div>
                         @elseif($transactionMode === 'zendo')
                             <div class="p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                     <i class="fa-solid fa-motorcycle text-base"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-extrabold text-white">Delivery Kurir Zendo</p>
-                                    <p class="text-[10px] text-gray-300">Pilih titik alamat di peta, ongkir dihitung otomatis & terkirim ke Zendo.</p>
+                                    <p class="text-xs font-extrabold text-[var(--text)]">Delivery Kurir Zendo</p>
+                                    <p class="text-[10px] text-[var(--text-muted)]">Pilih titik alamat di peta, ongkir dihitung otomatis & terkirim ke Zendo.</p>
                                 </div>
                             </div>
                         @else
-                            <div class="p-3.5 rounded-xl border border-goldAccent/40 bg-goldAccent/10 flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-goldAccent/20 text-goldAccent flex items-center justify-center shrink-0">
+                            <div class="p-3.5 rounded-xl border border-[var(--border)] bg-[var(--badge-bg)] flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] text-[var(--text)] flex items-center justify-center shrink-0">
                                     <i class="fa-solid fa-qrcode text-base"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs font-extrabold text-white">Transaksi Kasir (QR Slip)</p>
-                                    <p class="text-[10px] text-gray-300">Pilih menu lalu tunjukkan slip QR ke kasir.</p>
+                                    <p class="text-xs font-extrabold text-[var(--text)]">Transaksi Kasir (QR Slip)</p>
+                                    <p class="text-[10px] text-[var(--text-muted)]">Pilih menu lalu tunjukkan slip QR ke kasir.</p>
                                 </div>
                             </div>
                         @endif
                     </div>
 
                     {{-- 2. Cart Items & Live Cost Breakdown --}}
-                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10">
+                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-[var(--border)]">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-bag-shopping text-cyanAccent"></i> 2. Daftar Menu Pesanan
+                            <h3 class="text-xs sm:text-sm font-bold text-[var(--text)] flex items-center gap-2">
+                                <i class="fa-solid fa-bag-shopping text-[var(--text-secondary)]"></i> 2. Daftar Menu Pesanan
                             </h3>
-                            <span id="panelItemCountBadge" class="text-[10px] font-mono font-bold text-gray-400">0 Item</span>
+                            <span id="panelItemCountBadge" class="text-[10px] font-mono font-bold text-[var(--text-muted)]">0 Item</span>
                         </div>
 
                         <div id="cartItems" class="space-y-2.5 max-h-48 overflow-y-auto custom-panel-scroll pr-1 min-h-[68px]">
-                            <div id="emptyCart" class="text-center py-5 text-gray-500">
+                            <div id="emptyCart" class="text-center py-5 text-[var(--text-faint)]">
                                 <i class="fa-solid fa-bag-shopping text-xl opacity-30 block mb-1.5"></i>
                                 <p class="text-xs">Belum ada menu dipilih. Klik <strong>+ Tambah</strong> pada menu.</p>
                             </div>
                         </div>
 
                         {{-- Subtotal + Ongkir Zendo + Grand Total --}}
-                        <div id="cartTotal" class="hidden border-t border-white/10 pt-3 mt-3 space-y-1.5">
-                            <div class="flex justify-between text-xs text-gray-400">
+                        <div id="cartTotal" class="hidden border-t border-[var(--border-soft)] pt-3 mt-3 space-y-1.5">
+                            <div class="flex justify-between text-xs text-[var(--text-muted)]">
                                 <span>Subtotal Menu</span>
-                                <span id="subtotalAmount" class="font-mono text-gray-200 font-semibold">Rp 0</span>
+                                <span id="subtotalAmount" class="font-mono text-[var(--text)] font-semibold">Rp 0</span>
                             </div>
 
-                            <div id="zendoFeeRow" class="flex justify-between text-xs text-emerald-400 {{ $initialProcessMethod === 'zendo' ? '' : 'hidden' }}">
+                            <div id="zendoFeeRow" class="flex justify-between text-xs text-emerald-600 dark:text-emerald-400 {{ $initialProcessMethod === 'zendo' ? '' : 'hidden' }}">
                                 <span class="flex items-center gap-1">
                                     <i class="fa-solid fa-motorcycle text-[10px]"></i>
                                     <span>Ongkir Zendo (<span id="cartDistanceText">1,5 km</span>)</span>
@@ -379,26 +386,26 @@
                                 <span id="deliveryFeeAmount" class="font-mono font-bold">Rp 10.000</span>
                             </div>
 
-                            <div class="flex justify-between items-center text-sm pt-2 border-t border-white/10">
-                                <span class="font-bold text-white">Total Pembayaran</span>
-                                <span id="totalAmount" class="font-mono text-lg text-goldAccent font-black">Rp 0</span>
+                            <div class="flex justify-between items-center text-sm pt-2 border-t border-[var(--border-soft)]">
+                                <span class="font-bold text-[var(--text)]">Total Pembayaran</span>
+                                <span id="totalAmount" class="font-mono text-lg text-[var(--text)] font-black">Rp 0</span>
                             </div>
 
-                            <p id="cartPaymentHint" class="text-[10px] text-gray-400 pt-0.5">
+                            <p id="cartPaymentHint" class="text-[10px] text-[var(--text-muted)] pt-0.5">
                                 {{ $initialProcessMethod === 'zendo' ? '*Pesanan & titik lokasi peta langsung dikirim otomatis ke kontak Kurir Zendo.' : '*Bayar di kasir setelah menunjukkan slip QR.' }}
                             </p>
                         </div>
                     </div>
 
                     {{-- 3. Customer Details & Zendo Interactive Map --}}
-                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10 space-y-4">
+                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-[var(--border)] space-y-4">
                         <div>
-                            <h3 class="text-xs sm:text-sm font-bold text-white mb-2.5 flex items-center gap-2">
-                                <i class="fa-solid fa-user text-goldAccent"></i> 3. Data Pemesan & Lokasi
+                            <h3 class="text-xs sm:text-sm font-bold text-[var(--text)] mb-2.5 flex items-center gap-2">
+                                <i class="fa-solid fa-user text-[var(--text)]"></i> 3. Data Pemesan & Lokasi
                             </h3>
-                            <label for="customerName" class="block text-[11px] font-semibold text-gray-300 mb-1">Nama Pemesan <span class="text-rose-400">*</span></label>
+                            <label for="customerName" class="block text-[11px] font-semibold text-[var(--text)] mb-1">Nama Pemesan <span class="text-[var(--error-text)]">*</span></label>
                             <input type="text" id="customerName" placeholder="Masukkan nama lengkap Anda..."
-                                class="w-full bg-black/50 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-goldAccent transition-colors">
+                                class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] rounded-xl px-3.5 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--field-focus)] transition-colors">
                         </div>
 
                         {{-- ZENDO INTERACTIVE MAP & DISTANCE CALCULATOR --}}
@@ -407,38 +414,38 @@
                                 ['index' => 1, 'name' => 'Kurir Zendo 1', 'phone' => $zendoWhatsapp ?? '6281234567890', 'clean_phone' => $zendoWhatsapp ?? '6281234567890']
                             ];
                         @endphp
-                        <div id="zendoFieldsWrap" class="space-y-3.5 pt-3 border-t border-white/10 {{ $initialProcessMethod === 'zendo' ? '' : 'hidden' }}">
+                        <div id="zendoFieldsWrap" class="space-y-3.5 pt-3 border-t border-[var(--border-soft)] {{ $initialProcessMethod === 'zendo' ? '' : 'hidden' }}">
                             {{-- Info Pembagian Kurir Zendo Otomatis (Acak yang Standby / Hampir Selesai) --}}
                             <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3.5 space-y-1.5">
                                 <div class="flex items-center justify-between">
-                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
                                         <i class="fa-solid fa-motorcycle"></i> Pengiriman Otomatis Kurir Zendo
                                     </span>
-                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[10px] font-mono font-bold">
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-mono font-bold">
                                         {{ count($availableCouriers) }} Kurir Siaga
                                     </span>
                                 </div>
-                                <p class="text-[11px] text-gray-300 leading-relaxed">
+                                <p class="text-[11px] text-[var(--text-muted)] leading-relaxed">
                                     Pesanan Anda (tanpa bukti struk) akan langsung diteruskan secara otomatis ke nomor WhatsApp kurir Zendo yang sedang kosong/standby atau yang pengirimannya hampir selesai.
                                 </p>
                             </div>
 
                             <div>
-                                <label for="customerPhone" class="block text-[11px] font-semibold text-emerald-400 mb-1">
+                                <label for="customerPhone" class="block text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-1">
                                     <i class="fa-brands fa-whatsapp mr-1"></i> Nomor WhatsApp Anda (Untuk Konfirmasi Kurir)
                                 </label>
                                 <input type="text" id="customerPhone" placeholder="Contoh: 081234567890"
-                                    class="w-full bg-black/50 border border-white/15 rounded-xl px-3.5 py-2 text-xs text-white font-mono placeholder-gray-500 focus:outline-none focus:border-emerald-400 transition-colors">
+                                    class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] rounded-xl px-3.5 py-2 text-xs text-[var(--text)] font-mono placeholder:text-[var(--text-faint)] focus:outline-none focus:border-emerald-500 transition-colors">
                             </div>
 
                             {{-- Map Search & GPS Controls --}}
-                            <div class="bg-black/40 border border-emerald-500/30 rounded-2xl p-3.5 space-y-3">
+                            <div class="bg-[var(--surface-strong-solid)] border border-emerald-500/30 rounded-2xl p-3.5 space-y-3">
                                 <div class="flex items-center justify-between gap-2">
-                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
                                         <i class="fa-solid fa-map-location-dot"></i> Peta Alamat & Cari Daerah (Zendo)
                                     </span>
                                     <button type="button" onclick="useMyGpsLocation()" id="gpsBtn"
-                                        class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold transition-all flex items-center gap-1">
+                                        class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold transition-all flex items-center gap-1">
                                         <i class="fa-solid fa-location-crosshairs"></i>
                                         <span>GPS Saya</span>
                                     </button>
@@ -448,52 +455,52 @@
                                 <div class="relative">
                                     <div class="flex gap-1.5">
                                         <div class="relative flex-1">
-                                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-faint)] text-xs"></i>
                                             <input type="text" id="mapSearchInput"
                                                 placeholder="Cari daerah / desa / jalan di Tulungagung..."
                                                 onkeydown="if(event.key==='Enter'){event.preventDefault();searchMapLocation();}"
-                                                class="w-full bg-zinc-950 border border-white/15 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-400">
+                                                class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] rounded-xl pl-8 pr-3 py-2 text-xs text-[var(--text)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-emerald-500">
                                         </div>
                                         <button type="button" onclick="searchMapLocation()" id="mapSearchBtn"
-                                            class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs transition-all shrink-0">
+                                            class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition-all shrink-0">
                                             Cari
                                         </button>
                                     </div>
 
                                     {{-- Dropdown Hasil Pencarian Daerah --}}
-                                    <div id="mapSearchResults" class="hidden mt-1.5 bg-zinc-950 border border-emerald-500/40 rounded-xl overflow-hidden shadow-2xl max-h-44 overflow-y-auto divide-y divide-white/5 z-30 relative"></div>
+                                    <div id="mapSearchResults" class="hidden mt-1.5 bg-[var(--surface-solid)] border border-emerald-500/40 rounded-xl overflow-hidden shadow-2xl max-h-44 overflow-y-auto divide-y divide-[var(--border-soft)] z-30 relative"></div>
                                 </div>
 
                                 {{-- Quick Daerah Chips Tulungagung --}}
                                 <div>
-                                    <span class="text-[10px] text-gray-400 block mb-1.5">Pilih Cepat Area Tulungagung (Klik untuk set peta):</span>
+                                    <span class="text-[10px] text-[var(--text-muted)] block mb-1.5">Pilih Cepat Area Tulungagung (Klik untuk set peta):</span>
                                     <div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
                                         <button type="button" onclick="selectPresetArea('Plosokandang, Kedungwaru, Tulungagung', -8.0748, 111.9225)"
-                                            class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold text-gray-300 whitespace-nowrap transition-all">
+                                            class="px-2.5 py-1 rounded-lg bg-[var(--surface-solid)] hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap transition-all">
                                             Plosokandang (~0.8 km)
                                         </button>
                                         <button type="button" onclick="selectPresetArea('Kedungwaru, Tulungagung', -8.0675, 111.9082)"
-                                            class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold text-gray-300 whitespace-nowrap transition-all">
+                                            class="px-2.5 py-1 rounded-lg bg-[var(--surface-solid)] hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap transition-all">
                                             Kedungwaru (~2.1 km)
                                         </button>
                                         <button type="button" onclick="selectPresetArea('Aloon-Aloon Tulungagung, Pusat Kota', -8.0657, 111.9025)"
-                                            class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold text-gray-300 whitespace-nowrap transition-all">
+                                            class="px-2.5 py-1 rounded-lg bg-[var(--surface-solid)] hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap transition-all">
                                             Aloon-Aloon (~3.3 km)
                                         </button>
                                         <button type="button" onclick="selectPresetArea('Boyolangu, Tulungagung', -8.0995, 111.8965)"
-                                            class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold text-gray-300 whitespace-nowrap transition-all">
+                                            class="px-2.5 py-1 rounded-lg bg-[var(--surface-solid)] hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap transition-all">
                                             Boyolangu (~4.5 km)
                                         </button>
                                         <button type="button" onclick="selectPresetArea('Kauman, Tulungagung', -8.0590, 111.8730)"
-                                            class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold text-gray-300 whitespace-nowrap transition-all">
+                                            class="px-2.5 py-1 rounded-lg bg-[var(--surface-solid)] hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap transition-all">
                                             Kauman (~5.6 km)
                                         </button>
                                         <button type="button" onclick="selectPresetArea('Sumbergempol, Tulungagung', -8.0970, 111.9585)"
-                                            class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold text-gray-300 whitespace-nowrap transition-all">
+                                            class="px-2.5 py-1 rounded-lg bg-[var(--surface-solid)] hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap transition-all">
                                             Sumbergempol (~6.4 km)
                                         </button>
                                         <button type="button" onclick="selectPresetArea('Ngunut, Tulungagung', -8.1225, 112.0120)"
-                                            class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-500/40 text-[10px] font-semibold text-gray-300 whitespace-nowrap transition-all">
+                                            class="px-2.5 py-1 rounded-lg bg-[var(--surface-solid)] hover:bg-emerald-500/15 border border-[var(--border)] hover:border-emerald-500/40 text-[10px] font-semibold text-[var(--text-secondary)] whitespace-nowrap transition-all">
                                             Ngunut (~12 km)
                                         </button>
                                     </div>
@@ -501,11 +508,11 @@
 
                                 @if (! ($hideLiveTracking ?? false))
                                 {{-- Interactive Leaflet Map Container --}}
-                                <div class="relative rounded-xl overflow-hidden border border-white/15">
-                                    <div id="zendoMap" class="w-full h-52 sm:h-56 bg-zinc-900"></div>
-                                    <div class="bg-zinc-950/90 px-3 py-1.5 text-[10px] text-gray-400 flex items-center justify-between border-t border-white/10">
-                                        <span><i class="fa-solid fa-hand-pointer text-emerald-400 mr-1"></i> Klik peta atau geser pin hijau ke lokasi Anda</span>
-                                        <span id="coordBadge" class="font-mono text-gray-500">-8.075, 111.922</span>
+                                <div class="relative rounded-xl overflow-hidden border border-[var(--border)]">
+                                    <div id="zendoMap" class="w-full h-52 sm:h-56 bg-[var(--media-bg)]"></div>
+                                    <div class="bg-[var(--surface-solid)] px-3 py-1.5 text-[10px] text-[var(--text-muted)] flex items-center justify-between border-t border-[var(--border)]">
+                                        <span><i class="fa-solid fa-hand-pointer text-emerald-600 dark:text-emerald-400 mr-1"></i> Klik peta atau geser pin hijau ke lokasi Anda</span>
+                                        <span id="coordBadge" class="font-mono text-[var(--text-faint)]">-8.075, 111.922</span>
                                     </div>
                                 </div>
 
@@ -513,29 +520,29 @@
                                 <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 space-y-2">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <span class="text-[10px] uppercase tracking-wider font-bold text-emerald-300 block">Jarak Kafe ke Lokasi</span>
-                                            <span id="distanceBadgeText" class="text-sm font-black text-white font-mono">1,5 km</span>
+                                            <span class="text-[10px] uppercase tracking-wider font-bold text-emerald-700 dark:text-emerald-300 block">Jarak Kafe ke Lokasi</span>
+                                            <span id="distanceBadgeText" class="text-sm font-black text-[var(--text)] font-mono">1,5 km</span>
                                         </div>
                                         <div class="text-right">
-                                            <span id="tariffBracketLabel" class="text-[10px] uppercase tracking-wider font-bold text-emerald-300 block">Tarif Zendo (0–3 km)</span>
-                                            <span id="tariffFeeBadgeText" class="text-base font-black text-emerald-400 font-mono">Rp {{ number_format($zendoTariff['tier_0_3'], 0, ',', '.') }}</span>
+                                            <span id="tariffBracketLabel" class="text-[10px] uppercase tracking-wider font-bold text-emerald-700 dark:text-emerald-300 block">Tarif Zendo (0–3 km)</span>
+                                            <span id="tariffFeeBadgeText" class="text-base font-black text-emerald-600 dark:text-emerald-400 font-mono">Rp {{ number_format($zendoTariff['tier_0_3'], 0, ',', '.') }}</span>
                                         </div>
                                     </div>
 
                                     {{-- Toggle Tabel Tarif Zendo --}}
                                     <div class="pt-1.5 border-t border-emerald-500/20">
                                         <button type="button" onclick="document.getElementById('zendoTariffTableInfo').classList.toggle('hidden')"
-                                            class="w-full flex items-center justify-between text-[10px] font-bold text-emerald-300 hover:text-white transition-colors">
+                                            class="w-full flex items-center justify-between text-[10px] font-bold text-emerald-700 dark:text-emerald-300 hover:text-[var(--text)] transition-colors">
                                             <span><i class="fa-solid fa-circle-info mr-1"></i> Lihat Rincian Tarif Jarak Zendo</span>
                                             <i class="fa-solid fa-chevron-down text-[9px]"></i>
                                         </button>
-                                        <div id="zendoTariffTableInfo" class="hidden mt-2 pt-2 border-t border-white/10 text-[10px] space-y-1 font-mono text-gray-300">
-                                            <div class="flex justify-between"><span>0 – 3 km</span><span class="text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_0_3'], 0, ',', '.') }}</span></div>
-                                            <div class="flex justify-between"><span>3,1 – 4 km</span><span class="text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_3_4'], 0, ',', '.') }}</span></div>
-                                            <div class="flex justify-between"><span>4,1 – 5 km</span><span class="text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_4_5'], 0, ',', '.') }}</span></div>
-                                            <div class="flex justify-between"><span>5,1 – 6 km</span><span class="text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_5_6'], 0, ',', '.') }}</span></div>
-                                            <div class="flex justify-between"><span>6,1 – 7 km</span><span class="text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_6_7'], 0, ',', '.') }}</span></div>
-                                            <div class="flex justify-between"><span>Di atas 7 km</span><span class="text-amber-400 font-bold">+Rp {{ number_format($zendoTariff['extra_per_km'], 0, ',', '.') }} / km</span></div>
+                                        <div id="zendoTariffTableInfo" class="hidden mt-2 pt-2 border-t border-[var(--border-soft)] text-[10px] space-y-1 font-mono text-[var(--text-secondary)]">
+                                            <div class="flex justify-between"><span>0 – 3 km</span><span class="text-emerald-600 dark:text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_0_3'], 0, ',', '.') }}</span></div>
+                                            <div class="flex justify-between"><span>3,1 – 4 km</span><span class="text-emerald-600 dark:text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_3_4'], 0, ',', '.') }}</span></div>
+                                            <div class="flex justify-between"><span>4,1 – 5 km</span><span class="text-emerald-600 dark:text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_4_5'], 0, ',', '.') }}</span></div>
+                                            <div class="flex justify-between"><span>5,1 – 6 km</span><span class="text-emerald-600 dark:text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_5_6'], 0, ',', '.') }}</span></div>
+                                            <div class="flex justify-between"><span>6,1 – 7 km</span><span class="text-emerald-600 dark:text-emerald-400 font-bold">Rp {{ number_format($zendoTariff['tier_6_7'], 0, ',', '.') }}</span></div>
+                                            <div class="flex justify-between"><span>Di atas 7 km</span><span class="text-amber-600 dark:text-amber-400 font-bold">+Rp {{ number_format($zendoTariff['extra_per_km'], 0, ',', '.') }} / km</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -544,27 +551,27 @@
 
                             {{-- Detail Alamat Pengiriman --}}
                             <div>
-                                <label for="deliveryAddress" class="block text-[11px] font-semibold text-emerald-400 mb-1">
-                                    <i class="fa-solid fa-location-dot mr-1"></i> Detail Alamat Pengiriman & Patokan <span class="text-rose-400">*</span>
+                                <label for="deliveryAddress" class="block text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 mb-1">
+                                    <i class="fa-solid fa-location-dot mr-1"></i> Detail Alamat Pengiriman & Patokan <span class="text-[var(--error-text)]">*</span>
                                 </label>
                                 <textarea id="deliveryAddress" rows="2" placeholder="Alamat otomatis terisi dari peta, tambahkan nomor rumah / warna pagar / patokan..."
-                                    class="w-full bg-black/50 border border-white/15 rounded-xl p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-emerald-400 transition-colors resize-none"></textarea>
+                                    class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] rounded-xl p-3 text-xs text-[var(--text)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-emerald-500 transition-colors resize-none"></textarea>
                             </div>
                         </div>
                     </div>
 
                     {{-- 4. Notes --}}
-                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-white/10">
-                        <h3 class="text-xs sm:text-sm font-bold text-white mb-2.5 flex items-center gap-2">
-                            <i class="fa-solid fa-note-sticky text-violetAccent"></i> 4. Catatan Pesanan (Opsional)
+                    <div class="glass-card rounded-2xl p-4 sm:p-5 border border-[var(--border)]">
+                        <h3 class="text-xs sm:text-sm font-bold text-[var(--text)] mb-2.5 flex items-center gap-2">
+                            <i class="fa-solid fa-note-sticky text-[var(--text-muted)]"></i> 4. Catatan Pesanan (Opsional)
                         </h3>
                         <textarea id="orderNotes" rows="2" placeholder="Contoh: less sugar, es dipisah, extra hot..."
-                            class="w-full bg-black/50 border border-white/15 rounded-xl p-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-goldAccent transition-colors resize-none"></textarea>
+                            class="w-full bg-[var(--field-bg)] border border-[var(--field-border)] rounded-xl p-3 text-xs text-[var(--text)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--field-focus)] transition-colors resize-none"></textarea>
                     </div>
 
                     {{-- 5. Submit Button --}}
                     <button type="button" onclick="submitOrder()" id="submitBtn"
-                        class="w-full py-4 rounded-2xl {{ $initialProcessMethod === 'zendo' ? 'bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 shadow-emerald-500/20' : 'bg-gradient-to-r from-goldAccent via-amber-400 to-yellow-300 shadow-goldAccent/20' }} text-black font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg disabled:opacity-50">
+                        class="w-full py-4 rounded-2xl {{ $initialProcessMethod === 'zendo' ? 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-500 shadow-emerald-500/20 text-white' : 'bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)]' }} font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg disabled:opacity-50">
                         @if($initialProcessMethod === 'zendo')
                             <i class="fa-solid fa-paper-plane mr-2"></i> Pesan Sekarang (Otomatis ke Zendo)
                         @else
@@ -578,23 +585,23 @@
     </div>
 
     {{-- FLOATING ADDED NOTIFICATION (TOAST) --}}
-    <div id="addedToast" class="fixed top-20 right-4 z-50 glass-card bg-[#15151c]/95 border border-goldAccent/40 shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none">
-        <div class="w-8 h-8 rounded-full bg-goldAccent/20 flex items-center justify-center text-goldAccent">
+    <div id="addedToast" class="fixed top-20 right-4 z-50 bg-[var(--surface-solid)] border border-[var(--border)] shadow-2xl rounded-2xl px-4 py-3 flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none">
+        <div class="w-8 h-8 rounded-full bg-[var(--accent-solid)] flex items-center justify-center text-[var(--accent-solid-text)]">
             <i class="fa-solid fa-check text-xs"></i>
         </div>
         <div>
-            <p class="text-xs font-bold text-white"><span id="toastItemName">Menu</span> ditambahkan!</p>
-            <p class="text-[10px] text-gray-400">Klik "Detail & Checkout" untuk lanjut memesan.</p>
+            <p class="text-xs font-bold text-[var(--text)]"><span id="toastItemName">Menu</span> ditambahkan!</p>
+            <p class="text-[10px] text-[var(--text-muted)]">Klik "Detail & Checkout" untuk lanjut memesan.</p>
         </div>
     </div>
 
     {{-- STICKY MOBILE BOTTOM BAR (langsung mengarahkan ke form pesanan di HP tanpa harus scroll semua menu) --}}
-    <div id="mobileBottomBar" class="lg:hidden fixed bottom-0 left-0 right-0 z-40 glass-card bg-[#15151c]/95 border-t border-goldAccent/30 p-3.5 px-4 flex items-center justify-between shadow-2xl translate-y-full transition-transform duration-300">
+    <div id="mobileBottomBar" class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--glass-surface-bg)] backdrop-blur-xl border-t border-[var(--border)] p-3.5 px-4 flex items-center justify-between shadow-2xl translate-y-full transition-transform duration-300">
         <div>
-            <span id="mobileBarCount" class="text-[10px] uppercase font-bold text-gray-400 block font-mono">0 Item</span>
-            <span id="mobileBarTotal" class="text-base font-black text-goldAccent font-mono">Rp 0</span>
+            <span id="mobileBarCount" class="text-[10px] uppercase font-bold text-[var(--text-muted)] block font-mono">0 Item</span>
+            <span id="mobileBarTotal" class="text-base font-black text-[var(--text)] font-mono">Rp 0</span>
         </div>
-        <button type="button" onclick="scrollToCheckoutSection()" class="px-5 py-2.5 rounded-xl bg-goldAccent text-black font-black text-xs uppercase tracking-wider shadow-lg shadow-goldAccent/20 flex items-center gap-1.5">
+        <button type="button" onclick="scrollToCheckoutSection()" class="px-5 py-2.5 rounded-xl bg-[var(--accent-solid)] text-[var(--accent-solid-text)] font-black text-xs uppercase tracking-wider shadow-lg flex items-center gap-1.5">
             <span>Lanjut Checkout</span>
             <i class="fa-solid fa-arrow-down text-[11px]"></i>
         </button>
@@ -602,28 +609,28 @@
 
     {{-- NOTIFIKASI PESANAN ZENDO TERKIRIM KE WHATSAPP (TANPA BUKTI STRUK) --}}
     <div id="zendoDirectSuccessModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-        <div class="glass-card bg-[#15151c] border border-emerald-500/40 rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl space-y-5 relative animate-fade-in text-center">
+        <div class="bg-[var(--surface-solid)] border border-emerald-500/40 rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl space-y-5 relative animate-fade-in text-center">
             <div class="space-y-2.5">
-                <div class="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
-                    <i class="fa-brands fa-whatsapp text-emerald-400 text-3xl"></i>
+                <div class="w-16 h-16 rounded-full bg-emerald-500/15 border-2 border-emerald-500 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+                    <i class="fa-brands fa-whatsapp text-emerald-600 dark:text-emerald-400 text-3xl"></i>
                 </div>
-                <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Terkirim Otomatis ke WhatsApp
+                <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Terkirim Otomatis ke WhatsApp
                 </span>
-                <h3 class="text-lg font-black text-white">Pesanan Terkirim ke WhatsApp Zendo!</h3>
-                <p class="text-xs text-gray-300 leading-relaxed">
-                    Pesanan & titik lokasi Anda telah langsung dikirim otomatis ke WhatsApp <strong id="modalCourierName" class="text-emerald-400">Kurir Zendo</strong> (<span id="modalZendoContact" class="font-mono text-emerald-400 font-bold"></span>).
+                <h3 class="text-lg font-black text-[var(--text)]">Pesanan Terkirim ke WhatsApp Zendo!</h3>
+                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+                    Pesanan & titik lokasi Anda telah langsung dikirim otomatis ke WhatsApp <strong id="modalCourierName" class="text-emerald-600 dark:text-emerald-400">Kurir Zendo</strong> (<span id="modalZendoContact" class="font-mono text-emerald-600 dark:text-emerald-400 font-bold"></span>).
                 </p>
             </div>
 
             <div class="space-y-2">
                 <a id="modalTrackingBtn" href="#"
-                    class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 text-black font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:opacity-95 transition-all">
+                    class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 hover:opacity-95 transition-all">
                     <i class="fa-solid fa-location-dot"></i>
                     <span>Lacak Posisi Kurir di Peta</span>
                 </a>
                 <button type="button" onclick="closeZendoSuccessModal()"
-                    class="w-full py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all">
+                    class="w-full py-2.5 rounded-2xl bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] border border-[var(--border)] text-[var(--text)] font-bold text-xs uppercase tracking-wider transition-all">
                     Tutup
                 </button>
             </div>
@@ -934,10 +941,10 @@
                 btnItem.className = 'w-full text-left px-3.5 py-2.5 hover:bg-emerald-500/15 transition-colors flex items-center justify-between gap-2';
                 btnItem.innerHTML = `
                     <div class="min-w-0">
-                        <p class="text-xs font-bold text-white truncate"><i class="fa-solid fa-location-dot text-emerald-400 mr-1.5"></i>${item.name}</p>
-                        <p class="text-[10px] text-gray-400">Estimasi jarak ~${km.toFixed(1)} km dari Nucomu Cafe</p>
+                        <p class="text-xs font-bold text-[var(--text)] truncate"><i class="fa-solid fa-location-dot text-emerald-600 dark:text-emerald-400 mr-1.5"></i>${item.name}</p>
+                        <p class="text-[10px] text-[var(--text-muted)]">Estimasi jarak ~${km.toFixed(1)} km dari Nucomu Cafe</p>
                     </div>
-                    <span class="text-[10px] font-mono font-bold text-emerald-400 shrink-0">Rp ${feeObj.fee.toLocaleString('id-ID')}</span>
+                    <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 shrink-0">Rp ${feeObj.fee.toLocaleString('id-ID')}</span>
                 `;
                 btnItem.onclick = () => selectPresetArea(item.name, item.lat, item.lng);
                 resultsEl.appendChild(btnItem);
@@ -963,10 +970,10 @@
                         btnItem.className = 'w-full text-left px-3.5 py-2.5 hover:bg-emerald-500/15 transition-colors flex items-center justify-between gap-2';
                         btnItem.innerHTML = `
                             <div class="min-w-0">
-                                <p class="text-xs font-semibold text-gray-200 truncate"><i class="fa-solid fa-map-pin text-amber-400 mr-1.5"></i>${place.display_name}</p>
-                                <p class="text-[10px] text-gray-400">Jarak ~${km.toFixed(1)} km</p>
+                                <p class="text-xs font-semibold text-[var(--text)] truncate"><i class="fa-solid fa-map-pin text-amber-500 mr-1.5"></i>${place.display_name}</p>
+                                <p class="text-[10px] text-[var(--text-muted)]">Jarak ~${km.toFixed(1)} km</p>
                             </div>
-                            <span class="text-[10px] font-mono font-bold text-emerald-400 shrink-0">Rp ${feeObj.fee.toLocaleString('id-ID')}</span>
+                            <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 shrink-0">Rp ${feeObj.fee.toLocaleString('id-ID')}</span>
                         `;
                         btnItem.onclick = () => selectPresetArea(place.display_name, pLat, pLng);
                         resultsEl.appendChild(btnItem);
@@ -1059,21 +1066,21 @@
 
             if (btnKasir && btnZendo) {
                 btnKasir.className = 'p-3 rounded-xl border text-left transition-all flex flex-col justify-between ' +
-                    (!isZendo ? 'border-goldAccent bg-goldAccent/15 text-white' : 'border-white/10 bg-black/40 text-gray-400 hover:border-white/25');
+                    (!isZendo ? 'border-[var(--accent-solid)] bg-[var(--badge-bg)] text-[var(--text)]' : 'border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:border-[var(--border-strong)]');
                 btnZendo.className = 'p-3 rounded-xl border text-left transition-all flex flex-col justify-between ' +
-                    (isZendo ? 'border-emerald-400 bg-emerald-500/15 text-white' : 'border-white/10 bg-black/40 text-gray-400 hover:border-white/25');
+                    (isZendo ? 'border-emerald-500 bg-emerald-500/15 text-[var(--text)]' : 'border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text-muted)] hover:border-[var(--border-strong)]');
             }
             if (iconKasir) {
-                iconKasir.className = 'fa-solid fa-qrcode text-sm ' + (!isZendo ? 'text-goldAccent' : 'text-gray-400');
+                iconKasir.className = 'fa-solid fa-qrcode text-sm ' + (!isZendo ? 'text-[var(--text)]' : 'text-[var(--text-muted)]');
             }
             if (iconZendo) {
-                iconZendo.className = 'fa-solid fa-motorcycle text-sm ' + (isZendo ? 'text-emerald-400' : 'text-gray-400');
+                iconZendo.className = 'fa-solid fa-motorcycle text-sm ' + (isZendo ? 'text-emerald-600 dark:text-emerald-400' : 'text-[var(--text-muted)]');
             }
             if (dotKasir) {
-                dotKasir.className = 'w-2 h-2 rounded-full ' + (!isZendo ? 'bg-goldAccent' : 'bg-white/20');
+                dotKasir.className = 'w-2 h-2 rounded-full ' + (!isZendo ? 'bg-[var(--accent-solid)]' : 'bg-[var(--border-strong)]');
             }
             if (dotZendo) {
-                dotZendo.className = 'w-2 h-2 rounded-full ' + (isZendo ? 'bg-emerald-400' : 'bg-white/20');
+                dotZendo.className = 'w-2 h-2 rounded-full ' + (isZendo ? 'bg-emerald-500' : 'bg-[var(--border-strong)]');
             }
 
             if (zendoFields) {
@@ -1105,10 +1112,10 @@
             submitBtn.disabled = false;
 
             if (currentProcessMethod === 'zendo') {
-                submitBtn.className = 'w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-green-400 text-black font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50';
+                submitBtn.className = 'w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-green-500 text-white font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50';
                 submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i> Pesan Sekarang (Otomatis ke Zendo)';
             } else {
-                submitBtn.className = 'w-full py-4 rounded-2xl bg-gradient-to-r from-goldAccent via-amber-400 to-yellow-300 text-black font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg shadow-goldAccent/20 disabled:opacity-50';
+                submitBtn.className = 'w-full py-4 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-black text-sm uppercase tracking-wider hover:opacity-95 active:scale-98 transition-all shadow-lg disabled:opacity-50';
                 submitBtn.innerHTML = '<i class="fa-solid fa-qrcode mr-2"></i> Buat Slip Pesanan (Kasir)';
             }
         }
@@ -1189,15 +1196,15 @@
                 totalQty += item.qty;
 
                 html += `
-                <div class="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+                <div class="flex items-center justify-between py-2 border-b border-[var(--border-soft)] last:border-0">
                     <div class="flex-1 min-w-0 pr-2">
-                        <p class="text-xs font-bold text-white truncate">${item.name}</p>
-                        <p class="text-[10px] text-gray-400 font-mono">Rp ${item.price.toLocaleString('id-ID')} × ${item.qty} = <span class="text-goldAccent font-bold">Rp ${lineTotal.toLocaleString('id-ID')}</span></p>
+                        <p class="text-xs font-bold text-[var(--text)] truncate">${item.name}</p>
+                        <p class="text-[10px] text-[var(--text-muted)] font-mono">Rp ${item.price.toLocaleString('id-ID')} × ${item.qty} = <span class="text-[var(--text)] font-bold">Rp ${lineTotal.toLocaleString('id-ID')}</span></p>
                     </div>
                     <div class="flex items-center gap-1.5 shrink-0">
-                        <button type="button" onclick="updateQty(${id}, -1)" class="qty-btn w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs flex items-center justify-center font-bold transition-colors">−</button>
-                        <span class="text-xs font-bold text-white w-5 text-center font-mono">${item.qty}</span>
-                        <button type="button" onclick="updateQty(${id}, 1)" class="qty-btn w-6 h-6 rounded-full bg-goldAccent hover:bg-amber-400 text-black text-xs flex items-center justify-center font-bold transition-colors">+</button>
+                        <button type="button" onclick="updateQty(${id}, -1)" class="qty-btn w-6 h-6 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] hover:border-[var(--border-strong)] text-[var(--text)] text-xs flex items-center justify-center font-bold transition-colors">−</button>
+                        <span class="text-xs font-bold text-[var(--text)] w-5 text-center font-mono">${item.qty}</span>
+                        <button type="button" onclick="updateQty(${id}, 1)" class="qty-btn w-6 h-6 rounded-full bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] text-xs flex items-center justify-center font-bold transition-colors">+</button>
                     </div>
                 </div>`;
             });
@@ -1256,11 +1263,11 @@
         function filterCategory(cat) {
             document.querySelectorAll('.cat-btn').forEach(btn => {
                 const isActive = btn.dataset.cat === cat;
-                btn.classList.toggle('bg-goldAccent', isActive);
-                btn.classList.toggle('text-black', isActive);
-                btn.classList.toggle('border-goldAccent', isActive);
-                btn.classList.toggle('text-gray-400', !isActive);
-                btn.classList.toggle('border-white/10', !isActive);
+                btn.classList.toggle('bg-[var(--accent-solid)]', isActive);
+                btn.classList.toggle('text-[var(--accent-solid-text)]', isActive);
+                btn.classList.toggle('border-[var(--accent-solid)]', isActive);
+                btn.classList.toggle('text-[var(--text-muted)]', !isActive);
+                btn.classList.toggle('border-[var(--border)]', !isActive);
             });
 
             document.querySelectorAll('.menu-card').forEach(card => {

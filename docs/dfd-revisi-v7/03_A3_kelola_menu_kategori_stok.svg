@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 980" width="1600" height="980" font-family="'Segoe UI', Arial, sans-serif">
+<defs>
+    <filter id="shadow" x="-8%" y="-8%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr-flow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#334155"/>
+    </marker>
+    <marker id="arr-valid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#15803D"/>
+    </marker>
+    <marker id="arr-invalid" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arr-ds" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.2 L 9 5 L 0 8.8 z" fill="#1D4ED8"/>
+    </marker>
+  </defs>
+<rect width="1600" height="980" fill="#FFFFFF"/>
+<rect x="0" y="0" width="1600" height="68" fill="#F8FAFC"/>
+<line x1="0" y1="68" x2="1600" y2="68" stroke="#CBD5E1" stroke-width="1.2"/>
+<rect x="0" y="0" width="7" height="68" fill="#1E3A8A"/>
+<text x="24" y="30" font-size="19" font-weight="700" fill="#0F172A">Level 2 - Kelola Menu, Kategori, Varian &amp; Stok (turunan proses 3.0 Level 1)</text>
+<text x="24" y="52" font-size="12.5" font-weight="500" fill="#475569">Fitur A3 • Aktor: Admin • Cakupan: CRUD Menu/Kategori, Varian, Stok, Arsip &amp; Pulihkan • Langkah: 3.1–3.8</text>
+<g transform="translate(1105, 13)">
+    <rect x="0" y="0" width="475" height="42" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+    <rect x="12" y="13" width="18" height="14" rx="2" fill="#EFF6FF" stroke="#1E293B" stroke-width="1.6"/>
+    <text x="36" y="24" font-size="11" font-weight="600" fill="#334155">Entitas</text>
+    <circle cx="96" cy="20" r="9" fill="#FFFFFF" stroke="#2563EB" stroke-width="2"/>
+    <text x="110" y="24" font-size="11" font-weight="600" fill="#334155">Langkah</text>
+    <rect x="167" y="12" width="18" height="15" rx="3" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="1.6"/>
+    <ellipse cx="176" cy="13" rx="9" ry="3.2" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="1.3"/>
+    <text x="191" y="24" font-size="11" font-weight="600" fill="#334155">Data Store</text>
+    <line x1="258" y1="20" x2="282" y2="20" stroke="#15803D" stroke-width="2.2" marker-end="url(#arr-valid)"/>
+    <text x="288" y="24" font-size="11" font-weight="600" fill="#15803D">Valid</text>
+    <line x1="330" y1="20" x2="354" y2="20" stroke="#DC2626" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arr-invalid)"/>
+    <text x="360" y="24" font-size="11" font-weight="600" fill="#B91C1C">Tidak Valid / Ulang</text>
+  </g>
+<path d="M 132.0 470.0 L 230.0 470.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 346.0 470.0 L 454.0 470.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 510.0 414.0 L 510.0 245.0 Q 510.0 235.0 520.0 235.0 L 699.0 235.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 566.0 470.0 L 729.0 470.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 510.0 526.0 L 510.0 730.0 Q 510.0 740.0 520.0 740.0 L 727.0 740.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 811.0 235.0 L 974.0 235.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1030.0 291.0 L 1030.0 316.0 Q 1030.0 326.0 1020.0 326.0 L 765.0 326.0 Q 755.0 326.0 755.0 316.0 L 755.0 291.0" fill="none" stroke="#DC2626" stroke-width="2.1" stroke-dasharray="6,4" marker-end="url(#arr-invalid)"/>
+<path d="M 1086.0 235.0 L 1242.0 235.0" fill="none" stroke="#15803D" stroke-width="2.1" marker-end="url(#arr-valid)"/>
+<path d="M 841.0 470.0 L 1037.0 470.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1300.0 177.0 L 1300.0 98.0 Q 1300.0 88.0 1290.0 88.0 L 82.0 88.0 Q 72.0 88.0 72.0 98.0 L 72.0 422.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 1095.0 528.0 L 1095.0 578.0 Q 1095.0 588.0 1105.0 588.0 L 1475.0 588.0 Q 1485.0 588.0 1485.0 598.0 L 1485.0 930.0 Q 1485.0 940.0 1475.0 940.0 L 54.0 940.0 Q 44.0 940.0 44.0 930.0 L 44.0 518.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 785.0 798.0 L 785.0 858.0 Q 785.0 868.0 775.0 868.0 L 110.0 868.0 Q 100.0 868.0 100.0 858.0 L 100.0 518.0" fill="none" stroke="#334155" stroke-width="1.9" marker-end="url(#arr-flow)"/>
+<path d="M 170.0 178.0 L 170.0 280.0 Q 170.0 290.0 180.0 290.0 L 253.0 290.0 Q 263.0 290.0 265.0 299.8 L 288.0 412.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 279.0 412.7 L 286.0 178.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arr-ds)"/>
+<path d="M 304.0 178.0 L 297.0 412.7" fill="none" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arr-ds)"/>
+<path d="M 288.0 412.0 L 317.5 299.7 Q 320.0 290.0 330.0 290.0 L 410.0 290.0 Q 420.0 290.0 420.0 280.0 L 420.0 178.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 690.0 154.0 L 690.0 162.7 Q 690.0 170.0 697.3 170.0 L 725.0 170.0 Q 735.0 170.0 744.1 174.1 L 755.0 179.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 825.0 154.0 L 825.0 162.7 Q 825.0 170.0 817.7 170.0 L 785.0 170.0 Q 775.0 170.0 765.9 174.1 L 755.0 179.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1276.0 182.2 L 1276.0 172.8 Q 1276.0 165.0 1268.2 165.0 L 1213.2 165.0 Q 1205.0 165.0 1205.0 156.8 L 1205.0 147.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 1324.0 182.2 L 1324.0 172.8 Q 1324.0 165.0 1331.8 165.0 L 1386.8 165.0 Q 1395.0 165.0 1395.0 156.8 L 1395.0 147.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 1355.1 217.0 L 1396.4 217.0 Q 1405.0 217.0 1405.0 208.4 L 1405.0 206.6 Q 1405.0 198.0 1413.6 198.0 L 1443.0 198.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 1355.1 253.0 L 1396.4 253.0 Q 1405.0 253.0 1405.0 261.6 L 1405.0 263.4 Q 1405.0 272.0 1413.6 272.0 L 1443.0 272.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 785.0 562.0 L 785.0 526.0" fill="none" stroke="#1D4ED8" stroke-width="1.9" marker-end="url(#arr-ds)"/>
+<path d="M 1153.0 470.0 L 1187.6 438.7 Q 1195.0 432.0 1205.0 432.0 L 1287.0 432.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 1153.0 470.0 L 1187.6 501.3 Q 1195.0 508.0 1205.0 508.0 L 1287.0 508.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<path d="M 842.3 731.0 L 1017.0 731.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arr-ds)"/>
+<path d="M 1017.0 749.0 L 842.3 749.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arr-ds)"/>
+<path d="M 785.0 682.0 L 785.0 670.0 Q 785.0 660.0 795.0 660.0 L 1270.0 660.0 Q 1280.0 660.0 1280.0 670.0 L 1280.0 716.0" fill="none" stroke="#1D4ED8" stroke-width="2" marker-start="url(#arr-ds)" marker-end="url(#arr-ds)"/>
+<g filter="url(#shadow)">
+        <rect x="12" y="422" width="120" height="96" rx="6" fill="#F8FAFC" stroke="#1E293B" stroke-width="2.4"/>
+        <rect x="12" y="422" width="120" height="23" rx="5" fill="#1E293B"/>
+        <rect x="12" y="438" width="120" height="7" fill="#1E293B"/>
+        <text x="72" y="437.5" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.8">AKTOR EKSTERNAL</text>
+        <text x="72" y="481" font-size="16" font-weight="700" fill="#0F172A" text-anchor="middle">Admin</text>
+        <text x="72" y="499" font-size="10.5" font-weight="500" fill="#475569" text-anchor="middle">Terautentikasi</text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="288" cy="470" r="58" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="261" y="436" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="288" y="448" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.1</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="288" y="473.0">Sinkron &amp; Muat</tspan><tspan x="288" y="487.5">Katalog / Arsip</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="510" cy="470" r="56" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="483" y="436" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="510" y="448" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.2</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="510" y="473.0">Pilih Aksi Menu</tspan><tspan x="510" y="487.5">/ Kat. / Arsip</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="755" cy="235" r="56" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="728" y="201" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="755" y="213" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.3</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="755" y="238.0">Isi / Ubah Menu,</tspan><tspan x="755" y="252.5">Kat. &amp; Varian</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1030" cy="235" r="56" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1003" y="201" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1030" y="213" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.4</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1030" y="238.0">Validasi Menu,</tspan><tspan x="1030" y="252.5">Varian &amp; Foto</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1300" cy="235" r="58" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1273" y="195" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1300" y="207" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.5</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1300" y="231.0">Simpan Menu,</tspan><tspan x="1300" y="245.5">Varian &amp; Stok</tspan><tspan x="1300" y="260.0">POS</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="785" cy="470" r="56" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="758" y="436" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="785" y="448" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.6</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="785" y="473.0">Cek Riwayat</tspan><tspan x="785" y="487.5">Transaksi Menu</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="1095" cy="470" r="58" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="1068" y="436" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="1095" y="448" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.7</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="1095" y="473.0">Arsipkan (Soft)</tspan><tspan x="1095" y="487.5">/ Hapus Permanen</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <circle cx="785" cy="740" r="58" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.5"/>
+        <rect x="758" y="700" width="54" height="17" rx="8.5" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+        <text x="785" y="712" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">3.8</text>
+        <text font-size="11.5" font-weight="700" fill="#0F172A" text-anchor="middle"><tspan x="785" y="736.0">Pulihkan Menu</tspan><tspan x="785" y="750.5">Terarsip</tspan><tspan x="785" y="765.0">(Restore)</tspan></text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 115 141 L 115 169 A 55 9 0 0 0 225 169 L 225 141 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="170" cy="141" rx="55" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="170" y="160" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D2</text>
+        <text x="170" y="175" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">categories</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 241 141 L 241 169 A 54 9 0 0 0 349 169 L 349 141 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="295" cy="141" rx="54" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="295" y="160" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="295" y="175" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 365 141 L 365 169 A 55 9 0 0 0 475 169 L 475 141 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="420" cy="141" rx="55" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="420" y="160" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="420" y="175" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 635 119 L 635 145 A 55 9 0 0 0 745 145 L 745 119 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="690" cy="119" rx="55" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="690" y="137" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D2</text>
+        <text x="690" y="152" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">categories</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 767 119 L 767 145 A 58 9 0 0 0 883 145 L 883 119 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="825" cy="119" rx="58" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="825" y="137" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D4</text>
+        <text x="825" y="152" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menu_options</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1151 112 L 1151 138 A 54 9 0 0 0 1259 138 L 1259 112 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1205" cy="112" rx="54" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1205" y="130" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D2</text>
+        <text x="1205" y="145" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">categories</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1337 112 L 1337 138 A 58 9 0 0 0 1453 138 L 1453 112 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1395" cy="112" rx="58" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1395" y="130" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D4</text>
+        <text x="1395" y="145" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menu_options</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1443 185 L 1443 211 A 57 9 0 0 0 1557 211 L 1557 185 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1500" cy="185" rx="57" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1500" y="203" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="1500" y="218" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1443 259 L 1443 285 A 57 9 0 0 0 1557 285 L 1557 259 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1500" cy="259" rx="57" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1500" y="277" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="1500" y="292" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 727 571 L 727 599 A 58 9 0 0 0 843 599 L 843 571 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="785" cy="571" rx="58" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="785" y="590" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D7</text>
+        <text x="785" y="605" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">order_items</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1287 418 L 1287 446 A 58 9 0 0 0 1403 446 L 1403 418 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1345" cy="418" rx="58" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1345" y="437" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="1345" y="452" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1287 494 L 1287 522 A 58 9 0 0 0 1403 522 L 1403 494 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1345" cy="494" rx="58" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1345" y="513" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="1345" y="528" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1017 725 L 1017 755 A 58 9 0 0 0 1133 755 L 1133 725 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1075" cy="725" rx="58" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1075" y="745" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D3</text>
+        <text x="1075" y="760" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">menus</text>
+      </g>
+<g filter="url(#shadow)">
+        <path d="M 1222 725 L 1222 755 A 58 9 0 0 0 1338 755 L 1338 725 Z" fill="#EFF6FF" stroke="#1D4ED8" stroke-width="2"/>
+        <ellipse cx="1280" cy="725" rx="58" ry="9" fill="#DBEAFE" stroke="#1D4ED8" stroke-width="2"/>
+        <text x="1280" y="745" font-size="12" font-weight="700" fill="#1E3A8A" text-anchor="middle">D16</text>
+        <text x="1280" y="760" font-size="11" font-weight="600" fill="#1E40AF" text-anchor="middle">settings</text>
+      </g>
+<g>
+      <rect x="131.5" y="415.0" width="117" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="190" y="428.5">Akses /admin/menu</tspan><tspan x="190" y="441.5">&amp; /admin/kategori</tspan></text>
+    </g>
+<g>
+      <rect x="330.5" y="437.5" width="129" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="395" y="451.0">Daftar menu &amp; arsip</tspan></text>
+    </g>
+<g>
+      <rect x="532.5" y="205.5" width="135" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="600" y="219.0">Tambah / Edit / Stok</tspan></text>
+    </g>
+<g>
+      <rect x="594.5" y="437.5" width="111" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="650" y="451.0">Hapus / Arsipkan</tspan></text>
+    </g>
+<g>
+      <rect x="563.5" y="709.5" width="123" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="625" y="723.0">Pulihkan (trashed)</tspan></text>
+    </g>
+<g>
+      <rect x="824.5" y="203.5" width="135" height="21" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="892" y="217.0">POST / PUT menu/kat.</tspan></text>
+    </g>
+<g>
+      <rect x="818.5" y="315.5" width="147" height="21" rx="5" fill="#FEF2F2" fill-opacity="0.96" stroke="#FCA5A5" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#991B1B" text-anchor="middle"><tspan x="892" y="329.0">[Tidak valid -&gt; ulang]</tspan></text>
+    </g>
+<g>
+      <rect x="1137.0" y="203.5" width="56" height="21" rx="5" fill="#F0FDF4" fill-opacity="0.96" stroke="#86EFAC" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#14532D" text-anchor="middle"><tspan x="1165" y="217.0">[Valid]</tspan></text>
+    </g>
+<g>
+      <rect x="869.5" y="428.0" width="141" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="940" y="441.5">count &gt; 0 -&gt; Arsip;</tspan><tspan x="940" y="454.5">count = 0 -&gt; Permanen</tspan></text>
+    </g>
+<g>
+      <rect x="606.5" y="71.0" width="147" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="680" y="84.5">Katalog menu, varian &amp;</tspan><tspan x="680" y="97.5">stok terbaru</tspan></text>
+    </g>
+<g>
+      <rect x="1227.5" y="571.0" width="135" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="1295" y="584.5">Notifikasi menu</tspan><tspan x="1295" y="597.5">diarsipkan / dihapus</tspan></text>
+    </g>
+<g>
+      <rect x="394.5" y="851.0" width="111" height="34" rx="5" fill="#FFFFFF" fill-opacity="0.96" stroke="#CBD5E1" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E293B" text-anchor="middle"><tspan x="450" y="864.5">Konfirmasi menu</tspan><tspan x="450" y="877.5">dipulihkan aktif</tspan></text>
+    </g>
+<g>
+      <rect x="147.0" y="224.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="170" y="238.0">Baca</tspan></text>
+    </g>
+<g>
+      <rect x="272.0" y="259.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="295" y="273.0">RW</tspan></text>
+    </g>
+<g>
+      <rect x="389.0" y="224.5" width="62" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="420" y="238.0">RW: sync</tspan></text>
+    </g>
+<g>
+      <rect x="642.0" y="159.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="665" y="173.0">Baca</tspan></text>
+    </g>
+<g>
+      <rect x="827.0" y="159.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="850" y="173.0">Baca</tspan></text>
+    </g>
+<g>
+      <rect x="1182.0" y="151.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="1205" y="165.0">RW</tspan></text>
+    </g>
+<g>
+      <rect x="1372.0" y="151.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="1395" y="165.0">RW</tspan></text>
+    </g>
+<g>
+      <rect x="1395.0" y="183.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="1418" y="197.0">RW</tspan></text>
+    </g>
+<g>
+      <rect x="1395.0" y="265.5" width="46" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="1418" y="279.0">RW</tspan></text>
+    </g>
+<g>
+      <rect x="797.5" y="534.5" width="135" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#BFDBFE" stroke-width="1"/>
+      <text font-size="10" font-weight="600" fill="#1E3A8A" text-anchor="middle"><tspan x="865" y="548.0">Baca: cek orderItems</tspan></text>
+    </g>
+<g>
+      <rect x="1180.5" y="403.5" width="99" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="1230" y="417.0">RW: soft/force</tspan></text>
+    </g>
+<g>
+      <rect x="1186.5" y="515.5" width="87" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="1230" y="529.0">RW: stok POS</tspan></text>
+    </g>
+<g>
+      <rect x="883.5" y="709.5" width="93" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="930" y="723.0">RW: restore()</tspan></text>
+    </g>
+<g>
+      <rect x="998.5" y="649.5" width="93" height="21" rx="5" fill="#EFF6FF" fill-opacity="0.96" stroke="#93C5FD" stroke-width="1"/>
+      <text font-size="10" font-weight="700" fill="#1E3A8A" text-anchor="middle"><tspan x="1045" y="663.0">RW: sync stok</tspan></text>
+    </g>
+</svg>

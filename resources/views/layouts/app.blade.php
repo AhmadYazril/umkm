@@ -1,13 +1,19 @@
 @php
+<<<<<<< HEAD
     $layoutBrand = $brand ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::resolveBrandSettings() : config('nucomu.brand', []));
     $layoutBrandName = $layoutBrand['name'] ?? config('nucomu.brand.name', 'Nucomu Cafe');
+=======
+    $activeTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark' ? 'dark' : 'light';
+    $isDarkTheme = $activeTheme === 'dark';
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 @endphp
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id" data-theme="{{ $activeTheme }}" class="scroll-smooth {{ $isDarkTheme ? 'dark' : '' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+<<<<<<< HEAD
     <meta name="theme-color" content="#0C0C0C">
     <meta name="color-scheme" content="dark">
     <style>:root{color-scheme:dark;}html,body{background-color:#0C0C0C;color:#F5F5F5;}</style>
@@ -16,6 +22,17 @@
     @if(!empty($layoutBrand['favicon_url']))
         <link rel="icon" href="{{ $layoutBrand['favicon_url'] }}">
     @endif
+=======
+    <meta name="theme-color" content="{{ $isDarkTheme ? '#0C0C0C' : '#F9F9F9' }}">
+    <meta name="color-scheme" content="{{ $activeTheme }}">
+    <style>
+        :root{color-scheme:light;}
+        [data-theme="dark"],.dark{color-scheme:dark;}
+        html,body{background-color:{{ $isDarkTheme ? '#0C0C0C' : '#F9F9F9' }};color:{{ $isDarkTheme ? '#F5F5F5' : '#191919' }};}
+    </style>
+    <title>@yield('title', 'Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
+    <meta name="description" content="@yield('meta_description', 'Nucomu Cafe — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
+>>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
     <!-- Anti-flicker Early State Resolver for Nucomu Opening Intro (Main Page Only) -->
     @if(request()->routeIs('home') || request()->is('/'))
@@ -36,6 +53,16 @@
         html.nucomu-intro-seen #nucomu-intro-overlay { display: none !important; }
         html.nucomu-intro-active { overflow: hidden !important; }
         html.nucomu-intro-active body { overflow: hidden !important; }
+        html.nucomu-intro-active #nucomu-intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: {{ $isDarkTheme ? '#0C0C0C' : '#F9F9F9' }};
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
     <noscript>
         <style>
@@ -44,8 +71,8 @@
         </style>
     </noscript>
 
-    <!-- LCP Preload for Hero Welcome Slide -->
-    <link rel="preload" as="image" href="{{ asset('images/hero/hero-welcome.webp') }}" type="image/webp" fetchpriority="high">
+    <!-- LCP Preload for First Hero Slide -->
+    <link rel="preload" as="image" href="{{ asset('images/hero/coffee-pack.webp') }}" type="image/webp" fetchpriority="high">
     @endif
 
     <!-- Google Fonts: Cormorant Garamond, DM Sans, Playfair Display, Montserrat, Plus Jakarta Sans & Manrope -->
@@ -72,20 +99,20 @@
             theme: {
                 extend: {
                     colors: {
-                        'bg-page': '#0C0C0C',
-                        'bg-section-alt': '#101010',
-                        'accent-solid': '#F5F2EE',
-                        'ink-black': '#F5F5F5',
-                        'charcoal': '#B5B5B5',
-                        'warm-ivory': '#0C0C0C',
-                        'pure-white': '#F5F5F5',
-                        'light-gray': 'rgba(255,255,255,0.14)',
-                        'medium-gray': '#B5B5B5',
-                        'soft-beige': 'rgba(255,255,255,0.08)',
-                        'warm-stone': 'rgba(255,255,255,0.22)',
-                        'espresso-brown': '#F5F2EE',
-                        'espresso-dark': '#141414',
-                        'accent-gold': '#B5B5B5',
+                        'bg-page': 'var(--bg-page)',
+                        'bg-section-alt': 'var(--bg-section-alt)',
+                        'accent-solid': 'var(--accent-solid)',
+                        'ink-black': 'var(--ink-black)',
+                        'charcoal': 'var(--charcoal)',
+                        'warm-ivory': 'var(--warm-ivory)',
+                        'pure-white': 'var(--pure-white)',
+                        'light-gray': 'var(--light-gray)',
+                        'medium-gray': 'var(--medium-gray)',
+                        'soft-beige': 'var(--soft-beige)',
+                        'warm-stone': 'var(--warm-stone)',
+                        'espresso-brown': 'var(--espresso-brown)',
+                        'espresso-dark': 'var(--espresso-dark)',
+                        'accent-gold': 'var(--accent-gold)',
                     },
                     fontFamily: {
                         sans: ['var(--font-sans)', 'system-ui', '-apple-system', 'sans-serif'],
@@ -111,7 +138,7 @@
     <!-- Page-specific styles -->
     @stack('styles')
 </head>
-<body class="bg-[#0C0C0C] text-[#F5F5F5] font-body antialiased selection:bg-[#F5F2EE] selection:text-[#111111]">
+<body class="bg-[var(--bg-page)] text-[var(--text)] font-body antialiased selection:bg-[var(--accent-solid)] selection:text-[var(--accent-solid-text)]">
 
     <!-- Opening Intro / Preloader (Main Page Only) -->
     @if(request()->routeIs('home') || request()->is('/'))
@@ -140,6 +167,7 @@
         $globalContact = \App\Http\Controllers\NucomuController::getContactSettings();
     @endphp
     <script>
+        window.NUCOMU_SITE_THEME = "{{ $activeTheme }}";
         window.NUCOMU_WA_NUMBER = "{{ $globalContact['whatsapp_clean'] ?? config('nucomu.contact.whatsapp_number', '6281234567890') }}";
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>

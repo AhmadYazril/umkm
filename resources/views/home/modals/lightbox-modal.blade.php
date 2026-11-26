@@ -1,13 +1,13 @@
 <!-- Lightbox Modal for Gallery Images -->
 <div id="lightbox-modal" 
-     class="fixed inset-0 z-50 bg-ink-black/90 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"
+     class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"
      onclick="closeLightbox()">
     
     <!-- Top Bar Controls -->
     <div class="absolute top-5 right-5 z-20 flex items-center space-x-4" onclick="event.stopPropagation()">
-        <span id="lightbox-counter" class="text-xs uppercase tracking-widest text-light-gray font-semibold">1 / 5</span>
+        <span id="lightbox-counter" class="text-xs uppercase tracking-widest text-neutral-300 font-semibold">1 / 5</span>
         <button onclick="closeLightbox()" 
-                class="w-10 h-10 rounded-full bg-charcoal/80 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
+                class="w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-neutral-900 transition-colors"
                 aria-label="Tutup Lightbox">
             <span class="material-symbols-outlined text-xl">close</span>
         </button>
@@ -16,13 +16,13 @@
     <!-- Navigation Arrows -->
     <button id="lightbox-prev-btn"
             onclick="prevLightbox(event)" 
-            class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-charcoal/70 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
+            class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-neutral-900 transition-colors"
             aria-label="Foto Sebelumnya">
         <span class="material-symbols-outlined text-2xl">chevron_left</span>
     </button>
     <button id="lightbox-next-btn"
             onclick="nextLightbox(event)" 
-            class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-charcoal/70 text-warm-ivory flex items-center justify-center hover:bg-white hover:text-ink-black transition-colors"
+            class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/70 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-neutral-900 transition-colors"
             aria-label="Foto Berikutnya">
         <span class="material-symbols-outlined text-2xl">chevron_right</span>
     </button>
