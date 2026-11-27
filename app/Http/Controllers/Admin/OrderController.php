@@ -155,6 +155,13 @@ class OrderController extends Controller
             $orderModeZendoChat = false;
         }
 
+        $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
+
+        $orderModeGrabfood = isset($dbSettings['order_mode_grabfood'])
+            ? in_array((string) $dbSettings['order_mode_grabfood'], ['1', 'true', 'yes'], true)
+            : (! empty($dbSettings['grabfood_url'] ?? null));
+        $grabfoodUrl = trim((string) ($dbSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', '')));
+
         // Sub-settings
         $orderDineInCash = ! isset($dbSettings['order_dine_in_cash']) || in_array((string) $dbSettings['order_dine_in_cash'], ['1', 'true', 'yes'], true);
         $orderDineInQris = ! isset($dbSettings['order_dine_in_qris']) || in_array((string) $dbSettings['order_dine_in_qris'], ['1', 'true', 'yes'], true);
@@ -191,8 +198,11 @@ class OrderController extends Controller
             'totalZendoTracking',
             'totalZendoChat',
             'orderModeDineIn',
+            'orderModeZendo',
             'orderModeZendoTracking',
             'orderModeZendoChat',
+            'orderModeGrabfood',
+            'grabfoodUrl',
             'orderDineInCash',
             'orderDineInQris',
             'qrisImage',
@@ -204,7 +214,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Save 3 transaction modes, sub-settings, and normalize mutual locks.
+     * Save transaction channel modes, sub-settings, and normalize mutual locks.
      */
     public function updateSettings(Request $request)
     {
@@ -213,15 +223,18 @@ class OrderController extends Controller
             'zendo_chat_template' => 'nullable|string|max:2000',
             'qris_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'last_changed_mode' => 'nullable|string|in:tracking,chat',
+            'grabfood_url' => 'nullable|url|max:500',
         ], [
             'qris_image.image' => 'File QRIS harus berupa gambar.',
             'qris_image.mimes' => 'Format gambar QRIS yang didukung adalah JPEG, PNG, JPG, atau WebP.',
             'qris_image.max' => 'Ukuran file gambar QRIS tidak boleh melebihi 2 MB.',
+            'grabfood_url.url' => 'Tautan GrabFood harus berupa URL valid (diawali https:// atau http://).',
         ]);
 
         $dineIn = $request->boolean('order_mode_dine_in');
         $tracking = $request->boolean('order_mode_zendo_tracking');
         $chat = $request->boolean('order_mode_zendo_chat');
+        $grabfood = $request->boolean('order_mode_grabfood');
         $lastChanged = $request->input('last_changed_mode');
 
         $autoDisabledMessage = null;
@@ -241,10 +254,11 @@ class OrderController extends Controller
             }
         }
 
-        // Simpan 3 key utama baru
+        // Simpan 4 key utama saluran transaksi
         Setting::set('order_mode_dine_in', $dineIn ? '1' : '0');
         Setting::set('order_mode_zendo_tracking', $tracking ? '1' : '0');
         Setting::set('order_mode_zendo_chat', $chat ? '1' : '0');
+        Setting::set('order_mode_grabfood', $grabfood ? '1' : '0');
 
         // Sub-pengaturan Mode 1: Makan di Cafe
         $dineInCash = $request->boolean('order_dine_in_cash');
@@ -302,12 +316,9 @@ class OrderController extends Controller
             Setting::set('zendo_chat_template', $tpl !== '' ? $tpl : self::DEFAULT_ZENDO_TEMPLATE);
         }
 
-        // Menjaga kompatibilitas jika grabfood_url dikirimkan lewat form kontak/tes
+        // Simpan / perbarui link GrabFood
         if ($request->has('grabfood_url')) {
             Setting::set('grabfood_url', trim((string) $request->input('grabfood_url')));
-        }
-        if ($request->has('order_mode_grabfood')) {
-            Setting::set('order_mode_grabfood', $request->boolean('order_mode_grabfood') ? '1' : '0');
         }
 
         $successMsg = 'Pengaturan cara transaksi berhasil disimpan.';

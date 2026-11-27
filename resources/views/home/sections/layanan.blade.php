@@ -2,6 +2,7 @@
 @php
     $txSettings = $txSettings ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? (new \App\Http\Controllers\NucomuController())->getTransactionSettings() : []);
     $orderModeZendo = (bool) ($txSettings['order_mode_zendo'] ?? (($txSettings['order_mode_zendo_tracking'] ?? false) || ($txSettings['order_mode_zendo_chat'] ?? false)));
+    $orderModeGrabfood = (bool) ($txSettings['order_mode_grabfood'] ?? false);
     $rawGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
     $layananGrabfoodUrl = !empty(trim((string) $rawGrabfoodUrl)) ? trim((string) $rawGrabfoodUrl) : 'https://food.grab.com';
 @endphp
@@ -116,10 +117,16 @@
                         <span class="text-[10px] sm:text-[10.5px] font-semibold text-[var(--text-muted)] uppercase tracking-[0.16em] font-body block">
                             02 / DELIVERY
                         </span>
+                        @if($orderModeZendo)
                         <span class="text-[9.5px] font-medium text-emerald-700 dark:text-emerald-400 bg-[#25D366]/10 px-2.5 py-0.5 rounded-full border border-[#25D366]/25 uppercase tracking-wider flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse"></span>
                             <span>Kurir Nucomu</span>
                         </span>
+                        @else
+                        <span class="text-[9.5px] font-medium text-rose-700 dark:text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/25 uppercase tracking-wider flex items-center gap-1">
+                            <span>🔴 Tutup Sementara</span>
+                        </span>
+                        @endif
                     </div>
 
                     <!-- Body Row -->
@@ -144,6 +151,7 @@
 
                             <!-- Tombol Pesan Sekarang -->
                             <div class="pt-4 mt-auto">
+                                @if($orderModeZendo)
                                 <button type="button" onclick="setModalProcessMethod('zendo'); openCartModal();" 
                                    class="layanan-btn-action inline-flex items-center gap-2 bg-[var(--badge-bg)] hover:bg-[var(--accent-solid)] text-[var(--text)] hover:text-[var(--accent-solid-text)] border border-[var(--border)] hover:border-[var(--accent-solid)] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full shadow-2xs hover:shadow-sm transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[var(--field-focus)] focus:ring-offset-2 focus:ring-offset-[var(--bg-page)] cursor-pointer">
                                     <span>Pesan Sekarang</span>
@@ -151,6 +159,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </button>
+                                @else
+                                <button type="button" disabled 
+                                   class="inline-flex items-center gap-2 bg-[var(--surface-muted)] text-[var(--text-muted)] border border-[var(--border)] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full opacity-60 cursor-not-allowed">
+                                    <span>Sedang Tutup</span>
+                                </button>
+                                @endif
                             </div>
                         </div>
 
@@ -181,10 +195,16 @@
                         <span class="text-[10px] sm:text-[10.5px] font-semibold text-[var(--text-muted)] uppercase tracking-[0.16em] font-body block">
                             {{ $orderModeZendo ? '03 / ONLINE ORDER' : '02 / ONLINE ORDER' }}
                         </span>
+                        @if($orderModeGrabfood)
                         <span class="text-[9.5px] font-medium text-emerald-700 dark:text-emerald-400 bg-[#00B14F]/10 px-2.5 py-0.5 rounded-full border border-[#00B14F]/25 uppercase tracking-wider flex items-center gap-1">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#00B14F] animate-pulse"></span>
                             <span>GrabFood</span>
                         </span>
+                        @else
+                        <span class="text-[9.5px] font-medium text-rose-700 dark:text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/25 uppercase tracking-wider flex items-center gap-1">
+                            <span>🔴 Tutup Sementara</span>
+                        </span>
+                        @endif
                     </div>
 
                     <!-- Body Row -->
@@ -209,6 +229,7 @@
 
                             <!-- Tombol Pesan Sekarang -->
                             <div class="pt-4 mt-auto">
+                                @if($orderModeGrabfood)
                                 <a href="{{ $layananGrabfoodUrl }}" 
                                    target="_blank" 
                                    rel="noopener noreferrer"
@@ -218,6 +239,12 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
                                     </svg>
                                 </a>
+                                @else
+                                <button type="button" disabled 
+                                   class="inline-flex items-center gap-2 bg-[var(--surface-muted)] text-[var(--text-muted)] border border-[var(--border)] font-semibold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full opacity-60 cursor-not-allowed">
+                                    <span>Sedang Tutup</span>
+                                </button>
+                                @endif
                             </div>
                         </div>
 

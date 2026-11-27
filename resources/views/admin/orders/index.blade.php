@@ -191,8 +191,8 @@
             {{-- Penanda mode antar mana yang terakhir disentuh admin (untuk normalisasi saling mengunci) --}}
             <input type="hidden" name="last_changed_mode" id="last_changed_mode" value="">
 
-            {{-- 3 Kartu Mode Grid --}}
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {{-- 4 Kartu Saluran Pesanan Grid (Pesan di Tempat, Zendo Tracking, Zendo Chat, GrabFood) --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 
                 {{-- KARTU MODE 1: Makan di Cafe (Kasir) --}}
                 <div id="card_mode_dine_in" 
@@ -435,6 +435,70 @@
                                    class="zendo-wa-input w-full px-3 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold focus:outline-none focus:border-neutral-800 transition">
                             <span class="text-[10px] text-muted-text mt-0.5 block">Tersinkronisasi dengan halaman Kontak (key: <code>zendo_whatsapp</code>).</span>
                         </div>
+                    </div>
+                </div>
+
+                {{-- KARTU MODE 4: GrabFood (Mitra Pesanan) --}}
+                <div id="card_mode_grabfood" 
+                     class="p-4 rounded-2xl border transition-all space-y-3.5 flex flex-col justify-between {{ $orderModeGrabfood ? 'bg-[#FAFDFB] border-[#00B14F]' : 'bg-warm-stone/20 border-[#E6E8E4]' }}">
+                    <div class="space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-9 h-9 rounded-xl bg-white border border-emerald-200 text-[#00B14F] flex items-center justify-center text-sm shadow-xs shrink-0 p-1">
+                                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-6 h-6 object-contain">
+                                </span>
+                                <div>
+                                    <h4 class="text-sm font-extrabold m-0" style="color: var(--admin-text-main, #1B1F1D);">GrabFood</h4>
+                                    <span id="badge_mode_grabfood" class="text-[10px] font-mono font-bold uppercase tracking-wider {{ $orderModeGrabfood ? 'text-[#008C3E]' : 'text-muted-text' }}">
+                                        {{ $orderModeGrabfood ? '● Status: AKTIF' : '○ Status: NONAKTIF' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Switch ON/OFF --}}
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0 mt-0.5">
+                                <input type="checkbox" 
+                                       name="order_mode_grabfood" 
+                                       id="order_mode_grabfood" 
+                                       value="1" 
+                                       class="sr-only peer" 
+                                       {{ $orderModeGrabfood ? 'checked' : '' }}
+                                       onchange="handleModeSwitchChange('grabfood', this)">
+                                <div class="w-11 h-6 bg-neutral-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00B14F]"></div>
+                            </label>
+                        </div>
+
+                        <p class="text-xs leading-relaxed m-0" style="color: var(--admin-text-sub, #555D58);">
+                            Pelanggan memesan via GrabFood melalui link outlet kafe. Driver Grab menyampaikan pesanan langsung ke kasir (tanpa barcode).
+                        </p>
+                    </div>
+
+                    {{-- Sub-Pengaturan Mode 4: Tautan Outlet GrabFood & Tes Link --}}
+                    <div class="pt-3 border-t space-y-2 text-xs" style="border-color: var(--admin-border-card, #E6E8E4);">
+                        <div>
+                            <label for="grabfood_url" class="block text-[11px] font-bold mb-1" style="color: var(--admin-text-main, #1B1F1D);">
+                                Tautan Resto GrabFood Kafe
+                            </label>
+                            <input type="url" 
+                                   id="grabfood_url" 
+                                   name="grabfood_url" 
+                                   value="{{ old('grabfood_url', $grabfoodUrl) }}" 
+                                   placeholder="https://food.grab.com/id/id/restaurant/..."
+                                   class="w-full px-3 py-2 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono font-semibold focus:outline-none focus:border-neutral-800 transition">
+                            <span class="text-[10px] text-muted-text mt-0.5 block">Tersinkronisasi dengan Kontak &amp; tombol GrabFood web.</span>
+                        </div>
+
+                        @if(!empty($grabfoodUrl))
+                            <div class="pt-1">
+                                <a href="{{ $grabfoodUrl }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="inline-flex items-center gap-1.5 font-bold text-[11.5px] text-[#008C3E] hover:underline">
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                    <span>Tes Buka Outlet GrabFood</span>
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
@@ -1151,16 +1215,17 @@
 <script>
     function confirmDisableLastMode(inputEl) {
         if (!inputEl.checked) {
-            const dineIn = document.getElementById('order_mode_dine_in').checked;
-            const tracking = document.getElementById('order_mode_zendo_tracking').checked;
-            const chat = document.getElementById('order_mode_zendo_chat').checked;
-            const totalActive = [dineIn, tracking, chat].filter(Boolean).length;
+            const dineIn = document.getElementById('order_mode_dine_in')?.checked || false;
+            const tracking = document.getElementById('order_mode_zendo_tracking')?.checked || false;
+            const chat = document.getElementById('order_mode_zendo_chat')?.checked || false;
+            const grab = document.getElementById('order_mode_grabfood')?.checked || false;
+            const totalActive = [dineIn, tracking, chat, grab].filter(Boolean).length;
 
             if (totalActive === 0) {
                 const confirmed = confirm(
-                    'Perhatian: Ini adalah cara transaksi terakhir yang masih aktif.\n\n' +
-                    'Jika Anda mematikannya, pelanggan sama sekali tidak akan bisa memesan melalui website dan daftar menu hanya akan menjadi katalog informasi.\n\n' +
-                    'Apakah Anda yakin ingin mematikan cara transaksi ini?'
+                    'Perhatian: Ini adalah saluran pesanan terakhir yang masih aktif.\n\n' +
+                    'Jika Anda mematikannya, semua cara pemesanan (Pesan di Tempat, Zendo, dan GrabFood) akan dinonaktifkan.\n\n' +
+                    'Apakah Anda yakin ingin mematikan saluran pesanan ini?'
                 );
                 if (!confirmed) {
                     inputEl.checked = true;
@@ -1177,6 +1242,7 @@
             if (mode === 'dine_in') updateDineInState(true);
             else if (mode === 'tracking') toggleZendoMode('tracking', true);
             else if (mode === 'chat') toggleZendoMode('chat', true);
+            else if (mode === 'grabfood') updateGrabfoodState(true);
             return;
         }
 
@@ -1184,6 +1250,25 @@
             updateDineInState(inputEl.checked);
         } else if (mode === 'tracking' || mode === 'chat') {
             toggleZendoMode(mode, inputEl.checked);
+        } else if (mode === 'grabfood') {
+            updateGrabfoodState(inputEl.checked);
+        }
+    }
+
+    function updateGrabfoodState(checked) {
+        const card = document.getElementById('card_mode_grabfood');
+        const badge = document.getElementById('badge_mode_grabfood');
+        if (!card || !badge) return;
+        if (checked) {
+            card.classList.remove('bg-warm-stone/20', 'border-[#E6E8E4]');
+            card.classList.add('bg-[#FAFDFB]', 'border-[#00B14F]');
+            badge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-[#008C3E]';
+            badge.innerText = '● Status: AKTIF';
+        } else {
+            card.classList.remove('bg-[#FAFDFB]', 'border-[#00B14F]');
+            card.classList.add('bg-warm-stone/20', 'border-[#E6E8E4]');
+            badge.className = 'text-[10px] font-mono font-bold uppercase tracking-wider text-muted-text';
+            badge.innerText = '○ Status: NONAKTIF';
         }
     }
 

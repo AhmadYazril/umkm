@@ -527,6 +527,14 @@ class KasirController extends Controller
             ? (string) $request->query('tab')
             : ($rawCode !== '' ? 'scan' : 'pos');
 
+        $dbSettings = Setting::pluck('value', 'key');
+        $orderModeDineIn = in_array((string) ($dbSettings['order_mode_dine_in'] ?? '1'), ['1', 'true', 'yes'], true);
+        $orderModeZendo = in_array((string) ($dbSettings['order_mode_zendo_tracking'] ?? '0'), ['1', 'true', 'yes'], true)
+            || in_array((string) ($dbSettings['order_mode_zendo_chat'] ?? '0'), ['1', 'true', 'yes'], true)
+            || in_array((string) ($dbSettings['order_mode_zendo'] ?? '0'), ['1', 'true', 'yes'], true);
+        $orderModeGrabfood = in_array((string) ($dbSettings['order_mode_grabfood'] ?? '0'), ['1', 'true', 'yes'], true)
+            || (! empty($dbSettings['grabfood_url'] ?? null));
+
         return view('kasir.index', compact(
             'catalogItems',
             'groupedCategories',
@@ -544,7 +552,10 @@ class KasirController extends Controller
             'portSuffix',
             'scheme',
             'baseQrUrl',
-            'activeTab'
+            'activeTab',
+            'orderModeDineIn',
+            'orderModeZendo',
+            'orderModeGrabfood'
         ));
     }
 

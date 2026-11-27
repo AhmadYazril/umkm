@@ -815,6 +815,9 @@ class NucomuController extends Controller
         $instagram = ! $isPlaceholder($settings['cafe_instagram'] ?? null) ? trim($settings['cafe_instagram']) : null;
         $tiktok = ! $isPlaceholder($settings['cafe_tiktok'] ?? null) ? trim($settings['cafe_tiktok']) : null;
         $grabfood = ! $isPlaceholder($settings['grabfood_url'] ?? null) ? trim($settings['grabfood_url']) : null;
+        $orderModeGrabfood = isset($settings['order_mode_grabfood'])
+            ? in_array((string) $settings['order_mode_grabfood'], ['1', 'true', 'yes'], true)
+            : (! empty($grabfood));
         $email = ! $isPlaceholder($settings['cafe_email'] ?? null) ? trim($settings['cafe_email']) : null;
         $mapsUrl = ! $isPlaceholder($settings['cafe_maps_url'] ?? null)
             ? trim($settings['cafe_maps_url'])
@@ -845,6 +848,7 @@ class NucomuController extends Controller
             'tiktok' => $tiktok,
             'tiktok_url' => $tiktok,
             'grabfood_url' => $grabfood,
+            'order_mode_grabfood' => $orderModeGrabfood,
             'email' => $email,
             'maps_url' => $mapsUrl,
             'maps_embed' => $mapsEmbed,
@@ -908,6 +912,11 @@ class NucomuController extends Controller
 
             if (! empty($dbSettings['grabfood_url'])) {
                 $grabfoodUrl = trim((string) $dbSettings['grabfood_url']);
+            }
+            if (isset($dbSettings['order_mode_grabfood'])) {
+                $orderModeGrabfood = in_array((string) $dbSettings['order_mode_grabfood'], ['1', 'true', 'yes'], true);
+            } else {
+                $orderModeGrabfood = ! empty($grabfoodUrl);
             }
             if (! empty($dbSettings['zendo_chat_template'])) {
                 $zendoChatTemplate = (string) $dbSettings['zendo_chat_template'];
@@ -1044,7 +1053,7 @@ class NucomuController extends Controller
         $primaryPhone = (! empty($couriers[0]['phone'])) ? $couriers[0]['phone'] : (string) $zendoWa;
         $primaryClean = (! empty($couriers[0]['clean_phone'])) ? $couriers[0]['clean_phone'] : $this->normalizeWhatsappNumber((string) $zendoWa);
 
-        $isAnyModeActive = $orderModeDineIn || $orderModeZendoTracking || $orderModeZendoChat;
+        $isAnyModeActive = $orderModeDineIn || $orderModeZendoTracking || $orderModeZendoChat || $orderModeGrabfood;
 
         return [
             'order_mode_dine_in' => $orderModeDineIn,
@@ -1057,7 +1066,7 @@ class NucomuController extends Controller
             'transaction_mode' => $mode,
             'hide_live_tracking' => $hideLiveTracking,
             'order_mode_zendo' => $orderModeZendo,
-            'order_mode_grabfood' => false,
+            'order_mode_grabfood' => $orderModeGrabfood,
             'grabfood_url' => $grabfoodUrl,
             'zendo_chat_template' => $zendoChatTemplate,
             'zendo_whatsapp' => $primaryPhone,
@@ -1855,11 +1864,12 @@ class NucomuController extends Controller
         $orderModeZendoTracking = (bool) ($txSettings['order_mode_zendo_tracking'] ?? false);
         $orderModeZendoChat = (bool) ($txSettings['order_mode_zendo_chat'] ?? false);
         $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
+        $orderModeGrabfood = (bool) ($txSettings['order_mode_grabfood'] ?? false);
 
         if (! $isAnyModeActive) {
             return response()->json([
                 'success' => false,
-                'message' => 'Layanan pemesanan sedang dinonaktifkan sementara oleh admin.',
+                'message' => 'Semua layanan pemesanan sedang dinonaktifkan sementara oleh admin.',
             ], 422);
         }
 
@@ -1869,15 +1879,15 @@ class NucomuController extends Controller
         $zendoTariff = $txSettings['zendo_tariff'];
 
         $requestedMethod = strtolower((string) $request->input('process_method', 'kasir'));
-        if (! in_array($requestedMethod, ['kasir', 'zendo'], true)) {
-            $requestedMethod = $orderModeDineIn ? 'kasir' : 'zendo';
+        if (! in_array($requestedMethod, ['kasir', 'zendo', 'grab'], true)) {
+            $requestedMethod = $orderModeDineIn ? 'kasir' : ($orderModeZendo ? 'zendo' : 'grab');
         }
         $processMethod = $requestedMethod;
 
         if ($processMethod === 'kasir' && ! $orderModeDineIn) {
             return response()->json([
                 'success' => false,
-                'message' => 'Layanan pemesanan makan di kafe sedang dinonaktifkan sementara oleh admin.',
+                'message' => 'Layanan pemesanan makan di kafe / pesan di tempat sedang dinonaktifkan sementara oleh admin.',
             ], 422);
         }
 
@@ -1885,6 +1895,13 @@ class NucomuController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Layanan pemesanan via Kurir Zendo sedang dinonaktifkan sementara oleh admin.',
+            ], 422);
+        }
+
+        if ($processMethod === 'grab' && ! $orderModeGrabfood) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Layanan pemesanan via GrabFood sedang dinonaktifkan sementara oleh admin.',
             ], 422);
         }
 

@@ -18,6 +18,11 @@ class OrderController extends Controller
         if (empty($cart)) {
             return redirect()->route('cart')->with('error', 'Keranjang Anda kosong.');
         }
+
+        $orderModeDineIn = in_array((string) Setting::get('order_mode_dine_in', '1'), ['1', 'true', 'yes'], true);
+        if (! $orderModeDineIn) {
+            return back()->with('error', 'Layanan pemesanan makan di tempat / kafe sedang dinonaktifkan sementara oleh admin.')->withInput();
+        }
         $tables = Table::where('is_active', true)->get();
         $total = collect($cart)->sum('line_total');
 
@@ -39,6 +44,11 @@ class OrderController extends Controller
         $cart = session('cart', []);
         if (empty($cart)) {
             return redirect()->route('cart')->with('error', 'Keranjang Anda kosong.');
+        }
+
+        $orderModeDineIn = in_array((string) Setting::get('order_mode_dine_in', '1'), ['1', 'true', 'yes'], true);
+        if (! $orderModeDineIn) {
+            return back()->with('error', 'Layanan pemesanan makan di tempat / kafe sedang dinonaktifkan sementara oleh admin.')->withInput();
         }
 
         $subtotal = collect($cart)->sum('line_total');

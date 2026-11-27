@@ -520,27 +520,39 @@
                                             <i class="fa-solid fa-barcode text-[11px]"></i>
                                             <span>Di Tempat</span>
                                         </span>
-                                        <span class="text-[10px] font-normal opacity-90 leading-none">Barcode</span>
+                                        <span class="text-[9.5px] font-normal opacity-90 leading-none">
+                                            {{ ($orderModeDineIn ?? true) ? 'Barcode' : '🔴 Nonaktif' }}
+                                        </span>
                                     </button>
 
                                     <button
                                         type="button"
                                         id="channelBtn-zendo"
                                         onclick="setKasirOrderChannel('zendo')"
-                                        class="kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                        class="kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer"
                                     >
-                                        <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-6 h-6 rounded-full object-cover shrink-0">
-                                        <span>Zendo</span>
+                                        <span class="flex items-center gap-1 leading-tight">
+                                            <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-4 h-4 rounded-full object-cover shrink-0">
+                                            <span>Zendo</span>
+                                        </span>
+                                        <span class="text-[9.5px] font-normal {{ ($orderModeZendo ?? false) ? 'text-sub' : 'text-rose-600 font-bold' }} leading-none">
+                                            {{ ($orderModeZendo ?? false) ? 'Kurir' : '🔴 Nonaktif' }}
+                                        </span>
                                     </button>
 
                                     <button
                                         type="button"
                                         id="channelBtn-grab"
                                         onclick="setKasirOrderChannel('grab')"
-                                        class="kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                        class="kasir-channel-btn min-h-[46px] px-2 py-1.5 rounded-lg bg-white text-ink border border-line text-xs font-bold transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer"
                                     >
-                                        <img src="{{ asset('images/logos/grabfood.png') }}" alt="Logo GrabFood" class="w-6 h-6 rounded-md object-contain bg-white shrink-0">
-                                        <span>Grab</span>
+                                        <span class="flex items-center gap-1 leading-tight">
+                                            <img src="{{ asset('images/logos/grabfood.png') }}" alt="Logo GrabFood" class="w-4 h-4 rounded-md object-contain bg-white shrink-0">
+                                            <span>Grab</span>
+                                        </span>
+                                        <span class="text-[9.5px] font-normal {{ ($orderModeGrabfood ?? false) ? 'text-sub' : 'text-rose-600 font-bold' }} leading-none">
+                                            {{ ($orderModeGrabfood ?? false) ? 'Mitra' : '🔴 Nonaktif' }}
+                                        </span>
                                     </button>
                                 </div>
 
@@ -1970,6 +1982,11 @@
          ========================================================================= --}}
     <script>
         const KASIR_CATALOG = @json($catalogJsMap);
+        const KASIR_CHANNEL_CONFIG = {
+            direct: @json($orderModeDineIn ?? true),
+            zendo: @json($orderModeZendo ?? false),
+            grab: @json($orderModeGrabfood ?? false),
+        };
         const KASIR_CHANNEL_ASSETS = {
             zendo: {
                 logo: @json(asset('images/logos/zendo-courier.png')),
@@ -3026,10 +3043,14 @@
                     if (bannerLogo) bannerLogo.src = cfg.logo;
                     if (bannerTitle) bannerTitle.textContent = cfg.title;
                     if (bannerPill) {
-                        bannerPill.textContent = cfg.pill;
-                        bannerPill.className = cfg.pillClass;
+                        const isChannelActive = KASIR_CHANNEL_CONFIG[normalized];
+                        bannerPill.textContent = isChannelActive ? cfg.pill : cfg.pill + ' • Nonaktif di Web';
+                        bannerPill.className = isChannelActive ? cfg.pillClass : 'px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-600 text-white';
                     }
                     if (bannerDesc) bannerDesc.textContent = cfg.desc;
+                }
+                if (!KASIR_CHANNEL_CONFIG[normalized] && typeof showKasirToast === 'function') {
+                    showKasirToast('Info: Saluran ' + (normalized === 'zendo' ? 'Zendo' : 'GrabFood') + ' sedang dinonaktifkan di pengaturan Admin');
                 }
                 if (dineWrap) dineWrap.classList.add('hidden');
                 if (tableWrap) tableWrap.classList.add('hidden');

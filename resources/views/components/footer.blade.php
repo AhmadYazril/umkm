@@ -17,6 +17,7 @@
     $footerInstagram = $contact['instagram'] ?? null;
     $footerTiktok = $contact['tiktok'] ?? null;
     $footerGrabfood = $contact['grabfood_url'] ?? null;
+    $footerGrabActive = (bool) ($contact['order_mode_grabfood'] ?? (!empty($footerGrabfood)));
     $footerMapsUrl = $contact['maps_url'] ?? config('nucomu.contact.google_maps_url', 'https://maps.google.com/?q=Nucomu+Cafe+Tulungagung');
     $footerEmail = $contact['email'] ?? null;
     $footerHours = $contact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB');
@@ -230,7 +231,7 @@
                         </a>
                     @endif
 
-                    @if(!empty($footerGrabfood))
+                    @if(!empty($footerGrabfood) && $footerGrabActive)
                         <a href="{{ $footerGrabfood }}" 
                            target="_blank" 
                            rel="noopener noreferrer" 

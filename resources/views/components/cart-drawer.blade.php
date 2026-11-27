@@ -17,7 +17,9 @@
     $orderModeZendoTracking = (bool) ($txSettings['order_mode_zendo_tracking'] ?? false);
     $orderModeZendoChat = (bool) ($txSettings['order_mode_zendo_chat'] ?? false);
     $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
-    $isAnyOrderModeActive = (bool) ($txSettings['is_any_mode_active'] ?? ($orderModeDineIn || $orderModeZendo));
+    $orderModeGrabfood = (bool) ($txSettings['order_mode_grabfood'] ?? false);
+    $grabfoodUrl = trim((string) ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', '')));
+    $isAnyOrderModeActive = (bool) ($txSettings['is_any_mode_active'] ?? ($orderModeDineIn || $orderModeZendo || $orderModeGrabfood));
     $orderDineInCash = (bool) ($txSettings['order_dine_in_cash'] ?? true);
     $orderDineInQris = (bool) ($txSettings['order_dine_in_qris'] ?? true);
     $qrisImage = $txSettings['qris_image'] ?? null;
@@ -625,14 +627,34 @@
             </div>
 
             @if($isAnyOrderModeActive)
-            <!-- Monochromatic Checkout Button (Switches to in-drawer checkout) -->
-            <button type="button" 
-                    id="cart-checkout-btn"
-                    onclick="switchCartView('checkout')" 
-                    class="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
-                <span>Checkout / Pesan Sekarang</span>
-                <span class="material-symbols-outlined text-lg">arrow_forward</span>
-            </button>
+                @if($orderModeDineIn || $orderModeZendo)
+                <!-- Monochromatic Checkout Button (Switches to in-drawer checkout) -->
+                <button type="button" 
+                        id="cart-checkout-btn"
+                        onclick="switchCartView('checkout')" 
+                        class="w-full py-3.5 px-5 rounded-2xl bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] font-bold text-sm tracking-wide shadow-md active:scale-98 transition-all flex items-center justify-center space-x-2 cursor-pointer">
+                    <span>Checkout / Pesan Sekarang</span>
+                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+                </button>
+                @endif
+
+                @if($orderModeGrabfood && !empty($grabfoodUrl))
+                <!-- Tombol Pesan via GrabFood Langsung -->
+                <a href="{{ $grabfoodUrl }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="w-full py-3 px-4 rounded-2xl bg-[#00B14F] hover:bg-[#008C3E] text-white font-bold text-xs tracking-wide shadow-xs active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-4 h-4 object-contain">
+                    <span>Pesan Menu di GrabFood</span>
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                </a>
+                @endif
+            @else
+                <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-700 dark:text-amber-400 text-xs text-center leading-relaxed">
+                    <i class="fa-solid fa-store-slash text-base mb-1 block"></i>
+                    <strong>Pemesanan Sedang Tutup</strong><br>
+                    Semua saluran pemesanan (Di Tempat, Zendo, dan GrabFood) sedang dinonaktifkan sementara oleh kafe.
+                </div>
             @endif
         </div>
     </div>
@@ -646,33 +668,54 @@
             <div class="flex-grow overflow-y-auto p-4 sm:p-5 space-y-4 drawer-scroll">
                 
                 <!-- 1. METODE PROSES TRANSAKSI (Kasir vs Zendo Courier) -->
-                @if($orderModeDineIn && $orderModeZendo)
+                @if($orderModeDineIn || $orderModeZendo)
                 <div class="space-y-2">
                     <label class="text-xs font-bold text-[var(--text)] uppercase tracking-wider flex items-center gap-1.5">
                         <span>1. Metode Pesanan</span>
                     </label>
                     <div class="grid grid-cols-2 gap-2.5">
                         <div id="method-card-kasir" 
-                             onclick="selectDrawerMethod('kasir')" 
-                             class="drawer-method-card active p-3 rounded-2xl bg-[var(--surface-strong)] border-2 border-[var(--accent-solid)] shadow-xs cursor-pointer transition-all">
+                             @if($orderModeDineIn) onclick="selectDrawerMethod('kasir')" @endif
+                             class="drawer-method-card {{ $initialProcessMethod === 'kasir' && $orderModeDineIn ? 'active bg-[var(--surface-strong)] border-2 border-[var(--accent-solid)] shadow-xs' : 'bg-[var(--surface)] border-2 border-[var(--border)]' }} p-3 rounded-2xl transition-all {{ $orderModeDineIn ? 'cursor-pointer hover:border-[var(--border-strong)]' : 'opacity-45 cursor-not-allowed bg-[var(--surface-muted)]' }}">
                             <div class="flex items-start justify-between">
-                                <span class="material-symbols-outlined text-[var(--text)] text-xl">store</span>
-                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-[var(--accent-solid)]"></span>
+                                <span class="material-symbols-outlined {{ $orderModeDineIn ? 'text-[var(--text)]' : 'text-[var(--text-muted)]' }} text-xl">store</span>
+                                <span class="method-dot w-2.5 h-2.5 rounded-full {{ $initialProcessMethod === 'kasir' && $orderModeDineIn ? 'bg-[var(--accent-solid)]' : 'bg-[var(--border-strong)]' }}"></span>
                             </div>
                             <h5 class="text-xs font-bold text-[var(--text)] mt-2">Kasir Kafe</h5>
-                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">Dine-In / Takeaway</p>
+                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">
+                                {{ $orderModeDineIn ? 'Dine-In / Takeaway' : '🔴 Tutup Sementara' }}
+                            </p>
                         </div>
                         <div id="method-card-zendo" 
-                             onclick="selectDrawerMethod('zendo')" 
-                             class="drawer-method-card p-3 rounded-2xl bg-[var(--surface)] border-2 border-[var(--border)] hover:border-[var(--border-strong)] cursor-pointer transition-all">
+                             @if($orderModeZendo) onclick="selectDrawerMethod('zendo')" @endif
+                             class="drawer-method-card {{ $initialProcessMethod === 'zendo' && $orderModeZendo ? 'active bg-[var(--surface-strong)] border-2 border-[var(--accent-solid)] shadow-xs' : 'bg-[var(--surface)] border-2 border-[var(--border)]' }} p-3 rounded-2xl transition-all {{ $orderModeZendo ? 'cursor-pointer hover:border-[var(--border-strong)]' : 'opacity-45 cursor-not-allowed bg-[var(--surface-muted)]' }}">
                             <div class="flex items-start justify-between">
-                                <span class="material-symbols-outlined text-[var(--text-muted)] text-xl">two_wheeler</span>
-                                <span class="method-dot w-2.5 h-2.5 rounded-full bg-[var(--border-strong)]"></span>
+                                <span class="material-symbols-outlined {{ $orderModeZendo ? 'text-[var(--text)]' : 'text-[var(--text-muted)]' }} text-xl">two_wheeler</span>
+                                <span class="method-dot w-2.5 h-2.5 rounded-full {{ $initialProcessMethod === 'zendo' && $orderModeZendo ? 'bg-[var(--accent-solid)]' : 'bg-[var(--border-strong)]' }}"></span>
                             </div>
                             <h5 class="text-xs font-bold text-[var(--text)] mt-2">Kurir Zendo</h5>
-                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">{{ count($zendoCouriers) }} Kurir Siaga</p>
+                            <p class="text-[10px] text-[var(--text-muted)] mt-0.5">
+                                {{ $orderModeZendo ? count($zendoCouriers).' Kurir Siaga' : '🔴 Tutup Sementara' }}
+                            </p>
                         </div>
                     </div>
+                </div>
+                @endif
+
+                @if($orderModeGrabfood && !empty($grabfoodUrl))
+                <!-- Opsi Tambahan / Alternatif Pesan GrabFood -->
+                <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-5 h-5 object-contain shrink-0">
+                        <div class="min-w-0">
+                            <span class="text-[11px] font-bold text-[var(--text)] block truncate">Mau pesan via GrabFood?</span>
+                            <span class="text-[9.5px] text-[var(--text-muted)] block truncate">Menu kami juga dapat dipesan langsung di aplikasi Grab.</span>
+                        </div>
+                    </div>
+                    <a href="{{ $grabfoodUrl }}" target="_blank" rel="noopener noreferrer" class="shrink-0 px-2.5 py-1 rounded-lg bg-[#00B14F] hover:bg-[#008C3E] text-white text-[10.5px] font-bold flex items-center gap-1 transition">
+                        <span>Buka Grab</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    </a>
                 </div>
                 @endif
 
@@ -1882,7 +1925,18 @@
         });
     };
 
+    const isDineInActive = @json($orderModeDineIn);
+    const isZendoActive = @json($orderModeZendo);
+
     window.selectDrawerMethod = function(method) {
+        if (method === 'kasir' && !isDineInActive) {
+            alert('Layanan pemesanan makan di kafe / pesan di tempat sedang dinonaktifkan sementara oleh kafe.');
+            return;
+        }
+        if (method === 'zendo' && !isZendoActive) {
+            alert('Layanan pemesanan via Kurir Zendo sedang dinonaktifkan sementara oleh kafe.');
+            return;
+        }
         window.currentDrawerMethod = method;
         const cardKasir = document.getElementById('method-card-kasir');
         const cardZendo = document.getElementById('method-card-zendo');
@@ -1960,6 +2014,22 @@
         const address = (addressInput ? addressInput.value : '').trim();
         const tableNumber = (tableInput ? tableInput.value : '').trim();
         const notes = (notesInput ? notesInput.value : '').trim();
+
+        if (!isZendo && !isDineInActive) {
+            if (errorEl) {
+                errorEl.innerText = 'Layanan pemesanan makan di kafe / pesan di tempat sedang dinonaktifkan sementara oleh kafe.';
+                errorEl.classList.remove('hidden');
+            }
+            return;
+        }
+
+        if (isZendo && !isZendoActive) {
+            if (errorEl) {
+                errorEl.innerText = 'Layanan pemesanan via Kurir Zendo sedang dinonaktifkan sementara oleh kafe.';
+                errorEl.classList.remove('hidden');
+            }
+            return;
+        }
 
         if (!customerName || !customerPhone) {
             if (errorEl) {
