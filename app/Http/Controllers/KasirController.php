@@ -496,15 +496,42 @@ class KasirController extends Controller
         $todayRevenue = 0;
         $pendingOrdersCount = 0;
 
+        $dbSettings = Setting::pluck('value', 'key');
+        $orderModeDineIn = in_array((string) ($dbSettings['order_mode_dine_in'] ?? '1'), ['1', 'true', 'yes'], true);
+        $orderModeZendo = in_array((string) ($dbSettings['order_mode_zendo_tracking'] ?? '0'), ['1', 'true', 'yes'], true)
+            || in_array((string) ($dbSettings['order_mode_zendo_chat'] ?? '0'), ['1', 'true', 'yes'], true)
+            || in_array((string) ($dbSettings['order_mode_zendo'] ?? '0'), ['1', 'true', 'yes'], true);
+        $orderModeGrabfood = in_array((string) ($dbSettings['order_mode_grabfood'] ?? '0'), ['1', 'true', 'yes'], true)
+            || (! empty($dbSettings['grabfood_url'] ?? null));
+
+        $activeChannels = [];
+        if ($orderModeDineIn) {
+            $activeChannels[] = Order::CHANNEL_DIRECT;
+        }
+        if ($orderModeZendo) {
+            $activeChannels[] = Order::CHANNEL_ZENDO;
+        }
+        if ($orderModeGrabfood) {
+            $activeChannels[] = Order::CHANNEL_GRAB;
+        }
+
         try {
-            $recentOrders = Order::with(['items', 'table', 'zendoDelivery'])->latest()->take(60)->get();
+            $recentOrders = Order::forChannels($activeChannels)
+                ->with(['items', 'table', 'zendoDelivery'])
+                ->latest()
+                ->take(60)
+                ->get();
             $recentOrdersPayload = $recentOrders->map(fn (Order $o): array => $this->formatOrderForKasir($o))->values()->all();
             $tables = Table::orderBy('number')->get();
-            $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
-            $todayRevenue = (int) Order::whereDate('created_at', today())
+            $todayOrdersCount = Order::forChannels($activeChannels)
+                ->whereDate('created_at', today())
+                ->where('status', '!=', 'cancelled')
+                ->count();
+            $todayRevenue = (int) Order::forChannels($activeChannels)
+                ->whereDate('created_at', today())
                 ->where('status', '!=', 'cancelled')
                 ->sum('total');
-            $pendingOrdersCount = $this->countUnpaidOrders();
+            $pendingOrdersCount = $this->countUnpaidOrders($activeChannels);
         } catch (\Throwable $e) {
             // Fallback gracefully if tables are empty
         }
@@ -526,14 +553,6 @@ class KasirController extends Controller
         $activeTab = in_array($request->query('tab'), ['pos', 'stock', 'scan', 'orders'], true)
             ? (string) $request->query('tab')
             : ($rawCode !== '' ? 'scan' : 'pos');
-
-        $dbSettings = Setting::pluck('value', 'key');
-        $orderModeDineIn = in_array((string) ($dbSettings['order_mode_dine_in'] ?? '1'), ['1', 'true', 'yes'], true);
-        $orderModeZendo = in_array((string) ($dbSettings['order_mode_zendo_tracking'] ?? '0'), ['1', 'true', 'yes'], true)
-            || in_array((string) ($dbSettings['order_mode_zendo_chat'] ?? '0'), ['1', 'true', 'yes'], true)
-            || in_array((string) ($dbSettings['order_mode_zendo'] ?? '0'), ['1', 'true', 'yes'], true);
-        $orderModeGrabfood = in_array((string) ($dbSettings['order_mode_grabfood'] ?? '0'), ['1', 'true', 'yes'], true)
-            || (! empty($dbSettings['grabfood_url'] ?? null));
 
         return view('kasir.index', compact(
             'catalogItems',
@@ -886,19 +905,21 @@ class KasirController extends Controller
             ];
         }
 
+        $activeChannels = Order::getActiveChannels();
         $todayOrdersCount = 0;
         $todayRevenue = 0;
         $pendingOrdersCount = 0;
         $recentOrders = [];
 
         try {
-            $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
-            $todayRevenue = (int) Order::whereDate('created_at', today())
+            $todayOrdersCount = Order::forChannels($activeChannels)->whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
+            $todayRevenue = (int) Order::forChannels($activeChannels)->whereDate('created_at', today())
                 ->where('status', '!=', 'cancelled')
                 ->sum('total');
-            $pendingOrdersCount = $this->countUnpaidOrders();
+            $pendingOrdersCount = $this->countUnpaidOrders($activeChannels);
 
-            $recentOrders = Order::with(['items', 'table', 'zendoDelivery'])
+            $recentOrders = Order::forChannels($activeChannels)
+                ->with(['items', 'table', 'zendoDelivery'])
                 ->latest()
                 ->take(60)
                 ->get()
@@ -917,6 +938,11 @@ class KasirController extends Controller
             ],
             'stocks' => $stocks,
             'recent_orders' => $recentOrders,
+            'channel_config' => [
+                'direct' => in_array(Order::CHANNEL_DIRECT, $activeChannels, true),
+                'zendo' => in_array(Order::CHANNEL_ZENDO, $activeChannels, true),
+                'grab' => in_array(Order::CHANNEL_GRAB, $activeChannels, true),
+            ],
         ]);
     }
 
@@ -1220,9 +1246,10 @@ class KasirController extends Controller
         $order->load(['items', 'table', 'zendoDelivery']);
 
         if ($request->expectsJson()) {
-            $todayOrdersCount = Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
-            $todayRevenue = (int) Order::whereDate('created_at', today())->where('status', '!=', 'cancelled')->sum('total');
-            $pendingOrdersCount = $this->countUnpaidOrders();
+            $activeChannels = Order::getActiveChannels();
+            $todayOrdersCount = Order::forChannels($activeChannels)->whereDate('created_at', today())->where('status', '!=', 'cancelled')->count();
+            $todayRevenue = (int) Order::forChannels($activeChannels)->whereDate('created_at', today())->where('status', '!=', 'cancelled')->sum('total');
+            $pendingOrdersCount = $this->countUnpaidOrders($activeChannels);
 
             $message = match ($order->status) {
                 'completed' => "Pembayaran pesanan #{$order->code} selesai & lunas.",
@@ -1261,11 +1288,16 @@ class KasirController extends Controller
     }
 
     /**
-     * Count all orders currently awaiting payment in the Kasir workspace.
+     * Count all orders currently awaiting payment in the Kasir workspace for active channels.
+     *
+     * @param  array<int, string>|null  $activeChannels
      */
-    protected function countUnpaidOrders(): int
+    protected function countUnpaidOrders(?array $activeChannels = null): int
     {
-        return Order::whereNotIn('status', ['completed', 'cancelled'])
+        $activeChannels ??= Order::getActiveChannels();
+
+        return Order::forChannels($activeChannels)
+            ->whereNotIn('status', ['completed', 'cancelled'])
             ->where(function ($query): void {
                 $query->where('payment_status', '!=', 'paid')
                     ->orWhereNull('payment_status');

@@ -30,106 +30,12 @@ class OrderController extends Controller
     {
         Order::ensureChannelColumnsExist();
 
-        $query = Order::with(['table', 'items', 'zendoDelivery']);
-
-        $activeChannel = null;
-        if ($request->filled('channel')) {
-            $requestedChannel = strtolower(trim((string) $request->channel));
-            if (in_array($requestedChannel, [Order::CHANNEL_DIRECT, Order::CHANNEL_ZENDO, Order::CHANNEL_GRAB], true)) {
-                $activeChannel = $requestedChannel;
-                $query->forChannel($activeChannel);
-            }
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        if ($request->filled('kind')) {
-            $this->applyOrderKindFilter($query, (string) $request->kind);
-        }
-        if ($request->filled('type')) {
-            $query->where('order_type', $request->type);
-        }
-        if ($request->filled('date')) {
-            $query->whereDate('created_at', $request->date);
-        }
-        if ($request->filled('search')) {
-            $search = trim((string) $request->search);
-            $query->where(function ($q) use ($search) {
-                $q->where('code', 'like', '%'.$search.'%')
-                    ->orWhere('customer_name', 'like', '%'.$search.'%')
-                    ->orWhere('customer_phone', 'like', '%'.$search.'%');
-            });
-        }
-
-        $orders = $query->latest()->paginate(20)->withQueryString();
-
-        // Transaction Summary Metrics & Status Counts
-        $totalOrders = Order::count();
-        $pendingOrders = Order::where('status', 'pending')->count();
-        $processingOrders = Order::where('status', 'processing')->count();
-        $readyOrders = Order::where('status', 'ready')->count();
-        $completedOrders = Order::where('status', 'completed')->count();
-        $cancelledOrders = Order::where('status', 'cancelled')->count();
-        $totalRevenue = (int) Order::where('status', 'completed')->sum('total');
-
-        // Separated Channel Counts & Revenues (Di Tempat/Barcode, Zendo, GrabFood)
-        $totalChannelDirect = Order::forChannel(Order::CHANNEL_DIRECT)->count();
-        $totalChannelZendo = Order::forChannel(Order::CHANNEL_ZENDO)->count();
-        $totalChannelGrab = Order::forChannel(Order::CHANNEL_GRAB)->count();
-
-        $revenueChannelDirect = (int) Order::forChannel(Order::CHANNEL_DIRECT)
-            ->where('status', '!=', 'cancelled')
-            ->where(function ($q): void {
-                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
-            })
-            ->sum('total');
-        $revenueChannelZendo = (int) Order::forChannel(Order::CHANNEL_ZENDO)
-            ->where('status', '!=', 'cancelled')
-            ->where(function ($q): void {
-                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
-            })
-            ->sum('total');
-        $revenueChannelGrab = (int) Order::forChannel(Order::CHANNEL_GRAB)
-            ->where('status', '!=', 'cancelled')
-            ->where(function ($q): void {
-                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
-            })
-            ->sum('total');
-
-        // Granular Kind Counts (backward-compatible)
-        $totalDineIn = $totalChannelDirect;
-
-        $totalZendoTracking = Order::forChannel(Order::CHANNEL_ZENDO)
-            ->where(function ($sub2): void {
-                $sub2->where('notes', 'like', '%Pin:%')
-                    ->orWhere('notes', 'like', '%Tahap_Zendo%')
-                    ->orWhere('form_data', 'like', '%customer_lat%')
-                    ->orWhereHas('zendoDelivery');
-            })
-            ->count();
-
-        $totalZendoChat = Order::forChannel(Order::CHANNEL_ZENDO)
-            ->where(function ($q): void {
-                $q->whereNull('notes')
-                    ->orWhere(function ($n): void {
-                        $n->where('notes', 'not like', '%Pin:%')
-                            ->where('notes', 'not like', '%Tahap_Zendo%');
-                    });
-            })
-            ->where(function ($sub3): void {
-                $sub3->whereNull('form_data')
-                    ->orWhere('form_data', 'not like', '%customer_lat%');
-            })
-            ->whereDoesntHave('zendoDelivery')
-            ->count();
-
         // Mode Toggles & Settings with Backward-Compatible Fallback
         $dbSettings = Setting::pluck('value', 'key');
         $legacyMode = $dbSettings['transaction_mode'] ?? 'both';
         $legacyHideTracking = in_array((string) ($dbSettings['hide_live_tracking'] ?? '0'), ['1', 'true', 'yes'], true);
 
-        // Mode 1: Makan di Cafe (Kasir)
+        // Mode 1: Makan di Cafe (Kasir / Pesan di Tempat)
         if (isset($dbSettings['order_mode_dine_in'])) {
             $orderModeDineIn = in_array((string) $dbSettings['order_mode_dine_in'], ['1', 'true', 'yes'], true);
         } else {
@@ -157,9 +63,144 @@ class OrderController extends Controller
 
         $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
 
-        $orderModeGrabfood = isset($dbSettings['order_mode_grabfood'])
-            ? in_array((string) $dbSettings['order_mode_grabfood'], ['1', 'true', 'yes'], true)
-            : (! empty($dbSettings['grabfood_url'] ?? null));
+        $orderModeGrabfood = in_array((string) ($dbSettings['order_mode_grabfood'] ?? '1'), ['1', 'true', 'yes'], true);
+        $grabfoodUrl = trim((string) ($dbSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', '')));
+
+        // Saluran pemesanan yang saat ini aktif (ON)
+        $activeChannels = [];
+        if ($orderModeDineIn) {
+            $activeChannels[] = Order::CHANNEL_DIRECT;
+        }
+        if ($orderModeZendo) {
+            $activeChannels[] = Order::CHANNEL_ZENDO;
+        }
+        if ($orderModeGrabfood) {
+            $activeChannels[] = Order::CHANNEL_GRAB;
+        }
+
+        $query = Order::with(['table', 'items', 'zendoDelivery']);
+
+        $activeChannel = null;
+        $channelIsDisabled = false;
+
+        if ($request->filled('channel')) {
+            $requestedChannel = strtolower(trim((string) $request->channel));
+            if (in_array($requestedChannel, [Order::CHANNEL_DIRECT, Order::CHANNEL_ZENDO, Order::CHANNEL_GRAB], true)) {
+                $activeChannel = $requestedChannel;
+                // Jika saluran yang diminta saat ini sedang NONAKTIF (OFF), sembunyikan riwayatnya
+                if (! in_array($activeChannel, $activeChannels, true)) {
+                    $channelIsDisabled = true;
+                    $query->whereRaw('1 = 0');
+                } else {
+                    $query->forChannel($activeChannel);
+                }
+            }
+        } else {
+            // Tampilan gabungan default: hanya tampilkan saluran yang saat ini aktif (ON)
+            $query->forChannels($activeChannels);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('kind')) {
+            $requestedKind = (string) $request->kind;
+            // Cek apakah jenis layanan yang diminta termasuk saluran yang nonaktif
+            if (
+                (in_array($requestedKind, ['dine_in', Order::CHANNEL_DIRECT], true) && ! $orderModeDineIn) ||
+                (in_array($requestedKind, ['zendo', 'zendo_tracking', 'zendo_chat'], true) && ! $orderModeZendo) ||
+                ($requestedKind === Order::CHANNEL_GRAB && ! $orderModeGrabfood)
+            ) {
+                $channelIsDisabled = true;
+                $query->whereRaw('1 = 0');
+            } else {
+                $this->applyOrderKindFilter($query, $requestedKind);
+            }
+        }
+        if ($request->filled('type')) {
+            $query->where('order_type', $request->type);
+        }
+        if ($request->filled('date')) {
+            $query->whereDate('created_at', $request->date);
+        }
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('code', 'like', '%'.$search.'%')
+                    ->orWhere('customer_name', 'like', '%'.$search.'%')
+                    ->orWhere('customer_phone', 'like', '%'.$search.'%');
+            });
+        }
+
+        $orders = $query->latest()->paginate(20)->withQueryString();
+
+        // Transaction Summary Metrics & Status Counts (Hanya untuk saluran yang sedang aktif/tampil)
+        $visibleBaseQuery = Order::forChannels($activeChannels);
+
+        $totalOrders = $visibleBaseQuery->count();
+        $pendingOrders = (clone $visibleBaseQuery)->where('status', 'pending')->count();
+        $processingOrders = (clone $visibleBaseQuery)->where('status', 'processing')->count();
+        $readyOrders = (clone $visibleBaseQuery)->where('status', 'ready')->count();
+        $completedOrders = (clone $visibleBaseQuery)->where('status', 'completed')->count();
+        $cancelledOrders = (clone $visibleBaseQuery)->where('status', 'cancelled')->count();
+        $totalRevenue = (int) (clone $visibleBaseQuery)->where('status', 'completed')->sum('total');
+
+        // Separated Channel Counts & Revenues (Hanya dihitung jika saluran ON; jika OFF bernilai 0 / riwayat disembunyikan)
+        $totalChannelDirect = $orderModeDineIn ? Order::forChannel(Order::CHANNEL_DIRECT)->count() : 0;
+        $totalChannelZendo = $orderModeZendo ? Order::forChannel(Order::CHANNEL_ZENDO)->count() : 0;
+        $totalChannelGrab = $orderModeGrabfood ? Order::forChannel(Order::CHANNEL_GRAB)->count() : 0;
+
+        $revenueChannelDirect = $orderModeDineIn ? (int) Order::forChannel(Order::CHANNEL_DIRECT)
+            ->where('status', '!=', 'cancelled')
+            ->where(function ($q): void {
+                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
+            })
+            ->sum('total') : 0;
+
+        $revenueChannelZendo = $orderModeZendo ? (int) Order::forChannel(Order::CHANNEL_ZENDO)
+            ->where('status', '!=', 'cancelled')
+            ->where(function ($q): void {
+                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
+            })
+            ->sum('total') : 0;
+
+        $revenueChannelGrab = $orderModeGrabfood ? (int) Order::forChannel(Order::CHANNEL_GRAB)
+            ->where('status', '!=', 'cancelled')
+            ->where(function ($q): void {
+                $q->where('status', 'completed')->orWhere('payment_status', 'paid');
+            })
+            ->sum('total') : 0;
+
+        // Granular Kind Counts (jika saluran nonaktif, bernilai 0)
+        $totalDineIn = $totalChannelDirect;
+
+        $totalZendoTracking = $orderModeZendoTracking ? Order::forChannel(Order::CHANNEL_ZENDO)
+            ->where(function ($sub2): void {
+                $sub2->where('notes', 'like', '%Pin:%')
+                    ->orWhere('notes', 'like', '%Tahap_Zendo%')
+                    ->orWhere('form_data', 'like', '%customer_lat%')
+                    ->orWhereHas('zendoDelivery');
+            })
+            ->count() : 0;
+
+        $totalZendoChat = $orderModeZendoChat ? Order::forChannel(Order::CHANNEL_ZENDO)
+            ->where(function ($q): void {
+                $q->whereNull('notes')
+                    ->orWhere(function ($n): void {
+                        $n->where('notes', 'not like', '%Pin:%')
+                            ->where('notes', 'not like', '%Tahap_Zendo%');
+                    });
+            })
+            ->where(function ($sub3): void {
+                $sub3->whereNull('form_data')
+                    ->orWhere('form_data', 'not like', '%customer_lat%');
+            })
+            ->whereDoesntHave('zendoDelivery')
+            ->count() : 0;
+
+        $orderModeZendo = $orderModeZendoTracking || $orderModeZendoChat;
+
+        $orderModeGrabfood = in_array((string) ($dbSettings['order_mode_grabfood'] ?? '1'), ['1', 'true', 'yes'], true);
         $grabfoodUrl = trim((string) ($dbSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', '')));
 
         // Sub-settings
@@ -188,6 +229,8 @@ class OrderController extends Controller
             'cancelledOrders',
             'totalRevenue',
             'activeChannel',
+            'activeChannels',
+            'channelIsDisabled',
             'totalChannelDirect',
             'totalChannelZendo',
             'totalChannelGrab',
@@ -258,6 +301,7 @@ class OrderController extends Controller
         Setting::set('order_mode_dine_in', $dineIn ? '1' : '0');
         Setting::set('order_mode_zendo_tracking', $tracking ? '1' : '0');
         Setting::set('order_mode_zendo_chat', $chat ? '1' : '0');
+        Setting::set('order_mode_zendo', ($tracking || $chat) ? '1' : '0');
         Setting::set('order_mode_grabfood', $grabfood ? '1' : '0');
 
         // Sub-pengaturan Mode 1: Makan di Cafe
@@ -505,6 +549,8 @@ class OrderController extends Controller
             $fileSlug = 'bulanan-'.$startDate->format('Y-m');
         }
 
+        $activeChannels = Order::getActiveChannels();
+
         $query = Order::with(['table', 'items', 'zendoDelivery'])
             ->whereBetween('created_at', [$startDate, $endDate]);
 
@@ -519,16 +565,18 @@ class OrderController extends Controller
         if ($request->filled('channel') && $request->query('channel') !== 'all') {
             $channelFilter = strtolower(trim((string) $request->query('channel')));
             if (in_array($channelFilter, [Order::CHANNEL_DIRECT, Order::CHANNEL_ZENDO, Order::CHANNEL_GRAB], true)) {
-                $query->forChannel($channelFilter);
+                if (! in_array($channelFilter, $activeChannels, true)) {
+                    $query->whereRaw('1 = 0');
+                } else {
+                    $query->forChannel($channelFilter);
+                }
                 $filterParts[] = 'Sumber: '.match ($channelFilter) {
                     Order::CHANNEL_DIRECT => 'Di Tempat (Barcode)',
                     Order::CHANNEL_ZENDO => 'Zendo',
                     Order::CHANNEL_GRAB => 'GrabFood',
                 };
             }
-        }
-
-        if ($request->filled('kind') && $request->query('kind') !== 'all') {
+        } elseif ($request->filled('kind') && $request->query('kind') !== 'all') {
             $kindFilter = (string) $request->query('kind');
             $this->applyOrderKindFilter($query, $kindFilter);
             $filterParts[] = 'Jenis: '.match ($kindFilter) {
@@ -539,6 +587,9 @@ class OrderController extends Controller
                 'grab' => 'GrabFood',
                 default => $kindFilter,
             };
+        } else {
+            // Terapkan hanya saluran yang saat ini aktif (ON)
+            $query->forChannels($activeChannels);
         }
 
         $orders = $query->orderBy('created_at', 'desc')->get();

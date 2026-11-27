@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class Order extends Model
@@ -76,6 +77,31 @@ class Order extends Model
                         $table->string('barcode_type', 20)->nullable()->after('order_channel');
                     }
                 });
+            }
+
+            if (Schema::hasColumn('orders', 'order_channel')) {
+                DB::table('orders')
+                    ->where(function ($q): void {
+                        $q->whereNull('order_channel')
+                            ->orWhere('order_channel', self::CHANNEL_DIRECT);
+                    })
+                    ->where(function ($q): void {
+                        $q->where('notes', 'like', '%[KURIR ZENDO]%')
+                            ->orWhereNotNull('delivery_address')
+                            ->orWhere('form_data', 'like', '%"channel":"zendo"%');
+                    })
+                    ->update(['order_channel' => self::CHANNEL_ZENDO]);
+
+                DB::table('orders')
+                    ->where(function ($q): void {
+                        $q->whereNull('order_channel')
+                            ->orWhere('order_channel', self::CHANNEL_DIRECT);
+                    })
+                    ->where(function ($q): void {
+                        $q->where('notes', 'like', '%[GRAB%')
+                            ->orWhere('form_data', 'like', '%"channel":"grab"%');
+                    })
+                    ->update(['order_channel' => self::CHANNEL_GRAB]);
             }
 
             return true;
@@ -151,6 +177,11 @@ class Order extends Model
             } else {
                 $q->whereNotNull('id');
             }
+        })->where(function (Builder $q) use ($hasChannelCol): void {
+            if ($hasChannelCol) {
+                $q->whereNull('order_channel')
+                    ->orWhereNotIn('order_channel', [self::CHANNEL_ZENDO, self::CHANNEL_GRAB]);
+            }
         })->whereNull('delivery_address')
             ->where(function (Builder $n): void {
                 $n->whereNull('notes')
@@ -166,6 +197,72 @@ class Order extends Model
                             ->where('form_data', 'not like', '%"channel":"grab"%');
                     });
             });
+    }
+
+    /**
+     * Scope query to only allowed transaction channels (e.g. direct, zendo, grab).
+     * If $allowedChannels is empty, no orders will match.
+     *
+     * @param  array<int, string>  $allowedChannels
+     */
+    #[Scope]
+    protected function forChannels(Builder $query, array $allowedChannels): Builder
+    {
+        $valid = array_values(array_unique(array_intersect($allowedChannels, [self::CHANNEL_DIRECT, self::CHANNEL_ZENDO, self::CHANNEL_GRAB])));
+        if (empty($valid)) {
+            return $query->whereRaw('1 = 0');
+        }
+        if (count($valid) === 3) {
+            return $query;
+        }
+
+        return $query->where(function (Builder $q) use ($valid): void {
+            foreach ($valid as $index => $ch) {
+                $method = $index === 0 ? 'where' : 'orWhere';
+                $q->{$method}(function (Builder $sub) use ($ch): void {
+                    $sub->forChannel($ch);
+                });
+            }
+        });
+    }
+
+    /**
+     * Resolve the list of transaction channels that are currently active (ON) in settings.
+     *
+     * @return array<int, string>
+     */
+    public static function getActiveChannels(): array
+    {
+        try {
+            $dbSettings = Setting::pluck('value', 'key');
+            $dineIn = in_array((string) ($dbSettings['order_mode_dine_in'] ?? '1'), ['1', 'true', 'yes'], true);
+
+            $hasTrackingSetting = isset($dbSettings['order_mode_zendo_tracking']);
+            $hasChatSetting = isset($dbSettings['order_mode_zendo_chat']);
+            if ($hasTrackingSetting || $hasChatSetting) {
+                $zendo = in_array((string) ($dbSettings['order_mode_zendo_tracking'] ?? '0'), ['1', 'true', 'yes'], true)
+                    || in_array((string) ($dbSettings['order_mode_zendo_chat'] ?? '0'), ['1', 'true', 'yes'], true);
+            } else {
+                $zendo = in_array((string) ($dbSettings['order_mode_zendo'] ?? '1'), ['1', 'true', 'yes'], true);
+            }
+
+            $grab = in_array((string) ($dbSettings['order_mode_grabfood'] ?? '1'), ['1', 'true', 'yes'], true);
+
+            $active = [];
+            if ($dineIn) {
+                $active[] = self::CHANNEL_DIRECT;
+            }
+            if ($zendo) {
+                $active[] = self::CHANNEL_ZENDO;
+            }
+            if ($grab) {
+                $active[] = self::CHANNEL_GRAB;
+            }
+
+            return $active;
+        } catch (\Throwable $e) {
+            return [self::CHANNEL_DIRECT, self::CHANNEL_ZENDO, self::CHANNEL_GRAB];
+        }
     }
 
     /**

@@ -1150,50 +1150,62 @@
                     type="button"
                     onclick="filterKasirOrderChannel('direct')"
                     data-ord-channel-btn="direct"
-                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-forest"
+                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-forest {{ ($orderModeDineIn ?? true) ? '' : 'opacity-70 bg-stone-50/60' }}"
                 >
                     <div class="flex items-center gap-2 min-w-0">
-                        <span class="w-8 h-8 rounded-lg bg-forest-soft text-forest-dark flex items-center justify-center shrink-0">
+                        <span class="w-8 h-8 rounded-lg {{ ($orderModeDineIn ?? true) ? 'bg-forest-soft text-forest-dark' : 'bg-neutral-100 text-neutral-400' }} flex items-center justify-center shrink-0">
                             <i class="fa-solid fa-barcode text-sm"></i>
                         </span>
                         <div class="min-w-0">
-                            <span class="block text-xs font-bold truncate">Di Tempat (Barcode)</span>
-                            <span class="block text-[10.5px] text-sub">Langsung / QR &amp; Garis</span>
+                            <span class="block text-xs font-bold truncate">Di Tempat</span>
+                            <span class="block text-[10.5px] {{ ($orderModeDineIn ?? true) ? 'text-sub' : 'text-rose-600 font-bold' }}">
+                                {{ ($orderModeDineIn ?? true) ? 'QR & Garis' : '🔴 Nonaktif' }}
+                            </span>
                         </div>
                     </div>
-                    <span id="kasirChannelCount-direct" class="px-2 py-0.5 rounded-lg bg-canvas text-ink text-xs font-bold tabular-nums">{{ $kasirCountDirect }}</span>
+                    <span id="kasirChannelCount-direct" class="px-2 py-0.5 rounded-lg {{ ($orderModeDineIn ?? true) ? 'bg-canvas text-ink' : 'bg-neutral-100 text-neutral-400' }} text-xs font-bold tabular-nums">
+                        {{ ($orderModeDineIn ?? true) ? $kasirCountDirect : 'Off' }}
+                    </span>
                 </button>
 
                 <button
                     type="button"
                     onclick="filterKasirOrderChannel('zendo')"
                     data-ord-channel-btn="zendo"
-                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-rose-400"
+                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-rose-400 {{ ($orderModeZendo ?? false) ? '' : 'opacity-70 bg-stone-50/60' }}"
                 >
                     <div class="flex items-center gap-2 min-w-0">
-                        <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-8 h-8 rounded-full object-cover shrink-0 border border-line bg-white">
+                        <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-8 h-8 rounded-full object-cover shrink-0 border border-line bg-white {{ ($orderModeZendo ?? false) ? '' : 'grayscale' }}">
                         <div class="min-w-0">
                             <span class="block text-xs font-bold truncate">Zendo</span>
-                            <span class="block text-[10.5px] text-sub">Kurir WA &bull; Tanpa Barcode</span>
+                            <span class="block text-[10.5px] {{ ($orderModeZendo ?? false) ? 'text-sub' : 'text-rose-600 font-bold' }}">
+                                {{ ($orderModeZendo ?? false) ? 'Kurir WA' : '🔴 Nonaktif' }}
+                            </span>
                         </div>
                     </div>
-                    <span id="kasirChannelCount-zendo" class="px-2 py-0.5 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold tabular-nums">{{ $kasirCountZendo }}</span>
+                    <span id="kasirChannelCount-zendo" class="px-2 py-0.5 rounded-lg {{ ($orderModeZendo ?? false) ? 'bg-rose-50 text-rose-700' : 'bg-neutral-100 text-neutral-400' }} text-xs font-bold tabular-nums">
+                        {{ ($orderModeZendo ?? false) ? $kasirCountZendo : 'Off' }}
+                    </span>
                 </button>
 
                 <button
                     type="button"
                     onclick="filterKasirOrderChannel('grab')"
                     data-ord-channel-btn="grab"
-                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-emerald-500"
+                    class="kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-emerald-500 {{ ($orderModeGrabfood ?? false) ? '' : 'opacity-70 bg-stone-50/60' }}"
                 >
                     <div class="flex items-center gap-2 min-w-0">
-                        <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-8 h-8 rounded-lg object-contain shrink-0 border border-line bg-white p-0.5">
+                        <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-8 h-8 rounded-lg object-contain shrink-0 border border-line bg-white p-0.5 {{ ($orderModeGrabfood ?? false) ? '' : 'grayscale' }}">
                         <div class="min-w-0">
                             <span class="block text-xs font-bold truncate">GrabFood</span>
-                            <span class="block text-[10.5px] text-sub">Mitra Grab &bull; Tanpa Barcode</span>
+                            <span class="block text-[10.5px] {{ ($orderModeGrabfood ?? false) ? 'text-sub' : 'text-rose-600 font-bold' }}">
+                                {{ ($orderModeGrabfood ?? false) ? 'Mitra Grab' : '🔴 Nonaktif' }}
+                            </span>
                         </div>
                     </div>
-                    <span id="kasirChannelCount-grab" class="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 text-xs font-bold tabular-nums">{{ $kasirCountGrab }}</span>
+                    <span id="kasirChannelCount-grab" class="px-2 py-0.5 rounded-lg {{ ($orderModeGrabfood ?? false) ? 'bg-emerald-50 text-emerald-800' : 'bg-neutral-100 text-neutral-400' }} text-xs font-bold tabular-nums">
+                        {{ ($orderModeGrabfood ?? false) ? $kasirCountGrab : 'Off' }}
+                    </span>
                 </button>
             </div>
 
@@ -3772,19 +3784,23 @@
             let countGrab = 0;
             (orders || []).forEach(o => {
                 const ch = o.order_channel || (o.is_zendo ? 'zendo' : 'direct');
+                if (window.KASIR_CHANNEL_CONFIG && KASIR_CHANNEL_CONFIG[ch] === false) {
+                    return; // Saluran nonaktif -> riwayat disembunyikan
+                }
                 if (ch === 'zendo') countZendo++;
                 else if (ch === 'grab') countGrab++;
                 else countDirect++;
             });
 
+            const visibleTotal = countDirect + countZendo + countGrab;
             const cAll = document.getElementById('kasirChannelCount-all');
             const cDir = document.getElementById('kasirChannelCount-direct');
             const cZen = document.getElementById('kasirChannelCount-zendo');
             const cGrb = document.getElementById('kasirChannelCount-grab');
-            if (cAll) cAll.textContent = String((orders || []).length);
-            if (cDir) cDir.textContent = String(countDirect);
-            if (cZen) cZen.textContent = String(countZendo);
-            if (cGrb) cGrb.textContent = String(countGrab);
+            if (cAll) cAll.textContent = String(visibleTotal);
+            if (cDir) cDir.textContent = (window.KASIR_CHANNEL_CONFIG && KASIR_CHANNEL_CONFIG.direct === false) ? 'Off' : String(countDirect);
+            if (cZen) cZen.textContent = (window.KASIR_CHANNEL_CONFIG && KASIR_CHANNEL_CONFIG.zendo === false) ? 'Off' : String(countZendo);
+            if (cGrb) cGrb.textContent = (window.KASIR_CHANNEL_CONFIG && KASIR_CHANNEL_CONFIG.grab === false) ? 'Off' : String(countGrab);
         }
 
         function renderKasirOrdersGrid() {
@@ -3800,6 +3816,10 @@
 
             const filtered = (KASIR_STATE.recentOrders || []).filter(ord => {
                 const ch = ord.order_channel || (ord.is_zendo ? 'zendo' : 'direct');
+                // Sembunyikan riwayat pesanan jika saluran sedang dinonaktifkan (OFF)
+                if (window.KASIR_CHANNEL_CONFIG && KASIR_CHANNEL_CONFIG[ch] === false) {
+                    return false;
+                }
                 const serviceMeta = getOrderServiceMeta(ord);
                 const bucket = getKasirOrderBucket(ord);
                 if (channelFilter !== 'all' && ch !== channelFilter) {
@@ -3822,13 +3842,16 @@
             });
 
             if (filtered.length === 0) {
-                const emptyLabel = query !== ''
-                    ? 'Pesanan tidak ditemukan untuk kata kunci tersebut'
-                    : (serviceFilter !== 'all' || channelFilter !== 'all'
-                        ? 'Belum ada pesanan pada filter ini'
-                        : (statusFilter === 'unpaid'
-                            ? 'Tidak ada pesanan yang menunggu pembayaran'
-                            : (statusFilter === 'completed' ? 'Belum ada pesanan selesai' : 'Belum ada pesanan dibatalkan')));
+                const isInactiveChannel = channelFilter !== 'all' && window.KASIR_CHANNEL_CONFIG && KASIR_CHANNEL_CONFIG[channelFilter] === false;
+                const emptyLabel = isInactiveChannel
+                    ? 'Riwayat pesanan saluran ini disembunyikan karena sedang NONAKTIF (OFF) di pengaturan Admin.'
+                    : (query !== ''
+                        ? 'Pesanan tidak ditemukan untuk kata kunci tersebut'
+                        : (serviceFilter !== 'all' || channelFilter !== 'all'
+                            ? 'Belum ada pesanan pada filter ini'
+                            : (statusFilter === 'unpaid'
+                                ? 'Tidak ada pesanan yang menunggu pembayaran'
+                                : (statusFilter === 'completed' ? 'Belum ada pesanan selesai' : 'Belum ada pesanan dibatalkan'))));
                 container.innerHTML = `
                     <div class="col-span-full bg-white border border-line rounded-xl p-12 text-center">
                         <p class="text-sm font-bold text-ink">${escapeKasirHtml(emptyLabel)}</p>
@@ -4619,6 +4642,9 @@
                 const data = await res.json();
                 if (res.ok && data.success) {
                     setSyncConnectionStatus(true);
+                    if (data.channel_config) {
+                        window.KASIR_CHANNEL_CONFIG = data.channel_config;
+                    }
                     if (data.stats) {
                         updateKasirHeaderStats(data.stats);
                     }
@@ -4684,6 +4710,10 @@
 
         function filterKasirOrderChannel(channel) {
             KASIR_STATE.activeOrderChannelFilter = channel || 'all';
+            if (channel !== 'all' && window.KASIR_CHANNEL_CONFIG && KASIR_CHANNEL_CONFIG[channel] === false && typeof showKasirToast === 'function') {
+                const label = channel === 'zendo' ? 'Kurir Zendo' : (channel === 'grab' ? 'GrabFood' : 'Pesan di Tempat');
+                showKasirToast(`Saluran ${label} sedang nonaktif di pengaturan (riwayat disembunyikan).`);
+            }
             document.querySelectorAll('.kasir-ord-channel-btn').forEach(btn => {
                 const key = btn.getAttribute('data-ord-channel-btn');
                 const active = key === KASIR_STATE.activeOrderChannelFilter;

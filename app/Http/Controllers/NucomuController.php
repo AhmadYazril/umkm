@@ -1869,7 +1869,7 @@ class NucomuController extends Controller
         if (! $isAnyModeActive) {
             return response()->json([
                 'success' => false,
-                'message' => 'Semua layanan pemesanan sedang dinonaktifkan sementara oleh admin.',
+                'message' => 'Layanan pemesanan sedang dinonaktifkan sementara oleh admin.',
             ], 422);
         }
 
@@ -1887,7 +1887,7 @@ class NucomuController extends Controller
         if ($processMethod === 'kasir' && ! $orderModeDineIn) {
             return response()->json([
                 'success' => false,
-                'message' => 'Layanan pemesanan makan di kafe / pesan di tempat sedang dinonaktifkan sementara oleh admin.',
+                'message' => 'Layanan pemesanan makan di kafe sedang dinonaktifkan sementara oleh admin.',
             ], 422);
         }
 

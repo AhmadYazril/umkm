@@ -185,7 +185,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.orders.updateSettings') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('admin.orders.updateSettings') }}" method="POST" enctype="multipart/form-data" id="orderSettingsForm" class="space-y-6">
             @csrf
 
             {{-- Penanda mode antar mana yang terakhir disentuh admin (untuk normalisasi saling mengunci) --}}
@@ -773,51 +773,72 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {{-- Kartu 1: Di Tempat / Barcode (Langsung) --}}
             <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'direct'])) }}"
-               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'direct' || request('kind') === 'dine_in') ? 'bg-[#FAFDFB] border-[#2F6B4F] ring-2 ring-[#2F6B4F]/20 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-[#2F6B4F]/60' }}">
+               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'direct' || request('kind') === 'dine_in') ? 'bg-[#FAFDFB] border-[#2F6B4F] ring-2 ring-[#2F6B4F]/20 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-[#2F6B4F]/60' }} {{ $orderModeDineIn ? '' : 'opacity-70 bg-stone-50/60' }}">
                 <div class="flex items-center gap-3 min-w-0">
-                    <span class="w-11 h-11 rounded-xl bg-[#E6F0EA] text-[#2F6B4F] flex items-center justify-center text-lg shrink-0">
+                    <span class="w-11 h-11 rounded-xl {{ $orderModeDineIn ? 'bg-[#E6F0EA] text-[#2F6B4F]' : 'bg-neutral-100 text-neutral-400' }} flex items-center justify-center text-lg shrink-0">
                         <i class="fa-solid fa-barcode"></i>
                     </span>
                     <div class="min-w-0">
-                        <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Di Tempat (Barcode)</span>
-                        <span class="block text-[10.5px] text-muted-text truncate">Transaksi langsung &bull; QR / Garis</span>
-                        <span class="block text-xs font-mono font-bold text-[#2F6B4F] mt-0.5">Rp {{ number_format($revenueChannelDirect, 0, ',', '.') }}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Di Tempat (Barcode)</span>
+                            <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded {{ $orderModeDineIn ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-100 text-rose-700' }}">
+                                {{ $orderModeDineIn ? 'Aktif' : 'OFF' }}
+                            </span>
+                        </div>
+                        <span class="block text-[10.5px] text-muted-text truncate">{{ $orderModeDineIn ? 'Transaksi langsung • QR / Garis' : 'Riwayat disembunyikan' }}</span>
+                        <span class="block text-xs font-mono font-bold {{ $orderModeDineIn ? 'text-[#2F6B4F]' : 'text-neutral-400 line-through' }} mt-0.5">
+                            Rp {{ number_format($revenueChannelDirect, 0, ',', '.') }}
+                        </span>
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-xl bg-[#E6F0EA] text-[#2F6B4F] font-mono font-extrabold text-sm shrink-0">
-                    {{ number_format($totalChannelDirect, 0, ',', '.') }}
+                <span class="px-2.5 py-1 rounded-xl {{ $orderModeDineIn ? 'bg-[#E6F0EA] text-[#2F6B4F]' : 'bg-neutral-100 text-neutral-400' }} font-mono font-extrabold text-sm shrink-0">
+                    {{ $orderModeDineIn ? number_format($totalChannelDirect, 0, ',', '.') : 'Off' }}
                 </span>
             </a>
 
             {{-- Kartu 2: Zendo --}}
             <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'zendo'])) }}"
-               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'zendo' || in_array(request('kind'), ['zendo', 'zendo_tracking', 'zendo_chat'], true)) ? 'bg-rose-50/70 border-rose-500 ring-2 ring-rose-200 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-rose-400' }}">
+               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'zendo' || in_array(request('kind'), ['zendo', 'zendo_tracking', 'zendo_chat'], true)) ? 'bg-rose-50/70 border-rose-500 ring-2 ring-rose-200 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-rose-400' }} {{ $orderModeZendo ? '' : 'opacity-70 bg-stone-50/60' }}">
                 <div class="flex items-center gap-3 min-w-0">
-                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-11 h-11 rounded-full object-cover border border-rose-200 bg-white shrink-0 shadow-2xs">
+                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-11 h-11 rounded-full object-cover border {{ $orderModeZendo ? 'border-rose-200' : 'border-neutral-200 grayscale' }} bg-white shrink-0 shadow-2xs">
                     <div class="min-w-0">
-                        <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Riwayat Zendo</span>
-                        <span class="block text-[10.5px] text-muted-text truncate">Kurir Zendo &bull; Tanpa Barcode</span>
-                        <span class="block text-xs font-mono font-bold text-rose-700 mt-0.5">Rp {{ number_format($revenueChannelZendo, 0, ',', '.') }}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Riwayat Zendo</span>
+                            <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded {{ $orderModeZendo ? 'bg-rose-50 text-rose-700' : 'bg-rose-100 text-rose-700' }}">
+                                {{ $orderModeZendo ? 'Aktif' : 'OFF' }}
+                            </span>
+                        </div>
+                        <span class="block text-[10.5px] text-muted-text truncate">{{ $orderModeZendo ? 'Kurir Zendo • Tanpa Barcode' : 'Riwayat disembunyikan' }}</span>
+                        <span class="block text-xs font-mono font-bold {{ $orderModeZendo ? 'text-rose-700' : 'text-neutral-400 line-through' }} mt-0.5">
+                            Rp {{ number_format($revenueChannelZendo, 0, ',', '.') }}
+                        </span>
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 font-mono font-extrabold text-sm shrink-0">
-                    {{ number_format($totalChannelZendo, 0, ',', '.') }}
+                <span class="px-2.5 py-1 rounded-xl {{ $orderModeZendo ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-neutral-100 text-neutral-400' }} font-mono font-extrabold text-sm shrink-0">
+                    {{ $orderModeZendo ? number_format($totalChannelZendo, 0, ',', '.') : 'Off' }}
                 </span>
             </a>
 
             {{-- Kartu 3: GrabFood --}}
             <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'grab'])) }}"
-               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'grab' || request('kind') === 'grab') ? 'bg-emerald-50/80 border-[#00B14F] ring-2 ring-emerald-200 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-[#00B14F]' }}">
+               class="group p-4 rounded-2xl border transition-all flex items-center justify-between gap-3 {{ ($activeChannel === 'grab' || request('kind') === 'grab') ? 'bg-emerald-50/80 border-[#00B14F] ring-2 ring-emerald-200 shadow-xs' : 'bg-white border-[#E6E8E4] hover:border-[#00B14F]' }} {{ $orderModeGrabfood ? '' : 'opacity-70 bg-stone-50/60' }}">
                 <div class="flex items-center gap-3 min-w-0">
-                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="Logo GrabFood" class="w-11 h-11 rounded-xl object-contain border border-emerald-200 bg-white p-1 shrink-0 shadow-2xs">
+                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="Logo GrabFood" class="w-11 h-11 rounded-xl object-contain border {{ $orderModeGrabfood ? 'border-emerald-200' : 'border-neutral-200 grayscale' }} bg-white p-1 shrink-0 shadow-2xs">
                     <div class="min-w-0">
-                        <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Riwayat GrabFood</span>
-                        <span class="block text-[10.5px] text-muted-text truncate">Mitra Grab &bull; Tanpa Barcode</span>
-                        <span class="block text-xs font-mono font-bold text-[#008C3E] mt-0.5">Rp {{ number_format($revenueChannelGrab, 0, ',', '.') }}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="block text-xs font-extrabold truncate" style="color: var(--admin-text-main, #1B1F1D);">Riwayat GrabFood</span>
+                            <span class="text-[9.5px] font-bold px-1.5 py-0.5 rounded {{ $orderModeGrabfood ? 'bg-emerald-50 text-[#008C3E]' : 'bg-rose-100 text-rose-700' }}">
+                                {{ $orderModeGrabfood ? 'Aktif' : 'OFF' }}
+                            </span>
+                        </div>
+                        <span class="block text-[10.5px] text-muted-text truncate">{{ $orderModeGrabfood ? 'Mitra Grab • Tanpa Barcode' : 'Riwayat disembunyikan' }}</span>
+                        <span class="block text-xs font-mono font-bold {{ $orderModeGrabfood ? 'text-[#008C3E]' : 'text-neutral-400 line-through' }} mt-0.5">
+                            Rp {{ number_format($revenueChannelGrab, 0, ',', '.') }}
+                        </span>
                     </div>
                 </div>
-                <span class="px-2.5 py-1 rounded-xl bg-emerald-50 text-[#008C3E] border border-emerald-200 font-mono font-extrabold text-sm shrink-0">
-                    {{ number_format($totalChannelGrab, 0, ',', '.') }}
+                <span class="px-2.5 py-1 rounded-xl {{ $orderModeGrabfood ? 'bg-emerald-50 text-[#008C3E] border border-emerald-200' : 'bg-neutral-100 text-neutral-400' }} font-mono font-extrabold text-sm shrink-0">
+                    {{ $orderModeGrabfood ? number_format($totalChannelGrab, 0, ',', '.') : 'Off' }}
                 </span>
             </a>
         </div>
@@ -842,37 +863,37 @@
 
                 {{-- Di Tempat (Barcode) --}}
                 <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'direct'])) }}" 
-                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ (request('channel') === 'direct' || request('kind') === 'dine_in') ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ (request('channel') === 'direct' || request('kind') === 'dine_in') ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }} {{ $orderModeDineIn ? '' : 'opacity-60' }}">
                     <i class="fa-solid fa-barcode text-[11px]"></i>
-                    <span>Di Tempat / Barcode ({{ $totalChannelDirect }})</span>
+                    <span>Di Tempat ({{ $orderModeDineIn ? $totalChannelDirect : 'Off' }})</span>
                 </a>
 
                 {{-- Zendo (Semua) --}}
                 <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'zendo'])) }}" 
-                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('channel') === 'zendo' ? 'bg-rose-600 text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
-                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-4 h-4 rounded-full object-cover bg-white">
-                    <span>Zendo ({{ $totalChannelZendo }})</span>
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('channel') === 'zendo' ? 'bg-rose-600 text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }} {{ $orderModeZendo ? '' : 'opacity-60' }}">
+                    <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Zendo" class="w-4 h-4 rounded-full object-cover bg-white {{ $orderModeZendo ? '' : 'grayscale' }}">
+                    <span>Zendo ({{ $orderModeZendo ? $totalChannelZendo : 'Off' }})</span>
                 </a>
 
                 {{-- Antar Zendo (Pelacakan) --}}
                 <a href="{{ route('admin.orders.index', array_merge(request()->except('channel', 'page'), ['kind' => 'zendo_tracking'])) }}" 
-                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_tracking' ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_tracking' ? 'bg-[#2F6B4F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }} {{ $orderModeZendoTracking ? '' : 'opacity-60' }}">
                     <i class="fa-solid fa-map-location-dot text-[11px]"></i>
-                    <span>Antar Zendo ({{ $totalZendoTracking }})</span>
+                    <span>Antar Zendo ({{ $orderModeZendoTracking ? $totalZendoTracking : 'Off' }})</span>
                 </a>
 
                 {{-- Chat Zendo (WA) --}}
                 <a href="{{ route('admin.orders.index', array_merge(request()->except('channel', 'page'), ['kind' => 'zendo_chat'])) }}" 
-                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_chat' ? 'bg-emerald-700 text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ request('kind') === 'zendo_chat' ? 'bg-emerald-700 text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }} {{ $orderModeZendoChat ? '' : 'opacity-60' }}">
                     <i class="fa-brands fa-whatsapp text-[12px]"></i>
-                    <span>Chat Zendo ({{ $totalZendoChat }})</span>
+                    <span>Chat Zendo ({{ $orderModeZendoChat ? $totalZendoChat : 'Off' }})</span>
                 </a>
 
                 {{-- GrabFood --}}
                 <a href="{{ route('admin.orders.index', array_merge(request()->except('kind', 'page'), ['channel' => 'grab'])) }}" 
-                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ (request('channel') === 'grab' || request('kind') === 'grab') ? 'bg-[#00B14F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }}">
-                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-4 h-4 rounded object-contain bg-white">
-                    <span>GrabFood ({{ $totalChannelGrab }})</span>
+                   class="px-3 py-1.5 rounded-xl transition-all whitespace-nowrap font-bold flex items-center gap-1.5 {{ (request('channel') === 'grab' || request('kind') === 'grab') ? 'bg-[#00B14F] text-white shadow-xs' : 'text-muted-text hover:text-ink-black hover:bg-warm-stone/50' }} {{ $orderModeGrabfood ? '' : 'opacity-60' }}">
+                    <img src="{{ asset('images/logos/grabfood.png') }}" alt="GrabFood" class="w-4 h-4 rounded object-contain bg-white {{ $orderModeGrabfood ? '' : 'grayscale' }}">
+                    <span>GrabFood ({{ $orderModeGrabfood ? $totalChannelGrab : 'Off' }})</span>
                 </a>
             </div>
         </div>
@@ -1153,11 +1174,32 @@
                     @empty
                         <tr>
                             <td colspan="7" class="px-6 py-12 text-center text-muted-text">
-                                <div class="w-12 h-12 rounded-2xl bg-warm-stone flex items-center justify-center mx-auto mb-3 text-muted-text">
-                                    <i class="fa-solid fa-receipt text-lg"></i>
-                                </div>
-                                <p class="font-bold text-sm" style="color: var(--admin-text-main, #1B1F1D);">Tidak ada pesanan ditemukan</p>
-                                <p class="text-xs text-muted-text mt-1">Coba sesuaikan kata kunci pencarian atau ubah tab jenis &amp; status filter.</p>
+                                @if($channelIsDisabled ?? false)
+                                    <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center mx-auto mb-3">
+                                        <i class="fa-solid fa-eye-slash text-lg"></i>
+                                    </div>
+                                    <p class="font-bold text-sm text-amber-900">Riwayat Transaksi Disembunyikan</p>
+                                    <p class="text-xs text-amber-800/80 mt-1 max-w-md mx-auto">
+                                        Saluran pemesanan ini saat ini sedang dalam posisi <strong>NONAKTIF (OFF)</strong> pada pengaturan di atas, sehingga seluruh riwayat transaksinya disembunyikan.
+                                    </p>
+                                    <p class="text-xs text-muted-text mt-2">
+                                        Untuk menampilkan kembali riwayat transaksi ini, silakan aktifkan kembali saluran terkait pada kartu pengaturan mode transaksi di bagian atas.
+                                    </p>
+                                @elseif(empty($activeChannels ?? []))
+                                    <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center mx-auto mb-3">
+                                        <i class="fa-solid fa-store-slash text-lg"></i>
+                                    </div>
+                                    <p class="font-bold text-sm text-rose-900">Semua Saluran Pemesanan Sedang Nonaktif</p>
+                                    <p class="text-xs text-rose-800/80 mt-1 max-w-md mx-auto">
+                                        Seluruh mode transaksi (Di Tempat, Zendo, dan GrabFood) sedang dalam posisi OFF, sehingga riwayat transaksi disembunyikan sementara.
+                                    </p>
+                                @else
+                                    <div class="w-12 h-12 rounded-2xl bg-warm-stone flex items-center justify-center mx-auto mb-3 text-muted-text">
+                                        <i class="fa-solid fa-receipt text-lg"></i>
+                                    </div>
+                                    <p class="font-bold text-sm" style="color: var(--admin-text-main, #1B1F1D);">Tidak ada pesanan ditemukan</p>
+                                    <p class="text-xs text-muted-text mt-1">Coba sesuaikan kata kunci pencarian atau ubah tab jenis &amp; status filter.</p>
+                                @endif
                             </td>
                         </tr>
                     @endforelse
@@ -1252,6 +1294,20 @@
             toggleZendoMode(mode, inputEl.checked);
         } else if (mode === 'grabfood') {
             updateGrabfoodState(inputEl.checked);
+        }
+
+        // Simpan posisi scroll sebelum halaman dimuat ulang
+        try {
+            sessionStorage.setItem('admin_orders_scroll', window.scrollY.toString());
+        } catch (e) {}
+
+        // Otomatis simpan pengaturan dan perbarui riwayat transaksi secara instan
+        const form = document.getElementById('orderSettingsForm');
+        if (form) {
+            if (typeof showAdminToast === 'function') {
+                showAdminToast('Menyimpan perubahan saluran & memperbarui riwayat transaksi...', 'info', 'Menyimpan');
+            }
+            form.submit();
         }
     }
 
@@ -1403,6 +1459,17 @@
 
     // Two-way synchronization for Zendo WhatsApp phone number inputs (Mode 2 & Mode 3)
     document.addEventListener('DOMContentLoaded', () => {
+        // Pulihkan posisi scroll setelah reload otomatis toggle ON/OFF
+        try {
+            const savedScroll = sessionStorage.getItem('admin_orders_scroll');
+            if (savedScroll !== null) {
+                sessionStorage.removeItem('admin_orders_scroll');
+                requestAnimationFrame(() => {
+                    window.scrollTo({ top: Number(savedScroll), behavior: 'instant' });
+                });
+            }
+        } catch (e) {}
+
         const waInputs = document.querySelectorAll('.zendo-wa-input');
         waInputs.forEach(input => {
             input.addEventListener('input', function() {
