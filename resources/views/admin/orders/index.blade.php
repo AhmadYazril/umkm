@@ -570,14 +570,22 @@
                           class="w-full p-3 rounded-xl border border-[#E6E8E4] bg-white text-xs font-mono text-ink-black leading-relaxed focus:outline-none focus:border-neutral-800 transition resize-y">{{ old('zendo_chat_template', $zendoChatTemplate) }}</textarea>
             </div>
 
-            {{-- Tombol Simpan Pengaturan --}}
-            <div class="flex items-center justify-end gap-3 pt-2">
-                <button type="submit" 
-                        class="min-h-[40px] px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center gap-2 cursor-pointer btn-press"
-                        style="background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF;">
-                    <i class="fa-solid fa-floppy-disk text-xs"></i>
-                    <span>Simpan Pengaturan Transaksi</span>
-                </button>
+            {{-- Tombol Simpan Pengaturan & Indikator Belum Disimpan --}}
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t" style="border-color: var(--admin-border-card, #E6E8E4);">
+                <div id="unsavedSettingsNotice" class="hidden text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-300 px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-2xs">
+                    <i class="fa-solid fa-circle-exclamation text-amber-600 text-sm shrink-0"></i>
+                    <span>Pengaturan telah diubah. Klik tombol <strong>Simpan Pengaturan Transaksi</strong> di sebelah kanan untuk mengonfirmasi dan menerapkan perubahan.</span>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 ml-auto">
+                    <button type="submit" 
+                            id="btnSaveOrderSettings"
+                            class="min-h-[42px] px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-sm flex items-center justify-center gap-2 cursor-pointer btn-press"
+                            style="background-color: var(--admin-btn-primary-bg, #2F6B4F); color: #FFFFFF;">
+                        <i class="fa-solid fa-floppy-disk text-xs"></i>
+                        <span>Simpan Pengaturan Transaksi</span>
+                    </button>
+                </div>
             </div>
         </form>
 
@@ -1296,18 +1304,18 @@
             updateGrabfoodState(inputEl.checked);
         }
 
-        // Simpan posisi scroll sebelum halaman dimuat ulang
-        try {
-            sessionStorage.setItem('admin_orders_scroll', window.scrollY.toString());
-        } catch (e) {}
+        // Tandai ada perubahan pengaturan yang belum disimpan (disimpan setelah klik tombol Simpan Pengaturan Transaksi)
+        markSettingsAsUnsaved();
+    }
 
-        // Otomatis simpan pengaturan dan perbarui riwayat transaksi secara instan
-        const form = document.getElementById('orderSettingsForm');
-        if (form) {
-            if (typeof showAdminToast === 'function') {
-                showAdminToast('Menyimpan perubahan saluran & memperbarui riwayat transaksi...', 'info', 'Menyimpan');
-            }
-            form.submit();
+    function markSettingsAsUnsaved() {
+        const notice = document.getElementById('unsavedSettingsNotice');
+        const btn = document.getElementById('btnSaveOrderSettings');
+        if (notice) {
+            notice.classList.remove('hidden');
+        }
+        if (btn) {
+            btn.classList.add('ring-4', 'ring-[#2F6B4F]/30');
         }
     }
 
@@ -1459,7 +1467,7 @@
 
     // Two-way synchronization for Zendo WhatsApp phone number inputs (Mode 2 & Mode 3)
     document.addEventListener('DOMContentLoaded', () => {
-        // Pulihkan posisi scroll setelah reload otomatis toggle ON/OFF
+        // Pulihkan posisi scroll setelah menyimpan pengaturan
         try {
             const savedScroll = sessionStorage.getItem('admin_orders_scroll');
             if (savedScroll !== null) {
@@ -1469,6 +1477,26 @@
                 });
             }
         } catch (e) {}
+
+        const settingsForm = document.getElementById('orderSettingsForm');
+        if (settingsForm) {
+            settingsForm.addEventListener('change', (e) => {
+                if (e.target && e.target.type !== 'submit') {
+                    markSettingsAsUnsaved();
+                }
+            });
+            settingsForm.addEventListener('submit', () => {
+                try {
+                    sessionStorage.setItem('admin_orders_scroll', window.scrollY.toString());
+                } catch (e) {}
+
+                const btn = document.getElementById('btnSaveOrderSettings');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-xs"></i><span>Menyimpan Pengaturan...</span>';
+                }
+            });
+        }
 
         const waInputs = document.querySelectorAll('.zendo-wa-input');
         waInputs.forEach(input => {
