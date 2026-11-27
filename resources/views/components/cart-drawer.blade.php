@@ -699,28 +699,27 @@
                                class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                     </div>
 
-<<<<<<< HEAD
                     <!-- Kasir Specific: Nomor Meja & Pilihan Format Barcode -->
-                    <div id="drawer-field-table" class="space-y-3">
+                    <div id="drawer-field-table" class="space-y-3 {{ $initialProcessMethod === 'zendo' ? 'hidden' : '' }}">
                         <div>
-                            <label for="drawer-customer-table" class="block text-xs font-bold text-neutral-800 uppercase tracking-wider mb-1">
-                                Nomor Meja <span class="text-stone-400 font-normal">(Kosongkan jika Take Away)</span>
+                            <label for="drawer-customer-table" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
+                                Nomor Meja <span class="text-[var(--text-muted)] font-normal">(Kosongkan jika Take Away)</span>
                             </label>
                             <input type="text" 
                                    id="drawer-customer-table" 
                                    placeholder="Contoh: Meja 05 / Take Away" 
-                                   class="w-full py-2.5 px-3 rounded-xl bg-white border border-stone-200 text-neutral-900 text-xs focus:outline-none focus:border-neutral-900 transition-all placeholder:text-stone-400">
+                                   class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
                         </div>
 
                         <div id="drawer-field-barcode-type" class="space-y-1.5">
-                            <label class="block text-xs font-bold text-neutral-800 uppercase tracking-wider">
+                            <label class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider">
                                 Format Kode Slip Kasir
                             </label>
                             <div class="grid grid-cols-2 gap-2">
                                 <button type="button"
                                         id="drawer-barcode-opt-qr"
                                         onclick="selectDrawerBarcodeType('qr')"
-                                        class="p-2.5 rounded-xl border-2 border-neutral-900 bg-neutral-900 text-white text-left transition-all cursor-pointer flex items-center gap-2">
+                                        class="p-2.5 rounded-xl border-2 border-[var(--accent-solid)] bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-left transition-all cursor-pointer flex items-center gap-2">
                                     <i class="fa-solid fa-qrcode text-sm shrink-0"></i>
                                     <div class="min-w-0">
                                         <span class="block text-[11px] font-bold leading-tight">QR Code</span>
@@ -730,25 +729,16 @@
                                 <button type="button"
                                         id="drawer-barcode-opt-barcode"
                                         onclick="selectDrawerBarcodeType('barcode')"
-                                        class="p-2.5 rounded-xl border-2 border-stone-200 bg-white text-neutral-800 hover:border-stone-400 text-left transition-all cursor-pointer flex items-center gap-2">
+                                        class="p-2.5 rounded-xl border-2 border-[var(--field-border)] bg-[var(--field-bg)] text-[var(--text)] hover:border-[var(--field-focus)] text-left transition-all cursor-pointer flex items-center gap-2">
                                     <i class="fa-solid fa-barcode text-sm shrink-0"></i>
                                     <div class="min-w-0">
                                         <span class="block text-[11px] font-bold leading-tight">Barcode Garis</span>
-                                        <span class="block text-[9.5px] text-neutral-500 leading-tight">Alat Scanner Kasir</span>
+                                        <span class="block text-[9.5px] text-[var(--text-muted)] leading-tight">Alat Scanner Kasir</span>
                                     </div>
                                 </button>
                             </div>
-                            <p class="text-[10px] text-neutral-500">Bisa diubah kapan saja saat menunjukkan slip ke kasir.</p>
-=======
-                    <!-- Kasir Specific: Nomor Meja -->
-                    <div id="drawer-field-table">
-                        <label for="drawer-customer-table" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
-                            Nomor Meja <span class="text-[var(--text-muted)] font-normal">(Kosongkan jika Take Away)</span>
-                        </label>
-                        <input type="text" 
-                               id="drawer-customer-table" 
-                               placeholder="Contoh: Meja 05 / Take Away" 
-                               class="w-full py-2.5 px-3 rounded-xl bg-[var(--field-bg)] border border-[var(--field-border)] text-[var(--text)] text-xs focus:outline-none focus:border-[var(--field-focus)] transition-all placeholder:text-[var(--text-faint)]">
+                            <p class="text-[10px] text-[var(--text-muted)]">Bisa diubah kapan saja saat menunjukkan slip ke kasir.</p>
+                        </div>
                     </div>
 
                     <!-- Kasir Specific: Metode Pembayaran (Dine-In / Take Away) -->
@@ -780,25 +770,19 @@
                                     class="drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer {{ ! $orderDineInCash && ! $orderDineInQris ? 'bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]' : 'bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]' }}">
                                 Transfer
                             </button>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         </div>
                     </div>
 
                     <!-- Zendo Specific: Alamat Pengiriman -->
                     <div id="drawer-field-address" class="hidden space-y-2">
-<<<<<<< HEAD
-                        <div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-rose-50/70 border border-rose-200/80">
+                        <div class="flex items-center gap-2.5 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/25">
                             <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Kurir Zendo" class="w-8 h-8 rounded-full object-cover shrink-0 bg-white">
-                            <p class="text-[10.5px] text-neutral-700 leading-snug">
-                                <strong class="text-neutral-900">Kurir Zendo (Tanpa Barcode):</strong> Pesanan langsung dikirim ke WhatsApp Zendo, lalu kurir menyampaikan rincian ke kasir.
+                            <p class="text-[10.5px] text-[var(--text-muted)] leading-snug">
+                                <strong class="text-[var(--text)]">Kurir Zendo (Tanpa Barcode):</strong> Pesanan langsung dikirim ke WhatsApp Zendo, lalu kurir menyampaikan rincian ke kasir.
                             </p>
                         </div>
-                        <label for="drawer-customer-address" class="block text-xs font-bold text-neutral-800 uppercase tracking-wider mb-1">
-                            Alamat Pengantaran Zendo <span class="text-rose-500">*</span>
-=======
                         <label for="drawer-customer-address" class="block text-xs font-bold text-[var(--text)] uppercase tracking-wider mb-1">
                             Alamat Pengantaran Zendo <span class="text-[var(--error-text)]">*</span>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         </label>
                         <textarea id="drawer-customer-address" 
                                   rows="2" 
@@ -856,20 +840,19 @@
             </p>
         </div>
 
-<<<<<<< HEAD
         <!-- Zendo Partner Banner (Shown only for Zendo — NO barcode) -->
-        <div id="drawer-zendo-partner-badge" class="hidden mx-auto w-full p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-center gap-3 text-left">
+        <div id="drawer-zendo-partner-badge" class="hidden mx-auto w-full p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center gap-3 text-left">
             <img src="{{ asset('images/logos/zendo-courier.png') }}" alt="Logo Zendo" class="w-11 h-11 rounded-full object-cover shrink-0 shadow-xs bg-white">
             <div class="min-w-0">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-rose-700 block">Kurir Zendo &bull; Tanpa Barcode</span>
-                <p class="text-xs text-neutral-700 leading-snug mt-0.5">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">Kurir Zendo &bull; Tanpa Barcode</span>
+                <p class="text-xs text-[var(--text-muted)] leading-snug mt-0.5">
                     Cukup kirim detail pesanan ke WhatsApp Zendo. Kurir akan menyampaikan pesanan langsung ke kasir.
                 </p>
             </div>
         </div>
 
-        <!-- QR / Linear Barcode Plate (Shown ONLY for Kasir / Direct orders) -->
-        <div class="bg-white p-4 rounded-3xl border border-stone-200 shadow-md mx-auto w-full max-w-[320px] flex flex-col items-center justify-center space-y-3" id="drawer-qr-container">
+        <!-- QR / Linear Barcode Plate (White quiet-zone preserved for reliable camera & scanner reading) -->
+        <div class="bg-white p-4 rounded-3xl border border-[var(--border)] shadow-md mx-auto w-full max-w-[320px] flex flex-col items-center justify-center space-y-3" id="drawer-qr-container">
             <!-- Switcher QR Code <-> Barcode Garis -->
             <div class="grid grid-cols-2 gap-1 bg-stone-100 p-1 rounded-xl w-full">
                 <button type="button"
@@ -897,14 +880,7 @@
                 <div id="drawer-linear-barcode-target" class="w-full overflow-hidden"></div>
             </div>
 
-            <span class="text-[10px] text-neutral-600 font-bold uppercase tracking-wider block" id="success-qr-label">
-=======
-        <!-- QR Code Plate (White quiet-zone preserved for reliable camera QR scanning) -->
-        <div class="bg-white p-4 rounded-3xl border border-[var(--border)] shadow-md mx-auto w-fit flex flex-col items-center justify-center" id="drawer-qr-container">
-            <div id="drawer-qrcode-target"></div>
-            <img id="drawer-qr-fallback" class="hidden w-40 h-40 object-contain rounded" alt="QR Code">
-            <span class="text-[10px] text-[#191919] font-bold uppercase tracking-wider mt-2.5 block" id="success-qr-label">
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+            <span class="text-[10px] text-[#191919] font-bold uppercase tracking-wider block" id="success-qr-label">
                 SCAN DI KASIR
             </span>
         </div>
@@ -1128,22 +1104,6 @@
         return 2;
     };
 
-<<<<<<< HEAD
-    window.menuCarouselState = {
-        currentPage: 0,
-        totalPages: 1
-    };
-
-    window.updateMenuCarouselControls = function() {
-        const controls = document.getElementById('recommendations-carousel-controls');
-        const counter = document.getElementById('rec-page-counter');
-        const prevBtn = document.getElementById('rec-prev-btn');
-        const nextBtn = document.getElementById('rec-next-btn');
-        const dotsWrap = document.getElementById('rec-page-dots');
-        if (!controls) return;
-
-        const { currentPage, totalPages } = window.menuCarouselState;
-=======
     const buildMenuColumns = (parentEl, cards, numCols) => {
         const columns = [];
         for (let c = 0; c < numCols; c++) {
@@ -1238,13 +1198,10 @@
         const nextBtn = document.getElementById('rec-next-btn');
         const dotsContainer = document.getElementById('rec-page-dots');
         const counter = document.getElementById('rec-page-counter');
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
         if (totalPages <= 1) {
             controls.classList.add('hidden');
             controls.classList.remove('flex');
-<<<<<<< HEAD
-=======
             if (dotsContainer) {
                 dotsContainer.innerHTML = '';
             }
@@ -1257,36 +1214,12 @@
             if (nextBtn) {
                 nextBtn.disabled = true;
             }
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             return;
         }
 
         controls.classList.remove('hidden');
         controls.classList.add('flex');
 
-<<<<<<< HEAD
-        if (counter) {
-            const curStr = String(currentPage + 1).padStart(2, '0');
-            const totStr = String(totalPages).padStart(2, '0');
-            counter.textContent = `${curStr} / ${totStr}`;
-        }
-
-        if (prevBtn) prevBtn.disabled = currentPage <= 0;
-        if (nextBtn) nextBtn.disabled = currentPage >= totalPages - 1;
-
-        if (dotsWrap) {
-            dotsWrap.innerHTML = '';
-            for (let i = 0; i < totalPages; i++) {
-                const dot = document.createElement('button');
-                dot.type = 'button';
-                dot.className = 'nucomu-menu-dot' + (i === currentPage ? ' is-active' : '');
-                dot.setAttribute('aria-label', `Halaman menu ${i + 1}`);
-                dot.setAttribute('aria-current', i === currentPage ? 'true' : 'false');
-                dot.onclick = function() {
-                    window.goToMenuPage(i);
-                };
-                dotsWrap.appendChild(dot);
-=======
         if (prevBtn) {
             prevBtn.disabled = currentPage <= 0;
         }
@@ -1313,58 +1246,10 @@
                     }
                 });
                 dotsContainer.appendChild(dot);
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             }
         }
     };
 
-<<<<<<< HEAD
-    window.goToMenuPage = function(pageIndex, animate = true) {
-        const container = document.getElementById('recommendations-columns-container');
-        if (!container) return;
-
-        const track = container.querySelector('.menu-slide-track');
-        if (!track) return;
-
-        const slides = Array.from(track.querySelectorAll('.menu-page-slide'));
-        const totalPages = Math.max(1, slides.length);
-        const targetPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
-
-        slides.forEach((slide, idx) => {
-            if (idx === targetPage) {
-                slide.classList.remove('is-collapsed-page');
-            } else {
-                slide.classList.add('is-collapsed-page');
-            }
-        });
-
-        if (!animate) {
-            track.style.transition = 'none';
-        } else {
-            track.style.transition = '';
-        }
-
-        track.style.transform = targetPage === 0
-            ? 'translateX(0px)'
-            : `translateX(calc(-${targetPage * 100}% - ${targetPage * 24}px))`;
-
-        if (!animate) {
-            void track.offsetWidth;
-            track.style.transition = '';
-        }
-
-        window.menuCarouselState = {
-            currentPage: targetPage,
-            totalPages: totalPages
-        };
-        window.updateMenuCarouselControls();
-    };
-
-    window.prevMenuPage = function() {
-        const current = (window.menuCarouselState && window.menuCarouselState.currentPage) || 0;
-        if (current > 0) {
-            window.goToMenuPage(current - 1);
-=======
     window.goToMenuPage = function(targetIndex) {
         const container = document.getElementById('recommendations-columns-container');
         if (!container) {
@@ -1441,16 +1326,10 @@
             finalizeSlides();
         } else {
             container._collapseTimer = setTimeout(finalizeSlides, 480);
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
         }
     };
 
     window.nextMenuPage = function() {
-<<<<<<< HEAD
-        const state = window.menuCarouselState || { currentPage: 0, totalPages: 1 };
-        if (state.currentPage < state.totalPages - 1) {
-            window.goToMenuPage(state.currentPage + 1);
-=======
         const container = document.getElementById('recommendations-columns-container');
         if (!container) {
             return;
@@ -1470,7 +1349,6 @@
         const currentPage = parseInt(container.dataset.currentPage || '0', 10);
         if (currentPage > 0) {
             window.goToMenuPage(currentPage - 1);
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
         }
     };
 
@@ -1553,64 +1431,6 @@
             }
         }
 
-<<<<<<< HEAD
-        // Rebuild layout
-        container.innerHTML = '';
-        container.dataset.renderedCols = String(numCols);
-
-        if (containerId === 'recommendations-columns-container') {
-            const perPage = numCols * 2;
-            const totalPages = Math.max(1, Math.ceil(visibleCards.length / perPage));
-            const track = document.createElement('div');
-            track.className = 'menu-slide-track';
-
-            for (let p = 0; p < totalPages; p++) {
-                const slide = document.createElement('div');
-                slide.className = 'menu-page-slide' + (p > 0 ? ' is-collapsed-page' : '');
-                slide.dataset.pageIndex = String(p);
-
-                const colsWrap = document.createElement('div');
-                colsWrap.className = 'menu-columns-container flex items-start w-full';
-
-                const columns = [];
-                for (let c = 0; c < numCols; c++) {
-                    const col = document.createElement('div');
-                    col.className = 'menu-column flex-1 flex flex-col gap-y-[74px] sm:gap-y-28 min-w-0';
-                    colsWrap.appendChild(col);
-                    columns.push(col);
-                }
-
-                const pageCards = visibleCards.slice(p * perPage, (p + 1) * perPage);
-                pageCards.forEach((wrap, idx) => {
-                    columns[idx % numCols].appendChild(wrap);
-                });
-
-                slide.appendChild(colsWrap);
-                track.appendChild(slide);
-            }
-
-            container.appendChild(track);
-            window.menuCarouselState = {
-                currentPage: 0,
-                totalPages: visibleCards.length > 0 ? totalPages : 1
-            };
-            window.goToMenuPage(0, false);
-        } else {
-            const columns = [];
-            for (let c = 0; c < numCols; c++) {
-                const col = document.createElement('div');
-                col.className = 'menu-column flex-1 flex flex-col gap-y-[74px] sm:gap-y-28 min-w-0';
-                container.appendChild(col);
-                columns.push(col);
-            }
-
-            // Distribute card i into column (i mod numCols)
-            visibleCards.forEach((wrap, idx) => {
-                const targetCol = idx % numCols;
-                columns[targetCol].appendChild(wrap);
-            });
-        }
-=======
         if (isHomepageCarousel) {
             if (container._collapseTimer) {
                 clearTimeout(container._collapseTimer);
@@ -1622,7 +1442,6 @@
 
             const pageSize = numCols * 2;
             const totalPages = visibleCards.length > 0 ? Math.ceil(visibleCards.length / pageSize) : 0;
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
             if (totalPages === 0) {
                 container.dataset.currentPage = '0';
@@ -1983,7 +1802,6 @@
         if (headSuccess) headSuccess.classList.toggle('hidden', viewName !== 'success');
     };
 
-<<<<<<< HEAD
     window.selectDrawerBarcodeType = function(type) {
         const normalized = type === 'barcode' ? 'barcode' : 'qr';
         window.currentDrawerBarcodeType = normalized;
@@ -1992,13 +1810,13 @@
 
         if (qrBtn) {
             qrBtn.className = normalized === 'qr'
-                ? 'p-2.5 rounded-xl border-2 border-neutral-900 bg-neutral-900 text-white text-left transition-all cursor-pointer flex items-center gap-2'
-                : 'p-2.5 rounded-xl border-2 border-stone-200 bg-white text-neutral-800 hover:border-stone-400 text-left transition-all cursor-pointer flex items-center gap-2';
+                ? 'p-2.5 rounded-xl border-2 border-[var(--accent-solid)] bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-left transition-all cursor-pointer flex items-center gap-2'
+                : 'p-2.5 rounded-xl border-2 border-[var(--field-border)] bg-[var(--field-bg)] text-[var(--text)] hover:border-[var(--field-focus)] text-left transition-all cursor-pointer flex items-center gap-2';
         }
         if (barBtn) {
             barBtn.className = normalized === 'barcode'
-                ? 'p-2.5 rounded-xl border-2 border-neutral-900 bg-neutral-900 text-white text-left transition-all cursor-pointer flex items-center gap-2'
-                : 'p-2.5 rounded-xl border-2 border-stone-200 bg-white text-neutral-800 hover:border-stone-400 text-left transition-all cursor-pointer flex items-center gap-2';
+                ? 'p-2.5 rounded-xl border-2 border-[var(--accent-solid)] bg-[var(--accent-solid)] text-[var(--accent-solid-text)] text-left transition-all cursor-pointer flex items-center gap-2'
+                : 'p-2.5 rounded-xl border-2 border-[var(--field-border)] bg-[var(--field-bg)] text-[var(--text)] hover:border-[var(--field-focus)] text-left transition-all cursor-pointer flex items-center gap-2';
         }
     };
 
@@ -2051,7 +1869,8 @@
                 slipLink.href = u.toString();
             } catch (e) {}
         }
-=======
+    };
+
     window.selectDrawerPaymentMethod = function(payMethod) {
         const input = document.getElementById('drawer-payment-method');
         if (input) input.value = payMethod;
@@ -2061,7 +1880,6 @@
                 ? 'drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--accent-solid)] text-[var(--accent-solid-text)] border-[var(--accent-solid)]'
                 : 'drawer-pay-btn py-2.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer bg-[var(--field-bg)] text-[var(--text-muted)] border-[var(--field-border)] hover:text-[var(--text)]';
         });
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
     };
 
     window.selectDrawerMethod = function(method) {

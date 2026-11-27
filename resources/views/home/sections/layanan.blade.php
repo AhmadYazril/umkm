@@ -5,11 +5,7 @@
     $rawGrabfoodUrl = $contact['grabfood_url'] ?? ($txSettings['grabfood_url'] ?? config('nucomu.contact.grabfood_url', ''));
     $layananGrabfoodUrl = !empty(trim((string) $rawGrabfoodUrl)) ? trim((string) $rawGrabfoodUrl) : 'https://food.grab.com';
 @endphp
-<<<<<<< HEAD
-<section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] border-b border-[#E5E5E5] overflow-hidden relative">
-=======
 <section id="layanan" class="py-16 sm:py-20 lg:py-24 bg-[#FFFFFF] dark:bg-[var(--bg-page)] relative border-b border-[var(--border-soft)] overflow-hidden">
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
     <!-- Background Ambient Glow & Blueprint Dot Matrix Texture -->
     <div class="absolute inset-0 pointer-events-none opacity-30 [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_35%,#000_60%,transparent_100%)]" style="background-image: radial-gradient(var(--dot-pattern-color) 1px, transparent 1px);" aria-hidden="true"></div>
     <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[650px] h-[320px] rounded-full blur-3xl pointer-events-none" style="background: linear-gradient(to bottom, var(--ambient-glow-top), transparent);" aria-hidden="true"></div>
@@ -72,13 +68,8 @@
                                     Reservasi Meja &amp; Acara Privat
                                     <span class="sr-only">Reservasi Tempat &amp; Acara</span>
                                 </h3>
-<<<<<<< HEAD
-                                <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    {{ $brand['services_reservasi_desc'] ?? 'Pesan meja khusus untuk kebutuhan acara spesial, mulai dari pertemuan, ulang tahun, hingga acara privat lainnya.' }}
-=======
                                 <p class="font-body text-xs text-[var(--text-muted)] leading-relaxed font-normal">
-                                    Pesan meja khusus untuk kebutuhan acara spesial, mulai dari pertemuan, ulang tahun, hingga acara privat lainnya.
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                                    {{ $brand['services_reservasi_desc'] ?? 'Pesan meja khusus untuk kebutuhan acara spesial, mulai dari pertemuan, ulang tahun, hingga acara privat lainnya.' }}
                                 </p>
                             </div>
 
@@ -146,13 +137,8 @@
                                 <h4 class="font-body text-lg sm:text-xl font-semibold text-[var(--text)] leading-snug tracking-tight mb-2">
                                     Delivery via WhatsApp (Zendo)
                                 </h4>
-<<<<<<< HEAD
-                                <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    {{ $brand['services_delivery_desc'] ?? 'Nikmati menu favoritmu dengan mudah melalui WhatsApp. Pesanan akan segera diproses dan diantar ke lokasi kamu.' }}
-=======
                                 <p class="font-body text-xs text-[var(--text-muted)] leading-relaxed font-normal">
-                                    Nikmati menu favoritmu dengan mudah melalui WhatsApp. Pesanan akan segera diproses dan diantar ke lokasi kamu.
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                                    {{ $brand['services_delivery_desc'] ?? 'Nikmati menu favoritmu dengan mudah melalui WhatsApp. Pesanan akan segera diproses dan diantar ke lokasi kamu.' }}
                                 </p>
                             </div>
 
@@ -216,13 +202,8 @@
                                 <h4 class="font-body text-lg sm:text-xl font-semibold text-[var(--text)] leading-snug tracking-tight mb-2">
                                     Pesan Menu Favoritmu di GrabFood
                                 </h4>
-<<<<<<< HEAD
-                                <p class="font-body text-xs text-[#666666] leading-relaxed font-normal">
-                                    {{ $brand['services_online_desc'] ?? 'Dapatkan menu Nucomu favoritmu melalui aplikasi GrabFood dengan proses yang praktis dan cepat.' }}
-=======
                                 <p class="font-body text-xs text-[var(--text-muted)] leading-relaxed font-normal">
-                                    Dapatkan menu Nucomu favoritmu melalui aplikasi GrabFood dengan proses yang praktis dan cepat.
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                                    {{ $brand['services_online_desc'] ?? 'Dapatkan menu Nucomu favoritmu melalui aplikasi GrabFood dengan proses yang praktis dan cepat.' }}
                                 </p>
                             </div>
 

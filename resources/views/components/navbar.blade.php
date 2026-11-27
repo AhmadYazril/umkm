@@ -105,15 +105,9 @@
             <!-- Drawer Header -->
             <div class="flex items-center justify-between pb-4 border-b border-[var(--border)]">
                 <div class="flex items-center gap-2.5">
-<<<<<<< HEAD
                     <img src="{{ $navLogoUrl }}" 
                          alt="{{ strtoupper($navBrandName) }}" 
-                         class="h-6 w-auto object-contain brightness-0 invert">
-=======
-                    <img src="{{ asset('images/nucomu/nucomu_logo_brand.png') }}" 
-                         alt="NUCOMU CAFE" 
                          class="h-6 w-auto object-contain dark:brightness-0 dark:invert">
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                 </div>
                 <button onclick="toggleMobileDrawer()" class="w-9 h-9 rounded-full bg-[var(--badge-bg)] hover:bg-[var(--surface-hover)] text-[var(--text)] flex items-center justify-center transition-colors active:scale-95" aria-label="Tutup Menu">
                     <span class="material-symbols-outlined text-xl">close</span>
@@ -179,15 +173,9 @@
                 <span class="material-symbols-outlined text-base">event_seat</span>
                 <span>Reservasi Tempat</span>
             </button>
-<<<<<<< HEAD
-            <div class="pt-1 text-center text-[11px] text-white/50 font-medium flex items-center justify-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span>{{ $navContact['hours'] ?? config('nucomu.contact.hours') }}</span>
-=======
             <div class="pt-1 text-center text-[11px] text-[var(--text-muted)] font-medium flex items-center justify-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span>{{ config('nucomu.contact.hours') }}</span>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                <span>{{ $navContact['hours'] ?? config('nucomu.contact.hours') }}</span>
             </div>
         </div>
     </div>

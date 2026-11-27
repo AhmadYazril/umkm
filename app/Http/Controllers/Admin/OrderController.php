@@ -353,14 +353,10 @@ class OrderController extends Controller
 
     public function printReceipt(Order $order)
     {
-<<<<<<< HEAD
-        $order->load(['table', 'items']);
+        $order->load(['table', 'items', 'zendoDelivery']);
         $settings = Setting::pluck('value', 'key')->all();
         $contact = NucomuController::getContactSettings();
         $brand = NucomuController::resolveBrandSettings();
-=======
-        $order->load(['table', 'items', 'zendoDelivery']);
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
         return view('admin.orders.receipt', compact('order', 'settings', 'contact', 'brand'));
     }

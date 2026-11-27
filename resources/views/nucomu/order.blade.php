@@ -118,13 +118,8 @@
             $orderPageContact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
         @endphp
         <div class="text-center mb-6 sm:mb-8">
-<<<<<<< HEAD
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-semibold text-goldAccent mb-2.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> {{ $orderPageContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}
-=======
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-[11px] font-semibold text-[var(--text)] mb-2.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Buka Sekarang · 08:00 - 23:00
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> {{ $orderPageContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}
             </div>
             <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--text)] font-editorial mb-2">Pilih <span class="italic">Menu</span> & Proses Transaksi</h1>
             <p class="text-[var(--text-muted)] text-xs sm:text-sm max-w-2xl mx-auto" id="orderHeroSubtitle">

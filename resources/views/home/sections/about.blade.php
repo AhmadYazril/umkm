@@ -145,61 +145,33 @@
                              style="background-color: var(--color-about-backplate); border: 1px solid var(--color-about-backplate-border);"
                              aria-hidden="true"></div>
 
-<<<<<<< HEAD
-                        {{-- 2. Frame Media Nucomu Cafe (Video Animasi Room Tour 3D atau Foto dari Admin) --}}
+                        {{-- 2. Frame Media Nucomu Cafe (Video Animasi Room Tour 3D atau Foto Pilihan Admin) --}}
                         @php
                             $aboutMediaType = $brand['about_media_type'] ?? 'video';
                             $aboutMediaUrl = $brand['about_media_url'] ?? asset('videos/room-tour.mp4');
                         @endphp
-=======
-                        {{-- 2. Frame Media Nucomu Cafe (Video Animasi Room Tour 3D atau Foto Pilihan Admin) --}}
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         <div id="about-video-container"
                              class="story-anim-photo relative z-10 w-full rounded-[18px] sm:rounded-[22px] lg:rounded-[24px] overflow-hidden border-[3.5px] sm:border-4 bg-neutral-950 select-none aspect-video sm:aspect-video lg:aspect-[16/10]"
                              style="border-color: var(--color-about-frame-border); box-shadow: var(--color-about-frame-shadow);">
                             
-<<<<<<< HEAD
-                            @if($aboutMediaType === 'image')
-                                <img id="about-room-tour-image"
-                                     src="{{ $aboutMediaUrl }}"
-                                     alt="{{ $brand['name'] ?? 'Nucomu Cafe' }}"
-                                     class="absolute inset-0 w-full h-full object-cover">
-                            @else
-                                {{-- Video Room Tour 3D --}}
-=======
-                            @php
-                                $aboutMediaType = $brand['about_media_type'] ?? 'video';
-                                $aboutMediaUrl = $brand['about_media_url'] ?? asset('videos/room-tour.mp4');
-                            @endphp
-
                             @if($aboutMediaType === 'image')
                                 {{-- Foto / Gambar Pilihan Admin --}}
-                                <img src="{{ $aboutMediaUrl }}"
-                                     alt="{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : 'Nucomu Cafe' }}"
+                                <img id="about-room-tour-image"
+                                     src="{{ $aboutMediaUrl }}"
+                                     alt="{{ !empty($brand['cafe_story_headline']) ? $brand['cafe_story_headline'] : ($brand['name'] ?? 'Nucomu Cafe') }}"
                                      class="absolute inset-0 w-full h-full object-cover">
                             @else
                                 {{-- Video Room Tour 3D / Video Pilihan Admin --}}
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                                 <video id="about-room-tour-video"
                                        class="absolute inset-0 w-full h-full object-cover"
                                        muted
                                        loop
                                        playsinline
-<<<<<<< HEAD
-=======
                                        poster="{{ asset('images/nucomu/nucomu_story_1.png') }}"
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                                        preload="metadata">
                                     <source src="{{ $aboutMediaUrl }}" type="video/mp4">
                                 </video>
                             @endif
-<<<<<<< HEAD
-
-                            {{-- Badge Tag Dinamis di Pojok Kiri Bawah --}}
-                            <div id="about-video-badge" class="absolute bottom-3 left-3 z-30 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[var(--color-about-title,#1C1C1C)] border border-white/60 shadow-sm flex items-center space-x-1.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-about-badge-dot,#242424)] animate-pulse"></span>
-                                <span id="about-video-badge-text">{{ $aboutMediaType === 'image' ? strtoupper($brand['name'] ?? 'NUCOMU CAFE') : 'ROOM TOUR 3D' }}</span>
-=======
 
                             {{-- Top Labels Inside Video Frame (Room Tour 3D & Nucomu Cafe) --}}
                             <div class="absolute top-3 left-14 sm:left-16 z-30 flex items-center gap-2">
@@ -209,15 +181,14 @@
                             </div>
                             <div class="absolute top-3 right-3 z-30">
                                 <span class="text-[10px] sm:text-[11px] font-medium tracking-[0.15em] uppercase text-white/80 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 font-editorial">
-                                    Nucomu Cafe
+                                    {{ $brand['name'] ?? 'Nucomu Cafe' }}
                                 </span>
                             </div>
 
                             {{-- Badge Tag Dinamis di Pojok Kiri Bawah --}}
                             <div id="about-video-badge" class="absolute bottom-3 left-3 z-30 bg-black/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-white border border-white/20 shadow-md flex items-center space-x-1.5">
                                 <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-                                <span id="about-video-badge-text">{{ $aboutMediaType === 'image' ? 'NUCOMU SPACE' : 'ROOM TOUR 3D' }}</span>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                                <span id="about-video-badge-text">{{ $aboutMediaType === 'image' ? strtoupper($brand['name'] ?? 'NUCOMU CAFE') : 'ROOM TOUR 3D' }}</span>
                             </div>
 
                         </div>
@@ -227,24 +198,14 @@
                              style="background-color: var(--color-about-logo-bg); border: 1px solid var(--color-about-logo-border);"
                              title="Nucomu Cafe Tulungagung">
                             <img src="{{ asset('images/nucomu/nucomu_logo_icon.png') }}" 
-<<<<<<< HEAD
                                  alt="Logo {{ $brand['name'] ?? 'Nucomu Cafe' }}" 
-                                 class="h-6 sm:h-7 lg:h-8 w-auto object-contain brightness-0">
-                            <span class="text-[7.5px] sm:text-[8.5px] font-extrabold tracking-[0.2em] text-[#1C1C1C] uppercase mt-1 font-body">NUCOMU</span>
-                        </div>
-
-                        @if($aboutMediaType !== 'image')
-                        {{-- 4. Tombol Play/Pause Bulat Interaktif (Sudut Kanan Bawah Frame) --}}
-=======
-                                 alt="Logo Nucomu Cafe" 
                                  class="h-6 sm:h-7 lg:h-8 w-auto object-contain"
                                  style="filter: var(--color-about-logo-filter);">
                             <span class="text-[7.5px] sm:text-[8.5px] font-extrabold tracking-[0.2em] uppercase mt-1 font-body" style="color: var(--color-about-logo-text);">NUCOMU</span>
                         </div>
 
                         {{-- 4. Tombol Play/Pause Bulat Interaktif (Hanya tampil jika media adalah video) --}}
-                        @if(($brand['about_media_type'] ?? 'video') === 'video')
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                        @if($aboutMediaType !== 'image')
                         <button id="about-video-play-btn"
                                 type="button"
                                 aria-label="Jeda Video Room Tour 3D"
@@ -319,22 +280,7 @@
                                 <p class="font-editorial text-[15px] sm:text-base leading-[1.75] font-normal" style="color: var(--color-about-body-sub);">
                                     {{ $brand['cafe_story_p3'] }}
                                 </p>
-<<<<<<< HEAD
-                                <blockquote class="absolute inset-0 font-sans italic font-semibold text-lg sm:text-xl lg:text-[22px] text-[var(--color-about-quote-text,#333333)] leading-[1.55]">
-                                    <span id="story-typewriter-text" data-quote="&ldquo;{{ $quoteText }}&rdquo;">&ldquo;{{ $quoteText }}&rdquo;</span><span id="story-typewriter-cursor" class="inline-block w-[2px] h-[0.9em] bg-[#1C1C1C] align-middle ml-1 animate-pulse" aria-hidden="true"></span>
-                                </blockquote>
-                            </div>
-                        </div>
-
-                        {{-- Right: Editorial Signature & Stamp --}}
-                        <div class="flex-shrink-0 flex items-center gap-3 self-center md:self-end lg:self-center">
-                            <div class="hidden lg:block w-12 h-px bg-[var(--color-about-divider,#E5E5E5)]" aria-hidden="true"></div>
-                            <div class="text-right select-none">
-                                <span class="block text-[11px] font-bold tracking-[0.2em] text-[var(--color-about-body,#666666)] uppercase font-body">{{ strtoupper($brand['name'] ?? 'Nucomu Cafe') }}</span>
-                            </div>
-=======
                             @endif
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         </div>
                     </div>
 

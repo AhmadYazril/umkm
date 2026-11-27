@@ -776,6 +776,7 @@
                         </div>
 
                         <!-- 4. Attached Photo Grid (2x2 Grid for 4 photos, 1x2 for 2 photos) -->
+                        @php $reviewFallbackImg = asset('images/nucomu/latte_grabfood.jpg'); @endphp
                         @if(count($cardImages) >= 4)
                             <div class="grid grid-cols-2 grid-rows-2 gap-[3px] h-[136px] sm:h-[142px] rounded-lg sm:rounded-xl overflow-hidden bg-[var(--media-bg)] border border-[var(--border)] mb-2.5">
                                 @foreach(array_slice($cardImages, 0, 4) as $imgIdx => $imgUrl)
@@ -786,6 +787,7 @@
                                              alt="Foto ulasan {{ $rev['name'] }}"
                                              referrerpolicy="no-referrer"
                                              loading="lazy"
+                                             onerror="this.onerror=null;this.src='{{ $reviewFallbackImg }}';"
                                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                         {{-- Video duration badges on Dya slma (idx 0) first two videos --}}
                                         @if($idx === 0 && in_array($imgIdx, [0, 1]))
@@ -809,6 +811,7 @@
                                              alt="Foto ulasan {{ $rev['name'] }}"
                                              referrerpolicy="no-referrer"
                                              loading="lazy"
+                                             onerror="this.onerror=null;this.src='{{ $reviewFallbackImg }}';"
                                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                         <span class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs">
                                             <i class="fa-solid fa-expand"></i>
@@ -824,6 +827,7 @@
                                          alt="Foto ulasan {{ $rev['name'] }}"
                                          referrerpolicy="no-referrer"
                                          loading="lazy"
+                                         onerror="this.onerror=null;this.src='{{ $reviewFallbackImg }}';"
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 </div>
                                 <div class="grid grid-rows-2 gap-[3px] w-full h-full">
@@ -834,6 +838,7 @@
                                                  alt="Foto ulasan {{ $rev['name'] }}"
                                                  referrerpolicy="no-referrer"
                                                  loading="lazy"
+                                                 onerror="this.onerror=null;this.src='{{ $reviewFallbackImg }}';"
                                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                         </div>
                                     @endforeach
@@ -846,6 +851,7 @@
                                      alt="Foto ulasan {{ $rev['name'] }}"
                                      referrerpolicy="no-referrer"
                                      loading="lazy"
+                                     onerror="this.onerror=null;this.src='{{ $reviewFallbackImg }}';"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             </div>
                         @else
@@ -1095,6 +1101,7 @@
                                              alt="Foto ulasan {{ $mRev['name'] }}"
                                              referrerpolicy="no-referrer"
                                              loading="lazy"
+                                             onerror="this.onerror=null;this.src='{{ asset('images/nucomu/latte_grabfood.jpg') }}';"
                                              onclick="openReviewImagePreview('{{ $img }}', '{{ addslashes($mRev['name']) }}')"
                                              class="w-16 h-16 rounded-xl object-cover border border-[var(--border)] cursor-pointer hover:opacity-90 transition-opacity shrink-0">
                                     @endforeach
@@ -1508,7 +1515,7 @@
                     const item = document.createElement('div');
                     item.className = 'relative group cursor-pointer aspect-[4/3] rounded-2xl overflow-hidden border border-[var(--border)] bg-[var(--media-bg)]';
                     item.onclick = () => openReviewImagePreview(imgUrl, rev.name);
-                    item.innerHTML = `<img src="${imgUrl}" alt="Foto ulasan" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    item.innerHTML = `<img src="${imgUrl}" alt="Foto ulasan" onerror="this.onerror=null;this.src='{{ asset('images/nucomu/latte_grabfood.jpg') }}';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                       <span class="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold gap-1.5"><i class="fa-solid fa-expand"></i><span>Perbesar</span></span>`;
                     photosGridEl.appendChild(item);
                 });

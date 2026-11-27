@@ -155,9 +155,8 @@
                 </div>
 
                 <!-- Hours Card with Elevation & Row Highlight & Icon Micro-Animations -->
-<<<<<<< HEAD
                 @php $footerOpGroups = $operatingHours['groups'] ?? []; @endphp
-                <div class="footer-hours-card {{ count($footerOpGroups) === 2 ? 'grid grid-cols-2 divide-x divide-white/10' : 'block space-y-1' }} md:block md:divide-x-0 rounded-2xl bg-zinc-900/70 backdrop-blur-md border border-white/10 p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
+                <div class="footer-hours-card {{ count($footerOpGroups) === 2 ? 'grid grid-cols-2 divide-x divide-white/10' : 'block space-y-1' }} md:block md:divide-x-0 rounded-2xl bg-zinc-900/75 dark:bg-white/[0.04] backdrop-blur-md border border-white/12 p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
                     @foreach($footerOpGroups as $opIdx => $opGroup)
                         @if($opIdx > 0)
                             <!-- Dashed Divider (animated dash-offset on card hover, desktop only) -->
@@ -184,16 +183,6 @@
                                 <p class="text-[9.5px] md:text-[10px] font-semibold tracking-wider text-zinc-400 uppercase transition-colors group-hover/row:text-zinc-300">{{ strtoupper($opGroup['label']) }}</p>
                                 <p class="text-[12px] sm:text-[13px] md:text-sm font-bold text-white tracking-wide mt-0.5 tabular-nums whitespace-nowrap">{{ $opGroup['hours'] }}</p>
                             </div>
-=======
-                <div class="footer-hours-card grid grid-cols-2 divide-x divide-white/10 md:block md:divide-x-0 rounded-2xl bg-zinc-900/75 dark:bg-white/[0.04] border border-white/12 backdrop-blur-md p-2 md:p-3.5 shadow-inner transition-all duration-300 hover:border-white/25 hover:shadow-[0_12px_32px_rgba(0,0,0,0.6),0_0_16px_rgba(255,255,255,0.04)] text-left">
-                    <!-- Row: Senin – Sabtu -->
-                    <div class="footer-op-row group/row flex flex-col items-center text-center gap-2 px-2 py-2.5 md:flex-row md:items-center md:text-left md:gap-3 md:p-2 rounded-xl transition-colors duration-200 hover:bg-white/[0.05] cursor-default">
-                        <div class="w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0 text-zinc-300 transition-colors duration-200 group-hover/row:border-white/25 group-hover/row:text-white">
-                            <svg class="footer-sun-icon w-4 h-4 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="12" r="4"/>
-                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-                            </svg>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                         </div>
                     @endforeach
                 </div>

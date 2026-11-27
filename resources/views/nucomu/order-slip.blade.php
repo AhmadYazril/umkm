@@ -14,12 +14,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<<<<<<< HEAD
-    {{-- QR Code & Offline 1D Code 128 Barcode Libraries --}}
-=======
     <link rel="stylesheet" href="{{ asset('css/nucomu.css') }}?v={{ filemtime(public_path('css/nucomu.css')) }}">
-    {{-- QR Code libraries (Primary + Fallbacks) --}}
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+    {{-- QR Code & Offline 1D Code 128 Barcode Libraries --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
     <script src="{{ asset('js/nucomu-barcode.js') }}"></script>
@@ -107,22 +103,21 @@
                 </div>
             </div>
 
-<<<<<<< HEAD
             {{-- SWITCHABLE QR CODE & 1D LINEAR BARCODE SECTION --}}
-            <div class="px-6 py-6 flex flex-col items-center border-b border-white/5 bg-black/20">
+            <div class="px-6 py-6 flex flex-col items-center border-b border-[var(--border-soft)] bg-[var(--badge-bg)]">
                 {{-- Switcher Tab: QR Code vs Barcode Bergaris (Code 128) --}}
-                <div class="grid grid-cols-2 gap-1.5 bg-white/5 border border-white/10 p-1 rounded-2xl w-full max-w-[300px] mb-4 no-print">
+                <div class="grid grid-cols-2 gap-1.5 bg-[var(--surface-solid)] border border-[var(--border)] p-1 rounded-2xl w-full max-w-[300px] mb-4 no-print">
                     <button type="button"
                             id="slipModeBtn-qr"
                             onclick="switchSlipCodeMode('qr')"
-                            class="py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-goldAccent text-black shadow-xs">
+                            class="py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-xs">
                         <i class="fa-solid fa-qrcode text-xs"></i>
                         <span>QR Code</span>
                     </button>
                     <button type="button"
                             id="slipModeBtn-barcode"
                             onclick="switchSlipCodeMode('barcode')"
-                            class="py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-gray-300 hover:text-white">
+                            class="py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text)]">
                         <i class="fa-solid fa-barcode text-xs"></i>
                         <span>Barcode Garis</span>
                     </button>
@@ -130,99 +125,59 @@
 
                 {{-- MODE 1: QR CODE --}}
                 <div id="slipQrModeWrap" class="w-full flex flex-col items-center">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] text-goldAccent font-semibold mb-3">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--surface-solid)] border border-[var(--border)] text-[10px] text-[var(--text)] font-semibold mb-3">
                         <i class="fa-solid fa-camera"></i> Siap Scan Kamera Kasir / Google Lens
                     </div>
 
                     {{-- White QR Plate Container --}}
-                    <div class="bg-white p-4 rounded-3xl shadow-2xl flex items-center justify-center min-w-[210px] min-h-[210px]" id="qrContainer">
+                    <div class="bg-white p-4 rounded-3xl border border-[var(--border)] shadow-xl flex items-center justify-center min-w-[210px] min-h-[210px]" id="qrContainer">
                         <canvas id="qrCanvas" class="hidden"></canvas>
                         <div id="qrcodeJsTarget"></div>
                         <img id="qrFallbackImg" class="hidden w-[200px] h-[200px] object-contain rounded" alt="QR Code">
                     </div>
 
                     {{-- Host IP & Direct URL Info for User & Kasir --}}
-                    <div class="mt-4 w-full bg-black/50 border border-white/10 rounded-2xl p-3 text-center space-y-1.5 no-print">
-                        <div class="flex items-center justify-center gap-1.5 text-[11px] text-gray-300">
-                            <i class="fa-solid fa-wifi text-emerald-400 text-[10px]"></i>
-                            <span class="font-semibold text-white">Target Akses IP:</span>
-                            <span class="font-mono text-goldAccent font-bold" id="currentScanHost">{{ $host }}{{ $portSuffix }}</span>
+                    <div class="mt-4 w-full bg-[var(--surface-solid)] border border-[var(--border)] rounded-2xl p-3 text-center space-y-1.5 no-print">
+                        <div class="flex items-center justify-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                            <i class="fa-solid fa-wifi text-emerald-600 dark:text-emerald-400 text-[10px]"></i>
+                            <span class="font-semibold text-[var(--text)]">Target Akses IP:</span>
+                            <span class="font-mono text-[var(--text)] font-bold" id="currentScanHost">{{ $host }}{{ $portSuffix }}</span>
                         </div>
 
                         <div class="flex items-center justify-center gap-2 pt-1">
-                            <button type="button" onclick="copyScanUrl()" class="px-3 py-1 bg-white/10 hover:bg-white/20 text-gray-200 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
+                            <button type="button" onclick="copyScanUrl()" class="px-3 py-1 bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] text-[var(--text)] border border-[var(--border)] rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
                                 <i class="fa-regular fa-copy"></i>
                                 <span id="copyBtnText">Salin Tautan</span>
                             </button>
-                            <button type="button" onclick="toggleIpModal()" class="px-3 py-1 bg-goldAccent/15 hover:bg-goldAccent/25 text-goldAccent border border-goldAccent/30 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
+                            <button type="button" onclick="toggleIpModal()" class="px-3 py-1 bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
                                 <i class="fa-solid fa-gear"></i>
                                 <span>Ganti Host IP</span>
                             </button>
                         </div>
 
-                        <p class="text-[9px] text-gray-500 font-mono pt-1" id="fullUrlPreview">{{ $adminOrderUrl }}</p>
+                        <p class="text-[9px] text-[var(--text-faint)] font-mono pt-1" id="fullUrlPreview">{{ $adminOrderUrl }}</p>
                     </div>
 
-                    <p class="text-[10px] text-gray-500 mt-2.5 text-center">
+                    <p class="text-[10px] text-[var(--text-faint)] mt-2.5 text-center">
                         Tunjukkan QR code ini ke kasir atau ganti ke mode Barcode Garis untuk alat scanner kasir.
                     </p>
                 </div>
 
                 {{-- MODE 2: 1D LINEAR BARCODE (CODE 128B — ENCODES CLEAN ORDER CODE) --}}
                 <div id="slipBarcodeModeWrap" class="hidden w-full flex flex-col items-center">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-300 font-semibold mb-3">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold mb-3">
                         <i class="fa-solid fa-barcode"></i> Code 128 &bull; Siap Scan Alat Scanner Kasir
                     </div>
 
-                    <div class="bg-white px-4 py-5 rounded-3xl shadow-2xl w-full flex flex-col items-center justify-center">
+                    <div class="bg-white px-4 py-5 rounded-3xl border border-[var(--border)] shadow-xl w-full flex flex-col items-center justify-center">
                         <div id="slipLinearBarcodeTarget" class="w-full"></div>
                     </div>
 
-                    <p class="text-[10.5px] text-gray-400 mt-3 text-center leading-relaxed">
-                        Barcode garis ini memuat kode <span class="font-mono font-bold text-goldAccent">{{ $order->code }}</span>.<br>
+                    <p class="text-[10.5px] text-[var(--text-muted)] mt-3 text-center leading-relaxed">
+                        Barcode garis ini memuat kode <span class="font-mono font-bold text-[var(--text)]">{{ $order->code }}</span>.<br>
                         Saat di-scan dengan alat scanner kasir, kode langsung otomatis tertulis di pencarian pesanan.
                     </p>
                 </div>
-=======
-            {{-- QR CODE SECTION --}}
-            <div class="px-6 py-6 flex flex-col items-center border-b border-[var(--border-soft)] bg-[var(--badge-bg)]">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--surface-solid)] border border-[var(--border)] text-[10px] text-[var(--text)] font-semibold mb-3">
-                    <i class="fa-solid fa-camera"></i> Siap Scan Google Lens / HP Kasir
-                </div>
-
-                {{-- White QR Plate Container --}}
-                <div class="bg-white p-4 rounded-3xl border border-[var(--border)] shadow-xl flex items-center justify-center min-w-[210px] min-h-[210px]" id="qrContainer">
-                    <canvas id="qrCanvas" class="hidden"></canvas>
-                    <div id="qrcodeJsTarget"></div>
-                    <img id="qrFallbackImg" class="hidden w-[200px] h-[200px] object-contain rounded" alt="QR Code">
-                </div>
-
-                {{-- Host IP & Direct URL Info for User & Kasir --}}
-                <div class="mt-4 w-full bg-[var(--surface-solid)] border border-[var(--border)] rounded-2xl p-3 text-center space-y-1.5">
-                    <div class="flex items-center justify-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                        <i class="fa-solid fa-wifi text-emerald-600 dark:text-emerald-400 text-[10px]"></i>
-                        <span class="font-semibold text-[var(--text)]">Target Akses IP:</span>
-                        <span class="font-mono text-[var(--text)] font-bold" id="currentScanHost">{{ $host }}{{ $portSuffix }}</span>
-                    </div>
-
-                    <div class="flex items-center justify-center gap-2 pt-1">
-                        <button type="button" onclick="copyScanUrl()" class="px-3 py-1 bg-[var(--badge-bg)] hover:bg-[var(--btn-outline-hover-bg)] text-[var(--text)] border border-[var(--border)] rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
-                            <i class="fa-regular fa-copy"></i>
-                            <span id="copyBtnText">Salin Tautan</span>
-                        </button>
-                        <button type="button" onclick="toggleIpModal()" class="px-3 py-1 bg-[var(--accent-solid)] hover:bg-[var(--accent-solid-hover)] text-[var(--accent-solid-text)] rounded-lg text-[10px] font-bold transition-all flex items-center gap-1.5">
-                            <i class="fa-solid fa-gear"></i>
-                            <span>Ganti Host IP</span>
-                        </button>
-                    </div>
-
-                    <p class="text-[9px] text-[var(--text-faint)] font-mono pt-1" id="fullUrlPreview">{{ $adminOrderUrl }}</p>
-                </div>
-
-                <p class="text-[10px] text-[var(--text-faint)] mt-2.5 text-center">
-                    Tunjukkan barcode QR ini ke kasir atau buka tautan di atas via HP.
-                </p>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             </div>
 
             {{-- ORDER ITEMS --}}
@@ -305,19 +260,13 @@
             </div>
 
             {{-- Footer Slip --}}
-<<<<<<< HEAD
             @php
                 $slipBrand = $brand ?? \App\Http\Controllers\NucomuController::resolveBrandSettings();
                 $slipContact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
             @endphp
-            <div class="px-6 py-4 text-center bg-white/2">
-                <p class="text-[10px] text-gray-500">Terima kasih atas kunjungan Anda 🙏</p>
-                <p class="text-[10px] text-gray-500">{{ $slipBrand['name'] ?? 'Nucomu Cafe' }} · {{ $slipContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}</p>
-=======
             <div class="px-6 py-4 text-center bg-[var(--badge-bg)]">
                 <p class="text-[10px] text-[var(--text-faint)]">Terima kasih atas kunjungan Anda 🙏</p>
-                <p class="text-[10px] text-[var(--text-faint)]">Nucomu Cafe · Open 08:00 - 23:00</p>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                <p class="text-[10px] text-[var(--text-faint)]">{{ $slipBrand['name'] ?? 'Nucomu Cafe' }} · {{ $slipContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}</p>
             </div>
         </div>
 
@@ -426,13 +375,13 @@
 
             if (qrBtn) {
                 qrBtn.className = normalized === 'qr'
-                    ? 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-goldAccent text-black shadow-xs'
-                    : 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-gray-300 hover:text-white';
+                    ? 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-xs'
+                    : 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text)]';
             }
             if (barBtn) {
                 barBtn.className = normalized === 'barcode'
-                    ? 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-goldAccent text-black shadow-xs'
-                    : 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-gray-300 hover:text-white';
+                    ? 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 bg-[var(--accent-solid)] text-[var(--accent-solid-text)] shadow-xs'
+                    : 'py-2 px-3 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text)]';
             }
 
             if (normalized === 'barcode' && window.NucomuBarcode) {

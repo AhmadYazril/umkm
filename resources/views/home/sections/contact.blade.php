@@ -130,43 +130,23 @@
                             02 / JAM OPERASIONAL
                         </span>
                         
-<<<<<<< HEAD
                         <!-- Status Pill Badge -->
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F5F5F5] border border-[#E5E5E5] text-xs font-medium text-[#1C1C1C] mb-3.5">
-                            <span class="w-2 h-2 rounded-full bg-[#1C1C1C] shrink-0"></span>
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-xs font-medium text-[var(--text)] mb-3.5">
+                            <span class="w-2 h-2 rounded-full bg-[var(--accent-solid)] shrink-0"></span>
                             <span id="contact-section-hours-status">{!! $operatingHours['status_text_middot'] !!}</span>
                         </div>
 
                         <!-- Schedule Rows -->
-                        <div class="space-y-2 font-body text-sm text-[#444444] mb-2.5">
+                        <div class="space-y-2 font-body text-sm text-[var(--text-muted)] mb-2.5">
                             @foreach($operatingHours['groups'] as $opGroup)
                                 <div class="flex items-center justify-between sm:justify-start sm:gap-8">
-                                    <span class="w-28 text-[#666666]">{{ $opGroup['label'] }}</span>
-                                    <span class="font-bold text-[#1C1C1C]">{{ $opGroup['hours'] }}</span>
+                                    <span class="w-28 text-[var(--text-muted)]">{{ $opGroup['label'] }}</span>
+                                    <span class="font-bold text-[var(--text)]">{{ $opGroup['hours'] }}</span>
                                 </div>
                             @endforeach
                         </div>
-                        <p class="font-body text-xs text-[#8A8A8A]">
-                            {{ $contact['hours_brew'] ?? config('nucomu.contact.hours_brew', 'Bar kopi & dine-in buka setiap hari.') }}
-=======
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--badge-bg)] border border-[var(--border)] text-xs font-medium text-[var(--text)] mb-3.5">
-                            <span class="w-2 h-2 rounded-full bg-[var(--accent-solid)] shrink-0"></span>
-                            <span id="contact-section-hours-status">Buka sekarang &middot; tutup 21:00 WIB</span>
-                        </div>
-
-                        <div class="space-y-2 font-body text-sm text-[var(--text-muted)] mb-2.5">
-                            <div class="flex items-center justify-between sm:justify-start sm:gap-8">
-                                <span class="w-28 text-[var(--text-muted)]">Senin &ndash; Sabtu</span>
-                                <span class="font-bold text-[var(--text)]">11:00 &ndash; 21:00 WIB</span>
-                            </div>
-                            <div class="flex items-center justify-between sm:justify-start sm:gap-8">
-                                <span class="w-28 text-[var(--text-muted)]">Minggu</span>
-                                <span class="font-bold text-[var(--text)]">11:00 &ndash; 22:00 WIB</span>
-                            </div>
-                        </div>
                         <p class="font-body text-xs text-[var(--text-faint)]">
-                            {{ config('nucomu.contact.hours_brew', 'Bar kopi & dine-in buka setiap hari.') }}
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                            {{ $contact['hours_brew'] ?? config('nucomu.contact.hours_brew', 'Bar kopi & dine-in buka setiap hari.') }}
                         </p>
                     </div>
 
@@ -303,11 +283,7 @@
                             <svg class="w-4 h-4 text-[var(--text)] shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                             </svg>
-<<<<<<< HEAD
-                            <span class="font-medium text-[#222222]">{{ $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Tulungagung') }}</span>
-=======
-                            <span class="font-medium text-[var(--text)]">Jl. Mayor Sujadi, Plosokandang, Tulungagung</span>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                            <span class="font-medium text-[var(--text)]">{{ $contact['address'] ?? config('nucomu.contact.address', 'Jl. Mayor Sujadi, Plosokandang, Tulungagung') }}</span>
                         </div>
                         <a href="{{ $mapsDirectUrl }}" 
                            target="_blank" 

@@ -981,8 +981,11 @@
                                     <div>
                                         <div class="flex flex-wrap items-center gap-1.5">
                                             <span class="text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedOrder->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
-<<<<<<< HEAD
-                                                {{ $scannedOrder->payment_status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }}
+                                                {{ $scannedOrder->payment_status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }} ({{ $scannedOrder->status_label }})
+                                            </span>
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedServiceBadgeClass }}">
+                                                <i class="fa-solid {{ $scannedServiceIcon }} text-[10px]"></i>
+                                                <span>{{ $scannedOrder->service_type_label }}</span>
                                             </span>
                                             @if($scannedOrder->channel === 'zendo')
                                                 <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200">
@@ -1000,14 +1003,6 @@
                                                     <span>Di Tempat (Barcode)</span>
                                                 </span>
                                             @endif
-=======
-                                                {{ $scannedOrder->payment_status === 'paid' ? 'LUNAS' : 'BELUM BAYAR' }} ({{ $scannedOrder->status_label }})
-                                            </span>
-                                            <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md {{ $scannedServiceBadgeClass }}">
-                                                <i class="fa-solid {{ $scannedServiceIcon }} text-[10px]"></i>
-                                                <span>{{ $scannedOrder->service_type_label }}</span>
-                                            </span>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                                         </div>
                                         <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#{{ $scannedOrder->code }}</h3>
                                         <p class="text-xs font-normal text-sub mt-0.5">
@@ -1065,18 +1060,6 @@
                                     </div>
                                 </div>
 
-<<<<<<< HEAD
-                                <div class="pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                    <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'processing', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">
-                                        Set Diproses &amp; Lunas
-                                    </button>
-                                    <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'ready', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">
-                                        Set Siap Disajikan
-                                    </button>
-                                    <button type="button" onclick="updateKasirOrderStatus({{ $scannedOrder->id }}, 'completed', 'paid')" class="min-h-[48px] px-3 rounded-xl bg-forest text-white text-xs font-bold cursor-pointer">
-                                        Selesaikan Pesanan
-                                    </button>
-=======
                                 @php
                                     $scannedBucket = match (true) {
                                         $scannedOrder->status === 'cancelled' => 'cancelled',
@@ -1110,7 +1093,6 @@
                                             Pesanan ini sudah dibatalkan.
                                         </div>
                                     @endif
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                                 </div>
                             </div>
                         @else
@@ -1128,11 +1110,7 @@
         </section>
 
         {{-- =====================================================================
-<<<<<<< HEAD
-             TAB 4: PESANAN (Dipisahkan per Sumber: Di Tempat/Barcode, Zendo, Grab)
-=======
-             TAB 4: PESANAN (3 Tab Ringkas: Belum Bayar | Selesai | Batal + Filter Jenis)
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+             TAB 4: PESANAN (Sumber Transaksi + 3 Tab Ringkas: Belum Bayar | Selesai | Batal + Filter Jenis)
              ===================================================================== --}}
         @php
             $kasirCountDirect = $recentOrders->filter(fn ($o) => $o->channel === 'direct')->count();
@@ -1141,7 +1119,6 @@
         @endphp
         <section id="kasirMainPanel-orders" class="{{ $activeTab === 'orders' ? '' : 'hidden' }} space-y-4 pb-24 sm:pb-8">
 
-<<<<<<< HEAD
             {{-- Pemisahan Riwayat Transaksi Berdasarkan Sumber: Di Tempat (Barcode), Zendo, Grab --}}
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
                 <button
@@ -1208,23 +1185,6 @@
                 </button>
             </div>
 
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
-                    <button type="button" onclick="filterKasirOrderStatus('all')" data-ord-filter="all" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-bold bg-forest text-white cursor-pointer shrink-0">Semua Status</button>
-                    <button type="button" onclick="filterKasirOrderStatus('pending')" data-ord-filter="pending" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Pending</button>
-                    <button type="button" onclick="filterKasirOrderStatus('processing')" data-ord-filter="processing" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Diproses</button>
-                    <button type="button" onclick="filterKasirOrderStatus('ready')" data-ord-filter="ready" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Siap Saji</button>
-                    <button type="button" onclick="filterKasirOrderStatus('completed')" data-ord-filter="completed" class="kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0">Selesai</button>
-                </div>
-
-                <input
-                    type="search"
-                    id="kasirOrderSearchInput"
-                    oninput="searchKasirOrderRows(this.value)"
-                    placeholder="Cari kode atau nama pelanggan..."
-                    class="w-full sm:w-64 min-h-[44px] bg-white border border-line rounded-xl px-4 py-2 text-sm text-ink placeholder-muted focus:outline-none focus:border-forest"
-                >
-=======
             <div class="space-y-3">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
@@ -1258,7 +1218,6 @@
                         <span>Bawa Pulang</span>
                     </button>
                 </div>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             </div>
 
             <div id="kasirOrdersGridContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -1285,26 +1244,17 @@
                         data-order-id="{{ $ord->id }}"
                         data-order-bucket="{{ $ordBucket }}"
                         data-order-status="{{ $ord->status }}"
-<<<<<<< HEAD
                         data-order-channel="{{ $ord->channel }}"
-                        data-order-search="{{ strtolower($ord->code . ' ' . $ord->customer_name . ' ' . $ord->channel_label) }}"
-=======
                         data-order-service="{{ $ordServiceKey }}"
-                        data-order-search="{{ strtolower($ord->code . ' ' . $ord->customer_name . ' ' . ($ord->delivery_address ?? '')) }}"
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                        data-order-search="{{ strtolower($ord->code . ' ' . $ord->customer_name . ' ' . $ord->channel_label . ' ' . ($ord->delivery_address ?? '')) }}"
                     >
                         <div>
                             <div class="flex items-start justify-between gap-2 pb-3 border-b border-line">
-                                <div class="min-w-0">
+                                <div class="min-w-0 w-full">
                                     <div class="flex flex-wrap items-center gap-1.5">
                                         <span class="text-xs font-bold text-ink tabular-nums">#{{ $ord->code }}</span>
-<<<<<<< HEAD
-                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-md {{ $ord->payment_status === 'paid' ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink' }}">
-                                            {{ $ord->payment_status === 'paid' ? 'Lunas' : 'Belum Bayar' }}
-=======
                                         <span class="text-xs font-bold px-2 py-0.5 rounded-md {{ $ordBucket === 'completed' ? 'bg-forest-soft text-forest-dark' : ($ordBucket === 'cancelled' ? 'bg-danger-soft text-danger' : 'bg-warning-soft text-warning-ink') }}">
                                             {{ $ordBucket === 'completed' ? 'Selesai • ' . $ord->payment_method_label : ($ordBucket === 'cancelled' ? 'Batal' : 'Belum Bayar') }}
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                                         </span>
                                         @if($ord->channel === 'zendo')
                                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold">
@@ -1323,16 +1273,6 @@
                                             </span>
                                         @endif
                                     </div>
-<<<<<<< HEAD
-                                    <p class="text-xs font-bold text-ink mt-1.5">
-                                        {{ $ord->customer_name ?: 'Pelanggan Kasir' }}
-                                        <span class="font-normal text-sub">• {{ $ord->order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang' }}</span>
-                                    </p>
-                                </div>
-                                <span id="orderCardStatusBadge-{{ $ord->id }}" class="text-xs font-normal px-2.5 py-1 rounded-lg bg-canvas text-ink shrink-0">
-                                    {{ $ord->status_label }}
-                                </span>
-=======
                                     <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
                                         <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md {{ $ordServiceBadgeClass }}">
                                             <i class="fa-solid {{ $ordServiceIcon }} text-[10px]"></i>
@@ -1360,7 +1300,6 @@
                                         </p>
                                     @endif
                                 </div>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                             </div>
 
                             <div class="py-3 space-y-1.5 max-h-36 overflow-y-auto text-xs">
@@ -2031,7 +1970,6 @@
          ========================================================================= --}}
     <script>
         const KASIR_CATALOG = @json($catalogJsMap);
-<<<<<<< HEAD
         const KASIR_CHANNEL_ASSETS = {
             zendo: {
                 logo: @json(asset('images/logos/zendo-courier.png')),
@@ -2051,11 +1989,9 @@
             },
         };
         const KASIR_BASE_QR_URL = @json($baseQrUrl);
-=======
         const KASIR_QRIS_IMAGE_URL = @json($qrisImageUrl ?? null);
         const INITIAL_RECENT_ORDERS = @json($recentOrdersPayload ?? []);
         const INITIAL_SCANNED_ORDER = @json($scannedOrderPayload ?? null);
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
         const KASIR_STATE = {
             cart: [],
@@ -2064,15 +2000,11 @@
             activeMainTab: @json($activeTab),
             activeCategory: @json($initialCatalogTab),
             activeStockCategory: @json($firstCategoryKey),
-<<<<<<< HEAD
             activeOrderChannelFilter: 'all',
-            activeOrderStatusFilter: 'all',
-            orderSearchQuery: '',
-            lastSuccessOrder: null,
-=======
             activeOrderStatus: 'unpaid',
             activeOrderService: 'all',
             orderSearchQuery: '',
+            lastSuccessOrder: null,
             recentOrders: Array.isArray(INITIAL_RECENT_ORDERS) ? INITIAL_RECENT_ORDERS : [],
             ordersById: {},
             knownOrderIds: new Set(),
@@ -2080,7 +2012,6 @@
             editOrderDraft: null,
             payOrderDraft: null,
             cancelOrderTargetId: null,
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             stocks: {
                 @foreach($catalogItems as $ci)
                     {{ $ci['id'] }}: {{ $ci['is_available'] && (int)$ci['stock'] > 0 ? (int)$ci['stock'] : 0 }},
@@ -3293,28 +3224,18 @@
                 if (document.getElementById('kasirTableNo')) document.getElementById('kasirTableNo').value = '';
                 if (document.getElementById('kasirCashReceived')) document.getElementById('kasirCashReceived').value = '';
 
-<<<<<<< HEAD
                 openOrderSuccessModal({
                     code: data.order.code,
                     customerName: data.order.customer_name,
                     total: data.order.total,
                     changeAmount: data.order.change_amount || 0,
                     receiptUrl: data.receipt_url,
+                    showChange: payload.payment_method === 'cash',
                     channel: data.order.order_channel || currentChannel,
                     usesBarcode: Boolean(data.order.uses_barcode),
                     barcodeType: data.order.barcode_type || KASIR_STATE.barcodeType || 'qr',
                     qrUrl: data.qr_url || (KASIR_BASE_QR_URL + data.order.code),
                 });
-=======
-                openOrderSuccessModal(
-                    data.order.code,
-                    data.order.customer_name,
-                    data.order.total,
-                    data.order.change_amount || 0,
-                    data.receipt_url,
-                    payload.payment_method === 'cash'
-                );
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                 showKasirToast(`Pesanan #${data.order.code} tersimpan`);
                 syncKasirWithDatabase(false);
             } catch (err) {
@@ -3324,11 +3245,22 @@
             }
         }
 
-<<<<<<< HEAD
-        function openOrderSuccessModal(info) {
-=======
-        function openOrderSuccessModal(orderCode, customerName, totalAmount, changeAmount = 0, receiptUrl = null, showChange = true) {
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+        function openOrderSuccessModal(infoOrCode, customerNameArg = null, totalAmountArg = 0, changeAmountArg = 0, receiptUrlArg = null, showChangeArg = true) {
+            const info = (infoOrCode && typeof infoOrCode === 'object')
+                ? infoOrCode
+                : {
+                    code: infoOrCode,
+                    customerName: customerNameArg,
+                    total: totalAmountArg,
+                    changeAmount: changeAmountArg,
+                    receiptUrl: receiptUrlArg,
+                    showChange: showChangeArg,
+                    channel: 'direct',
+                    usesBarcode: true,
+                    barcodeType: KASIR_STATE.barcodeType || 'qr',
+                    qrUrl: KASIR_BASE_QR_URL + String(infoOrCode || ''),
+                };
+
             const modal = document.getElementById('kasirOrderSuccessModal');
             const codeEl = document.getElementById('modalSuccessOrderCode');
             const nameEl = document.getElementById('modalSuccessCustomerName');
@@ -3343,16 +3275,16 @@
 
             if (!modal) return;
 
-<<<<<<< HEAD
             KASIR_STATE.lastSuccessOrder = info;
 
             if (codeEl) codeEl.textContent = `#${info.code}`;
             if (nameEl) nameEl.textContent = info.customerName || 'Pelanggan Kasir';
             if (totalEl) totalEl.textContent = formatRupiah(info.total);
+            if (changeRow) changeRow.classList.toggle('hidden', info.showChange === false);
             if (changeEl) changeEl.textContent = formatRupiah(info.changeAmount || 0);
             if (receiptBtn && info.receiptUrl) receiptBtn.href = info.receiptUrl;
 
-            const isPartner = info.channel === 'zendo' || info.channel === 'grab' || !info.usesBarcode;
+            const isPartner = info.channel === 'zendo' || info.channel === 'grab' || info.usesBarcode === false;
             if (isPartner && KASIR_CHANNEL_ASSETS[info.channel]) {
                 const cfg = KASIR_CHANNEL_ASSETS[info.channel];
                 if (partnerBanner) {
@@ -3366,14 +3298,6 @@
                 if (codeBox) codeBox.classList.remove('hidden');
                 switchSuccessModalCodeMode(info.barcodeType === 'barcode' ? 'barcode' : 'qr');
             }
-=======
-            if (codeEl) codeEl.textContent = `#${orderCode}`;
-            if (nameEl) nameEl.textContent = customerName || 'Pelanggan Kasir';
-            if (totalEl) totalEl.textContent = formatRupiah(totalAmount);
-            if (changeRow) changeRow.classList.toggle('hidden', !showChange);
-            if (changeEl) changeEl.textContent = formatRupiah(changeAmount);
-            if (receiptBtn && receiptUrl) receiptBtn.href = receiptUrl;
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -3591,6 +3515,17 @@
             return 'Tunai';
         }
 
+        function getOrderChannelBadgeHtml(order) {
+            const ch = (order && order.order_channel) ? order.order_channel : (order && order.is_zendo ? 'zendo' : 'direct');
+            if (ch === 'zendo') {
+                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold"><img src="${KASIR_CHANNEL_ASSETS.zendo.logo}" alt="Zendo" class="w-3.5 h-3.5 rounded-full object-cover"><span>Zendo</span></span>`;
+            }
+            if (ch === 'grab') {
+                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10.5px] font-bold"><img src="${KASIR_CHANNEL_ASSETS.grab.logo}" alt="GrabFood" class="w-3.5 h-3.5 object-contain"><span>GrabFood</span></span>`;
+            }
+            return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-canvas text-sub border border-line text-[10.5px] font-bold"><i class="fa-solid fa-barcode text-[10px] text-forest"></i><span>Di Tempat</span></span>`;
+        }
+
         function renderScannedOrderResult(o) {
             const container = document.getElementById('scannedOrderResultContainer');
             if (!container || !o) return;
@@ -3701,6 +3636,7 @@
                                     <i class="fa-solid ${serviceMeta.icon} text-[10px]"></i>
                                     <span>${escapeKasirHtml(serviceMeta.label)}</span>
                                 </span>
+                                ${getOrderChannelBadgeHtml(o)}
                             </div>
                             <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#${escapeKasirHtml(o.code)}</h3>
                             <p class="text-xs font-normal text-sub mt-0.5">${customerMetaParts.join(' • ')}</p>
@@ -3744,64 +3680,8 @@
                     return;
                 }
 
-<<<<<<< HEAD
-                const o = data.order;
-                const container = document.getElementById('scannedOrderResultContainer');
-                if (!container) return;
-
-                const itemsHtml = (o.items || []).map(i => `
-                    <div class="flex items-center justify-between bg-canvas rounded-xl px-3.5 py-2.5 text-xs">
-                        <div>
-                            <span class="font-bold text-ink">${escapeKasirHtml(i.menu_name)}</span>
-                            <span class="text-sub ml-1.5 tabular-nums">x${i.qty}</span>
-                        </div>
-                        <span class="font-bold text-ink tabular-nums">${formatRupiah(i.line_total)}</span>
-                    </div>
-                `).join('');
-
-                const isPaid = o.payment_status === 'paid';
-                const ch = o.order_channel || 'direct';
-                let channelBadgeHtml = `<span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-md bg-canvas text-ink border border-line"><i class="fa-solid fa-barcode text-[11px] text-forest"></i><span>Di Tempat (Barcode)</span></span>`;
-                if (ch === 'zendo') {
-                    channelBadgeHtml = `<span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-200"><img src="${KASIR_CHANNEL_ASSETS.zendo.logo}" alt="Zendo" class="w-4 h-4 rounded-full object-cover"><span>Zendo</span></span>`;
-                } else if (ch === 'grab') {
-                    channelBadgeHtml = `<span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200"><img src="${KASIR_CHANNEL_ASSETS.grab.logo}" alt="GrabFood" class="w-4 h-4 object-contain"><span>GrabFood</span></span>`;
-                }
-
-                container.innerHTML = `
-                    <div class="space-y-4">
-                        <div class="flex flex-wrap items-start justify-between gap-3 pb-4 border-b border-line">
-                            <div>
-                                <div class="flex flex-wrap items-center gap-1.5">
-                                    <span class="text-xs font-bold px-2.5 py-1 rounded-md ${isPaid ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink'}">
-                                        ${isPaid ? 'LUNAS' : 'BELUM BAYAR'} (${escapeKasirHtml(o.status_label)})
-                                    </span>
-                                    ${channelBadgeHtml}
-                                </div>
-                                <h3 class="text-sm font-bold text-ink mt-2 tabular-nums">#${escapeKasirHtml(o.code)}</h3>
-                                <p class="text-xs font-normal text-sub mt-0.5">${escapeKasirHtml(o.customer_name || 'Pelanggan Kasir')} • ${o.order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang'}</p>
-                            </div>
-                            <a href="${data.receipt_url}" target="_blank" class="min-h-[44px] px-4 rounded-xl bg-canvas border border-line text-ink text-xs font-bold flex items-center">
-                                Cetak Struk
-                            </a>
-                        </div>
-                        <div class="space-y-2 max-h-60 overflow-y-auto pr-1">${itemsHtml}</div>
-                        <div class="flex items-center justify-between pt-3 border-t border-line">
-                            <span class="text-xs font-normal text-sub">Total</span>
-                            <span class="text-2xl font-bold text-ink tabular-nums">${formatRupiah(o.total)}</span>
-                        </div>
-                        <div class="pt-4 border-t border-line grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <button type="button" onclick="updateKasirOrderStatus(${o.id}, 'processing', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">Set Diproses & Lunas</button>
-                            <button type="button" onclick="updateKasirOrderStatus(${o.id}, 'ready', 'paid')" class="min-h-[48px] px-3 rounded-xl border border-line text-xs font-bold text-ink cursor-pointer">Set Siap Saji</button>
-                            <button type="button" onclick="updateKasirOrderStatus(${o.id}, 'completed', 'paid')" class="min-h-[48px] px-3 rounded-xl bg-forest text-white text-xs font-bold cursor-pointer">Selesaikan Pesanan</button>
-                        </div>
-                    </div>
-                `;
-                showKasirToast(`Pesanan #${o.code} ditemukan`);
-=======
                 renderScannedOrderResult(data.order);
                 showKasirToast(`Pesanan #${data.order.code} ditemukan`);
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             } catch (e) {
                 showKasirToast('Gagal memuat detail pesanan');
             }
@@ -3865,17 +3745,45 @@
             }
         }
 
+        function updateKasirChannelCounts(orders) {
+            let countDirect = 0;
+            let countZendo = 0;
+            let countGrab = 0;
+            (orders || []).forEach(o => {
+                const ch = o.order_channel || (o.is_zendo ? 'zendo' : 'direct');
+                if (ch === 'zendo') countZendo++;
+                else if (ch === 'grab') countGrab++;
+                else countDirect++;
+            });
+
+            const cAll = document.getElementById('kasirChannelCount-all');
+            const cDir = document.getElementById('kasirChannelCount-direct');
+            const cZen = document.getElementById('kasirChannelCount-zendo');
+            const cGrb = document.getElementById('kasirChannelCount-grab');
+            if (cAll) cAll.textContent = String((orders || []).length);
+            if (cDir) cDir.textContent = String(countDirect);
+            if (cZen) cZen.textContent = String(countZendo);
+            if (cGrb) cGrb.textContent = String(countGrab);
+        }
+
         function renderKasirOrdersGrid() {
             const container = document.getElementById('kasirOrdersGridContainer');
             if (!container) return;
 
+            updateKasirChannelCounts(KASIR_STATE.recentOrders || []);
+
+            const channelFilter = KASIR_STATE.activeOrderChannelFilter || 'all';
             const statusFilter = KASIR_STATE.activeOrderStatus || 'unpaid';
             const serviceFilter = KASIR_STATE.activeOrderService || 'all';
             const query = (KASIR_STATE.orderSearchQuery || '').toLowerCase().trim();
 
             const filtered = (KASIR_STATE.recentOrders || []).filter(ord => {
+                const ch = ord.order_channel || (ord.is_zendo ? 'zendo' : 'direct');
                 const serviceMeta = getOrderServiceMeta(ord);
                 const bucket = getKasirOrderBucket(ord);
+                if (channelFilter !== 'all' && ch !== channelFilter) {
+                    return false;
+                }
                 if (query === '' && bucket !== statusFilter) {
                     return false;
                 }
@@ -3884,7 +3792,7 @@
                 }
                 if (query !== '') {
                     const itemsText = (ord.items || []).map(it => it.menu_name || '').join(' ');
-                    const hay = `${ord.code || ''} ${ord.customer_name || ''} ${ord.delivery_address || ''} ${serviceMeta.label} ${itemsText}`.toLowerCase();
+                    const hay = `${ord.code || ''} ${ord.customer_name || ''} ${ord.channel_label || ''} ${ord.delivery_address || ''} ${serviceMeta.label} ${itemsText}`.toLowerCase();
                     if (!hay.includes(query)) {
                         return false;
                     }
@@ -3895,7 +3803,7 @@
             if (filtered.length === 0) {
                 const emptyLabel = query !== ''
                     ? 'Pesanan tidak ditemukan untuk kata kunci tersebut'
-                    : (serviceFilter !== 'all'
+                    : (serviceFilter !== 'all' || channelFilter !== 'all'
                         ? 'Belum ada pesanan pada filter ini'
                         : (statusFilter === 'unpaid'
                             ? 'Tidak ada pesanan yang menunggu pembayaran'
@@ -3984,16 +3892,18 @@
                         data-order-id="${ord.id}"
                         data-order-bucket="${escapeKasirHtml(bucket)}"
                         data-order-status="${escapeKasirHtml(ord.status)}"
+                        data-order-channel="${escapeKasirHtml(ord.order_channel || (ord.is_zendo ? 'zendo' : 'direct'))}"
                         data-order-service="${escapeKasirHtml(serviceMeta.key)}"
                     >
                         <div>
                             <div class="flex items-start justify-between gap-2 pb-3 border-b border-line">
                                 <div class="min-w-0 w-full">
-                                    <div class="flex flex-wrap items-center justify-between gap-1.5">
+                                    <div class="flex flex-wrap items-center gap-1.5">
                                         <span class="text-xs font-bold text-ink tabular-nums">#${escapeKasirHtml(ord.code)}</span>
                                         <span class="text-xs font-bold px-2 py-0.5 rounded-md ${badgeClass}">
                                             ${escapeKasirHtml(badgeText)}
                                         </span>
+                                        ${getOrderChannelBadgeHtml(ord)}
                                     </div>
                                     <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
                                         <span class="inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md ${serviceMeta.badgeClass}">
@@ -4584,8 +4494,20 @@
             const receiptUrl = result.receipt_url || draft.receiptUrl;
 
             const isCashPayment = draft.selectedMethod === 'cash';
+            const paidOrderObj = result.order || {};
             closePayOrderModal();
-            openOrderSuccessModal(orderCode, customerName, paidAmount, changeAmount, receiptUrl, isCashPayment);
+            openOrderSuccessModal({
+                code: orderCode,
+                customerName: customerName,
+                total: paidAmount,
+                changeAmount: changeAmount,
+                receiptUrl: receiptUrl,
+                showChange: isCashPayment,
+                channel: paidOrderObj.order_channel || (paidOrderObj.is_zendo ? 'zendo' : 'direct'),
+                usesBarcode: paidOrderObj.uses_barcode !== undefined ? Boolean(paidOrderObj.uses_barcode) : !Boolean(paidOrderObj.is_zendo),
+                barcodeType: paidOrderObj.barcode_type || 'qr',
+                qrUrl: KASIR_BASE_QR_URL + orderCode,
+            });
         }
 
         function openCancelOrderConfirm(orderId) {
@@ -4685,9 +4607,6 @@
                         });
                     }
                     if (Array.isArray(data.recent_orders)) {
-<<<<<<< HEAD
-                        renderSyncedKasirOrders(data.recent_orders);
-=======
                         const newlyArrivedPending = [];
                         data.recent_orders.forEach(ord => {
                             const idNum = Number(ord.id);
@@ -4714,7 +4633,6 @@
                             const firstNew = newlyArrivedPending[0];
                             showKasirToast(`Pesanan baru masuk: #${firstNew.code} (${firstNew.service_type_label})`);
                         }
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                     }
                     if (showNotification) {
                         showKasirToast('Data kasir tersinkron');
@@ -4743,100 +4661,6 @@
             syncKasirWithDatabase(false);
         });
 
-        function renderSyncedKasirOrders(orders) {
-            const container = document.getElementById('kasirOrdersGridContainer');
-            if (!container) return;
-
-            let countDirect = 0;
-            let countZendo = 0;
-            let countGrab = 0;
-            orders.forEach(o => {
-                const ch = o.order_channel || 'direct';
-                if (ch === 'zendo') countZendo++;
-                else if (ch === 'grab') countGrab++;
-                else countDirect++;
-            });
-
-            const cAll = document.getElementById('kasirChannelCount-all');
-            const cDir = document.getElementById('kasirChannelCount-direct');
-            const cZen = document.getElementById('kasirChannelCount-zendo');
-            const cGrb = document.getElementById('kasirChannelCount-grab');
-            if (cAll) cAll.textContent = String(orders.length);
-            if (cDir) cDir.textContent = String(countDirect);
-            if (cZen) cZen.textContent = String(countZendo);
-            if (cGrb) cGrb.textContent = String(countGrab);
-
-            if (orders.length === 0) {
-                container.innerHTML = `<div class="col-span-full bg-white border border-line rounded-xl p-12 text-center"><p class="text-sm font-bold text-ink">Belum ada pesanan</p></div>`;
-                return;
-            }
-
-            container.innerHTML = orders.map(ord => {
-                const ch = ord.order_channel || 'direct';
-                const isPaid = ord.payment_status === 'paid';
-                let channelChip = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-canvas text-sub border border-line text-[10.5px] font-bold"><i class="fa-solid fa-barcode text-[10px] text-forest"></i><span>Di Tempat</span></span>`;
-                if (ch === 'zendo') {
-                    channelChip = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 border border-rose-200 text-[10.5px] font-bold"><img src="${KASIR_CHANNEL_ASSETS.zendo.logo}" alt="Zendo" class="w-3.5 h-3.5 rounded-full object-cover"><span>Zendo</span></span>`;
-                } else if (ch === 'grab') {
-                    channelChip = `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10.5px] font-bold"><img src="${KASIR_CHANNEL_ASSETS.grab.logo}" alt="GrabFood" class="w-3.5 h-3.5 object-contain"><span>GrabFood</span></span>`;
-                }
-
-                const itemsHtml = (ord.items || []).map(it => `
-                    <div class="flex items-center justify-between text-ink">
-                        <span class="pr-2 font-normal">${escapeKasirHtml(it.menu_name)} <strong class="font-bold tabular-nums">x${it.qty}</strong></span>
-                        <span class="font-bold tabular-nums shrink-0">${formatRupiah(it.line_total)}</span>
-                    </div>
-                `).join('');
-
-                const searchStr = `${ord.code} ${ord.customer_name || ''} ${ord.channel_label || ''}`.toLowerCase();
-
-                return `
-                    <div
-                        class="kasir-order-card bg-white border border-line rounded-xl p-4 flex flex-col justify-between gap-4"
-                        data-order-status="${escapeKasirHtml(ord.status)}"
-                        data-order-channel="${escapeKasirHtml(ch)}"
-                        data-order-search="${escapeKasirHtml(searchStr)}"
-                    >
-                        <div>
-                            <div class="flex items-start justify-between gap-2 pb-3 border-b border-line">
-                                <div class="min-w-0">
-                                    <div class="flex flex-wrap items-center gap-1.5">
-                                        <span class="text-xs font-bold text-ink tabular-nums">#${escapeKasirHtml(ord.code)}</span>
-                                        <span class="text-[11px] font-bold px-2 py-0.5 rounded-md ${isPaid ? 'bg-forest-soft text-forest-dark' : 'bg-warning-soft text-warning-ink'}">${isPaid ? 'Lunas' : 'Belum Bayar'}</span>
-                                        ${channelChip}
-                                    </div>
-                                    <p class="text-xs font-bold text-ink mt-1.5">
-                                        ${escapeKasirHtml(ord.customer_name || 'Pelanggan Kasir')}
-                                        <span class="font-normal text-sub">• ${ord.order_type === 'dine_in' ? 'Makan di Sini' : 'Bawa Pulang'}</span>
-                                    </p>
-                                </div>
-                                <span id="orderCardStatusBadge-${ord.id}" class="text-xs font-normal px-2.5 py-1 rounded-lg bg-canvas text-ink shrink-0">${escapeKasirHtml(ord.status_label)}</span>
-                            </div>
-                            <div class="py-3 space-y-1.5 max-h-36 overflow-y-auto text-xs">${itemsHtml}</div>
-                        </div>
-                        <div class="pt-3 border-t border-line space-y-3">
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-normal text-sub tabular-nums">${escapeKasirHtml(ord.created_at_display || ord.created_at_time || '')}</span>
-                                <span class="text-sm font-bold text-ink tabular-nums">${formatRupiah(ord.total)}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <select onchange="updateKasirOrderStatus(${ord.id}, this.value, 'paid')" class="flex-1 min-h-[44px] bg-canvas border border-line rounded-xl px-3 py-2 text-xs font-bold text-ink focus:outline-none focus:border-forest cursor-pointer">
-                                    <option value="pending" ${ord.status === 'pending' ? 'selected' : ''}>Status: Pending</option>
-                                    <option value="processing" ${ord.status === 'processing' ? 'selected' : ''}>Status: Diproses</option>
-                                    <option value="ready" ${ord.status === 'ready' ? 'selected' : ''}>Status: Siap Saji</option>
-                                    <option value="completed" ${ord.status === 'completed' ? 'selected' : ''}>Status: Selesai</option>
-                                    <option value="cancelled" ${ord.status === 'cancelled' ? 'selected' : ''}>Status: Batal</option>
-                                </select>
-                                <a href="${ord.receipt_url}" target="_blank" class="min-h-[44px] px-4 rounded-xl bg-forest text-white text-xs font-bold flex items-center">Struk</a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            applyKasirOrderFilters();
-        }
-
         function filterKasirOrderChannel(channel) {
             KASIR_STATE.activeOrderChannelFilter = channel || 'all';
             document.querySelectorAll('.kasir-ord-channel-btn').forEach(btn => {
@@ -4860,67 +4684,18 @@
                         : 'kasir-ord-channel-btn p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 bg-white text-ink border-line hover:border-forest';
                 }
             });
-            applyKasirOrderFilters();
+            renderKasirOrdersGrid();
         }
 
         function filterKasirOrderStatus(status) {
-<<<<<<< HEAD
-            KASIR_STATE.activeOrderStatusFilter = status || 'all';
-=======
             KASIR_STATE.activeOrderStatus = status;
 
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             document.querySelectorAll('.kasir-ord-filter').forEach(btn => {
                 const st = btn.getAttribute('data-ord-filter');
-                btn.className = st === KASIR_STATE.activeOrderStatusFilter
+                btn.className = st === KASIR_STATE.activeOrderStatus
                     ? 'kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-bold bg-forest text-white cursor-pointer shrink-0'
                     : 'kasir-ord-filter min-h-[44px] px-4 rounded-xl text-xs font-normal bg-white text-sub border border-line cursor-pointer shrink-0';
             });
-<<<<<<< HEAD
-            applyKasirOrderFilters();
-        }
-
-        function searchKasirOrderRows(q) {
-            KASIR_STATE.orderSearchQuery = (q || '').toLowerCase().trim();
-            applyKasirOrderFilters();
-        }
-
-        function applyKasirOrderFilters() {
-            const channelFilter = KASIR_STATE.activeOrderChannelFilter || 'all';
-            const statusFilter = KASIR_STATE.activeOrderStatusFilter || 'all';
-            const query = KASIR_STATE.orderSearchQuery || '';
-
-            document.querySelectorAll('.kasir-order-card').forEach(card => {
-                const st = card.getAttribute('data-order-status') || '';
-                const ch = card.getAttribute('data-order-channel') || 'direct';
-                const text = card.getAttribute('data-order-search') || '';
-
-                const matchChannel = channelFilter === 'all' || ch === channelFilter;
-                const matchStatus = statusFilter === 'all' || st === statusFilter;
-                const matchSearch = query === '' || text.includes(query);
-
-                card.classList.toggle('hidden', !(matchChannel && matchStatus && matchSearch));
-            });
-        }
-
-        // Attach Global USB / Bluetooth Hardware Barcode Scanner Listener
-        document.addEventListener('DOMContentLoaded', () => {
-            checkKasirCameraEnvironment();
-            if (window.NucomuBarcode) {
-                window.NucomuBarcode.attachHardwareScanner({
-                    getInput: () => document.getElementById('manualOrderCodeInput'),
-                    onScan: (cleanCode) => {
-                        if (KASIR_STATE.activeMainTab !== 'scan') {
-                            switchKasirMainTab('scan');
-                        }
-                        const inputEl = document.getElementById('manualOrderCodeInput');
-                        if (inputEl) inputEl.value = cleanCode;
-                        lookupKasirOrderCode(cleanCode);
-                    },
-                });
-            }
-        });
-=======
 
             renderKasirOrdersGrid();
         }
@@ -4949,9 +4724,25 @@
             renderKasirOrdersGrid();
         }
 
-        // Terapkan render awal daftar pesanan agar sinkron dengan filter Pending
+        // Attach Global USB / Bluetooth Hardware Barcode Scanner Listener & Initial Orders Render
+        document.addEventListener('DOMContentLoaded', () => {
+            checkKasirCameraEnvironment();
+            if (window.NucomuBarcode) {
+                window.NucomuBarcode.attachHardwareScanner({
+                    getInput: () => document.getElementById('manualOrderCodeInput'),
+                    onScan: (cleanCode) => {
+                        if (KASIR_STATE.activeMainTab !== 'scan') {
+                            switchKasirMainTab('scan');
+                        }
+                        const inputEl = document.getElementById('manualOrderCodeInput');
+                        if (inputEl) inputEl.value = cleanCode;
+                        lookupKasirOrderCode(cleanCode);
+                    },
+                });
+            }
+        });
+
         renderKasirOrdersGrid();
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
         function showKasirToast(message) {
             const toast = document.getElementById('kasirToast');

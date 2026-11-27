@@ -45,35 +45,19 @@
                         <span class="nucomu-sans text-[11px] uppercase tracking-[0.18em] font-semibold text-[var(--menu-ink)]">FEATURED</span>
                         <span class="material-symbols-outlined text-sm text-[var(--menu-muted)] font-light">restaurant</span>
                     </div>
-<<<<<<< HEAD
-                    <h3 id="best-hero-title" class="nucomu-serif-display text-4xl sm:text-5xl lg:text-[54px] font-semibold text-[#191919] leading-[1.05] tracking-[-0.02em] transition-all duration-300">
-                        {!! $firstBestMenu['display_title'] ?? $firstBestMenu['name'] !!}
-                    </h3>
-
-                    <div class="flex items-center space-x-3 my-4">
-                        <span class="w-7 h-px bg-[#191919]"></span>
-                        <span id="best-hero-category" class="nucomu-sans text-xs font-medium tracking-wide text-[#30302D]">
-                            {{ $firstBestMenu['category_label'] ?? 'Menu Pilihan' }}
-                        </span>
-                    </div>
-
-                    <p id="best-hero-desc" class="nucomu-sans text-[13px] sm:text-sm text-[#8A8A86] leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
-                        {{ $firstBestMenu['description'] ?? '' }}
-=======
                     <h3 id="best-hero-title" class="nucomu-serif-display text-4xl sm:text-5xl lg:text-[54px] font-semibold text-[var(--menu-ink)] leading-[1.05] tracking-[-0.02em] transition-all duration-300">
-                        {!! $bestMenu[0]['display_title'] ?? $bestMenu[0]['name'] !!}
+                        {!! $firstBestMenu['display_title'] ?? $firstBestMenu['name'] !!}
                     </h3>
 
                     <div class="flex items-center space-x-3 my-4">
                         <span class="w-7 h-px bg-[var(--menu-ink)]"></span>
                         <span id="best-hero-category" class="nucomu-sans text-xs font-medium tracking-wide text-[var(--menu-charcoal)]">
-                            {{ $bestMenu[0]['category_label'] }}
+                            {{ $firstBestMenu['category_label'] ?? 'Menu Pilihan' }}
                         </span>
                     </div>
 
                     <p id="best-hero-desc" class="nucomu-sans text-[13px] sm:text-sm text-[var(--menu-muted)] leading-relaxed max-w-sm transition-all duration-300 min-h-[3rem]">
-                        {{ $bestMenu[0]['description'] }}
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                        {{ $firstBestMenu['description'] ?? '' }}
                     </p>
 
                     <div class="mt-8 flex items-center space-x-2 select-none opacity-60">
@@ -103,13 +87,8 @@
                         <button id="best-hero-order-btn" 
                                 type="button" 
                                 onclick="orderCurrentBestMenuItem()" 
-<<<<<<< HEAD
-                                class="nucomu-sans group px-7 sm:px-8 py-2.5 rounded-full bg-[#191919] hover:bg-[#30302D] text-[#FFFFFF] font-semibold text-xs sm:text-[13px] uppercase tracking-[0.12em] flex items-center space-x-2 shadow-[0_10px_24px_-6px_rgba(25,25,25,0.28)] transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer">
-                            <span id="best-hero-price" class="font-bold tabular-nums">{{ $firstBestMenu['price_formatted'] }}</span>
-=======
                                 class="nucomu-sans group px-7 sm:px-8 py-2.5 rounded-full bg-[var(--menu-ink)] hover:bg-[var(--menu-charcoal)] text-[var(--menu-btn-text)] font-semibold text-xs sm:text-[13px] uppercase tracking-[0.12em] flex items-center space-x-2 shadow-[var(--menu-cta-shadow)] transition-all duration-200 hover:-translate-y-0.5 active:scale-95 cursor-pointer">
-                            <span id="best-hero-price" class="font-bold tabular-nums">{{ $bestMenu[0]['price_formatted'] }}</span>
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                            <span id="best-hero-price" class="font-bold tabular-nums">{{ $firstBestMenu['price_formatted'] }}</span>
                             <span class="font-semibold tracking-[0.14em]">ORDER</span>
                             <span class="material-symbols-outlined text-sm transition-transform duration-200 group-hover:translate-x-0.5">chevron_right</span>
                         </button>

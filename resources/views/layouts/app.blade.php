@@ -1,11 +1,8 @@
 @php
-<<<<<<< HEAD
     $layoutBrand = $brand ?? (class_exists(\App\Http\Controllers\NucomuController::class) ? \App\Http\Controllers\NucomuController::resolveBrandSettings() : config('nucomu.brand', []));
     $layoutBrandName = $layoutBrand['name'] ?? config('nucomu.brand.name', 'Nucomu Cafe');
-=======
     $activeTheme = ($siteTheme ?? \App\Models\Setting::getSiteTheme()) === 'dark' ? 'dark' : 'light';
     $isDarkTheme = $activeTheme === 'dark';
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 @endphp
 <!DOCTYPE html>
 <html lang="id" data-theme="{{ $activeTheme }}" class="scroll-smooth {{ $isDarkTheme ? 'dark' : '' }}">
@@ -13,16 +10,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-<<<<<<< HEAD
-    <meta name="theme-color" content="#0C0C0C">
-    <meta name="color-scheme" content="dark">
-    <style>:root{color-scheme:dark;}html,body{background-color:#0C0C0C;color:#F5F5F5;}</style>
-    <title>@yield('title', $layoutBrandName . ' — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
-    <meta name="description" content="@yield('meta_description', $layoutBrandName . ' — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
-    @if(!empty($layoutBrand['favicon_url']))
-        <link rel="icon" href="{{ $layoutBrand['favicon_url'] }}">
-    @endif
-=======
     <meta name="theme-color" content="{{ $isDarkTheme ? '#0C0C0C' : '#F9F9F9' }}">
     <meta name="color-scheme" content="{{ $activeTheme }}">
     <style>
@@ -30,9 +17,11 @@
         [data-theme="dark"],.dark{color-scheme:dark;}
         html,body{background-color:{{ $isDarkTheme ? '#0C0C0C' : '#F9F9F9' }};color:{{ $isDarkTheme ? '#F5F5F5' : '#191919' }};}
     </style>
-    <title>@yield('title', 'Nucomu Cafe — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
-    <meta name="description" content="@yield('meta_description', 'Nucomu Cafe — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+    <title>@yield('title', $layoutBrandName . ' — Tempat Kembali, Rasa yang Dirindukan | Tulungagung')</title>
+    <meta name="description" content="@yield('meta_description', $layoutBrandName . ' — Kafe bernuansa monokrom hangat di Tulungagung untuk menikmati kopi single origin, dessert artisanal, dan waktu yang tenang.')">
+    @if(!empty($layoutBrand['favicon_url']))
+        <link rel="icon" href="{{ $layoutBrand['favicon_url'] }}">
+    @endif
 
     <!-- Anti-flicker Early State Resolver for Nucomu Opening Intro (Main Page Only) -->
     @if(request()->routeIs('home') || request()->is('/'))

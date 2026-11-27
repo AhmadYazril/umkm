@@ -51,78 +51,6 @@ class NucomuController extends Controller
 
         try {
             $dbSettings = Setting::pluck('value', 'key');
-<<<<<<< HEAD
-=======
-            if (! empty($dbSettings['cafe_name'])) {
-                $brand['name'] = $dbSettings['cafe_name'];
-            }
-            if (! empty($dbSettings['cafe_tagline'])) {
-                $brand['tagline'] = $dbSettings['cafe_tagline'];
-            }
-            if (! empty($dbSettings['hero_title'])) {
-                $brand['hero_title'] = $dbSettings['hero_title'];
-            }
-            if (! empty($dbSettings['hero_subtitle'])) {
-                $brand['hero_subtitle'] = $dbSettings['hero_subtitle'];
-            }
-            if (! empty($dbSettings['hero_badge'])) {
-                $brand['hero_badge'] = $dbSettings['hero_badge'];
-            }
-            if (! empty($dbSettings['cafe_story_headline'])) {
-                $brand['story_headline'] = $dbSettings['cafe_story_headline'];
-                $brand['cafe_story_headline'] = $dbSettings['cafe_story_headline'];
-            }
-            if (! empty($dbSettings['cafe_story_p1'])) {
-                $brand['story_p1'] = $dbSettings['cafe_story_p1'];
-                $brand['cafe_story_p1'] = $dbSettings['cafe_story_p1'];
-            }
-            if (! empty($dbSettings['cafe_story_p2'])) {
-                $brand['story_p2'] = $dbSettings['cafe_story_p2'];
-                $brand['cafe_story_p2'] = $dbSettings['cafe_story_p2'];
-            } else {
-                $brand['story_p2'] = 'Dengan paduan estetika monokrom hangat dan material alami, setiap sudut dirancang agar Anda dapat beristirahat sejenak dari kesibukan harian dan menikmati obrolan yang mengalir perlahan.';
-            }
-            if (! empty($dbSettings['cafe_story_p3'])) {
-                $brand['cafe_story_p3'] = $dbSettings['cafe_story_p3'];
-            }
-            if (! empty($dbSettings['about_label'])) {
-                $brand['about_label'] = $dbSettings['about_label'];
-            }
-            if (! empty($dbSettings['about_tagline'])) {
-                $brand['about_tagline'] = $dbSettings['about_tagline'];
-            }
-            if (! empty($dbSettings['about_quote'])) {
-                $brand['about_quote'] = $dbSettings['about_quote'];
-            }
-            if (! empty($dbSettings['about_button_text'])) {
-                $brand['about_button_text'] = $dbSettings['about_button_text'];
-            }
-            if (! empty($dbSettings['about_button_link'])) {
-                $brand['about_button_link'] = $dbSettings['about_button_link'];
-            }
-            $brand['about_media_type'] = $dbSettings['about_media_type'] ?? 'video';
-            $aboutMediaPath = $dbSettings['about_media_path'] ?? null;
-            if ($aboutMediaPath) {
-                if (str_starts_with($aboutMediaPath, 'http://') || str_starts_with($aboutMediaPath, 'https://')) {
-                    $brand['about_media_url'] = $aboutMediaPath;
-                } elseif (file_exists(public_path('uploads/about/'.$aboutMediaPath))) {
-                    $brand['about_media_url'] = asset('uploads/about/'.$aboutMediaPath);
-                } elseif (file_exists(public_path($aboutMediaPath))) {
-                    $brand['about_media_url'] = asset($aboutMediaPath);
-                } else {
-                    $brand['about_media_url'] = asset($aboutMediaPath);
-                }
-            } else {
-                $brand['about_media_url'] = asset('videos/room-tour.mp4');
-            }
-            if (! empty($dbSettings['cafe_story'])) {
-                $brand['story'] = $dbSettings['cafe_story'];
-            }
-            if (! empty($dbSettings['cafe_concept'])) {
-                $brand['concept'] = $dbSettings['cafe_concept'];
-            }
-            $contact = array_merge($contact, self::getContactSettings());
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
             if (! empty($dbSettings['google_places_api_key'])) {
                 $integrations['google_places_api_key'] = $dbSettings['google_places_api_key'];
             }
@@ -598,11 +526,15 @@ class NucomuController extends Controller
             if (isset($dbSettings['cafe_story_p3'])) {
                 $p3Val = trim((string) $dbSettings['cafe_story_p3']);
                 if ($p3Val !== '' && ! str_starts_with($p3Val, '[ISI:')) {
+                    $brand['story_p3'] = $p3Val;
                     $brand['cafe_story_p3'] = $p3Val;
                 }
             }
             if (! $isPlaceholder($dbSettings['about_label'] ?? null)) {
                 $brand['about_label'] = trim((string) $dbSettings['about_label']);
+            }
+            if (! $isPlaceholder($dbSettings['about_tagline'] ?? null)) {
+                $brand['about_tagline'] = trim((string) $dbSettings['about_tagline']);
             }
             if (! $isPlaceholder($dbSettings['about_quote'] ?? null)) {
                 $brand['about_quote'] = trim((string) $dbSettings['about_quote']);
@@ -2192,12 +2124,13 @@ class NucomuController extends Controller
             $storedNotes = implode(' | ', $zendoParts);
         }
 
-<<<<<<< HEAD
         $allowCash = (bool) ($txSettings['order_dine_in_cash'] ?? true);
         $allowQris = (bool) ($txSettings['order_dine_in_qris'] ?? true);
         $requestedPayment = strtolower((string) $request->input('payment_method', 'cash'));
         if ($processMethod === 'kasir') {
-            if ($requestedPayment === 'qris' && $allowQris) {
+            if ($requestedPayment === 'transfer') {
+                $paymentMethod = 'transfer';
+            } elseif ($requestedPayment === 'qris' && $allowQris) {
                 $paymentMethod = 'qris';
             } elseif (! $allowCash && $allowQris) {
                 $paymentMethod = 'qris';
@@ -2213,22 +2146,13 @@ class NucomuController extends Controller
         $barcodeType = $orderChannel === Order::CHANNEL_DIRECT
             ? ($requestedBarcodeType === Order::BARCODE_LINEAR ? Order::BARCODE_LINEAR : Order::BARCODE_QR)
             : null;
-=======
-        $requestedPaymentMethod = strtolower((string) $request->input('payment_method', 'cash'));
-        $paymentMethod = ($processMethod === 'kasir' && in_array($requestedPaymentMethod, ['cash', 'qris', 'transfer'], true))
-            ? $requestedPaymentMethod
-            : 'cash';
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
         try {
             $order = DB::transaction(function () use ($request, $processMethod, $orderChannel, $barcodeType, $paymentMethod, $dineType, $customerPhone, $storedNotes, $subtotal, $grandTotal, $deliveryAddress, $deliveryFee, $distanceKm, $tableNo, $customerLat, $customerLng) {
                 $date = Carbon::now()->format('Ymd');
                 $count = Order::whereDate('created_at', today())->count() + 1;
                 $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
-<<<<<<< HEAD
-=======
 
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
                 while (Order::where('code', $code)->exists()) {
                     $count++;
                     $code = 'NCM-'.$date.'-'.str_pad((string) $count, 3, '0', STR_PAD_LEFT);
@@ -2256,8 +2180,7 @@ class NucomuController extends Controller
                     'total' => $grandTotal,
                     'payment_method' => $paymentMethod,
                     'payment_status' => 'unpaid',
-<<<<<<< HEAD
-                    'status' => $processMethod === 'zendo' ? 'processing' : 'pending',
+                    'status' => 'pending',
                 ];
 
                 if (Schema::hasColumn('orders', 'order_channel')) {
@@ -2268,10 +2191,6 @@ class NucomuController extends Controller
                 }
 
                 $order = Order::create($orderPayload);
-=======
-                    'status' => 'pending',
-                ]);
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
 
                 foreach ($request->items as $item) {
                     $menuIdVal = $item['menu_id'] ?? null;

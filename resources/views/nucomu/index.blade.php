@@ -95,21 +95,14 @@
     </header>
 
     {{-- HERO --}}
-<<<<<<< HEAD
     @php
         $nucomuContact = $contact ?? \App\Http\Controllers\NucomuController::getContactSettings();
         $nucomuBrand = $brand ?? \App\Http\Controllers\NucomuController::resolveBrandSettings();
     @endphp
-    <section class="pt-10 pb-6 px-6 text-center relative z-10">
-        <div class="max-w-4xl mx-auto flex flex-col items-center">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-[#E5E5E5] text-[11px] font-semibold text-[#1C1C1C] shadow-2xs font-body mb-3">
-                <span class="w-2 h-2 rounded-full bg-[#1C1C1C] animate-pulse"></span> {{ $nucomuContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}
-=======
     <section class="pt-10 pb-6 px-6 text-center relative z-10 bg-[var(--bg-page)]">
         <div class="max-w-4xl mx-auto flex flex-col items-center">
             <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[var(--surface)] border border-[var(--border)] text-[11px] font-semibold text-[var(--text)] shadow-2xs font-body mb-3">
-                <span class="w-2 h-2 rounded-full bg-[var(--accent-solid)] animate-pulse"></span> Open Daily: 08:00 - 23:00 WIB
->>>>>>> 5e565ecbf7a31fdc5f79c6a55f162c428fa8b4e9
+                <span class="w-2 h-2 rounded-full bg-[var(--accent-solid)] animate-pulse"></span> {{ $nucomuContact['hours'] ?? config('nucomu.contact.hours', 'Senin – Sabtu: 11:00 – 21:00 WIB | Minggu: 11:00 – 22:00 WIB') }}
             </div>
             <h1 class="text-3xl sm:text-5xl font-bold tracking-tight leading-tight text-[var(--text)] font-editorial mx-auto">
                 Suasana, Rasa, &amp; 
