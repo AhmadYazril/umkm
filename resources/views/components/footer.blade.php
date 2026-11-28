@@ -288,11 +288,6 @@
                 &copy; {{ date('Y') }} {{ $footerBrandName }}. Seluruh Hak Cipta Dilindungi. Tulungagung, Jawa Timur.
             </p>
 
-            <!-- Center Tagline -->
-            <p class="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-mono text-center m-0">
-                CRAFTED WITH CARE &middot; MONOCHROME EDITORIAL
-            </p>
-
             <!-- Back to Top Right with Enhanced Animation -->
             <div class="flex items-center justify-center">
                 <button type="button" 
